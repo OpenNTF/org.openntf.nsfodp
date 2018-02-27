@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="WINDOWS-1252"?><jardesc>
+    <jar path="C:/temp/bazaar-interpreter.jar"/>
+    <options buildIfNeeded="true" compress="false" descriptionLocation="/com.ibm.xsp.extlibx.bazaar.interpreter/export-jar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/com.ibm.xsp.extlibx.bazaar.interpreter/.classpath"/>
+        <folder path="/com.ibm.xsp.extlibx.bazaar.interpreter/META-INF"/>
+        <javaElement handleIdentifier="=com.ibm.xsp.extlibx.bazaar.interpreter/src"/>
+        <file path="/com.ibm.xsp.extlibx.bazaar.interpreter/.project"/>
+        <file path="/com.ibm.xsp.extlibx.bazaar.interpreter/build.properties"/>
+    </selectedElements>
+</jardesc>
