@@ -13,5 +13,6 @@ Export-Package: com.ibm.xsp.extlib.fragment,
  com.ibm.xsp.extlib.interpreter.renderkit.html_extended,
  com.ibm.xsp.extlib.javacompiler,
  com.ibm.xsp.extlib.javacompiler.impl
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/org.eclipse.osgi_3.4.3.R34x_v20081215-1030-RCP20140609-1400.jar
 Require-Bundle: com.ibm.pvc.servlet.jsp
