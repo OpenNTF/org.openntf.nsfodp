@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Phil's Extension Library
 Bundle-SymbolicName: com.ibm.xsp.extlibx.bazaar;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: IBM
 Bundle-ClassPath: .
 Eclipse-ExtensibleAPI: true 
