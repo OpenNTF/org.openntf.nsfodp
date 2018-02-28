@@ -217,7 +217,7 @@ public class DynamicXPageBean {
 		}
 		String className=PageToClassNameUtil.getClassNameForPage(pageName);
 
-		// We make sure that the class does not yet exists
+		// We make sure that the class does not yet exist
 		JavaSourceClassLoader loader=getJavaSourceClassLoader();
 		if(loader.isCompiledFile(className)) {
 			return loader.loadClass(className);
