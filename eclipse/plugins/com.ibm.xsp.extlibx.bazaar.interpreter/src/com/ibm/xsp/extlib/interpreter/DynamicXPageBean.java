@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2013
+ * ï¿½ Copyright IBM Corp. 2013
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -47,6 +47,7 @@ import com.ibm.xsp.page.translator.LogicalPage;
 import com.ibm.xsp.page.translator.PhysicalPage;
 import com.ibm.xsp.page.translator.Translator;
 import com.ibm.xsp.registry.FacesSharableRegistry;
+import com.ibm.xsp.util.TypedUtil;
 
 /**
  * This is a bean that compiles some XPages source code into a class and
@@ -138,7 +139,7 @@ public class DynamicXPageBean {
 	public JavaSourceClassLoader getJavaSourceClassLoader() {
 		if(isRequestBasedClassLoader()) {
 			// Look for a class loader set at the request level
-			Map scope = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+			Map<String, Object> scope = TypedUtil.getRequestMap(FacesContext.getCurrentInstance().getExternalContext());
 			JavaSourceClassLoader l = (JavaSourceClassLoader)scope.get(DYNAMIC_CLASS_LOADER_ENTRY);
 			if(l==null) {
 				l=createJavaSourceClassLoader();

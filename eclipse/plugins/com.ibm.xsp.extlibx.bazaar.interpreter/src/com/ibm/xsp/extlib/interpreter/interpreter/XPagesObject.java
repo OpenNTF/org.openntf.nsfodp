@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -574,7 +574,8 @@ public abstract class XPagesObject {
 	    return true;
 	}
 	
-    public Object newObject() throws FacesException {
+    @SuppressWarnings("deprecation")
+	public Object newObject() throws FacesException {
         try {
             Object o = definition.getJavaClass().newInstance();
             initProperties(o);
@@ -745,8 +746,8 @@ public abstract class XPagesObject {
         
         // Methodbinding setters
         if(prop instanceof FacesMethodBindingProperty) {
-            FacesMethodBindingProperty p = (FacesMethodBindingProperty)prop;
-            return new MethodBindingSetterFactory(prop.getName(),findSetter(prop, MethodBinding.class));
+			FacesMethodBindingProperty p = (FacesMethodBindingProperty)prop;
+            return new MethodBindingSetterFactory(p.getName(),findSetter(p, MethodBinding.class));
         }
 	        
         throw new FacesExceptionEx(null,"Cannot set value for property {0}",prop.getName());

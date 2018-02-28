@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -34,6 +34,7 @@ import com.ibm.xsp.extlib.interpreter.interpreter.parser.XPagesCache;
  */
 public class XPagesInterpreter {
 	
+	@SuppressWarnings("unused")
 	private UIViewRoot viewRoot;
 	private SecurityManager security;
 	private ControlFactory controlFactory;

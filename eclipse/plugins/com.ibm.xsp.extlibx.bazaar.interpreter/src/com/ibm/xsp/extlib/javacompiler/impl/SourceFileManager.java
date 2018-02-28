@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2013
+ * ï¿½ Copyright IBM Corp. 2013
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -197,7 +197,8 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
     	return classPath;
     }
     private static void gatherBundleClassPath(Set<String> classPath, Bundle b) {
-    	Dictionary<String, String> header = b.getHeaders(); // "Bundle-ClassPath"
+    	@SuppressWarnings("unchecked")
+		Dictionary<String, String> header = b.getHeaders(); // "Bundle-ClassPath"
     	for(Enumeration<String> e=header.keys(); e.hasMoreElements(); ) {
     		String key = e.nextElement();
     		if(key.equals("Bundle-ClassPath")) {

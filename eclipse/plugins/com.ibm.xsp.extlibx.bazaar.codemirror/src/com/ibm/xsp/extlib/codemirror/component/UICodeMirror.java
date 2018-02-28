@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -19,7 +19,6 @@ package com.ibm.xsp.extlib.codemirror.component;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
-import javax.servlet.http.HttpSession;
 
 
 

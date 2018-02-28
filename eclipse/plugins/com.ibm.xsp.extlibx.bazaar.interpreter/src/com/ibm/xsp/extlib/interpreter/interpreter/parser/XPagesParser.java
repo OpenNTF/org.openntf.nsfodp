@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import javax.faces.FacesException;
-import javax.faces.component.UIViewRoot;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -32,7 +31,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.xsp.FacesExceptionEx;
-import com.ibm.xsp.component.UIViewRootEx;
 import com.ibm.xsp.extlib.interpreter.interpreter.ComplexProperty;
 import com.ibm.xsp.extlib.interpreter.interpreter.Control;
 import com.ibm.xsp.extlib.interpreter.interpreter.ControlFactory;
@@ -261,14 +259,5 @@ public class XPagesParser {
             text.append(ch, start, length);
         }
         private StringBuilder sharedBuilder = new StringBuilder(256);
-    }
-
-    private static boolean isWhitespace(CharSequence string) {
-        int length = string.length();
-        for (int i=0; i<length; i++) {
-            if (!Character.isWhitespace(string.charAt(i)))
-                return false;
-        }
-        return true;
     }
 }

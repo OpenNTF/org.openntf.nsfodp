@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -40,6 +40,7 @@ import com.ibm.xsp.page.FacesPageDispatcher;
 import com.ibm.xsp.page.FacesPageDriver;
 import com.ibm.xsp.page.FacesPageException;
 import com.ibm.xsp.util.FacesUtil;
+import com.ibm.xsp.util.TypedUtil;
 
 
 
@@ -178,7 +179,7 @@ public class UIControlFactory extends AbstractDynamicContent implements NamingCo
                     }
                 }
                 UIComponent c = ControlBuilder.buildControl(context, ic, true);
-                parent.getChildren().add(c);
+                TypedUtil.getChildren(parent).add(c);
             }
         }
         protected IControl findControl(IControl control, String id) {
@@ -242,7 +243,7 @@ public class UIControlFactory extends AbstractDynamicContent implements NamingCo
         }
         
         lbl.setValue("Error while parsing Content"+b);
-        tag.getChildren().add(lbl);
+        TypedUtil.getChildren(tag).add(lbl);
         return tag;
     }
 	

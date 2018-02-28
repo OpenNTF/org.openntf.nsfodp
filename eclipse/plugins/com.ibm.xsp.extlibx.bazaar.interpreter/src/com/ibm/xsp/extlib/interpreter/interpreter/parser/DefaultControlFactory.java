@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2010
+ * ï¿½ Copyright IBM Corp. 2010
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -16,11 +16,8 @@
 
 package com.ibm.xsp.extlib.interpreter.interpreter.parser;
 
-import javax.faces.component.UIComponent;
-
 import com.ibm.commons.util.StringUtil;
 import com.ibm.xsp.FacesExceptionEx;
-import com.ibm.xsp.component.UIViewRootEx;
 import com.ibm.xsp.context.FacesContextEx;
 import com.ibm.xsp.extlib.interpreter.interpreter.ComplexProperty;
 import com.ibm.xsp.extlib.interpreter.interpreter.Control;

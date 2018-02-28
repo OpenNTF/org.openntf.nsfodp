@@ -1,5 +1,5 @@
 /*
- * © Copyright IBM Corp. 2013
+ * ï¿½ Copyright IBM Corp. 2013
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
@@ -25,6 +25,8 @@ import com.ibm.commons.util.AbstractException;
  * @author priand
  */
 public class DynamicXPagesException extends AbstractException {
+	
+	public static boolean DEBUG = false;
 
 	private static final long serialVersionUID	= 1L;
 
@@ -46,7 +48,7 @@ public class DynamicXPagesException extends AbstractException {
 	}
 
 	public void printExtraInformation(PrintWriter err) {
-		if(false) {
+		if(DEBUG) {
 			if(xpagesSource!=null) {
 				err.println(xpagesSource);
 			}
