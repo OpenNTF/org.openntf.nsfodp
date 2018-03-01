@@ -197,7 +197,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
     	return classPath;
     }
     private static void gatherBundleClassPath(Set<String> classPath, Bundle b) {
-    	@SuppressWarnings("unchecked")
 		Dictionary<String, String> header = b.getHeaders(); // "Bundle-ClassPath"
     	for(Enumeration<String> e=header.keys(); e.hasMoreElements(); ) {
     		String key = e.nextElement();
