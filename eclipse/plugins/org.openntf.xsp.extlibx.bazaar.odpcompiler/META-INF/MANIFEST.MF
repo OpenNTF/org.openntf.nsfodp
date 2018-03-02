@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: On-Disk-Project Compiler
+Bundle-SymbolicName: org.openntf.xsp.extlibx.bazaar.odpcompiler;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: OpenNTF
+Bundle-ClassPath: .
+Export-Package: org.openntf.xsp.extlibx.bazaar.odpcompiler,
+ org.openntf.xsp.extlibx.bazaar.odpcompiler.odp,
+ org.openntf.xsp.extlibx.bazaar.odpcompiler.update
+Import-Package: com.ibm.xsp.extlib.javacompiler,
+ javax.servlet,
+ javax.servlet.http
+Require-Bundle: org.eclipse.osgi,
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.http.registry,
+ com.ibm.domino.xsp.adapter,
+ com.ibm.domino.xsp.bootstrap,
+ com.ibm.domino.xsp.bridge.http,
+ com.ibm.xsp.core,
+ com.ibm.commons,
+ com.ibm.commons.xml,
+ com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.0"

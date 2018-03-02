@@ -7,6 +7,7 @@
 		<version>2.0.0-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
-	<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+	<artifactId>org.openntf.xsp.extlibx.bazaar.odpcompiler</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
 </project>

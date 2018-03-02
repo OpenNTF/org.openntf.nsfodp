@@ -2,7 +2,7 @@
 <feature
       id="com.ibm.xsp.extlibx.bazaar.feature"
       label="XPages Bazaar Feature"
-      version="1.0.1.qualifier">
+      version="2.0.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -24,6 +24,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.ibm.xsp.extlibx.bazaar.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.ibm.xsp.extlibx.bazaar.codemirror"
          download-size="0"
          install-size="0"
@@ -32,7 +39,38 @@
          unpack="false"/>
 
    <plugin
+         id="com.ibm.xsp.extlibx.bazaar.codemirror.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.ibm.xsp.extlibx.bazaar.interpreter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlibx.bazaar.interpreter.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.openntf.xsp.extlibx.bazaar.odpcompiler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.openntf.xsp.extlibx.bazaar.odpcompiler.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

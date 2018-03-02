@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<!-- Bazaar -->
+   <feature url="features/com.ibm.xsp.extlibx.bazaar.feature_2.0.0.qualifier.jar" id="com.ibm.xsp.extlibx.bazaar.feature" version="2.0.0">
+      <category name="XPages Bazaar"/>
+   </feature>
+   
+   <category-def name="XPages Bazaar" label="XPages Bazaar"/>
+</site>

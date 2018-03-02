@@ -17,7 +17,9 @@ package com.ibm.xsp.extlib.javacompiler.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,6 +27,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -34,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -44,11 +48,10 @@ import javax.tools.StandardLocation;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.internal.adaptor.URLConverterImpl;
-import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.Bundle;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 
 /**
@@ -57,9 +60,6 @@ import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
  * @author priand
  */
 public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager> {
-
-	// Use an OSGi service instead!
-	private static final URLConverter urlConverter=new URLConverterImpl();
 
 	private JavaSourceClassLoader classLoader;
 	private Map<URI, JavaFileObjectJavaSource> fileObjects=new HashMap<URI, JavaFileObjectJavaSource>();
@@ -71,6 +71,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 		this.classLoader=classLoader;
 		if(resolve) {
 			resolvedClassPath = resolveClasspath(classPath);
+			System.out.println("Resolved classpath is " + Arrays.asList(resolvedClassPath));
 		} else {
 			resolvedClassPath = classPath;
 		}
@@ -165,16 +166,23 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 			            resolved.add(path);
 			            continue;
 					}
-					URL u = b.getResource(cp);
-					if(u!=null) {
-						try {
-							// We have to go through an intermediate File object ar url.toURI() has an issue
-							// with path encoding. For example, spaces are not replaced by %20
-							URL asFileUrl = urlConverter.toFileURL(u);
-							String asUriString = (new File(asFileUrl.getFile()).toURI()).toString();
-				            String url = "jar:"+asUriString;
-				            resolved.add(url);
-						} catch(Exception e) {e.printStackTrace();}
+					
+					// Then extract to a temporary directory
+					// Note: b.getResource(cp) doesn't seem to work with dynamically-installed plugins
+					try(JarFile jarFile = new JarFile(f)) {
+						JarEntry jarEntry = jarFile.getJarEntry(cp);
+						if(jarEntry != null) {
+							File tempJar = File.createTempFile(cp.replace('/', '-'), ".jar");
+							tempJar.deleteOnExit();
+							try(FileOutputStream fos = new FileOutputStream(tempJar)) {
+								try(InputStream is = jarFile.getInputStream(jarEntry)) {
+									StreamUtil.copyStream(is, fos);
+								}
+							}
+							String fileUri = tempJar.toURI().toString();
+							String url = "jar:" + fileUri;
+							resolved.add(url);
+						}
 					}
 				}
 			}

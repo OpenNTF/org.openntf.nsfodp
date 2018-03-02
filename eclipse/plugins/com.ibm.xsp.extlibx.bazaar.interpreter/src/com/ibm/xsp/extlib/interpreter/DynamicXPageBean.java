@@ -237,12 +237,8 @@ public class DynamicXPageBean {
 			throw new DynamicXPagesException(e, pageContent, javaPage, "Error while compiling the XPages generated Java source");
 		}
 	}
-
-	protected String translate(String className, String pageName, String pageContent) throws Exception {
-		FacesContextEx ctx=FacesContextEx.getCurrentInstance();
-
-		FacesSharableRegistry registry=ctx.getApplicationEx().getRegistry();
-
+	
+	public String translate(String className, String pageName, String pageContent, FacesSharableRegistry registry) throws Exception {
 		FacesDeserializer deserial;
 		{
 			Map<String, Object> options=new HashMap<String, Object>();
@@ -276,6 +272,23 @@ public class DynamicXPageBean {
 
 		String result=compiler.translate(logical);
 		return result;
+	}
+
+	/**
+	 * Translates XSP source into an intermediate Java source representation.
+	 * 
+	 * @param className the final qualified name of the Java source, e.g. "xsp.SomeXPage"
+	 * @param pageName the XPage file name, e.g. "SomeXPage.xsp"
+	 * @param pageContent
+	 * @return
+	 * @throws Exception
+	 */
+	public String translate(String className, String pageName, String pageContent) throws Exception {
+		FacesContextEx ctx=FacesContextEx.getCurrentInstance();
+
+		FacesSharableRegistry registry=ctx.getApplicationEx().getRegistry();
+
+		return translate(className, pageName, pageContent, registry);
 	}
 	
 	public String compilationExceptionString(Object e, boolean xpagesSource, boolean javaSource) {

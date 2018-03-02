@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Phil's Extension Library
 Bundle-SymbolicName: com.ibm.xsp.extlibx.bazaar;singleton:=true
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: IBM
 Bundle-ClassPath: .
 Eclipse-ExtensibleAPI: true 
@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.ibm.xsp.extlib,
  com.ibm.designer.runtime,
  com.ibm.designer.runtime.acl,
- com.ibm.designer.runtime.directory
+ com.ibm.designer.runtime.directory,
+ org.eclipse.osgi
 Export-Package: com.ibm.xsp.extlib.bazaar.minifier,
  com.ibm.xsp.extlib.library
 Bundle-Activator: com.ibm.xsp.extlib.library.BazaarActivator
