@@ -71,7 +71,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 		this.classLoader=classLoader;
 		if(resolve) {
 			resolvedClassPath = resolveClasspath(classPath);
-			System.out.println("Resolved classpath is " + Arrays.asList(resolvedClassPath));
 		} else {
 			resolvedClassPath = classPath;
 		}
