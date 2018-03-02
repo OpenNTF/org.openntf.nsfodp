@@ -20,61 +20,51 @@
          id="com.ibm.xsp.extlibx.bazaar"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.ibm.xsp.extlibx.bazaar.source"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.ibm.xsp.extlibx.bazaar.codemirror"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
          id="com.ibm.xsp.extlibx.bazaar.codemirror.source"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.ibm.xsp.extlibx.bazaar.interpreter"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
          id="com.ibm.xsp.extlibx.bazaar.interpreter.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
          id="org.openntf.xsp.extlibx.bazaar.odpcompiler"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.openntf.xsp.extlibx.bazaar.odpcompiler.source"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
