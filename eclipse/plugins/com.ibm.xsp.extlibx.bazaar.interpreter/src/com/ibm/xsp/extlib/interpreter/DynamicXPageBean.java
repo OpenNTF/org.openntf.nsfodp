@@ -36,7 +36,6 @@ import com.ibm.xsp.application.ApplicationEx;
 import com.ibm.xsp.application.ViewHandlerEx;
 import com.ibm.xsp.context.FacesContextEx;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
-import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.page.FacesPageDriver;
 import com.ibm.xsp.page.compiled.CompiledPageDriver;
 import com.ibm.xsp.page.compiled.PageToClassNameUtil;
@@ -59,39 +58,6 @@ public class DynamicXPageBean {
 	
 	private static final String DYNAMIC_CLASS_LOADER_ENTRY = "Dynamic_JavaSourceClassLoader";
 	
-	private class DynamicFacesClassLoader implements FacesClassLoader {
-		JavaSourceClassLoader classLoader;
-
-		public DynamicFacesClassLoader(JavaSourceClassLoader classLoader) {
-			this.classLoader=classLoader;
-		}
-		
-		public JavaSourceClassLoader getClassLoader() {
-			return classLoader;
-		}
-
-		@SuppressWarnings("rawtypes")
-		public Class loadClass(String name) throws ClassNotFoundException {
-			JavaSourceClassLoader cl = getClassLoader();
-			if(cl!=null) {
-				if(isDynamicPage(name)) {
-					if(cl.isCompiledFile(name)) {
-						return cl.loadClass(name);
-					}
-					String content=getDynamicPage(name);
-					if(StringUtil.isNotEmpty(content)) {
-						try {
-							return compile(name, content);
-						} catch (Exception ex) {
-							throw new ClassNotFoundException(StringUtil.format("Error while dynamically compiling the XPage class {0}", name), ex);
-						}
-					}
-				}
-			}
-			return FacesContextEx.getCurrentInstance().getContextClassLoader().loadClass(name);
-		}
-	}
-
 	private class DynamicCompiledPageDriver extends CompiledPageDriver {
 		public DynamicCompiledPageDriver(DynamicFacesClassLoader classLoader) {
 			super(classLoader);
@@ -115,15 +81,18 @@ public class DynamicXPageBean {
 		this.parent=getThreadClassLoader();
 
 		// And then the page driver for it
-		ViewHandlerEx viewHandler=(ViewHandlerEx) ApplicationEx.getInstance().getViewHandler();
-		FacesPageDriver driver=viewHandler.getPageDriver();
-		if(!(driver instanceof DynamicCompiledPageDriver)) {
-			viewHandler.setPageDriver(new DynamicCompiledPageDriver(new DynamicFacesClassLoader(classLoader) {
-				@Override
-				public JavaSourceClassLoader getClassLoader() {
-					return getJavaSourceClassLoader();
-				}
-			}));
+		ApplicationEx application = ApplicationEx.getInstance();
+		if(application != null) {
+			ViewHandlerEx viewHandler=(ViewHandlerEx) application.getViewHandler();
+			FacesPageDriver driver=viewHandler.getPageDriver();
+			if(!(driver instanceof DynamicCompiledPageDriver)) {
+				viewHandler.setPageDriver(new DynamicCompiledPageDriver(new DynamicFacesClassLoader(this, classLoader) {
+					@Override
+					public JavaSourceClassLoader getClassLoader() {
+						return getJavaSourceClassLoader();
+					}
+				}));
+			}
 		}
 	}
 
