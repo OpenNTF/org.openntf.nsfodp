@@ -27,7 +27,6 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -218,21 +217,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
     		}
     	}
     }
-
-// TEST	
-// Scan the existing jar files in the classpath...	
-//	private void loadJarClasspath(ArrayList<String> classPath) throws IOException {
-//		// Load all the jar from the class path
-//		Enumeration<URL> e=classLoader.getResources("META-INF/MANIFEST.MF");
-//		while(e.hasMoreElements()) {
-//			URL url=e.nextElement();
-//			String s = url.toExternalForm();
-//			String sUrl=s.substring(0,s.length()-"META-INF/MANIFEST.MF".length());
-//			if(sUrl.startsWith("file:") || sUrl.startsWith("jar:")) {
-//				classPath.add(sUrl);
-//			}
-//		}
-//	}
 	
 	@Override
 	public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException {
@@ -375,9 +359,8 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 				JarEntry entry=e.nextElement();
 				String name=entry.getName();
 				if(name.startsWith(rootEntryName) && name.indexOf('/',rootEnd)<0 && name.endsWith(JavaSourceClassLoader.CLASS_EXTENSION)) {
-					//URI uri=(new URL(jarPrefix+name)).toURI();
-					URI uri = new URI(jarPrefix+name);
 					String binaryName=removeClassExtension(StringUtil.replace(name,'/', '.'));
+					URI uri = new URI(jarPrefix+name);
 					list.add(new JavaFileObjectClass(uri, binaryName));
 				}
 			}
