@@ -17,14 +17,21 @@ package com.ibm.xsp.extlib.javacompiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -55,6 +62,9 @@ public class JavaSourceClassLoader extends ClassLoader {
 	private List<String> options;
 	private DiagnosticCollector<JavaFileObject> diagnostics;
 	private SourceFileManager javaFileManager;
+	private PrintStream out;
+	
+	private final ClassLoader classPathLoader;
 
 	public JavaSourceClassLoader(ClassLoader parentClassLoader, List<String> compilerOptions, String[] classPath) {
 		this(parentClassLoader, compilerOptions, classPath, true);
@@ -69,6 +79,23 @@ public class JavaSourceClassLoader extends ClassLoader {
 
 		StandardJavaFileManager standardJavaFileManager=javaCompiler.getStandardFileManager(diagnostics, null, null);
 		javaFileManager=new SourceFileManager(standardJavaFileManager, JavaSourceClassLoader.this, classPath, resolve);
+		
+		URL[] urls = Arrays.stream(javaFileManager.getResolvedClassPath())
+				.map(url -> {
+					try {
+						String fullUrl;
+						if(!url.contains("!/")) {
+							fullUrl = url + "!/";
+						} else {
+							fullUrl = url;
+						}
+						return new URL(fullUrl);
+					} catch (MalformedURLException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toList()).toArray(new URL[0]);
+		this.classPathLoader = new URLClassLoader(urls);
 	}
 
 	public void addCompiledFile(String qualifiedClassName, JavaFileObjectJavaCompiled classFile) {
@@ -81,6 +108,10 @@ public class JavaSourceClassLoader extends ClassLoader {
 	
 	public SourceFileManager getJavaFileManager() {
 		return javaFileManager;
+	}
+	
+	public void setOutputStream(PrintStream out) {
+		this.out = out;
 	}
 
 	@Override
@@ -97,6 +128,14 @@ public class JavaSourceClassLoader extends ClassLoader {
 			return c;
 		} catch (ClassNotFoundException nf) {
 		}
+		
+		// Look through the effective class path
+		try {
+			Class<?> c = Class.forName(qualifiedClassName, true, this.classPathLoader);
+			return c;
+		} catch(ClassNotFoundException nf) {
+		}
+		
 		return super.findClass(qualifiedClassName);
 	}
 
@@ -160,7 +199,7 @@ public class JavaSourceClassLoader extends ClassLoader {
 		if(result==null||!result.booleanValue()) {
 			List<Diagnostic<? extends JavaFileObject>> l=diagnostics.getDiagnostics();
 			for(Diagnostic<? extends JavaFileObject> d : l) {
-				System.out.println(d.toString());
+				println(d.toString());
 			}
 			throw new JavaCompilerException(null, diagnostics, "Compilation failed.");
 		}
@@ -171,7 +210,7 @@ public class JavaSourceClassLoader extends ClassLoader {
 				compiled.put(qualifiedClassName, newClass);
 			}
 			return compiled;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new JavaCompilerException(e, diagnostics, "Error while loading the compiled classes");
 		}
 	}
@@ -197,4 +236,15 @@ public class JavaSourceClassLoader extends ClassLoader {
 		}
 	}
 */	
+	// *******************************************************************************
+	// * Internal utility methods
+	// *******************************************************************************
+	
+	private void println(Object message) {
+		if(this.out != null) {
+			out.print(message);
+		} else {
+			System.out.println(message);
+		}
+	}
 }
