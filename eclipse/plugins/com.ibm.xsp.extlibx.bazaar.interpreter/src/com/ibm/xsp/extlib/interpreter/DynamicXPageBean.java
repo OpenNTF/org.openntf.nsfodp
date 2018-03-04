@@ -179,7 +179,7 @@ public class DynamicXPageBean {
 		JavaSourceClassLoader loader=getJavaSourceClassLoader();
 		return loader.isCompiledFile(className);
 	}
-	public Class<?> compile(String pageName, String pageContent) throws Exception {
+	public Class<?> compile(String pageName, String pageContent, FacesSharableRegistry registry) throws Exception {
 		// Make sure it ends with .xsp
 		if(!pageName.endsWith(".xsp")) {
 			pageName+=".xsp";
@@ -195,7 +195,11 @@ public class DynamicXPageBean {
 		// Translate and compile it
 		String javaPage=null;
 		try {
-			javaPage=translate(className, pageName, pageContent);
+			if(registry == null) {
+				javaPage=translate(className, pageName, pageContent);
+			} else {
+				javaPage=translate(className, pageName, pageContent, registry);
+			}
 		} catch (Exception e) {
 			throw new DynamicXPagesException(e, pageContent, null, "Error while compiling the XPages source");
 		}
@@ -205,6 +209,9 @@ public class DynamicXPageBean {
 		} catch (Exception e) {
 			throw new DynamicXPagesException(e, pageContent, javaPage, "Error while compiling the XPages generated Java source");
 		}
+	}
+	public Class<?> compile(String pageName, String pageContent) throws Exception {
+		return compile(pageName, pageContent, null);
 	}
 	
 	public String translate(String className, String pageName, String pageContent, FacesSharableRegistry registry) throws Exception {
