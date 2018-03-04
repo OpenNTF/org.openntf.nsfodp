@@ -47,8 +47,8 @@ import com.ibm.xsp.extlib.javacompiler.impl.SourceFileManager;
  */
 public class JavaSourceClassLoader extends ClassLoader {
 	
-	public static final String JAVA_EXTENSION=".java";
-	public static final String CLASS_EXTENSION=".class";
+	public static final String JAVA_EXTENSION=JavaFileObject.Kind.SOURCE.extension;
+	public static final String CLASS_EXTENSION=JavaFileObject.Kind.CLASS.extension;
 
 	private Map<String, JavaFileObjectJavaCompiled> classes;
 	private JavaCompiler javaCompiler;
