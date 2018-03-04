@@ -186,6 +186,13 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 			}
 		}
 	}
+	
+	/**
+	 * @return the fully resolved class path for this file manager
+	 */
+	public String[] getResolvedClassPath() {
+		return resolvedClassPath;
+	}
     
     private static Collection<String> getBundleClassPath(Bundle b, boolean includeFragments) {
     	// Create a set to make sure that the same path is not added twice
