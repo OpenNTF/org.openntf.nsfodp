@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 
 import javax.servlet.ServletException;
@@ -34,32 +36,26 @@ public class Servlet extends HttpServlet {
 		resp.setContentType("text/plain");
 		
 		PrintStream out = new PrintStream(os);
-		PrintStream origOut = System.out;
-		System.setOut(out);
-		PrintStream origErr = System.err;
-		PrintStream err = new PrintStream(os);
-		System.setErr(err);
 		try {
 			
 			FacesSharableRegistry registry = createRegistry();
-			System.out.println("Registry: " + registry);
 			
-			File odpFile = new File("H:\\Projects\\SourceTree\\endeavor\\nsf\\nsf-dashboard");
+			Path odpFile = Paths.get("H:\\Projects\\SourceTree\\endeavor\\nsf\\nsf-dashboard");
 			OnDiskProject odp = new OnDiskProject(odpFile);
-			File siteFile = new File("H:\\Projects\\SourceTree\\endeavor\\endeavour-plugin\\releng\\net.cmssite.endeavour60.updatesite\\target\\site");
+			//File siteFile = new File("H:\\Projects\\SourceTree\\endeavor\\endeavour-plugin\\releng\\net.cmssite.endeavour60.updatesite\\target\\site");
+			File siteFile = new File("C:\\temp\\site");
 			UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 			
-			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, registry);
+			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, registry, out);
 			compiler.addUpdateSite(updateSite);
 			compiler.compile();
 			
 			out.println("done");
-		} catch(Exception e) {
+		} catch(Throwable e) {
 			e.printStackTrace(out);
 		} finally {
-			System.setOut(origOut);
-			System.setErr(origErr);
 			out.flush();
+			out.close();
 		}
 	}
 	

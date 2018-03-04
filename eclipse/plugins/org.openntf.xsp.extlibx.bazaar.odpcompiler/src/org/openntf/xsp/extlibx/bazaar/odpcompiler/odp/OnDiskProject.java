@@ -15,10 +15,18 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
@@ -27,6 +35,7 @@ import org.w3c.dom.Element;
 
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
+import com.ibm.commons.xml.XResult;
 
 /**
  * Represents an On-Disk Project version of an NSF.
@@ -35,36 +44,54 @@ import com.ibm.commons.xml.XMLException;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	private final File baseDir;
+	private final Path baseDir;
 	
-	public OnDiskProject(File baseDirectory) {
+	public OnDiskProject(Path baseDirectory) {
 		this.baseDir = Objects.requireNonNull(baseDirectory);
 	}
 	
-	public File getBaseDirectory() {
+	public Path getBaseDirectory() {
 		return baseDir;
 	}
 	
-	public File getClasspathFile() {
-		File classpath = new File(baseDir, ".classpath");
-		if(!classpath.exists()) {
-			throw new IllegalStateException("Classpath file does not exist: " + classpath.getAbsolutePath());
+	public Path getClasspathFile() {
+		Path classpath = baseDir.resolve(".classpath");
+		if(!Files.exists(classpath)) {
+			throw new IllegalStateException("Classpath file does not exist: " + classpath.toAbsolutePath());
 		}
-		if(!classpath.isFile()) {
-			throw new IllegalStateException("Classpath file is not a file: " + classpath.getAbsolutePath());
+		if(!Files.isRegularFile(classpath)) {
+			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
 		}
 		return classpath;
 	}
 	
-	public File getPluginFile() {
-		File pluginXml = new File(baseDir, "plugin.xml");
-		if(!pluginXml.exists()) {
-			throw new IllegalStateException("Plugin file does not exist: " + pluginXml.getAbsolutePath());
+	public Path getPluginFile() {
+		Path pluginXml = baseDir.resolve("plugin.xml");
+		if(!Files.exists(pluginXml)) {
+			throw new IllegalStateException("Plugin file does not exist: " + pluginXml.toAbsolutePath());
 		}
-		if(!pluginXml.isFile()) {
-			throw new IllegalStateException("Plugin file is not a file: " + pluginXml.getAbsolutePath());
+		if(!Files.isRegularFile(pluginXml)) {
+			throw new IllegalStateException("Plugin file is not a file: " + pluginXml.toAbsolutePath());
 		}
 		return pluginXml;
+	}
+	
+	/**
+	 * Returns the paths in the ODP that are used at runtime for Java resource
+	 * resolution.
+	 * 
+	 * @return a {@link List} of {@link Path}s
+	 * @throws IOException if there is a problem reading the filesystem
+	 * @throws XMLException if there is a problem parsing the class path configuration
+	 * @throws FileNotFoundException if one of the configured class paths doesn't exist
+	 */
+	public List<Path> getResourcePaths() throws FileNotFoundException, XMLException, IOException {
+		List<Path> result = new ArrayList<>(findSourceFolders());
+		Path files = getBaseDirectory().resolve("Resources").resolve("Files");
+		if(Files.exists(files) && Files.isDirectory(files)) {
+			result.add(files);
+		}
+		return result;
 	}
 	
 	public List<String> getRequiredBundles() throws XMLException {
@@ -73,6 +100,70 @@ public class OnDiskProject {
 		return Arrays.stream(DOMUtil.evaluateXPath(pluginXml, "/plugin/requires/import").getNodes())
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("plugin"))
+			.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Generates a map of source folders to the Java source files they contain.
+	 * 
+	 * @return a {@link Map} of {@link Path}s to {@link List}s of {@code Path}s
+	 * @throws IOException if there is a problem reading the filesystem
+	 * @throws XMLException if there is a problem parsing the class path configuration
+	 * @throws FileNotFoundException if one of the configured class paths doesn't exist
+	 */
+	public Map<Path, List<JavaSource>> getJavaSourceFiles() throws FileNotFoundException, XMLException, IOException {
+		return findSourceFolders().stream()
+				.collect(Collectors.toMap(
+					Function.identity(),
+					ODPUtil::listJavaFiles
+				));
+	}
+	
+	public List<CustomControl> getCustomControls() throws IOException {
+		Path dir = baseDir.resolve("CustomControls");
+		if(Files.exists(dir) && Files.isDirectory(dir)) {
+			return Files.find(baseDir, 1,
+					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile())
+					.map(path -> new CustomControl(path))
+					.collect(Collectors.toList());
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	public List<XPage> getXPages() throws IOException {
+		Path dir = baseDir.resolve("XPages");
+		if(Files.exists(dir) && Files.isDirectory(dir)) {
+			return Files.find(baseDir, 1,
+					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile())
+					.map(path -> new CustomControl(path))
+					.collect(Collectors.toList());
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	// *******************************************************************************
+	// * Internal utility methods
+	// *******************************************************************************
+	
+	private List<Path> findSourceFolders() throws FileNotFoundException, IOException, XMLException {
+		Path classpath = getClasspathFile();
+		Document domDoc;
+		try(InputStream is = Files.newInputStream(classpath)) {
+			domDoc = DOMUtil.createDocument(is);
+		}
+		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=src]");
+		List<String> paths = Arrays.stream(xresult.getNodes())
+			.map(node -> Element.class.cast(node))
+			.map(el -> el.getAttribute("path"))
+			.filter(path -> !"Local".equals(path))
+			.collect(Collectors.toList());
+		paths.add("Code/Java");
+		return paths.stream()
+			.map(path -> getBaseDirectory().resolve(path))
+			.filter(Files::exists)
+			.filter(Files::isDirectory)
 			.collect(Collectors.toList());
 	}
 }

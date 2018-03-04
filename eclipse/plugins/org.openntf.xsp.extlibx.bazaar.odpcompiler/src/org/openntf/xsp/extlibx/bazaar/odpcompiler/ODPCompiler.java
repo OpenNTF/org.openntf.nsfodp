@@ -15,46 +15,65 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.spi.RegistryContributor;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.XPage;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.XSPCompilationResult;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.UpdateSite;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.MultiPathResourceBundleSource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 
 import com.ibm.xsp.extlib.library.BazaarActivator;
+import com.ibm.xsp.library.FacesClassLoader;
+import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesLibrary;
+import com.ibm.xsp.registry.FacesLibraryImpl;
+import com.ibm.xsp.registry.FacesProject;
+import com.ibm.xsp.registry.FacesProjectImpl;
 import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.commons.xml.DOMUtil;
+import com.ibm.xsp.registry.LibraryFragmentImpl;
+import com.ibm.xsp.registry.UpdatableLibrary;
+import com.ibm.xsp.registry.config.IconUrlSource;
+import com.ibm.xsp.registry.config.ResourceBundleSource;
+import com.ibm.xsp.registry.parse.ConfigParser;
+import com.ibm.xsp.registry.parse.ConfigParserFactory;
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.XMLException;
-import com.ibm.commons.xml.XResult;
+import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
+import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
+import com.ibm.xsp.extlib.interpreter.interpreter.parser.DefaultControlFactory;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 
@@ -72,13 +91,34 @@ public class ODPCompiler {
 	private final FacesSharableRegistry facesRegistry;
 	private final Set<UpdateSite> updateSites = new LinkedHashSet<>();
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
+	private final PrintStream out;
 	
-	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList("-source", "1.8", "-target", "1.8");
+	// XSP compiler components
+	private final FacesProject facesProject;
+	private final DynamicXPageBean dynamicXPageBean = new DynamicXPageBean();
+	private final ResourceBundleSource resourceBundleSource;
+	private final IconUrlSource iconUrlSource = new IconUrlSource() {
+		@Override public URL getIconUrl(String arg0) {
+			// TODO ???
+			return null;
+		}
+	};
 	
-	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, FacesSharableRegistry facesRegistry) {
+	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
+			"-source", "1.8",
+			"-target", "1.8",
+			"-g",
+			"-parameters",
+			"-encoding", "utf-8"
+			);
+	
+	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, FacesSharableRegistry facesRegistry, PrintStream out) throws FileNotFoundException, XMLException, IOException {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
 		this.odp = Objects.requireNonNull(onDiskProject);
 		this.facesRegistry = Objects.requireNonNull(facesRegistry);
+		this.out = out;
+		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), facesRegistry);
+		this.resourceBundleSource = new MultiPathResourceBundleSource(odp.getResourcePaths());
 	}
 	
 	public OnDiskProject getOnDiskProject() {
@@ -107,21 +147,21 @@ public class ODPCompiler {
 	 * 	<li>Constructs the NSF from the on-disk project</li>
 	 * 	<li>Uninstalls any installed bundles</li>
 	 * </ol>
-	 * 
-	 * @throws IOException if there is a problem reading files from disk 
-	 * @throws XMLException if there is a problem parsing project configuration files
-	 * @throws FileNotFoundException if there is a problem reading files from disk
-	 * @throws JavaCompilerException if there is a problem compiling Java or XPages code
+	 * @throws Exception 
 	 */
-	public void compile() throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
+	public void compile() throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		try {
 			initPlugins(bundles);
 
+			// Compile Java classes
 			Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
 			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
 			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(getClass().getClassLoader(), compilerOptions, classPath);
-			compileJavaSources(classLoader);
+			
+			Map<String, Class<?>> javaClasses = compileJavaSources(classLoader);
+			Map<CustomControl, XSPCompilationResult> customControls = compileCustomControls(classLoader);
+			Map<XPage, XSPCompilationResult> xpages = compileXPages(classLoader);
 			
 		} finally {
 			uninstallBundles(bundles);
@@ -132,7 +172,6 @@ public class ODPCompiler {
 	// * Bundle manipulation methods
 	// *******************************************************************************
 	private Collection<Bundle> installBundles() {
-		debug("============================");
 		debug("Installing bundles");
 		
 		Collection<Bundle> result = updateSites.stream()
@@ -147,7 +186,6 @@ public class ODPCompiler {
 	}
 	
 	private void uninstallBundles(Collection<Bundle> bundles) {
-		debug("============================");
 		debug("Uninstalling bundles");
 		
 		bundles.stream().forEach(t -> {
@@ -157,7 +195,6 @@ public class ODPCompiler {
 				throw new RuntimeException(e);
 			}
 		});
-		debug(MessageFormat.format("- Uninstalled {0,choice,0#no bundles|1# 1 bundle|1<{0} bundles}", bundles.size()));
 	}
 	
 	/**
@@ -167,9 +204,9 @@ public class ODPCompiler {
 	 * @param bundles the bundles to scan
 	 */
 	private void initPlugins(Collection<Bundle> bundles) {
-		debug("============================");
 		debug("Initializing plugins");
 		
+		// TODO is this step necessary? They may be automatically contributed, based on the "Duplicate library ID" messages on the console 
 		AtomicBoolean contributed = new AtomicBoolean(false);
 		bundles.stream().forEach(bundle -> {
 			URL pluginXml = bundle.getEntry("/plugin.xml");
@@ -238,54 +275,111 @@ public class ODPCompiler {
 	// * Class compilation methods
 	// *******************************************************************************
 	
-	private void compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
-		debug("============================");
+	private Map<String, Class<?>> compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
 		debug("Compiling Java source");
 		
-		Map<String, CharSequence> sources = findSourceFolders().stream()
-			.map(path -> new File(odp.getBaseDirectory(), path))
-			.collect(Collectors.toMap(
-				File::toPath,
-				ODPUtil::listJavaFiles
-			))
-			.entrySet().stream()
+		Map<String, CharSequence> sources = odp.getJavaSourceFiles().entrySet().stream()
 			.map(entry ->
 				// Convert to a map of class name -> source
 				entry.getValue().stream()
 					.collect(Collectors.toMap(
-						path -> ODPUtil.toJavaClassName(entry.getKey().relativize(path)),
-						ODPUtil::readFile
+						source -> ODPUtil.toJavaClassName(entry.getKey().relativize(source.getDataFile())),
+						source -> ODPUtil.readFile(source.getDataFile())
 					))
 			)
 			.map(Map::entrySet)
 			.flatMap(Set::stream)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		
-		debug(MessageFormat.format("Compiling {0,choice,0#no classes|1# 1 class|1<{0} classes}", sources.size()));
-		Map<String, Class<?>> classes = classLoader.addClasses(sources);
+		debug(MessageFormat.format("- Compiling {0,choice,0#no classes|1# 1 class|1<{0} classes}", sources.size()));
+		return classLoader.addClasses(sources);
 	}
 	
-	private List<String> findSourceFolders() throws FileNotFoundException, IOException, XMLException {
-		File classpath = odp.getClasspathFile();
-		Document domDoc;
-		try(InputStream is = new FileInputStream(classpath)) {
-			domDoc = DOMUtil.createDocument(is);
+	// *******************************************************************************
+	// * XSP compilation methods
+	// *******************************************************************************
+	
+	private Map<CustomControl, XSPCompilationResult> compileCustomControls(JavaSourceClassLoader classLoader) throws Exception {
+		debug("Compiling custom controls");
+		
+		ConfigParser configParser = ConfigParserFactory.getParserInstance();
+		FacesClassLoader facesClassLoader = new DynamicFacesClassLoader(dynamicXPageBean, classLoader);
+		
+		Map<CustomControl, XSPCompilationResult> result = new LinkedHashMap<>();
+		
+		for(CustomControl cc : odp.getCustomControls()) {
+			Document xspConfig = ODPUtil.readXml(cc.getXspConfigFile());
+			// TODO support alternate namespaces/prefixes
+			String namespace = DefaultControlFactory.XC_NS;
+			Path fileName = cc.getXspConfigFile().relativize(odp.getBaseDirectory());
+			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
+					facesProject,
+					facesClassLoader,
+					fileName.toString(),
+					xspConfig.getDocumentElement(),
+					resourceBundleSource,
+					iconUrlSource,
+					namespace
+			);
+			
+			UpdatableLibrary library = getLibrary();
+			library.addLibraryFragment(fragment);
+			
+			// Load the definition to refresh its parent ref
+			CompositeComponentDefinitionImpl def = (CompositeComponentDefinitionImpl)library.getDefinition(cc.getControlName());
+			def.refreshReferences();
+			
+			// Now actually translate
+			XSPCompilationResult compilationResult = compileXSP(cc);
+			result.put(cc, compilationResult);
 		}
-		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=src]");
-		List<String> paths = Arrays.stream(xresult.getNodes())
-			.map(node -> Element.class.cast(node))
-			.map(el -> el.getAttribute("path"))
-			.filter(path -> !"Local".equals(path))
-			.collect(Collectors.toList());
-		paths.add("Code/Java");
-		return paths;
+		
+		return result;
+	}
+	
+	private Map<XPage, XSPCompilationResult> compileXPages(JavaSourceClassLoader classLoader) throws Exception {
+		debug("Compiling XPages");
+		Map<XPage, XSPCompilationResult> result = new LinkedHashMap<>();
+		
+		for(XPage xpage : odp.getXPages()) {
+			XSPCompilationResult compilationResult = compileXSP(xpage);
+			result.put(xpage, compilationResult);
+		}
+		
+		return result;
 	}
 	
 	// *******************************************************************************
 	// * Internal utility methods
 	// *******************************************************************************
 	
-	private void debug(Object message) {
-		System.out.println(message);
+	private void debug(Object message, Object... params) {
+		if(out != null) {
+			out.println(StringUtil.format(StringUtil.toString(message), params));
+		}
+	}
+	
+	private UpdatableLibrary getLibrary() {
+		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(DefaultControlFactory.XC_NS);
+		if(library == null) {
+			try {
+				library = new FacesLibraryImpl(facesRegistry, DefaultControlFactory.XC_NS);
+				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs");
+				localLibsField.setAccessible(true);
+				@SuppressWarnings("unchecked")
+				Map<String, UpdatableLibrary> localLibs = (Map<String, UpdatableLibrary>)localLibsField.get(facesRegistry);
+				localLibs.put(DefaultControlFactory.XC_NS, library);
+			} catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return library;
+	}
+	
+	private XSPCompilationResult compileXSP(XPage xpage) throws Exception {
+		String xspSource = ODPUtil.readFile(xpage.getDataFile());
+		String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
+		Class<?> compiled = dynamicXPageBean.compile(xpage.getPageName(), javaSource);
+		return new XSPCompilationResult(javaSource, compiled);
 	}
 }

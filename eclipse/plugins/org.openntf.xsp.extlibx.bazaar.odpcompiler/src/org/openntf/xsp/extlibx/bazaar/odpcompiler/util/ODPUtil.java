@@ -1,7 +1,6 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -17,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.JavaSource;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
@@ -31,18 +31,15 @@ public enum ODPUtil {
 	;
 	
 	public static String readFile(Path path) {
-		try(InputStream is = new FileInputStream(path.toFile())) {
+		try(InputStream is = Files.newInputStream(path)) {
 			return StreamUtil.readString(is);
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	public static String readFile(File file) {
-		return readFile(file.toPath());
-	}
 	
-	public static Document readXml(File file) {
-		try(InputStream is = new FileInputStream(file)) {
+	public static Document readXml(Path file) {
+		try(InputStream is = Files.newInputStream(file)) {
 			return DOMUtil.createDocument(is);
 		} catch(IOException | XMLException e) {
 			throw new RuntimeException(e);
@@ -54,10 +51,11 @@ public enum ODPUtil {
 		return name.substring(0, name.length()-JavaSourceClassLoader.JAVA_EXTENSION.length()).replace(File.separatorChar, '.');
 	}
 	
-	public static List<Path> listJavaFiles(File baseDir) {
+	public static List<JavaSource> listJavaFiles(Path baseDir) {
 		try {
-			return Files.find(baseDir.toPath(), Integer.MAX_VALUE,
+			return Files.find(baseDir, Integer.MAX_VALUE,
 					(path, attr) -> path.toString().endsWith(".java") && attr.isRegularFile())
+					.map(path -> new JavaSource(path))
 					.collect(Collectors.toList());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
