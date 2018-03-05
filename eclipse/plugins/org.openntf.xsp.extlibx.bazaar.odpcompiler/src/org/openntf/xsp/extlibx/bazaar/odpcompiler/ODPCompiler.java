@@ -307,22 +307,6 @@ public class ODPCompiler {
 			XSPCompilationResult compilationResult = compileXSP(cc, classLoader);
 			result.put(cc, compilationResult);
 		}
-//		int LIMIT = 500, breaker = 0;
-//		Queue<CustomControl> queue = new ArrayDeque<>();
-//		queue.addAll(ccs);
-//		CustomControl cc;
-//		while((cc = queue.peek()) != null) {
-//			if(breaker++ > LIMIT) {
-//				throw new RuntimeException("Exceeded breaker!");
-//			}
-//			try {
-//				XSPCompilationResult compilationResult = compileXSP(cc, classLoader);
-//				result.put(cc, compilationResult);
-//			} catch(FacesPageException e) {
-//				// This is probably a local dependency
-//				// TODO have this look through the definitions for a known one and hold off
-//			}
-//		}
 		
 		return result;
 	}
