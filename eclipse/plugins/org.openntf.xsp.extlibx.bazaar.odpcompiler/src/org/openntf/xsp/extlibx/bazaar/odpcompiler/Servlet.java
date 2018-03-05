@@ -39,7 +39,6 @@ public class Servlet extends HttpServlet {
 		try {
 			Path odpFile = Paths.get("H:\\Projects\\SourceTree\\endeavor\\nsf\\nsf-dashboard");
 			OnDiskProject odp = new OnDiskProject(odpFile);
-			//File siteFile = new File("H:\\Projects\\SourceTree\\endeavor\\endeavour-plugin\\releng\\net.cmssite.endeavour60.updatesite\\target\\site");
 			File siteFile = new File("C:\\temp\\site");
 			UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 			
