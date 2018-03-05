@@ -48,7 +48,13 @@ public enum ODPUtil {
 	
 	public static String toJavaClassName(Path path) {
 		String name = path.toString();
-		return name.substring(0, name.length()-JavaSourceClassLoader.JAVA_EXTENSION.length()).replace(File.separatorChar, '.');
+		if(name.endsWith(JavaSourceClassLoader.JAVA_EXTENSION)) {
+			return name.substring(0, name.length()-JavaSourceClassLoader.JAVA_EXTENSION.length()).replace(File.separatorChar, '.');
+		} else if(name.endsWith(JavaSourceClassLoader.CLASS_EXTENSION)) {
+			return name.substring(0, name.length()-JavaSourceClassLoader.JAVA_EXTENSION.length()).replace(File.separatorChar, '.');
+		} else {
+			throw new IllegalArgumentException("Cannot infer class name from path " + path);
+		}
 	}
 	
 	public static List<JavaSource> listJavaFiles(Path baseDir) {

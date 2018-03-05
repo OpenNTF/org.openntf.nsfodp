@@ -19,12 +19,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,6 +47,36 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
+	/** Platform-specific PathMatcher separator, escaped in the case of Windows */
+	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator;
+	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
+		"AppProperties" + MATCH_SEP + "$DBIcon",
+		"AppProperties" + MATCH_SEP + "database.properties",
+		"Code" + MATCH_SEP + "dbscript.lsdb",
+		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.javalib",
+		"Forms" + MATCH_SEP + "*",
+		"Framesets" + MATCH_SEP + "*",
+		"Pages" + MATCH_SEP + "*",
+		"Resources" + MATCH_SEP + "AboutDocument",
+		"Resources" + MATCH_SEP + "UsingDocument",
+		"SharedElements" + MATCH_SEP + "Fields" + MATCH_SEP + "*",
+		"SharedElements" + MATCH_SEP + "Outlines" + MATCH_SEP + "*",
+		"Views" + MATCH_SEP + "*"
+	}).map(glob -> "glob:" + glob).map(FileSystems.getDefault()::getPathMatcher).collect(Collectors.toList());
+	// Special: image resources, Themes, stylesheets, files, META-INF/MANIFEST.MF, WebContent, plugin.xml, xspdesign.properties, most code
+	public static final List<PathMatcher> FILE_RESOURCES = Arrays.stream(new String[] {
+		"AppProperties" + MATCH_SEP + "xspdesign.properties",
+		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.js",
+		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.jss",
+		"META-INF" + MATCH_SEP + "*",
+		"plugin.xml",
+		"Resources" + MATCH_SEP + "Files" + MATCH_SEP + "*",
+		"Resources" + MATCH_SEP + "Images" + MATCH_SEP + "*",
+		"Resources" + MATCH_SEP + "StyleSheets" + MATCH_SEP + "*",
+		"Resources" + MATCH_SEP + "Themes" + MATCH_SEP + "*",
+		"WebContent" + MATCH_SEP + "**"
+	}).map(glob -> "glob:" + glob).map(FileSystems.getDefault()::getPathMatcher).collect(Collectors.toList());
+	
 	private final Path baseDir;
 	
 	public OnDiskProject(Path baseDirectory) {
@@ -152,46 +183,38 @@ public class OnDiskProject {
 	 * @return a {@link Map} of file {@link Path}s to {@link String}s containing DXL
 	 */
 	public Map<Path, String> getDirectDXLElements() {
-		// TODO add importing of *.javalib
-		// really, best to change this to filename/extension matching
-		List<String> standardDirs = Arrays.asList(
-			"AppProperties" + File.separator + "$DBIcon",
-			"AppProperties" + File.separator + "database.properties",
-			"Forms",
-			"Framesets",
-			"Pages",
-			"SharedElements" + File.separator + "Fields",
-			"SharedElements" + File.separator + "Outlines",
-			"Views"
-		);
-		List<String> standardFiles = Arrays.asList(
-			"Code" + File.separator + "dbscript.lsdb",
-			"Resources" + File.separator + "AboutDocument",
-			//"Resources" + File.separator + "IconNote",
-			"Resources" + File.separator + "UsingDocument"
-		);
-		
-		Map<Path, String> result = new LinkedHashMap<>();
-		result.putAll(standardDirs.stream()
-			.map(dir -> baseDir.resolve(dir))
-			.filter(Files::isDirectory)
-			.map(t -> {
+		return DIRECT_DXL_FILES.stream()
+			.map(glob -> {
 				try {
-					return Files.list(t);
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)));
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			})
 			.flatMap(Function.identity())
-			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile)));
-		result.putAll(standardFiles.stream()
-			.map(file -> baseDir.resolve(file))
-			.filter(Files::isRegularFile)
-			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile)));
-		return result;
+			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile));
 	}
 	
-	// Special: image resources, Themes, stylesheets, files, META-INF/MANIFEST.MF, WebContent, plugin.xml, xspdesign.properties, most code
+	public Map<Path, FileResource> getFileResources() {
+		return FILE_RESOURCES.stream()
+			.map(glob -> {
+				try {
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.flatMap(Function.identity())
+			.collect(Collectors.toMap(Function.identity(), p -> new FileResource(p)));
+	}
+	
+	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
+		// "Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.lss"
+		PathMatcher glob = FileSystems.getDefault().getPathMatcher("glob:Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.lss");
+		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)))
+			.map(path -> new LotusScriptLibrary(path))
+			.collect(Collectors.toList());
+	}
 	
 	// *******************************************************************************
 	// * Internal utility methods

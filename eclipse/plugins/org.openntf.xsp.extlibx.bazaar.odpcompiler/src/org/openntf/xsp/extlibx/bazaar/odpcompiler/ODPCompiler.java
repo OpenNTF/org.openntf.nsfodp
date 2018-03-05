@@ -15,6 +15,9 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
+import static com.ibm.commons.util.StringUtil.format;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,20 +38,26 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.FileResource;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.JavaSource;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.LotusScriptLibrary;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.XPage;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.XSPCompilationResult;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.UpdateSite;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.DXLUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.MultiPathResourceBundleSource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.ibm.xsp.extlib.library.BazaarActivator;
 import com.ibm.xsp.library.FacesClassLoader;
@@ -81,10 +90,13 @@ import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
+import com.ibm.designer.domino.napi.NotesNote;
 import com.ibm.designer.domino.napi.NotesSession;
+import com.ibm.designer.domino.napi.design.FileAccess;
 import com.ibm.designer.domino.napi.dxl.DXLImporter;
 import com.ibm.designer.domino.napi.dxl.DXLImporter.ImportOption;
 import com.ibm.designer.runtime.domino.bootstrap.util.StreamUtil;
+import com.ibm.domino.napi.c.BackendBridge;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -173,7 +185,7 @@ public class ODPCompiler {
 			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
 			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(getClass().getClassLoader(), compilerOptions, classPath);
 			
-			Map<String, Class<?>> javaClasses = compileJavaSources(classLoader);
+			compileJavaSources(classLoader);
 			Map<CustomControl, XSPCompilationResult> customControls = compileCustomControls(classLoader);
 			Map<XPage, XSPCompilationResult> xpages = compileXPages(classLoader);
 			
@@ -186,7 +198,12 @@ public class ODPCompiler {
 				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
 				importer.setReplaceDbProperties(true);
 				importer.setReplicaRequiredForReplaceOrUpdate(false);
+				
 				importBasicElements(importer, database);
+				importFileResources(importer, database);
+				importJavaElements(importer, database, classLoader);
+				importLotusScriptLibraries(importer, database);
+				
 				return file;
 			} finally {
 				lotusSession.recycle();
@@ -380,22 +397,89 @@ public class ODPCompiler {
 		
 		Path nsf = Files.createTempFile("odpcompiler", ".nsf");
 		Files.delete(nsf);
-		lotus.domino.Database lotusDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
-		lotusDatabase.createCopy("", nsf.toAbsolutePath().toString());
-		lotusDatabase.recycle();
+		lotus.domino.Database tempDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
+		tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
+		tempDatabase.remove();
 		
 		return nsf;
 	}
 	
-	private void importBasicElements(DxlImporter importer, Database database) throws NotesException {
+	private void importBasicElements(DxlImporter importer, Database database) throws NotesException, IOException {
 		debug("Importing basic design elements");
 		for(Map.Entry<Path, String> entry : odp.getDirectDXLElements().entrySet()) {
 			if(StringUtil.isNotEmpty(entry.getValue())) {
 				try {
-					importer.importDxl(entry.getValue(), database);
+					importDxl(importer, entry.getValue(), database, "Basic element " + odp.getBaseDirectory().relativize(entry.getKey()));
 				} catch(NotesException ne) {
 					throw new NotesException(ne.id, "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey()), ne);
 				}
+			}
+		}
+	}
+	
+	private void importFileResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
+		debug("Importing file resources");
+		for(FileResource res : odp.getFileResources().values()) {
+			Optional<Document> dxl = res.getDxl();
+			if(dxl.isPresent()) {
+				Document dxlDoc = dxl.get();
+				DXLUtil.writeItemFileData(dxlDoc, "$FileData", res.getDataFile());
+				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(res.getDataFile()));
+				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "File resource " + odp.getBaseDirectory().relativize(res.getDataFile()));
+			} else {
+				// TODO handle creating DXL for documents without metadata
+				// This should read the path and create a basic file for that type, with the right flags
+			}
+		}
+	}
+	
+	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, NotesException, NumberFormatException, NotesAPIException {
+		debug("Importing Java design elements");
+		
+		for(Map.Entry<Path, List<JavaSource>> entry : odp.getJavaSourceFiles().entrySet()) {
+			// $ClassData0: CD, $ClassSize0: int, $ClassIndexItem: String[] ("WEB-INF/classes/util/Tester.class")
+			// $FileData: CD, $FileNames: String[] ("util/Tester.java"), $FileSize: int
+			
+			for(JavaSource source : entry.getValue()) {
+				// TODO outside of Code/Java, I think that compiled files are two notes: one
+				// 	for the source and one for the compiled bytecode
+				// TODO figure out how embedded classes work
+				// 	If they end up all in the class loader, perhaps iterate through that
+				// 	and match generated classes to their parents. But what about non-public,
+				//	non-inner classes in the same file?
+				
+				Path filePath = entry.getKey().relativize(source.getDataFile());
+				String className = ODPUtil.toJavaClassName(filePath);
+				byte[] byteCode = classLoader.getClassByteCode(className);
+				String javaSource = ODPUtil.readFile(source.getDataFile());
+				byte[] javaSourceData = javaSource.getBytes();
+				
+				Document dxlDoc = ODPUtil.readXml(source.getDxlFile());
+				
+				DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
+				DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
+				DXLUtil.writeItemFileData(dxlDoc, "$FileData", javaSourceData);
+				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", javaSourceData.length);
+				
+				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Java class " + className);
+			}
+		}
+	}
+	
+	private void importLotusScriptLibraries(DxlImporter importer, Database database) throws IOException, XMLException, NotesException {
+		for(LotusScriptLibrary lib : odp.getLotusScriptLibraries()) {
+			Document dxlDoc = ODPUtil.readXml(lib.getDxlFile());
+			String script = ODPUtil.readFile(lib.getDataFile());
+			int chunkSize = 60 * 1024;
+			for(int startIndex = 0; startIndex < script.length(); startIndex += chunkSize) {
+				int endIndex = Math.min(startIndex+chunkSize, script.length());
+				String scriptChunk = script.substring(startIndex, endIndex);
+				Element el = DXLUtil.writeItemString(dxlDoc, "$ScriptLib", false, scriptChunk);
+				el.setAttribute("sign", "true");
+				el.setAttribute("summary", "false");
+				
+				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + lib.getDataFile());
+				// TODO compile LotusScript
 			}
 		}
 	}
@@ -435,6 +519,26 @@ public class ODPCompiler {
 			return new XSPCompilationResult(javaSource, compiled);
 		} catch(FacesPageException e) {
 			throw new RuntimeException("Exception while converting XSP element " + odp.getBaseDirectory().relativize(xpage.getDataFile()), e);
+		}
+	}
+	
+	private void importDxl(DxlImporter importer, String dxl, Database database, String name) throws NotesException, IOException {
+		try {
+			importer.importDxl(dxl, database);
+			
+//			Path tempFile = Files.createTempFile(name.replace(File.separatorChar, '-'), ".xml");
+//			try(OutputStream os = Files.newOutputStream(tempFile)) {
+//				os.write(dxl.getBytes());
+//				debug("wrote " + name + " to " + tempFile);
+//			}
+		} catch(NotesException ne) {
+			if(ne.text.contains("DXL importer operation failed")) {
+				debug("Exception while importing " + name);
+				String log = importer.getLog();
+				debug(log);
+				debug(dxl);
+			}
+			throw ne;
 		}
 	}
 }
