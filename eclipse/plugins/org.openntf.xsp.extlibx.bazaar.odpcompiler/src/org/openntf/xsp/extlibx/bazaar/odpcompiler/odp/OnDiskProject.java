@@ -15,6 +15,7 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -142,6 +144,54 @@ public class OnDiskProject {
 			return Collections.emptyList();
 		}
 	}
+	
+	/**
+	 * Returns a list of DXL content that does not need any additional processing
+	 * or contextual information to import, such as forms and views.
+	 * 
+	 * @return a {@link Map} of file {@link Path}s to {@link String}s containing DXL
+	 */
+	public Map<Path, String> getDirectDXLElements() {
+		// TODO add importing of *.javalib
+		// really, best to change this to filename/extension matching
+		List<String> standardDirs = Arrays.asList(
+			"AppProperties" + File.separator + "$DBIcon",
+			"AppProperties" + File.separator + "database.properties",
+			"Forms",
+			"Framesets",
+			"Pages",
+			"SharedElements" + File.separator + "Fields",
+			"SharedElements" + File.separator + "Outlines",
+			"Views"
+		);
+		List<String> standardFiles = Arrays.asList(
+			"Code" + File.separator + "dbscript.lsdb",
+			"Resources" + File.separator + "AboutDocument",
+			//"Resources" + File.separator + "IconNote",
+			"Resources" + File.separator + "UsingDocument"
+		);
+		
+		Map<Path, String> result = new LinkedHashMap<>();
+		result.putAll(standardDirs.stream()
+			.map(dir -> baseDir.resolve(dir))
+			.filter(Files::isDirectory)
+			.map(t -> {
+				try {
+					return Files.list(t);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.flatMap(Function.identity())
+			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile)));
+		result.putAll(standardFiles.stream()
+			.map(file -> baseDir.resolve(file))
+			.filter(Files::isRegularFile)
+			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile)));
+		return result;
+	}
+	
+	// Special: image resources, Themes, stylesheets, files, META-INF/MANIFEST.MF, WebContent, plugin.xml, xspdesign.properties, most code
 	
 	// *******************************************************************************
 	// * Internal utility methods

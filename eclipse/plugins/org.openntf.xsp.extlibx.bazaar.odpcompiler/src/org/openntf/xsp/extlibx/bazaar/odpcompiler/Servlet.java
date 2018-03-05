@@ -44,7 +44,8 @@ public class Servlet extends HttpServlet {
 			
 			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, out);
 			compiler.addUpdateSite(updateSite);
-			compiler.compile();
+			Path nsf = compiler.compile();
+			out.println("Created NSF " + nsf);
 			
 			out.println("done");
 		} catch(Throwable e) {

@@ -113,6 +113,14 @@ public class JavaSourceClassLoader extends ClassLoader {
 	public void setOutputStream(PrintStream out) {
 		this.out = out;
 	}
+	
+	public byte[] getClassByteCode(String qualifiedClassName) {
+		if(isCompiledFile(qualifiedClassName)) {
+			return classes.get(qualifiedClassName).getByteCode();
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	protected Class<?> findClass(String qualifiedClassName) throws ClassNotFoundException {

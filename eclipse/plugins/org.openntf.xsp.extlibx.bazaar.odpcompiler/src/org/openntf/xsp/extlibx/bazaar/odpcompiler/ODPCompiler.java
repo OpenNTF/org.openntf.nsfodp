@@ -17,15 +17,19 @@ package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -65,10 +69,22 @@ import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
+
+import lotus.domino.Database;
+import lotus.domino.DxlImporter;
+import lotus.domino.NotesException;
+import lotus.domino.NotesFactory;
+
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
+import com.ibm.designer.domino.napi.NotesAPIException;
+import com.ibm.designer.domino.napi.NotesDatabase;
+import com.ibm.designer.domino.napi.NotesSession;
+import com.ibm.designer.domino.napi.dxl.DXLImporter;
+import com.ibm.designer.domino.napi.dxl.DXLImporter.ImportOption;
+import com.ibm.designer.runtime.domino.bootstrap.util.StreamUtil;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -143,9 +159,11 @@ public class ODPCompiler {
 	 * 	<li>Constructs the NSF from the on-disk project</li>
 	 * 	<li>Uninstalls any installed bundles</li>
 	 * </ol>
+	 * 
+	 * @return a {@link Path} representing the created database
 	 * @throws Exception if there is a problem compiling any component
 	 */
-	public synchronized void compile() throws Exception {
+	public synchronized Path compile() throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		try {
 			initRegistry();
@@ -159,6 +177,20 @@ public class ODPCompiler {
 			Map<CustomControl, XSPCompilationResult> customControls = compileCustomControls(classLoader);
 			Map<XPage, XSPCompilationResult> xpages = compileXPages(classLoader);
 			
+			lotus.domino.Session lotusSession = NotesFactory.createSession();
+			try {
+				Path file = createDatabase(lotusSession);
+				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString());
+				DxlImporter importer = lotusSession.createDxlImporter();
+				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_CREATE);
+				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
+				importer.setReplaceDbProperties(true);
+				importer.setReplicaRequiredForReplaceOrUpdate(false);
+				importBasicElements(importer, database);
+				return file;
+			} finally {
+				lotusSession.recycle();
+			}
 		} finally {
 			uninstallBundles(bundles);
 		}
@@ -321,6 +353,51 @@ public class ODPCompiler {
 		}
 		
 		return result;
+	}
+	
+	// *******************************************************************************
+	// * NSF manipulation methods
+	// *******************************************************************************
+	
+	/**
+	 * Creates a new, non-replica copy of the stub blank database for population
+	 * in the local temp directory.
+	 * 
+	 * @return a {@link Path} representing the new NSF file
+	 * @throws IOException if there is a problem creating the file
+	 * @throws NotesException if there is an API-level problem creating the copy
+	 */
+	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException {
+		debug("Creating destination NSF");
+		Path temp = Files.createTempFile("odpcompilertemp", ".nsf");
+		temp.toFile().deleteOnExit();
+		
+		try(OutputStream os = Files.newOutputStream(temp)) {
+			try(InputStream is = getClass().getResourceAsStream("/res/blank.nsf")) {
+				StreamUtil.copyStream(is, os);
+			}
+		}
+		
+		Path nsf = Files.createTempFile("odpcompiler", ".nsf");
+		Files.delete(nsf);
+		lotus.domino.Database lotusDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
+		lotusDatabase.createCopy("", nsf.toAbsolutePath().toString());
+		lotusDatabase.recycle();
+		
+		return nsf;
+	}
+	
+	private void importBasicElements(DxlImporter importer, Database database) throws NotesException {
+		debug("Importing basic design elements");
+		for(Map.Entry<Path, String> entry : odp.getDirectDXLElements().entrySet()) {
+			if(StringUtil.isNotEmpty(entry.getValue())) {
+				try {
+					importer.importDxl(entry.getValue(), database);
+				} catch(NotesException ne) {
+					throw new NotesException(ne.id, "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey()), ne);
+				}
+			}
+		}
 	}
 	
 	// *******************************************************************************

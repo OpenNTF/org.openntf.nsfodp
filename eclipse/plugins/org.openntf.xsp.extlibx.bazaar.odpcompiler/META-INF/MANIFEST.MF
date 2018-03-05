@@ -10,7 +10,8 @@ Export-Package: org.openntf.xsp.extlibx.bazaar.odpcompiler,
  org.openntf.xsp.extlibx.bazaar.odpcompiler.update
 Import-Package: com.ibm.xsp.extlib.javacompiler,
  javax.servlet,
- javax.servlet.http
+ javax.servlet.http,
+ lotus.domino
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,
  org.eclipse.equinox.http.registry,
@@ -20,4 +21,5 @@ Require-Bundle: org.eclipse.osgi,
  com.ibm.xsp.core,
  com.ibm.commons,
  com.ibm.commons.xml,
- com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.0"
+ com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.0",
+ com.ibm.domino.napi;bundle-version="9.0.1"
