@@ -122,7 +122,7 @@ public class OnDiskProject {
 	public List<CustomControl> getCustomControls() throws IOException {
 		Path dir = baseDir.resolve("CustomControls");
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(baseDir, 1,
+			return Files.find(dir, 1,
 					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile())
 					.map(path -> new CustomControl(path))
 					.collect(Collectors.toList());
@@ -134,7 +134,7 @@ public class OnDiskProject {
 	public List<XPage> getXPages() throws IOException {
 		Path dir = baseDir.resolve("XPages");
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(baseDir, 1,
+			return Files.find(dir, 1,
 					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile())
 					.map(path -> new CustomControl(path))
 					.collect(Collectors.toList());

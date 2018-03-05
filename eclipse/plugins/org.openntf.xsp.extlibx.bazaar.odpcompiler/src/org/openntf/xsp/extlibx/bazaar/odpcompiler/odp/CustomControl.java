@@ -16,7 +16,9 @@ public class CustomControl extends XPage {
 	
 	public CustomControl(Path xspSourceFile) {
 		super(xspSourceFile);
-		this.xspConfigFile = xspSourceFile.getParent().resolve(xspSourceFile.getFileName()+EXT_XSPCONFIG);
+		String fileName = xspSourceFile.getFileName().toString();
+		String baseName = fileName.substring(0, fileName.length()-EXT_XSP.length());
+		this.xspConfigFile = xspSourceFile.getParent().resolve(baseName+EXT_XSPCONFIG);
 	}
 	
 	public Path getXspConfigFile() {

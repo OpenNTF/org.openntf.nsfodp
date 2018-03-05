@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -57,6 +59,7 @@ import org.w3c.dom.Document;
 
 import com.ibm.xsp.extlib.library.BazaarActivator;
 import com.ibm.xsp.library.FacesClassLoader;
+import com.ibm.xsp.page.FacesPageException;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
 import com.ibm.xsp.registry.FacesLibrary;
 import com.ibm.xsp.registry.FacesLibraryImpl;
@@ -70,6 +73,7 @@ import com.ibm.xsp.registry.config.ResourceBundleSource;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
@@ -207,27 +211,27 @@ public class ODPCompiler {
 		debug("Initializing plugins");
 		
 		// TODO is this step necessary? They may be automatically contributed, based on the "Duplicate library ID" messages on the console 
-		AtomicBoolean contributed = new AtomicBoolean(false);
-		bundles.stream().forEach(bundle -> {
-			URL pluginXml = bundle.getEntry("/plugin.xml");
-			if(pluginXml != null) {
-				IExtensionRegistry reg = Platform.getExtensionRegistry();
-				Object token = ODPUtil.getTemporaryUserToken(reg);
-				IContributor contributor = new RegistryContributor(String.valueOf(bundle.getBundleId()), bundle.getSymbolicName(), null, null);
-				try {
-					try(InputStream is = pluginXml.openStream()) {
-						if(!reg.addContribution(is, contributor, false, bundle.getSymbolicName(), null, token)) {
-							debug(">> failed to contribute plugin " + bundle.getSymbolicName());
-						}
-						contributed.set(true);
-					}
-				} catch(IOException ioe) {
-					throw new RuntimeException(ioe);
-				}
-			}
-		});
+//		AtomicBoolean contributed = new AtomicBoolean(false);
+//		bundles.stream().forEach(bundle -> {
+//			URL pluginXml = bundle.getEntry("/plugin.xml");
+//			if(pluginXml != null) {
+//				IExtensionRegistry reg = Platform.getExtensionRegistry();
+//				Object token = ODPUtil.getTemporaryUserToken(reg);
+//				IContributor contributor = new RegistryContributor(String.valueOf(bundle.getBundleId()), bundle.getSymbolicName(), null, null);
+//				try {
+//					try(InputStream is = pluginXml.openStream()) {
+//						if(!reg.addContribution(is, contributor, false, bundle.getSymbolicName(), null, token)) {
+//							debug(">> failed to contribute plugin " + bundle.getSymbolicName());
+//						}
+//						contributed.set(true);
+//					}
+//				} catch(IOException ioe) {
+//					throw new RuntimeException(ioe);
+//				}
+//			}
+//		});
 		
-		if(contributed.get()) {
+//		if(contributed.get()) {
 			// Reset the XSP stack's library cache
 			try {
 				Class<?> libraryServiceLoaderClass = getClass().getClassLoader().loadClass("com.ibm.xsp.library.LibraryServiceLoader");
@@ -240,7 +244,7 @@ public class ODPCompiler {
 			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
 				throw new RuntimeException(e);
 			}
-		}
+//		}
 	}
 	
 	/**
@@ -307,11 +311,12 @@ public class ODPCompiler {
 		
 		Map<CustomControl, XSPCompilationResult> result = new LinkedHashMap<>();
 		
-		for(CustomControl cc : odp.getCustomControls()) {
+		List<CustomControl> ccs = odp.getCustomControls();
+		for(CustomControl cc : ccs) {
 			Document xspConfig = ODPUtil.readXml(cc.getXspConfigFile());
-			// TODO support alternate namespaces/prefixes
-			String namespace = DefaultControlFactory.XC_NS;
-			Path fileName = cc.getXspConfigFile().relativize(odp.getBaseDirectory());
+			
+			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue());
+			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
 			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
 					facesProject,
 					facesClassLoader,
@@ -322,17 +327,35 @@ public class ODPCompiler {
 					namespace
 			);
 			
-			UpdatableLibrary library = getLibrary();
+			UpdatableLibrary library = getLibrary(namespace);
 			library.addLibraryFragment(fragment);
 			
 			// Load the definition to refresh its parent ref
 			CompositeComponentDefinitionImpl def = (CompositeComponentDefinitionImpl)library.getDefinition(cc.getControlName());
 			def.refreshReferences();
-			
-			// Now actually translate
-			XSPCompilationResult compilationResult = compileXSP(cc);
+		}
+		
+		// Now that they're all defined, try to compile them in a queue
+		for(CustomControl cc : ccs) {
+			XSPCompilationResult compilationResult = compileXSP(cc, classLoader);
 			result.put(cc, compilationResult);
 		}
+//		int LIMIT = 500, breaker = 0;
+//		Queue<CustomControl> queue = new ArrayDeque<>();
+//		queue.addAll(ccs);
+//		CustomControl cc;
+//		while((cc = queue.peek()) != null) {
+//			if(breaker++ > LIMIT) {
+//				throw new RuntimeException("Exceeded breaker!");
+//			}
+//			try {
+//				XSPCompilationResult compilationResult = compileXSP(cc, classLoader);
+//				result.put(cc, compilationResult);
+//			} catch(FacesPageException e) {
+//				// This is probably a local dependency
+//				// TODO have this look through the definitions for a known one and hold off
+//			}
+//		}
 		
 		return result;
 	}
@@ -342,7 +365,7 @@ public class ODPCompiler {
 		Map<XPage, XSPCompilationResult> result = new LinkedHashMap<>();
 		
 		for(XPage xpage : odp.getXPages()) {
-			XSPCompilationResult compilationResult = compileXSP(xpage);
+			XSPCompilationResult compilationResult = compileXSP(xpage, classLoader);
 			result.put(xpage, compilationResult);
 		}
 		
@@ -359,16 +382,16 @@ public class ODPCompiler {
 		}
 	}
 	
-	private UpdatableLibrary getLibrary() {
-		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(DefaultControlFactory.XC_NS);
+	private UpdatableLibrary getLibrary(String namespace) {
+		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(namespace);
 		if(library == null) {
 			try {
-				library = new FacesLibraryImpl(facesRegistry, DefaultControlFactory.XC_NS);
+				library = new FacesLibraryImpl(facesRegistry, namespace);
 				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs");
 				localLibsField.setAccessible(true);
 				@SuppressWarnings("unchecked")
 				Map<String, UpdatableLibrary> localLibs = (Map<String, UpdatableLibrary>)localLibsField.get(facesRegistry);
-				localLibs.put(DefaultControlFactory.XC_NS, library);
+				localLibs.put(namespace, library);
 			} catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
@@ -376,10 +399,10 @@ public class ODPCompiler {
 		return library;
 	}
 	
-	private XSPCompilationResult compileXSP(XPage xpage) throws Exception {
+	private XSPCompilationResult compileXSP(XPage xpage, JavaSourceClassLoader classLoader) throws Exception {
 		String xspSource = ODPUtil.readFile(xpage.getDataFile());
 		String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
-		Class<?> compiled = dynamicXPageBean.compile(xpage.getPageName(), javaSource);
+		Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 		return new XSPCompilationResult(javaSource, compiled);
 	}
 }

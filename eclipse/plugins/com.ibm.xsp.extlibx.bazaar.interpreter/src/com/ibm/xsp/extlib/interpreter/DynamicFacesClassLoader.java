@@ -1,7 +1,8 @@
 package com.ibm.xsp.extlib.interpreter;
 
+import javax.faces.context.FacesContext;
+
 import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.context.FacesContextEx;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 
@@ -36,6 +37,11 @@ public class DynamicFacesClassLoader implements FacesClassLoader {
 				}
 			}
 		}
-		return FacesContextEx.getCurrentInstance().getContextClassLoader().loadClass(name);
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		if(facesContext != null) {
+			return facesContext.getContextClassLoader().loadClass(name);
+		} else {
+			return classLoader.loadClass(name);
+		}
 	}
 }

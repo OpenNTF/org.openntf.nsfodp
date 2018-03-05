@@ -37,16 +37,13 @@ public class Servlet extends HttpServlet {
 		
 		PrintStream out = new PrintStream(os);
 		try {
-			
-			FacesSharableRegistry registry = createRegistry();
-			
 			Path odpFile = Paths.get("H:\\Projects\\SourceTree\\endeavor\\nsf\\nsf-dashboard");
 			OnDiskProject odp = new OnDiskProject(odpFile);
 			//File siteFile = new File("H:\\Projects\\SourceTree\\endeavor\\endeavour-plugin\\releng\\net.cmssite.endeavour60.updatesite\\target\\site");
 			File siteFile = new File("C:\\temp\\site");
 			UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 			
-			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, registry, out);
+			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, out);
 			compiler.addUpdateSite(updateSite);
 			compiler.compile();
 			
@@ -57,15 +54,5 @@ public class Servlet extends HttpServlet {
 			out.flush();
 			out.close();
 		}
-	}
-	
-	private FacesSharableRegistry createRegistry() {
-		SharableRegistryImpl registry = new SharableRegistryImpl(getClass().getPackage().getName());
-		XspRegistryManager regMan = XspRegistryManager.getManager();
-		regMan.getRegistryProviderIds().stream()
-			.map(regMan::getRegistryProvider)
-			.map(XspRegistryProvider::getRegistry)
-			.forEach(registry::addDepend);
-		return registry;
 	}
 }
