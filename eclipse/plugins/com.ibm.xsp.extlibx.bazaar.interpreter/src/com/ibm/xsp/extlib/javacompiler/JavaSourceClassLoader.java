@@ -222,6 +222,11 @@ public class JavaSourceClassLoader extends ClassLoader {
 			throw new JavaCompilerException(e, diagnostics, "Error while loading the compiled classes");
 		}
 	}
+	
+	public Collection<String> getCompiledClassNames() {
+		return Collections.unmodifiableCollection(classes.keySet());
+	}
+	
 /*
     // TESTS..
 	public static void main(String[] args) {

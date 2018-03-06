@@ -51,3 +51,7 @@ Licensed under the Eclipse Public License 1.0
 org.openntf.domino
 Available from https://openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API
 Licensed under Apache 2.0
+
+Domino JNA
+Available from https://github.com/klehmann/domino-jna
+Licensed under Apache 2.0

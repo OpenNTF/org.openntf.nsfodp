@@ -57,6 +57,10 @@ public enum ODPUtil {
 		}
 	}
 	
+	public static String toJavaPath(String className) {
+		return className.replace('.', '/') + ".class";
+	}
+	
 	public static List<JavaSource> listJavaFiles(Path baseDir) {
 		try {
 			return Files.find(baseDir, Integer.MAX_VALUE,
