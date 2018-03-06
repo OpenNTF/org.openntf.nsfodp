@@ -499,6 +499,8 @@ public class ODPCompiler {
 		if(library == null) {
 			try {
 				library = new FacesLibraryImpl(facesRegistry, namespace);
+				// TODO this is probably properly done by creating a FacesProjectImpl
+				// - it can then register the library fragments itself
 				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs");
 				localLibsField.setAccessible(true);
 				@SuppressWarnings("unchecked")
