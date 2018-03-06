@@ -65,13 +65,13 @@ public class OnDiskProject {
 	}).map(glob -> "glob:" + glob).map(FileSystems.getDefault()::getPathMatcher).collect(Collectors.toList());
 	// Special: image resources, Themes, stylesheets, files, META-INF/MANIFEST.MF, WebContent, plugin.xml, xspdesign.properties, most code
 	public static final List<PathMatcher> FILE_RESOURCES = Arrays.stream(new String[] {
-		"AppProperties" + MATCH_SEP + "xspdesign.properties",
+		".classpath",
+		".settings" + MATCH_SEP + "**",
 		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.js",
 		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.jss",
 		"META-INF" + MATCH_SEP + "*",
 		"plugin.xml",
 		"Resources" + MATCH_SEP + "Files" + MATCH_SEP + "*",
-		"Resources" + MATCH_SEP + "Images" + MATCH_SEP + "*",
 		"Resources" + MATCH_SEP + "StyleSheets" + MATCH_SEP + "*",
 		"Resources" + MATCH_SEP + "Themes" + MATCH_SEP + "*",
 		"WebContent" + MATCH_SEP + "**"
@@ -199,7 +199,9 @@ public class OnDiskProject {
 		return FILE_RESOURCES.stream()
 			.map(glob -> {
 				try {
-					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)));
+					return Files.find(baseDir, Integer.MAX_VALUE,
+						(path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata")
+					);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -209,11 +211,22 @@ public class OnDiskProject {
 	}
 	
 	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
-		// "Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.lss"
 		PathMatcher glob = FileSystems.getDefault().getPathMatcher("glob:Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.lss");
-		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)))
+		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
 			.map(path -> new LotusScriptLibrary(path))
 			.collect(Collectors.toList());
+	}
+	
+	public List<ImageResource> getImageResources() throws IOException {
+		PathMatcher glob = FileSystems.getDefault().getPathMatcher("glob:Resources" + MATCH_SEP + "Images" + MATCH_SEP + "*");
+		return Files.find(baseDir, Integer.MAX_VALUE,
+				(path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"))
+				.map(path -> new ImageResource(path))
+				.collect(Collectors.toList());
+	}
+	
+	public Path getXspProperties() {
+		return baseDir.resolve("AppProperties").resolve("xspdesign.properties");
 	}
 	
 	// *******************************************************************************

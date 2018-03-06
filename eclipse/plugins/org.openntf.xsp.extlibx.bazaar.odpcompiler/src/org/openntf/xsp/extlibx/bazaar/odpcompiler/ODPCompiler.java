@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -41,8 +42,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.tools.JavaFileObject;
 
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.FileResource;
@@ -81,6 +80,7 @@ import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
 import com.mindoo.domino.jna.NotesNote;
 import com.mindoo.domino.jna.errors.LotusScriptCompilationError;
+import com.mindoo.domino.jna.errors.NotesError;
 import com.mindoo.domino.jna.gc.NotesGC;
 import com.mindoo.domino.jna.utils.LegacyAPIUtils;
 
@@ -183,9 +183,9 @@ public class ODPCompiler {
 			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
 			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(getClass().getClassLoader(), compilerOptions, classPath);
 			
-			Map<String, Class<?>> javaClasses = compileJavaSources(classLoader);
-			Map<CustomControl, XSPCompilationResult> customControls = compileCustomControls(classLoader);
-			Map<XPage, XSPCompilationResult> xpages = compileXPages(classLoader);
+			compileJavaSources(classLoader);
+			compileCustomControls(classLoader);
+			compileXPages(classLoader);
 			
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
 			try {
@@ -199,8 +199,14 @@ public class ODPCompiler {
 				
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
-				importJavaElements(importer, database, classLoader, javaClasses);
+				importImageResources(importer, database);
 				importLotusScriptLibraries(importer, database);
+				
+				Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
+				importCustomControls(importer, database, classLoader, compiledClassNames);
+				importXPages(importer, database, classLoader, compiledClassNames);
+				importJavaElements(importer, database, classLoader, compiledClassNames);
+				
 				
 				return file;
 			} finally {
@@ -302,7 +308,7 @@ public class ODPCompiler {
 				entry.getValue().stream()
 					.collect(Collectors.toMap(
 						source -> ODPUtil.toJavaClassName(entry.getKey().relativize(source.getDataFile())),
-						source -> ODPUtil.readFile(source.getDataFile())
+						JavaSource::getSource
 					))
 			)
 			.map(Map::entrySet)
@@ -327,7 +333,7 @@ public class ODPCompiler {
 		
 		List<CustomControl> ccs = odp.getCustomControls();
 		for(CustomControl cc : ccs) {
-			Document xspConfig = ODPUtil.readXml(cc.getXspConfigFile());
+			Document xspConfig = cc.getXspConfig().get();
 			
 			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue());
 			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
@@ -417,24 +423,98 @@ public class ODPCompiler {
 	
 	private void importFileResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
 		debug("Importing file resources");
+		Path webContent = Paths.get("WebContent");
 		for(FileResource res : odp.getFileResources().values()) {
 			Optional<Document> dxl = res.getDxl();
+			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
 			if(dxl.isPresent()) {
 				Document dxlDoc = dxl.get();
 				DXLUtil.writeItemFileData(dxlDoc, "$FileData", res.getDataFile());
 				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(res.getDataFile()));
-				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "File resource " + odp.getBaseDirectory().relativize(res.getDataFile()));
+				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "File resource " + filePath);
 			} else {
-				// TODO handle creating DXL for documents without metadata
-				// This should read the path and create a basic file for that type, with the right flags
+				// Special handling for WebContent files
+				if(filePath.startsWith(webContent)) {
+					filePath = webContent.relativize(filePath);
+					ODPUtil.importFileResource(importer, res.getDataFile(), database, filePath.toString().replace('\\', '/'), "~C4g", "w");
+				} else {
+					ODPUtil.importFileResource(importer, res.getDataFile(), database, filePath.toString().replace('\\', '/'), "~C4gP", null);
+				}
 			}
 		}
 	}
 	
-	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Map<String, Class<?>> javaClasses) throws FileNotFoundException, XMLException, IOException, NotesException, NumberFormatException, NotesAPIException {
-		debug("Importing Java design elements");
+	private void importImageResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
+		debug("Importing image resources");
+		for(FileResource res : odp.getImageResources()) {
+			try {
+				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
+				Document dxlDoc = res.getDxl().get();
+				DXLUtil.writeItemFileData(dxlDoc, "$ImageData", res.getDataFile());
+				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(res.getDataFile()));
+				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Image resource " + filePath);
+			} catch(RuntimeException e) {
+				throw new RuntimeException("Exception while processing resource " + res.getDataFile(), e);
+			}
+		}
+	}
+	
+	private void importCustomControls(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws IOException, XMLException, NotesException {
+		debug("Importing custom controls");
 		
-		Set<String> matchedClassNames = new HashSet<>();
+		List<CustomControl> ccs = odp.getCustomControls();
+		for(CustomControl cc : ccs) {
+			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, cc);
+			
+			String xspConfig = cc.getXspConfigSource();
+			byte[] xspConfigData = xspConfig.getBytes();
+			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData);
+			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length);
+			
+			importer.importDxl(DOMUtil.getXMLString(dxlDoc), database);
+		}
+	}
+	
+	private void importXPages(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws IOException, XMLException, NotesException {
+		debug("Importing XPages");
+		
+		List<XPage> xpages = odp.getXPages();
+		for(XPage xpage : xpages) {
+			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, xpage);
+			importer.importDxl(DOMUtil.getXMLString(dxlDoc), database);
+		}
+	}
+	
+	private Document importXSP(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws XMLException, IOException {
+		String className = xpage.getJavaClassName();
+		byte[] byteCode = classLoader.getClassByteCode(className);
+		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page";
+		byte[] innerByteCode = classLoader.getClassByteCode(innerClassName);
+
+		String xspSource = xpage.getSource();
+		byte[] xspSourceData = xspSource.getBytes();
+		
+		Document dxlDoc = xpage.getDxl().get();
+		
+		DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
+		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
+		DXLUtil.writeItemFileData(dxlDoc, "$ClassData1", innerByteCode);
+		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize1", innerByteCode.length);
+		DXLUtil.writeItemFileData(dxlDoc, "$FileData", xspSourceData);
+		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", xspSourceData.length);
+		
+		String[] classIndex = new String[] { "WEB-INF/classes/" + ODPUtil.toJavaPath(className), "WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName) };
+		DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndex);
+		
+		// Drain them from the later queue
+		compiledClassNames.remove(className);
+		compiledClassNames.remove(innerClassName);
+		
+		return dxlDoc;
+	}
+	
+	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws FileNotFoundException, XMLException, IOException, NotesException, NumberFormatException, NotesAPIException {
+		debug("Importing Java design elements");
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
 		for(Map.Entry<Path, List<JavaSource>> entry : javaSourceFiles.entrySet()) {
@@ -448,12 +528,12 @@ public class ODPCompiler {
 				
 				Path filePath = entry.getKey().relativize(source.getDataFile());
 				String className = ODPUtil.toJavaClassName(filePath);
-				matchedClassNames.add(className);
+				compiledClassNames.remove(className);
 				byte[] byteCode = classLoader.getClassByteCode(className);
-				String javaSource = ODPUtil.readFile(source.getDataFile());
+				String javaSource = source.getSource();
 				byte[] javaSourceData = javaSource.getBytes();
 				
-				Document dxlDoc = ODPUtil.readXml(source.getDxlFile());
+				Document dxlDoc = source.getDxl().get();
 				
 				DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
 				DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
@@ -469,7 +549,7 @@ public class ODPCompiler {
 						.collect(Collectors.toList());
 				for(int i = 0; i < innerClasses.size(); i++) {
 					String innerClassName = innerClasses.get(i);
-					matchedClassNames.add(innerClassName);
+					compiledClassNames.remove(innerClassName);
 					byte[] innerByteCode = classLoader.getClassByteCode(innerClassName);
 					DXLUtil.writeItemFileData(dxlDoc, "$ClassData" + (i+1), innerByteCode);
 					DXLUtil.writeItemNumber(dxlDoc, "$ClassSize" + (i+1), innerByteCode.length);
@@ -482,13 +562,10 @@ public class ODPCompiler {
 		}
 		
 		// Create standalone class files for remaining classes
-		Set<String> leftovers = new HashSet<>(classLoader.getCompiledClassNames());
-		leftovers.removeAll(matchedClassNames);
-		leftovers.removeIf(className -> className.startsWith("xsp.")); // TODO have this actually look up against compiled XPages
-		for(String leftoverClassName : leftovers) {
-			String fileName = "WEB-INF/classes/" + leftoverClassName.substring(0, leftoverClassName.length()-JavaFileObject.Kind.CLASS.extension.length()).replace('.', '/');
+		for(String leftoverClassName : compiledClassNames) {
+			String fileName = "WEB-INF/classes/" + ODPUtil.toJavaPath(leftoverClassName);
 			byte[] leftoverByteCode = classLoader.getClassByteCode(leftoverClassName);
-			this.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g");
+			ODPUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w");
 		}
 	}
 	
@@ -497,8 +574,8 @@ public class ODPCompiler {
 		
 		List<String> noteIds = new ArrayList<>();
 		for(LotusScriptLibrary lib : odp.getLotusScriptLibraries()) {
-			Document dxlDoc = ODPUtil.readXml(lib.getDxlFile());
-			String script = ODPUtil.readFile(lib.getDataFile());
+			Document dxlDoc = lib.getDxl().get();
+			String script = lib.getSource();
 			int chunkSize = 60 * 1024;
 			for(int startIndex = 0; startIndex < script.length(); startIndex += chunkSize) {
 				int endIndex = Math.min(startIndex+chunkSize, script.length());
@@ -529,6 +606,12 @@ public class ODPCompiler {
 					});
 				} catch(LotusScriptCompilationError err) {
 					nextPass.add(noteId);
+				} catch(NotesError err) {
+					if(err.getId() == 12051) { // Same as above, but not encapsulated
+						nextPass.add(noteId);
+					} else {
+						throw err;
+					}
 				}
 			}
 			
@@ -573,7 +656,7 @@ public class ODPCompiler {
 	
 	private XSPCompilationResult compileXSP(XPage xpage, JavaSourceClassLoader classLoader) throws Exception {
 		try {
-			String xspSource = ODPUtil.readFile(xpage.getDataFile());
+			String xspSource = xpage.getSource();
 			String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
 			Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 			return new XSPCompilationResult(javaSource, compiled);
@@ -602,21 +685,5 @@ public class ODPCompiler {
 			}
 			throw ne;
 		}
-	}
-	
-	/**
-	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
-	 */
-	private void importFileResource(DxlImporter importer, byte[] data, Database database, String name, String flags) throws XMLException, IOException {
-		Document dxlDoc = DOMUtil.createDocument();
-		Element note = DOMUtil.createElement(dxlDoc, "note");
-		note.setAttribute("class", "form");
-		note.setAttribute("xmlns", "http://www.lotus.com/dxl");
-		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags);
-		DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, "w"); // TODO figure out if this should change
-		DXLUtil.writeItemString(dxlDoc, "$TITLE", false, name);
-		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", data.length);
-		DXLUtil.writeItemFileData(dxlDoc, "$FileData", data);
-		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name);
 	}
 }

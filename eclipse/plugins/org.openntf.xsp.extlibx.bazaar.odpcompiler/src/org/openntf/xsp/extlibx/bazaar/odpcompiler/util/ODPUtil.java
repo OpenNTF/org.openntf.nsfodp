@@ -20,12 +20,17 @@ import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.JavaSource;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.runtime.domino.bootstrap.util.StringUtil;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
+
+import lotus.domino.Database;
+import lotus.domino.DxlImporter;
+import lotus.domino.NotesException;
 
 public enum ODPUtil {
 	;
@@ -149,5 +154,45 @@ public enum ODPUtil {
 	
 	public static Optional<Bundle> findBundle(String bundleId) {
 		return Optional.ofNullable(org.eclipse.core.runtime.Platform.getBundle(bundleId));
+	}
+
+	/**
+	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
+	 */
+	public static void importFileResource(DxlImporter importer, Path file, Database database, String name, String flags, String flagsExt) throws XMLException, IOException, NotesException {
+		Document dxlDoc = DOMUtil.createDocument();
+		Element note = DOMUtil.createElement(dxlDoc, "note");
+		note.setAttribute("class", "form");
+		note.setAttribute("xmlns", "http://www.lotus.com/dxl");
+		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags);
+		if(StringUtil.isNotEmpty(flagsExt)) {
+			DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt);	
+		}
+		DXLUtil.writeItemString(dxlDoc, "$TITLE", false, name);
+		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(file));
+		DXLUtil.writeItemFileData(dxlDoc, "$FileData", file);
+		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name);
+		String dxl = DOMUtil.getXMLString(dxlDoc);
+		importer.importDxl(dxl, database);
+	}
+
+	/**
+	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
+	 */
+	public static void importFileResource(DxlImporter importer, byte[] data, Database database, String name, String flags, String flagsExt) throws XMLException, IOException, NotesException {
+		Document dxlDoc = DOMUtil.createDocument();
+		Element note = DOMUtil.createElement(dxlDoc, "note");
+		note.setAttribute("class", "form");
+		note.setAttribute("xmlns", "http://www.lotus.com/dxl");
+		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags);
+		if(StringUtil.isNotEmpty(flagsExt)) {
+			DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt);	
+		}
+		DXLUtil.writeItemString(dxlDoc, "$TITLE", false, name);
+		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", data.length);
+		DXLUtil.writeItemFileData(dxlDoc, "$FileData", data);
+		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name);
+		String dxl = DOMUtil.getXMLString(dxlDoc);
+		importer.importDxl(dxl, database);
 	}
 }

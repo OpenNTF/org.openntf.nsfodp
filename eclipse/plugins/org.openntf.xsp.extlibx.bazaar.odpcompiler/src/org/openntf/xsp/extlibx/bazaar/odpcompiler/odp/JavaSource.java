@@ -7,9 +7,9 @@ import java.nio.file.Path;
  * DXL metadata file.
  * 
  * @author Jesse Gallagher
- *
+ * @since 2.0.0
  */
-public class JavaSource extends AbstractSplitDesignElement {
+public class JavaSource extends AbstractSourceDesignElement {
 	public JavaSource(Path javaSourceFile) {
 		super(javaSourceFile);
 	}

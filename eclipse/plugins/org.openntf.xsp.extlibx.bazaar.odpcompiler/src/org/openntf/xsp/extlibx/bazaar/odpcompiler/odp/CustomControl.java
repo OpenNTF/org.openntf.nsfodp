@@ -1,6 +1,11 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
+import org.w3c.dom.Document;
 
 /**
  * This class represents the files that make up a custom control: the XSP
@@ -25,8 +30,19 @@ public class CustomControl extends XPage {
 		return xspConfigFile;
 	}
 	
+	public String getXspConfigSource() {
+		return ODPUtil.readFile(xspConfigFile);
+	}
+	
+	public Optional<Document> getXspConfig() {
+		if(Files.isRegularFile(xspConfigFile)) {
+			return Optional.ofNullable(ODPUtil.readXml(xspConfigFile));
+		} else {
+			return Optional.empty();
+		}
+	}
+	
 	public String getControlName() {
-		String fileName = this.getDataFile().getFileName().toString();
-		return fileName.substring(0, fileName.length()-EXT_XSP.length());
+		return this.getPageBaseName();
 	}
 }

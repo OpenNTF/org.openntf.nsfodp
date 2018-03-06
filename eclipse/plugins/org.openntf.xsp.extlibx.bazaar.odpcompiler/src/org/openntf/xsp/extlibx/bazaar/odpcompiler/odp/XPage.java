@@ -9,7 +9,7 @@ import java.nio.file.Path;
  * @author Jesse Gallagher
  *
  */
-public class XPage extends AbstractSplitDesignElement {
+public class XPage extends AbstractSourceDesignElement {
 	public static final String EXT_XSP = ".xsp";
 	public static final String PACKAGE_XSP = "xsp";
 	
@@ -18,9 +18,13 @@ public class XPage extends AbstractSplitDesignElement {
 	}
 	
 	public String getJavaClassName() {
+		return PACKAGE_XSP + '.' + getJavaClassSimpleName();
+	}
+	
+	public String getJavaClassSimpleName() {
 		String pageName = getPageBaseName();
 		String capitalized = pageName.substring(0, 1).toUpperCase() + pageName.substring(1);
-		return PACKAGE_XSP + '.' + capitalized;
+		return capitalized;
 	}
 	
 	public String getPageName() {
