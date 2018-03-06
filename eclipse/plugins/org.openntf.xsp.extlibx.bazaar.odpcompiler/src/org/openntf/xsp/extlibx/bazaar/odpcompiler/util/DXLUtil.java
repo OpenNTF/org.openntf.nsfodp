@@ -1,12 +1,8 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.util;
 
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
-
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -20,7 +16,6 @@ import org.w3c.dom.Node;
 
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-import com.ibm.designer.runtime.domino.bootstrap.util.StreamUtil;
 
 /**
  * Utilities for manipulating "raw"-type DXL documents.
@@ -169,9 +164,12 @@ public enum DXLUtil {
 			Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode();
 			Element item = DOMUtil.createElement(dxlDoc, note, "item");
 			item.setAttribute("name", itemName);
+			if(value.length > 1) {
+				item = DOMUtil.createElement(dxlDoc, item, "textlist");
+			}
 			for(CharSequence val : value) {
-				Element number = DOMUtil.createElement(dxlDoc, item, "text");
-				number.setTextContent(val.toString());
+				Element text = DOMUtil.createElement(dxlDoc, item, "text");
+				text.setTextContent(val.toString());
 			}
 			return item;
 		} else {
