@@ -1,10 +1,6 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
 import com.ibm.xsp.extlib.library.BazaarActivator;
-import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.xsp.registry.SharableRegistryImpl;
-import com.ibm.xsp.registry.config.XspRegistryManager;
-import com.ibm.xsp.registry.config.XspRegistryProvider;
 
 import java.io.File;
 import java.io.IOException;
