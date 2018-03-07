@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.CompositeDataUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.DXLUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODSConstants;
@@ -74,7 +75,7 @@ public class AbstractSplitDesignElement {
 			throw new IllegalArgumentException("Cannot read file " + file);
 		}
 		try(InputStream is = Files.newInputStream(file)) {
-			return DXLUtil.getFileResourceData(is, (int)Files.size(file));
+			return CompositeDataUtil.getFileResourceData(is, (int)Files.size(file));
 		}
 	}
 }

@@ -1,6 +1,9 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
+import java.io.IOException;
 import java.nio.file.Path;
+
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.CompositeDataUtil;
 
 public class JavaScriptLibrary extends AbstractSourceDesignElement {
 
@@ -16,5 +19,10 @@ public class JavaScriptLibrary extends AbstractSourceDesignElement {
 	@Override
 	public String getFileSizeItem() {
 		return null;
+	}
+	
+	@Override
+	public byte[] getCompositeData() throws IOException {
+		return CompositeDataUtil.getJavaScriptLibraryData(getDataFile());
 	}
 }

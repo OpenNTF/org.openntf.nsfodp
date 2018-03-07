@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.CompositeDataUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.DXLUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODSConstants;
 import org.w3c.dom.Document;
@@ -48,7 +49,7 @@ public class ImageResource extends FileResource {
 			throw new IllegalArgumentException("Cannot read file " + file);
 		}
 		try(InputStream is = Files.newInputStream(file)) {
-			return DXLUtil.getImageResourceData(file);
+			return CompositeDataUtil.getImageResourceData(file);
 		}
 	}
 }
