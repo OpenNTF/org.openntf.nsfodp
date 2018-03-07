@@ -646,6 +646,14 @@ public class ODPCompiler {
 			List<String> importedIds = new ArrayList<>();
 			String noteId = importer.getFirstImportedNoteID();
 			while(StringUtil.isNotEmpty(noteId)) {
+				lotus.domino.Document doc = database.getDocumentByID(noteId);
+				try {
+					doc.sign();
+					doc.save();
+				} finally {
+					doc.recycle();
+				}
+				
 				importedIds.add(noteId);
 				noteId = importer.getNextImportedNoteID(noteId);
 			}
