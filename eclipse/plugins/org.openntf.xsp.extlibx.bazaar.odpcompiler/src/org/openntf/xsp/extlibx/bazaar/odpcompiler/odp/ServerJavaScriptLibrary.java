@@ -2,7 +2,7 @@ package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
 import java.nio.file.Path;
 
-public class ServerJavaScriptLibrary extends AbstractSourceDesignElement {
+public class ServerJavaScriptLibrary extends JavaScriptLibrary {
 
 	public ServerJavaScriptLibrary(Path dataFile) {
 		super(dataFile);
@@ -11,10 +11,5 @@ public class ServerJavaScriptLibrary extends AbstractSourceDesignElement {
 	@Override
 	public String getFileDataItem() {
 		return "$ServerJavaScriptLibrary";
-	}
-	
-	@Override
-	public String getFileSizeItem() {
-		return null;
 	}
 }
