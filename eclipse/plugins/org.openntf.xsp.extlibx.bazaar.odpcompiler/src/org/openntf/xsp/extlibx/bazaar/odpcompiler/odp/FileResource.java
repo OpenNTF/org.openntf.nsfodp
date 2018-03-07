@@ -24,9 +24,18 @@ public class FileResource extends AbstractSplitDesignElement {
 	private final String flags;
 	private final String flagsExt;
 	private final Function<Path, String> nameProvider;
+	private final boolean copyToClasses;
 	
 	public FileResource(Path dataFile) {
 		this(dataFile, null, null, null);
+	}
+	
+	public FileResource(Path dataFile, boolean copyToClasses) {
+		super(dataFile);
+		this.flags = null;
+		this.flagsExt = null;
+		this.nameProvider = null;
+		this.copyToClasses = copyToClasses;
 	}
 	
 	public FileResource(Path dataFile, String flags, String flagsExt, Function<Path, String> nameProvider) {
@@ -34,6 +43,7 @@ public class FileResource extends AbstractSplitDesignElement {
 		this.flags = flags;
 		this.flagsExt = flagsExt;
 		this.nameProvider = nameProvider;
+		this.copyToClasses = false;
 	}
 	
 	@Override
@@ -62,7 +72,10 @@ public class FileResource extends AbstractSplitDesignElement {
 			}
 			
 			return attachFileData(dxlDoc);
-		}
-		
+		}		
+	}
+	
+	public boolean isCopyToClasses() {
+		return copyToClasses;
 	}
 }

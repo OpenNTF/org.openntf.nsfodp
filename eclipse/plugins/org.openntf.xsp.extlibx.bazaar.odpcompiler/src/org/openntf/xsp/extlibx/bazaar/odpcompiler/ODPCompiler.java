@@ -15,6 +15,7 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.AbstractSplitDesignElement;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.FileResource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.JavaSource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.LotusScriptLibrary;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
@@ -425,6 +427,23 @@ public class ODPCompiler {
 			Document dxlDoc = res.getDxl();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
 			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath);
+			
+			if(res instanceof FileResource) {
+				FileResource fileRes = (FileResource)res;
+				if(fileRes.isCopyToClasses()) {
+					// Also create a copy beneath WEB-INF/classes
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					try(InputStream is = Files.newInputStream(fileRes.getDataFile())) {
+						StreamUtil.copyStream(is, baos);
+					}
+					// Use expanded syntax due to the presence of the xmlns
+					String title = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").getStringValue();
+					if(StringUtil.isEmpty(title)) {
+						throw new IllegalStateException("Could not identify original title for file resource " + filePath);
+					}
+					ODPUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w");
+				}
+			}
 		}
 	}
 	
