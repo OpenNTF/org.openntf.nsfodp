@@ -76,6 +76,9 @@ public class OnDiskProject {
 		this.FILE_RESOURCES = Arrays.asList(
 			new GlobMatcher(".classpath", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
 			new GlobMatcher(".settings/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("Code/Java/**", path -> 
+				path.toString().endsWith(".java") || path.toString().endsWith(AbstractSplitDesignElement.EXT_METADATA) ? null : new FileResource(path, true)
+			),
 			new GlobMatcher("Code/ScriptLibraries/*.js", path -> new JavaScriptLibrary(path)),
 			new GlobMatcher("Code/ScriptLibraries/*.jss", path -> new ServerJavaScriptLibrary(path)),
 			new GlobMatcher("META-INF/*", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
@@ -212,6 +215,7 @@ public class OnDiskProject {
 				}
 			})
 			.flatMap(Function.identity())
+			.filter(Objects::nonNull)
 			.map(AbstractSplitDesignElement.class::cast)
 			.collect(Collectors.toList());
 	}
