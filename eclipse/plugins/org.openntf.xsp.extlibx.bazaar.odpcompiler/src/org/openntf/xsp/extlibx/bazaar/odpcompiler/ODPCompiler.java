@@ -37,14 +37,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.AbstractSplitDesignElement;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.FileResource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.JavaSource;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.LotusScriptLibrary;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
@@ -199,7 +198,6 @@ public class ODPCompiler {
 				
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
-				importImageResources(importer, database);
 				importLotusScriptLibraries(importer, database);
 				
 				Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
@@ -423,39 +421,10 @@ public class ODPCompiler {
 	
 	private void importFileResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
 		debug("Importing file resources");
-		Path webContent = Paths.get("WebContent");
-		for(FileResource res : odp.getFileResources().values()) {
-			Optional<Document> dxl = res.getDxl();
+		for(AbstractSplitDesignElement res : odp.getFileResources()) {
+			Document dxlDoc = res.getDxl();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
-			if(dxl.isPresent()) {
-				Document dxlDoc = dxl.get();
-				DXLUtil.writeItemFileData(dxlDoc, "$FileData", res.getDataFile());
-				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(res.getDataFile()));
-				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "File resource " + filePath);
-			} else {
-				// Special handling for WebContent files
-				if(filePath.startsWith(webContent)) {
-					filePath = webContent.relativize(filePath);
-					ODPUtil.importFileResource(importer, res.getDataFile(), database, filePath.toString().replace('\\', '/'), "~C4g", "w");
-				} else {
-					ODPUtil.importFileResource(importer, res.getDataFile(), database, filePath.toString().replace('\\', '/'), "~C4gP", null);
-				}
-			}
-		}
-	}
-	
-	private void importImageResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
-		debug("Importing image resources");
-		for(FileResource res : odp.getImageResources()) {
-			try {
-				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
-				Document dxlDoc = res.getDxl().get();
-				DXLUtil.writeItemFileData(dxlDoc, "$ImageData", res.getDataFile());
-				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(res.getDataFile()));
-				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Image resource " + filePath);
-			} catch(RuntimeException e) {
-				throw new RuntimeException("Exception while processing resource " + res.getDataFile(), e);
-			}
+			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath);
 		}
 	}
 	
@@ -494,7 +463,7 @@ public class ODPCompiler {
 		String xspSource = xpage.getSource();
 		byte[] xspSourceData = xspSource.getBytes();
 		
-		Document dxlDoc = xpage.getDxl().get();
+		Document dxlDoc = xpage.getDxl();
 		
 		DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
 		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
@@ -530,15 +499,11 @@ public class ODPCompiler {
 				String className = ODPUtil.toJavaClassName(filePath);
 				compiledClassNames.remove(className);
 				byte[] byteCode = classLoader.getClassByteCode(className);
-				String javaSource = source.getSource();
-				byte[] javaSourceData = javaSource.getBytes();
 				
-				Document dxlDoc = source.getDxl().get();
+				Document dxlDoc = source.getDxl();
 				
 				DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
 				DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
-				DXLUtil.writeItemFileData(dxlDoc, "$FileData", javaSourceData);
-				DXLUtil.writeItemNumber(dxlDoc, "$FileSize", javaSourceData.length);
 				
 				List<String> classIndexItem = new ArrayList<>();
 				classIndexItem.add("WEB-INF/classes/" + ODPUtil.toJavaPath(className));
@@ -574,7 +539,7 @@ public class ODPCompiler {
 		
 		List<String> noteIds = new ArrayList<>();
 		for(LotusScriptLibrary lib : odp.getLotusScriptLibraries()) {
-			Document dxlDoc = lib.getDxl().get();
+			Document dxlDoc = lib.getDxl();
 			String script = lib.getSource();
 			int chunkSize = 60 * 1024;
 			for(int startIndex = 0; startIndex < script.length(); startIndex += chunkSize) {
@@ -584,7 +549,7 @@ public class ODPCompiler {
 				el.setAttribute("sign", "true");
 				el.setAttribute("summary", "false");
 				
-				noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + lib.getDataFile()));
+				noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + odp.getBaseDirectory().relativize(lib.getDataFile())));
 			}
 		}
 
@@ -665,8 +630,17 @@ public class ODPCompiler {
 		}
 	}
 	
+	private static final boolean DEBUG_DXL = false;
+	
 	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws NotesException, IOException {
 		try {
+			if(DEBUG_DXL) {
+				String tempFileName = "c:\\temp\\dxl\\" + name.replace('/', '-').replace('\\', '-') + ".xml";
+				try(OutputStream os = Files.newOutputStream(Paths.get(tempFileName))) {
+					os.write(dxl.getBytes());
+				}
+			}
+			
 			importer.importDxl(dxl, database);
 			
 			List<String> importedIds = new ArrayList<>();

@@ -15,11 +15,9 @@
  */
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.odp;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -47,40 +45,42 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	/** Platform-specific PathMatcher separator, escaped in the case of Windows */
-	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator;
 	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
-		"AppProperties" + MATCH_SEP + "$DBIcon",
-		"AppProperties" + MATCH_SEP + "database.properties",
-		"Code" + MATCH_SEP + "dbscript.lsdb",
-		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.javalib",
-		"Forms" + MATCH_SEP + "*",
-		"Framesets" + MATCH_SEP + "*",
-		"Pages" + MATCH_SEP + "*",
-		"Resources" + MATCH_SEP + "AboutDocument",
-		"Resources" + MATCH_SEP + "UsingDocument",
-		"SharedElements" + MATCH_SEP + "Fields" + MATCH_SEP + "*",
-		"SharedElements" + MATCH_SEP + "Outlines" + MATCH_SEP + "*",
-		"Views" + MATCH_SEP + "*"
-	}).map(glob -> "glob:" + glob).map(FileSystems.getDefault()::getPathMatcher).collect(Collectors.toList());
-	// Special: image resources, Themes, stylesheets, files, META-INF/MANIFEST.MF, WebContent, plugin.xml, xspdesign.properties, most code
-	public static final List<PathMatcher> FILE_RESOURCES = Arrays.stream(new String[] {
-		".classpath",
-		".settings" + MATCH_SEP + "**",
-		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.js",
-		"Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.jss",
-		"META-INF" + MATCH_SEP + "*",
-		"plugin.xml",
-		"Resources" + MATCH_SEP + "Files" + MATCH_SEP + "*",
-		"Resources" + MATCH_SEP + "StyleSheets" + MATCH_SEP + "*",
-		"Resources" + MATCH_SEP + "Themes" + MATCH_SEP + "*",
-		"WebContent" + MATCH_SEP + "**"
-	}).map(glob -> "glob:" + glob).map(FileSystems.getDefault()::getPathMatcher).collect(Collectors.toList());
+		"AppProperties/$DBIcon",
+		"AppProperties/database.properties",
+		"Code/dbscript.lsdb",
+		"Code/ScriptLibraries/*.javalib",
+		"Forms/*",
+		"Framesets/*",
+		"Pages/*",
+		"Resources/AboutDocument",
+		"Resources/UsingDocument",
+		"SharedElements/Fields/*",
+		"SharedElements/Outlines/*",
+		"Views/*"
+	}).map(GlobMatcher::glob).collect(Collectors.toList());
 	
+
 	private final Path baseDir;
+	
+	public final List<GlobMatcher> FILE_RESOURCES;
 	
 	public OnDiskProject(Path baseDirectory) {
 		this.baseDir = Objects.requireNonNull(baseDirectory);
+		
+		this.FILE_RESOURCES = Arrays.asList(
+			new GlobMatcher(".classpath", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher(".settings/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("Code/ScriptLibraries/*.js", path -> new JavaScriptLibrary(path)),
+			new GlobMatcher("Code/ScriptLibraries/*.jss", path -> new ServerJavaScriptLibrary(path)),
+			new GlobMatcher("META-INF/*", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("plugin.xml", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("Resources/Files/*", path -> new FileResource(path)),
+			new GlobMatcher("Resources/Images/*", path -> new ImageResource(path)),
+			new GlobMatcher("Resources/StyleSheets/*", path -> new FileResource(path)),
+			new GlobMatcher("Resources/Themes/*", path -> new FileResource(path)),
+			new GlobMatcher("WebContent/**", path -> new FileResource(path, "~C4g", "w", p -> ODPUtil.toBasicFilePath(baseDir.resolve("WebContent"), p)))
+		);
 	}
 	
 	public Path getBaseDirectory() {
@@ -195,38 +195,27 @@ public class OnDiskProject {
 			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile));
 	}
 	
-	public Map<Path, FileResource> getFileResources() {
+	public List<AbstractSplitDesignElement> getFileResources() {
 		return FILE_RESOURCES.stream()
-			.map(glob -> {
+			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,
-						(path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata")
-					);
+						(path, attr) -> attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata")
+					).map(matcher::getElement);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			})
 			.flatMap(Function.identity())
-			.collect(Collectors.toMap(Function.identity(), p -> new FileResource(p)));
-	}
-	
-	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
-		PathMatcher glob = FileSystems.getDefault().getPathMatcher("glob:Code" + MATCH_SEP + "ScriptLibraries" + MATCH_SEP + "*.lss");
-		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
-			.map(path -> new LotusScriptLibrary(path))
+			.map(AbstractSplitDesignElement.class::cast)
 			.collect(Collectors.toList());
 	}
 	
-	public List<ImageResource> getImageResources() throws IOException {
-		PathMatcher glob = FileSystems.getDefault().getPathMatcher("glob:Resources" + MATCH_SEP + "Images" + MATCH_SEP + "*");
-		return Files.find(baseDir, Integer.MAX_VALUE,
-				(path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"))
-				.map(path -> new ImageResource(path))
-				.collect(Collectors.toList());
-	}
-	
-	public Path getXspProperties() {
-		return baseDir.resolve("AppProperties").resolve("xspdesign.properties");
+	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
+		PathMatcher glob = GlobMatcher.glob("Code/ScriptLibraries/*.lss");
+		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
+			.map(path -> new LotusScriptLibrary(path))
+			.collect(Collectors.toList());
 	}
 	
 	// *******************************************************************************

@@ -1,6 +1,7 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -10,12 +11,16 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
 
+import javax.activation.MimetypesFileTypeMap;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
+
+import static org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODSConstants.*;
 
 /**
  * Utilities for manipulating "raw"-type DXL documents.
@@ -25,26 +30,6 @@ import com.ibm.commons.xml.XMLException;
  */
 public enum DXLUtil {
 	;
-
-	private static final int SIZE_WORD = 2;
-	private static final int SIZE_DWORD = 4;
-	private static final int SIZE_LSIG = SIZE_WORD          // Signature
-	                             + SIZE_DWORD;              // Length
-	private static final int SIZE_CDFILEHEADER = SIZE_LSIG  // Header
-	                             + SIZE_WORD                // FilleExtLen
-	                             + SIZE_DWORD               // FileDataSize
-	                             + SIZE_DWORD               // SegCount
-	                             + SIZE_DWORD               // Flags
-	                             + SIZE_DWORD;              // Reserved
-	private static final int SIZE_CDFILESEGMENT = SIZE_LSIG // Header
-			                     + SIZE_WORD                // DataSize
-	                             + SIZE_WORD                // SegSize
-	                             + SIZE_DWORD               // Flags
-	                             + SIZE_DWORD;              // Reserved
-	// It appears that CDFILESEGMENTs cap out at 10240 bytes of data
-	private static final int SEGMENT_SIZE_CAP = 10240;
-	/** The amount of data to store in each CD record item */
-	private static final int PER_ITEM_DATA_CAP = (SIZE_CDFILESEGMENT + SEGMENT_SIZE_CAP) * 2;
 	
 	public static void writeItemFileData(Document dxlDoc, String itemName, byte[] itemData) throws XMLException, IOException {
 		try(InputStream is = new ByteArrayInputStream(itemData)) {
@@ -60,12 +45,48 @@ public enum DXLUtil {
 			writeItemFileData(dxlDoc, itemName, is, (int)Files.size(file));
 		}
 	}
+	
 	public static void writeItemFileData(Document dxlDoc, String itemName, InputStream is, int fileLength) throws XMLException, IOException {
+		byte[] data = getFileResourceData(is, fileLength);
+		writeItemDataRaw(dxlDoc, itemName, data, PER_FILE_ITEM_DATA_CAP, SIZE_CDFILEHEADER);
+	}
+	
+	public static void writeItemDataRaw(Document dxlDoc, String itemName, byte[] data, int itemCap, int headerSize) throws XMLException {
 		deleteItems(dxlDoc, itemName);
 		
+		Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode();
+		
+		int dxlChunks = data.length / itemCap;
+		if(data.length % itemCap > 0) {
+			dxlChunks++;
+		}
+		int offset = 0;
+		Base64.Encoder base64 = Base64.getEncoder();
+		for (int i = 0; i < dxlChunks; i++) {
+			int chunkSize = Math.min(data.length-offset, itemCap + (i==0 ? headerSize : 0));
+			String chunkData = base64.encodeToString(Arrays.copyOfRange(data, offset, offset + chunkSize));
+
+			Element itemNode = DOMUtil.createElement(dxlDoc, note, "item");
+			itemNode.setAttribute("name", itemName);
+			Element fileDataNode = DOMUtil.createElement(dxlDoc, itemNode, "rawitemdata");
+			fileDataNode.setAttribute("type", "1");
+//			fileDataNode.setTextContent(chunkData);
+			// Write out the value with 72-column wrapping
+			StringBuilder wrapped = new StringBuilder("\n");
+			for(int stringIndex = 0; stringIndex < chunkData.length(); stringIndex += 72) {
+				wrapped.append(chunkData.substring(stringIndex, Math.min(stringIndex+72, chunkData.length())));
+				wrapped.append('\n');
+			}
+			fileDataNode.setTextContent(wrapped.toString());
+
+			offset += chunkSize;
+		}
+	}
+	
+	public static byte[] getFileResourceData(InputStream is, int fileLength) throws IOException {
 		// Spec out the structure
-		int segCount = fileLength / SEGMENT_SIZE_CAP;
-		if (fileLength % SEGMENT_SIZE_CAP > 0) {
+		int segCount = fileLength / FILE_SEGMENT_SIZE_CAP;
+		if (fileLength % FILE_SEGMENT_SIZE_CAP > 0) {
 			segCount++;
 		}
 		
@@ -77,7 +98,7 @@ public enum DXLUtil {
 		ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
 		// CDFILEHEADER
 		{
-			buf.putShort((short)97);       // Header.Signature - SIG_CDFILEHEADER
+			buf.putShort(SIG_CDFILEHEADER);// Header.Signature
 			buf.putInt(SIZE_CDFILEHEADER); // Header.Length
 			buf.putShort((short)0);        // FileExtLen
 			buf.putInt(fileLength);        // FileDataSize
@@ -89,13 +110,13 @@ public enum DXLUtil {
 			// Each chunk begins with a CDFILESEGMENT
 
 			// Figure out our data and segment sizes
-			int dataOffset = SEGMENT_SIZE_CAP * i;
-			short dataSize = (short)Math.min((fileLength - dataOffset), SEGMENT_SIZE_CAP);
+			int dataOffset = FILE_SEGMENT_SIZE_CAP * i;
+			short dataSize = (short)Math.min((fileLength - dataOffset), FILE_SEGMENT_SIZE_CAP);
 			short segSize = (short)(dataSize + (dataSize % 2));
 
 			// CDFILESEGMENT
 			{
-				buf.putShort((short)96);                  // Header.Signature - SIG_CDFILESEGMENT
+				buf.putShort(SIG_CDFILESEGMENT);          // Header.Signature
 				buf.putInt(segSize + SIZE_CDFILESEGMENT); // Header.Length
 				buf.putShort((short)dataSize);            // DataSize
 				buf.putShort((short)segSize);             // SegSize
@@ -110,35 +131,103 @@ public enum DXLUtil {
 				}
 			}
 		}
-
-		Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode();
-		
-		
-		byte[] reconData = buf.array();
-		int dxlChunks = totalSize / PER_ITEM_DATA_CAP;
-		if(totalSize % PER_ITEM_DATA_CAP > 0) {
-			dxlChunks++;
+		return buf.array();
+	}
+	
+	public static byte[] getImageResourceData(Path file) throws IOException {
+		int fileLength = (int)Files.size(file);
+		// Load image info
+		File imageFile = file.toFile();
+		int height = 0; // true value not actually stored
+		int width = 0; // true value not actually stored
+		String mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
+		if(mimeType == null) {
+			throw new RuntimeException("Cannot determine MIME type for " + file);
 		}
-		int offset = 0;
-		Base64.Encoder base64 = Base64.getEncoder();
-		for (int i = 0; i < dxlChunks; i++) {
-			int chunkSize = Math.min(reconData.length-offset, PER_ITEM_DATA_CAP + (i==0 ? SIZE_CDFILEHEADER : 0));
-			String chunkData = base64.encodeToString(Arrays.copyOfRange(reconData, offset, offset + chunkSize));
-
-			Element itemNode = DOMUtil.createElement(dxlDoc, note, "item");
-			itemNode.setAttribute("name", itemName);
-			Element fileDataNode = DOMUtil.createElement(dxlDoc, itemNode, "rawitemdata");
-			fileDataNode.setAttribute("type", "1");
-			// Write out the value with 72-column wrapping
-			StringBuilder wrapped = new StringBuilder("\n");
-			for(int stringIndex = 0; stringIndex < chunkData.length(); stringIndex += 72) {
-				wrapped.append(chunkData.substring(stringIndex, Math.min(stringIndex+72, chunkData.length())));
-				wrapped.append('\n');
+		short imageType = 0;
+		switch(mimeType) {
+		case "image/gif":
+			imageType = 1; // CDIMAGETYPE_GIF
+			break;
+		case "image/jpeg":
+		case "image/png": // for some reason
+			imageType = 2; // CDIMAGETYPE_JPEG
+			break;
+		case "image/bmp":
+			imageType = 3; // CDIMAGETYPE_BMP
+			break;
+		default:
+			// Everything else is 0
+			break;
+		}
+		
+		// Spec out the structure
+		int segCount = fileLength / IMAGE_SEGMENT_SIZE_CAP;
+		if (fileLength % IMAGE_SEGMENT_SIZE_CAP > 0) {
+			segCount++;
+		}
+		
+		int totalSize = SIZE_CDGRAPHIC + SIZE_CDIMAGEHEADER + (SIZE_CDIMAGESEGMENT * segCount) + fileLength + (fileLength % 2);
+		
+		// Now create a CD record for the file data
+		// TODO this could be a little more efficient by writing to a Base64 wrapper and
+		//   cutting off and making a new item node at size intervals
+		ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
+		// CDGRAPHIC
+		{
+			buf.putShort(SIG_CDGRAPHIC); // Header.Signature
+			buf.putInt(SIZE_CDGRAPHIC);  // Header.Length
+			buf.putShort((short)0);      // DestSize.width
+			buf.putShort((short)0);      // DestSize.height
+			buf.putShort((short)0);      // CropSize.height
+			buf.putShort((short)0);      // CropSize.width
+			buf.putShort((short)0);      // CropOffset.left
+			buf.putShort((short)0);      // CropOffset.top
+			buf.putShort((short)0);      // CropOffset.right
+			buf.putShort((short)0);      // CropOffset.bottom
+			buf.putShort((short)0);      // fResize
+			buf.put(CDGRAPHIC_VERSION3); // Version
+			buf.put((byte)0);            // bFlags;
+			buf.putShort((short)0);      // wReserved
+		}
+		// CDIMAGEHEADER
+		{
+			buf.putShort(SIG_CDIMAGEHEADER);// Header.Signature
+			buf.putInt(SIZE_CDIMAGEHEADER); // Header.Length
+			buf.putShort(imageType);        // ImageType
+			buf.putShort((short)width);     // Width
+			buf.putShort((short)height);    // Height
+			buf.putInt(fileLength);         // ImageDataSize
+			buf.putInt(segCount);           // SegCount
+			buf.putInt(0);                  // Flags
+			buf.putInt(0);                  // Reserved
+		}
+		try(InputStream is = Files.newInputStream(file)) {
+			for(int i = 0; i < segCount; i++) {
+				// Each chunk begins with a CDIMAGESEGMENT
+	
+				// Figure out our data and segment sizes
+				int dataOffset = IMAGE_SEGMENT_SIZE_CAP * i;
+				short dataSize = (short)Math.min((fileLength - dataOffset), IMAGE_SEGMENT_SIZE_CAP);
+				short segSize = (short)(dataSize + (dataSize % 2));
+	
+				// CDIMAGESEGMENT
+				{
+					buf.putShort(SIG_CDIMAGESEGMENT);          // Header.Signature - SIG_CDIMAGESEGMENT
+					buf.putInt(segSize + SIZE_CDIMAGESEGMENT); // Header.Length
+					buf.putShort((short)dataSize);             // DataSize
+					buf.putShort((short)segSize);              // SegSize
+					
+					byte[] segData = new byte[dataSize];
+					is.read(segData);
+					buf.put(segData);
+					if(segSize > dataSize) {
+						buf.put((byte)0);
+					}
+				}
 			}
-			fileDataNode.setTextContent(wrapped.toString());
-
-			offset += chunkSize;
 		}
+		return buf.array();
 	}
 	
 	public static void writeItemNumber(Document dxlDoc, String itemName, Number... value) throws XMLException {

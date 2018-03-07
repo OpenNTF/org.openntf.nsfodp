@@ -159,26 +159,6 @@ public enum ODPUtil {
 	/**
 	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
 	 */
-	public static void importFileResource(DxlImporter importer, Path file, Database database, String name, String flags, String flagsExt) throws XMLException, IOException, NotesException {
-		Document dxlDoc = DOMUtil.createDocument();
-		Element note = DOMUtil.createElement(dxlDoc, "note");
-		note.setAttribute("class", "form");
-		note.setAttribute("xmlns", "http://www.lotus.com/dxl");
-		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags);
-		if(StringUtil.isNotEmpty(flagsExt)) {
-			DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt);	
-		}
-		DXLUtil.writeItemString(dxlDoc, "$TITLE", false, name);
-		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", Files.size(file));
-		DXLUtil.writeItemFileData(dxlDoc, "$FileData", file);
-		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name);
-		String dxl = DOMUtil.getXMLString(dxlDoc);
-		importer.importDxl(dxl, database);
-	}
-
-	/**
-	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
-	 */
 	public static void importFileResource(DxlImporter importer, byte[] data, Database database, String name, String flags, String flagsExt) throws XMLException, IOException, NotesException {
 		Document dxlDoc = DOMUtil.createDocument();
 		Element note = DOMUtil.createElement(dxlDoc, "note");
@@ -194,5 +174,9 @@ public enum ODPUtil {
 		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name);
 		String dxl = DOMUtil.getXMLString(dxlDoc);
 		importer.importDxl(dxl, database);
+	}
+	
+	public static String toBasicFilePath(Path baseDir, Path file) {
+		return baseDir.relativize(file).toString().replace(File.separatorChar, '/');
 	}
 }
