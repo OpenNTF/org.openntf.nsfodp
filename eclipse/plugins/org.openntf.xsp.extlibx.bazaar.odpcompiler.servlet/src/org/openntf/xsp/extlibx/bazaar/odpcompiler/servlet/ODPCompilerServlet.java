@@ -1,6 +1,4 @@
-package org.openntf.xsp.extlibx.bazaar.odpcompiler;
-
-import com.ibm.xsp.extlib.library.BazaarActivator;
+package org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +13,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.ODPCompiler;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.ODPCompilerActivator;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.FilesystemUpdateSite;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.UpdateSite;
 
-public class Servlet extends HttpServlet {
+public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -38,7 +38,7 @@ public class Servlet extends HttpServlet {
 			File siteFile = new File("C:\\temp\\site");
 			UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 			
-			ODPCompiler compiler = new ODPCompiler(BazaarActivator.instance.getBundle().getBundleContext(), odp, out);
+			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, out);
 			compiler.addUpdateSite(updateSite);
 			Path nsf = compiler.compile();
 			out.println("Created NSF " + nsf);

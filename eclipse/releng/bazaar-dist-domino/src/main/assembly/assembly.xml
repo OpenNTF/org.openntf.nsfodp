@@ -1,0 +1,43 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>bazaar-domino</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	
+	<!-- Local files -->
+	<fileSets>
+		<fileSet>
+			<directory>${project.basedir}/../../..</directory>
+			<includes>
+				<include>CodeMirror-LICENSE</include>
+				<include>google-code-prettify-LICENSE</include>
+				<include>LICENSE</include>
+				<include>NOTICE</include>
+				<include>vkbeautify-LICENSE</include>
+			</includes>
+			<outputDirectory>.</outputDirectory>
+			<lineEnding>windows</lineEnding>
+		</fileSet>
+	</fileSets>
+	
+	<moduleSets>
+		<!-- The final update site -->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>com.ibm.xsp.extlib.bazaar:org.openntf.xsp.extlibx.bazaar.updatesite</include>
+			</includes>
+			
+			<binaries>
+				<attachmentClassifier>assembly</attachmentClassifier>
+				<outputDirectory>UpdateSite</outputDirectory>
+				<unpack>true</unpack>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+</assembly>

@@ -14,8 +14,10 @@
 		<module>plugins/com.ibm.xsp.extlibx.bazaar.codemirror</module>
 		<module>plugins/com.ibm.xsp.extlibx.bazaar.interpreter</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet</module>
 		<module>features/com.ibm.xsp.extlibx.bazaar.feature</module>
 		<module>releng/org.openntf.xsp.extlibx.bazaar.updatesite</module>
+		<module>releng/bazaar-dist-domino</module>
 	</modules>
 
 	<properties>

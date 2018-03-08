@@ -9,9 +9,9 @@ import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.DXLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-import com.ibm.designer.runtime.domino.bootstrap.util.StringUtil;
 
 /**
  * Represents a "file resource"-type element in the ODP, which may be a file resource,

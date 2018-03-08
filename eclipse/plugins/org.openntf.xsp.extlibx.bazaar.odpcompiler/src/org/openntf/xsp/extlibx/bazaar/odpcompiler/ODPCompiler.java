@@ -92,10 +92,10 @@ import lotus.domino.NotesFactory;
 
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
-import com.ibm.designer.runtime.domino.bootstrap.util.StreamUtil;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;

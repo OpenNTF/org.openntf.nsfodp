@@ -1,19 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="com.ibm.xsp.extlibx.bazaar.feature"
-      label="XPages Bazaar Feature"
-      version="2.0.0.qualifier">
-
-   <description url="https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar">
-      [Enter Feature Description here.]
-   </description>
-
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-
-   <license url="https://www.apache.org/licenses/LICENSE-2.0">
-                                       Apache License
+                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -215,71 +200,4 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   </license>
 
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar.codemirror"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar.codemirror.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar.interpreter"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="com.ibm.xsp.extlibx.bazaar.interpreter.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odpcompiler"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odpcompiler.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet"
-         download-size="0"
-         install-size="0"
-         fragment="true"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet.source"
-         download-size="0"
-         install-size="0"
-         fragment="true"
-         version="0.0.0"/>
-
-</feature>

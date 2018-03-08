@@ -12,11 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  com.ibm.xsp.core,
  com.ibm.xsp.extsn,
  com.ibm.xsp.domino,
- com.ibm.xsp.designer,
  com.ibm.xsp.extlib,
- com.ibm.designer.runtime,
- com.ibm.designer.runtime.acl,
- com.ibm.designer.runtime.directory,
  org.eclipse.osgi
 Export-Package: com.ibm.xsp.extlib.bazaar.minifier,
  com.ibm.xsp.extlib.library

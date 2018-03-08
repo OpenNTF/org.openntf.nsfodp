@@ -22,10 +22,10 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-import com.ibm.designer.runtime.domino.bootstrap.util.StringUtil;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 
 import lotus.domino.Database;

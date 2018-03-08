@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: On-Disk-Project Compiler Servlet
+Bundle-SymbolicName: org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: OpenNTF
+Require-Bundle: org.eclipse.equinox.http.registry
+Import-Package: javax.servlet;version="2.5.0",
+ javax.servlet.http;version="2.5.0"
+Fragment-Host: org.openntf.xsp.extlibx.bazaar.odpcompiler
