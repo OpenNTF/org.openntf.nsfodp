@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.openntf.xsp.extlibx.bazaar.eclipse.dependencies.feature"
+      label="XPages Bazaar Eclipse Dependencies Feature"
+      version="2.0.0.qualifier">
+
+   <description url="https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter Copyright Description here.]
+   </license>
+
+   <plugin
+         id="com.ibm.commons"
+         download-size="0"
+         install-size="0"
+         version="9.0.1.20180115-1058"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extsn"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.domino"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.domino.napi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.commons.xml"
+         download-size="0"
+         install-size="0"
+         version="9.0.1.20180115-1058"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.lib.fastinfoset"
+         download-size="0"
+         install-size="0"
+         version="9.0.1.20180115-1058"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.pvc.servlet"
+         download-size="0"
+         install-size="0"
+         version="2.5.0.20180114-1124"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.lib.jsf"
+         download-size="0"
+         install-size="0"
+         version="9.0.1.20180115-1058"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.lib.acf"
+         download-size="0"
+         install-size="0"
+         version="9.0.1.20180115-1058"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.commons.vfs"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.runtime.directory"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.notes.java.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.lib.javamail"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.domino.xsp.adapter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.domino.xsp.bootstrap"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.designer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.commons.jdbc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.jscript"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.designer.runtime.acl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.domino.services"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib.controls"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib.mobile"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib.domino"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.extlib.oneui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.theme.bootstrap"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.xsp.bluemix.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.pvc.servlet.jsp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ibm.notes.java.api.win32.linux"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.lang"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

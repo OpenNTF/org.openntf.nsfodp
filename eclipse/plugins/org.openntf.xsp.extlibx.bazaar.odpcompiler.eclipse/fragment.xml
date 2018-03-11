@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution
+               locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+               <command
+                     commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
+                     label="Compile On-Disk Project">
+               </command>
+         </menuContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+         <command
+               id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
+               name="Compile On-Disk Project"
+               defaultHandler="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.CompileODPHandler">
+         </command>
+   </extension>
+
+</fragment>

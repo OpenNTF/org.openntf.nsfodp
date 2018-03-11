@@ -108,7 +108,7 @@ public enum ODPUtil {
 	public static Collection<String> expandRequiredBundles(BundleContext bundleContext, List<String> bundleIds) {
 		Objects.requireNonNull(bundleContext);
 		return Objects.requireNonNull(bundleIds).stream()
-			.map(ODPUtil::findBundle)
+			.map(id -> ODPUtil.findBundle(bundleContext, id))
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.map(bundle -> {
@@ -133,7 +133,7 @@ public enum ODPUtil {
 			return Arrays.stream(requires)
 				.filter(req -> req.contains("visibility:=reexport"))
 				.map(req -> req.substring(0, req.indexOf(';')))
-				.map(ODPUtil::findBundle)
+				.map(id -> ODPUtil.findBundle(bundleContext, id))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(dependency -> {
@@ -152,8 +152,13 @@ public enum ODPUtil {
 		}
 	}
 	
-	public static Optional<Bundle> findBundle(String bundleId) {
-		return Optional.ofNullable(org.eclipse.core.runtime.Platform.getBundle(bundleId));
+	public static Optional<Bundle> findBundle(BundleContext bundleContext, String bundleId) {
+		for(Bundle bundle : bundleContext.getBundles()) {
+			if(StringUtil.equals(bundleId, bundle.getSymbolicName()) && bundle.getState() != Bundle.INSTALLED) {
+				return Optional.of(bundle);
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**

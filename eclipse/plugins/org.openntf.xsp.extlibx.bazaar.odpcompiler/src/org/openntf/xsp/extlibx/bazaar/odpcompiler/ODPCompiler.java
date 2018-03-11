@@ -16,6 +16,8 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +40,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.AbstractSplitDesignElement;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.CustomControl;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.FileResource;
@@ -175,14 +182,44 @@ public class ODPCompiler {
 	 * @throws Exception if there is a problem compiling any component
 	 */
 	public synchronized Path compile() throws Exception {
+		return compile(getClass().getClassLoader());
+	}
+	
+	public synchronized Path compile(ClassLoader cl) throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		try {
 			initRegistry();
 
 			// Compile Java classes
 			Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
+			
+			// Special support for Notes.jar
+			Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux");
+			if(bundle.isPresent()) {
+				System.out.println("Expanding Notes.jar");
+				File f = FileLocator.getBundleFile(bundle.get());
+				if(f.isFile()) {
+					try(JarFile jar = new JarFile(f)) {
+						JarEntry notesJar = jar.getJarEntry("Notes.jar");
+						Path tempFile = Files.createTempFile("Notes", ".jar");
+						Files.delete(tempFile);
+						try(InputStream is = jar.getInputStream(notesJar)) {
+							Files.copy(is, tempFile);
+						}
+						dependencies.add(tempFile.toString());
+					}
+				} else {
+					Path path = f.toPath().resolve("Notes.jar");
+					Path tempFile = Files.createTempFile("Notes", ".jar");
+					Files.delete(tempFile);
+					Files.copy(path, tempFile);
+					dependencies.add(tempFile.toString());
+				}
+				
+			}
+			
 			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
-			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(getClass().getClassLoader(), compilerOptions, classPath);
+			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(cl, compilerOptions, classPath);
 			
 			compileJavaSources(classLoader);
 			compileCustomControls(classLoader);

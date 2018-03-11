@@ -15,8 +15,13 @@
 		<module>plugins/com.ibm.xsp.extlibx.bazaar.interpreter</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.cli</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse</module>
 		<module>features/com.ibm.xsp.extlibx.bazaar.feature</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.dependencies.feature</module>
 		<module>releng/org.openntf.xsp.extlibx.bazaar.updatesite</module>
+		<module>releng/org.openntf.xsp.extlibx.bazaar.eclipse.updatesite</module>
 		<module>releng/bazaar-dist-domino</module>
 	</modules>
 
