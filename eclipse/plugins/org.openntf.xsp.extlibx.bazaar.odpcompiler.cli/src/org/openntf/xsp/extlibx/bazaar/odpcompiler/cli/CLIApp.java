@@ -119,6 +119,7 @@ public class CLIApp {
 		}
 		
 		urls.add(Paths.get(notesBin, "jvm", "lib", "ext", "njempcl.jar").toUri().toURL());
+		urls.add(Paths.get(notesBin, "jvm", "lib", "ext", "Notes.jar").toUri().toURL());
 		
 		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
 		

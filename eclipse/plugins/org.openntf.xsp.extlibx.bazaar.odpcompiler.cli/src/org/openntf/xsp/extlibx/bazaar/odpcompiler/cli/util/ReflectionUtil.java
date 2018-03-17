@@ -14,6 +14,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
@@ -76,15 +77,34 @@ public enum ReflectionUtil {
 	 * 
 	 * @param cl a class loader able to find the EclipseStarter class
 	 * @return the BundleContext object
+	 * @throws IOException 
 	 */
-	public static Object init(ClassLoader cl) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public static Object init(ClassLoader cl) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
 		ReflectionUtil.classLoader = cl;
+		
+		Properties javaProfile = new Properties();
+		try(InputStream is = cl.getResourceAsStream("JavaSE-1.8.profile")) {
+			javaProfile.load(is);
+		}
+		String packages = javaProfile.getProperty("org.osgi.framework.system.packages");
+		javaProfile.setProperty("org.osgi.framework.system.packages", packages + ",lotus.domino.*,lotus.notes.*");
+		Path tempProfile = Files.createTempFile("javaProfile", ".profile");
+		try(OutputStream os = Files.newOutputStream(tempProfile)) {
+			javaProfile.store(os, "Temp java profile");
+		}
+		
 		Class<?> eclipseStarter = classLoader.loadClass("org.eclipse.core.runtime.adaptor.EclipseStarter");
+		
+		Map<String, String> initialProperties = new HashMap<String, String>();
+		initialProperties.put("osgi.compatibility.bootdelegation", "true");
+		initialProperties.put("osgi.java.profile", tempProfile.toUri().toString());
+		eclipseStarter.getMethod("setInitialProperties", Map.class).invoke(null, initialProperties);
+		
 		return eclipseStarter.getMethod("startup", String[].class, Runnable.class).invoke(null, new String[0], null);
 	}
 	
 	/**
-	 * Terminates the Equinox framrwork.
+	 * Terminates the Equinox framework.
 	 */
 	public static void term() throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		Class<?> eclipseStarter = classLoader.loadClass("org.eclipse.core.runtime.adaptor.EclipseStarter");

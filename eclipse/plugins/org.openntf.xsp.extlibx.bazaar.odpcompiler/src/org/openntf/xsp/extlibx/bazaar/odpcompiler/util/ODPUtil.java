@@ -108,7 +108,7 @@ public enum ODPUtil {
 	public static Collection<String> expandRequiredBundles(BundleContext bundleContext, List<String> bundleIds) {
 		Objects.requireNonNull(bundleContext);
 		return Objects.requireNonNull(bundleIds).stream()
-			.map(id -> ODPUtil.findBundle(bundleContext, id))
+			.map(id -> ODPUtil.findBundle(bundleContext, id, false))
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.map(bundle -> {
@@ -133,7 +133,7 @@ public enum ODPUtil {
 			return Arrays.stream(requires)
 				.filter(req -> req.contains("visibility:=reexport"))
 				.map(req -> req.substring(0, req.indexOf(';')))
-				.map(id -> ODPUtil.findBundle(bundleContext, id))
+				.map(id -> ODPUtil.findBundle(bundleContext, id, false))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(dependency -> {
@@ -152,9 +152,9 @@ public enum ODPUtil {
 		}
 	}
 	
-	public static Optional<Bundle> findBundle(BundleContext bundleContext, String bundleId) {
+	public static Optional<Bundle> findBundle(BundleContext bundleContext, String bundleId, boolean resolveAny) {
 		for(Bundle bundle : bundleContext.getBundles()) {
-			if(StringUtil.equals(bundleId, bundle.getSymbolicName()) && bundle.getState() != Bundle.INSTALLED) {
+			if(StringUtil.equals(bundleId, bundle.getSymbolicName()) && (resolveAny || bundle.getState() != Bundle.INSTALLED)) {
 				return Optional.of(bundle);
 			}
 		}

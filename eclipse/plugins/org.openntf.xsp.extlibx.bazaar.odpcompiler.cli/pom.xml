@@ -33,6 +33,11 @@
 									<artifactId>commons-cli</artifactId>
 									<version>1.4</version>
 								</artifactItem>
+								<artifactItem>
+									<groupId>com.ibm</groupId>
+									<artifactId>domino-api-binaries</artifactId>
+									<version>9.0.1</version>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>

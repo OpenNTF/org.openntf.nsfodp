@@ -2,7 +2,7 @@
 
 set -e
 
-mvn install
+mvn clean install
 cd target
 
 export Notes_ExecDirectory="/Applications/IBM Notes.app/Contents/MacOS"

@@ -17,7 +17,6 @@ package org.openntf.xsp.extlibx.bazaar.odpcompiler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +44,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -194,10 +192,13 @@ public class ODPCompiler {
 			Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
 			
 			// Special support for Notes.jar
-			Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux");
+			Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
 			if(bundle.isPresent()) {
 				System.out.println("Expanding Notes.jar");
 				File f = FileLocator.getBundleFile(bundle.get());
+				if(!f.exists()) {
+					throw new IllegalStateException("Could not locate Notes.jar");
+				}
 				if(f.isFile()) {
 					try(JarFile jar = new JarFile(f)) {
 						JarEntry notesJar = jar.getJarEntry("Notes.jar");
@@ -206,16 +207,15 @@ public class ODPCompiler {
 						try(InputStream is = jar.getInputStream(notesJar)) {
 							Files.copy(is, tempFile);
 						}
-						dependencies.add(tempFile.toString());
+						dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
 					}
 				} else {
 					Path path = f.toPath().resolve("Notes.jar");
 					Path tempFile = Files.createTempFile("Notes", ".jar");
 					Files.delete(tempFile);
 					Files.copy(path, tempFile);
-					dependencies.add(tempFile.toString());
+					dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
 				}
-				
 			}
 			
 			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
