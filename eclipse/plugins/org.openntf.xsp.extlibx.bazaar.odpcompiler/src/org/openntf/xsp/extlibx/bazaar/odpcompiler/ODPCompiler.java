@@ -194,7 +194,6 @@ public class ODPCompiler {
 			// Special support for Notes.jar
 			Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
 			if(bundle.isPresent()) {
-				System.out.println("Expanding Notes.jar");
 				File f = FileLocator.getBundleFile(bundle.get());
 				if(!f.exists()) {
 					throw new IllegalStateException("Could not locate Notes.jar");
