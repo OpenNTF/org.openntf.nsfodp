@@ -265,6 +265,7 @@ public class ODPCompiler {
 			.flatMap(Collection::stream)
 			.map(this::installBundle)
 			.collect(Collectors.toList()).stream() // Force waiting until installation is complete
+			.filter(Objects::nonNull)
 			.map(this::startBundle)
 			.collect(Collectors.toList());
 		debug(MessageFormat.format("- Installed {0,choice,0#no bundles|1# 1 bundle|1<{0} bundles}", result.size()));
@@ -326,8 +327,12 @@ public class ODPCompiler {
 				bundle.start();
 			}
 		} catch (BundleException e) {
-			e.printStackTrace();
-			// Ignore
+			if(e.toString().contains("Another singleton bundle selected")) {
+				// Ignore entirely
+			} else {
+				// Print the stack trace but move on
+				e.printStackTrace();
+			}
 		}
 		return bundle;
 	}
@@ -544,13 +549,6 @@ public class ODPCompiler {
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
 		for(Map.Entry<Path, List<JavaSource>> entry : javaSourceFiles.entrySet()) {
 			for(JavaSource source : entry.getValue()) {
-				// TODO outside of Code/Java, I think that compiled files are two notes: one
-				// 	for the source and one for the compiled bytecode
-				// TODO figure out how embedded classes work
-				// 	If they end up all in the class loader, perhaps iterate through that
-				// 	and match generated classes to their parents. But what about non-public,
-				//	non-inner classes in the same file?
-				
 				Path filePath = entry.getKey().relativize(source.getDataFile());
 				String className = ODPUtil.toJavaClassName(filePath);
 				compiledClassNames.remove(className);
