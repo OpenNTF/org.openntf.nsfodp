@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: On-Disk-Project Compiler Eclipse Integration
 Bundle-SymbolicName: org.openntf.xsp.extlibx.bazaar.odpcompiler.cli;singleton:=true
+Automatic-Module-Name: org.openntf.xsp.extlibx.bazaar.odpcompiler.cli
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: OpenNTF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
