@@ -53,6 +53,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -157,6 +158,7 @@ public class CompileODPMojo extends AbstractMojo {
 		packageZip.toFile().deleteOnExit();
 		try(OutputStream fos = Files.newOutputStream(packageZip)) {
 			try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+				zos.setLevel(Deflater.BEST_COMPRESSION);
 				ZipEntry entry = new ZipEntry("odp.zip");
 				zos.putNextEntry(entry);
 				Files.copy(odpZip, zos);
@@ -223,6 +225,7 @@ public class CompileODPMojo extends AbstractMojo {
 		
 		try(OutputStream fos = Files.newOutputStream(result)) {
 			try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+				zos.setLevel(Deflater.BEST_COMPRESSION);
 				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
