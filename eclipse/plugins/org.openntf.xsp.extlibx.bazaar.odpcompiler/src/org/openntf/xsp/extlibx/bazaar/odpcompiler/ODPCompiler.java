@@ -71,7 +71,6 @@ import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
-import com.ibm.xsp.page.FacesPageException;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
 import com.ibm.xsp.registry.FacesLibraryImpl;
 import com.ibm.xsp.registry.FacesProject;
@@ -702,7 +701,7 @@ public class ODPCompiler {
 			String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
 			Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 			return new XSPCompilationResult(javaSource, compiled);
-		} catch(FacesPageException e) {
+		} catch(Throwable e) {
 			throw new RuntimeException("Exception while converting XSP element " + odp.getBaseDirectory().relativize(xpage.getDataFile()), e);
 		}
 	}
