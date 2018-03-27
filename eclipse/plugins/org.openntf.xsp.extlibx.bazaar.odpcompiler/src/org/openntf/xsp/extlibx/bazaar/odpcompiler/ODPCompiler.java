@@ -237,6 +237,7 @@ public class ODPCompiler {
 				importer.setReplaceDbProperties(true);
 				importer.setReplicaRequiredForReplaceOrUpdate(false);
 				
+				importDbProperties(importer, database);
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
 				importLotusScriptLibraries(importer, database);
@@ -457,6 +458,19 @@ public class ODPCompiler {
 		copied.recycle();
 		
 		return nsf;
+	}
+	
+	private void importDbProperties(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
+		// DB properties gets special handling
+		debug("Importing DB properties");
+		Path properties = odp.getDbPropertiesFile();
+		Document dxlDoc = ODPUtil.readXml(properties);
+		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode();
+		if(fulltextsettings != null) {
+			fulltextsettings.getParentNode().removeChild(fulltextsettings);
+		}
+		String dxl = DOMUtil.getXMLString(dxlDoc);
+		importDxl(importer, dxl, database, "database.properties");
 	}
 	
 	private void importBasicElements(DxlImporter importer, Database database) throws NotesException, IOException {

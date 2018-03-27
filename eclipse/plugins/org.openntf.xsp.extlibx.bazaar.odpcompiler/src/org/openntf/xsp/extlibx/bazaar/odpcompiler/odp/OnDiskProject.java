@@ -47,7 +47,6 @@ import com.ibm.commons.xml.XResult;
 public class OnDiskProject {
 	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
 		"AppProperties/$DBIcon",
-		"AppProperties/database.properties",
 		"Code/dbscript.lsdb",
 		"Code/Agents/*.ja",
 		"Code/Agents/*.fa",
@@ -101,6 +100,17 @@ public class OnDiskProject {
 			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
 		}
 		return classpath;
+	}
+	
+	public Path getDbPropertiesFile() {
+		Path properties = baseDir.resolve("AppProperties").resolve("database.properties");
+		if(!Files.exists(properties)) {
+			throw new IllegalStateException("DB properties file does not exist: " + properties.toAbsolutePath());
+		}
+		if(!Files.isRegularFile(properties)) {
+			throw new IllegalStateException("DB properties file is not a file: " + properties.toAbsolutePath());
+		}
+		return properties;
 	}
 	
 	public Path getPluginFile() {
