@@ -97,10 +97,7 @@ public class OnDiskProject {
 	
 	public Path getClasspathFile() {
 		Path classpath = baseDir.resolve(".classpath");
-		if(!Files.exists(classpath)) {
-			throw new IllegalStateException("Classpath file does not exist: " + classpath.toAbsolutePath());
-		}
-		if(!Files.isRegularFile(classpath)) {
+		if(Files.exists(classpath) && !Files.isRegularFile(classpath)) {
 			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
 		}
 		return classpath;
@@ -233,6 +230,10 @@ public class OnDiskProject {
 	
 	private List<Path> findSourceFolders() throws FileNotFoundException, IOException, XMLException {
 		Path classpath = getClasspathFile();
+		if(!Files.exists(classpath)) {
+			return Collections.emptyList();
+		}
+		
 		Document domDoc;
 		try(InputStream is = Files.newInputStream(classpath)) {
 			domDoc = DOMUtil.createDocument(is);
