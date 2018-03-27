@@ -33,6 +33,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -140,6 +141,8 @@ public class ODPCompiler {
 			"-parameters",
 			"-encoding", "utf-8"
 			);
+	private static final String BLANK_DB = "/res/blank.nsf";
+	private static final String NOTEID_UNTITLED_VIEW = "11A";
 	
 	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, PrintStream out) throws FileNotFoundException, XMLException, IOException {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
@@ -343,7 +346,11 @@ public class ODPCompiler {
 	private Map<String, Class<?>> compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
 		debug("Compiling Java source");
 		
-		Map<String, CharSequence> sources = odp.getJavaSourceFiles().entrySet().stream()
+		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
+		if(javaSourceFiles.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		Map<String, CharSequence> sources = javaSourceFiles.entrySet().stream()
 			.map(entry ->
 				// Convert to a map of class name -> source
 				entry.getValue().stream()
@@ -435,7 +442,7 @@ public class ODPCompiler {
 		temp.toFile().deleteOnExit();
 		
 		try(OutputStream os = Files.newOutputStream(temp)) {
-			try(InputStream is = getClass().getResourceAsStream("/res/blank.nsf")) {
+			try(InputStream is = getClass().getResourceAsStream(BLANK_DB)) {
 				StreamUtil.copyStream(is, os);
 			}
 		}
@@ -443,8 +450,11 @@ public class ODPCompiler {
 		Path nsf = Files.createTempFile("odpcompiler", ".nsf");
 		Files.delete(nsf);
 		lotus.domino.Database tempDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
-		tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
+		lotus.domino.Database copied = tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
 		tempDatabase.remove();
+		lotus.domino.Document blankView = copied.getDocumentByID(NOTEID_UNTITLED_VIEW);
+		blankView.remove(true);
+		copied.recycle();
 		
 		return nsf;
 	}
