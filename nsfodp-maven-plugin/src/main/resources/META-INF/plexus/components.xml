@@ -15,7 +15,7 @@
 					<lifecycle>
 						<id>default</id>
 						<phases>
-							<package>org.openntf.maven:odp-compiler-maven-plugin:compile-odp</package>
+							<package>org.openntf.maven:nsfodp-maven-plugin:compile-odp</package>
 							<install>org.apache.maven.plugins:maven-install-plugin:install</install>
 						</phases>
 					</lifecycle>
