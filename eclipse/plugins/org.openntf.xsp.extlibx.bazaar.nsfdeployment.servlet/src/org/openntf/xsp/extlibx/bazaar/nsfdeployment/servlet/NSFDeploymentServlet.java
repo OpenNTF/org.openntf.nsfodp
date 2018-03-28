@@ -118,7 +118,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 			
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/plain");
-			os.write("Success!".getBytes());
+			os.write(("NSF successfully deployed to " + destPath).getBytes());
 		} catch(Throwable e) {
 			e.printStackTrace(out);
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

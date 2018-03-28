@@ -19,16 +19,15 @@
  * https://github.com/eclipse/jnosql-diana-driver/tree/master/couchbase-driver
  * https://github.com/eclipse/jnosql-artemis-extension/tree/master/couchbase-extension
  */
-package org.openntf.maven.odpcompiler;
+package org.openntf.maven.nsfodp;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,11 +36,9 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.DefaultMavenProjectHelper;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.codehaus.plexus.util.IOUtil;
+import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,10 +60,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Goal which touches a timestamp file.
+ * Goal which compiles an on-disk project.
  */
-@Mojo(name="compile-odp", defaultPhase=LifecyclePhase.COMPILE)
+@Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE)
 public class CompileODPMojo extends AbstractMojo {
+	
+	public static final String CLASSIFIER_NSF = "nsf";
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
@@ -154,9 +153,9 @@ public class CompileODPMojo extends AbstractMojo {
 				log.info("Generated NSF: " + outputFile);
 			}
 			
-			MavenProjectHelper helper = new DefaultMavenProjectHelper();
-			MavenProject project = Objects.requireNonNull(this.project, "Maven project cannot be null");
-			helper.attachArtifact(project, outputFile.toFile(), "nsf");
+			// Set the project artifact
+			Artifact artifact = project.getArtifact();
+			artifact.setFile(outputFile.toFile());
 		} catch(MojoExecutionException e) {
 			throw e;
 		} catch(Throwable t) {
@@ -201,12 +200,12 @@ public class CompileODPMojo extends AbstractMojo {
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
 			URI servlet = compilerServerUrl.toURI().resolve("/odpcompiler");
 			if(log.isInfoEnabled()) {
-				log.info("Compiling ODP on server " + servlet);
+				log.info("Compiling with server " + servlet);
 			}
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip");
 			
-			String userName = addAuthenticationInfo(this.compilerServer, post);
+			String userName = ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.compilerServer, post, this.log);
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);
@@ -269,49 +268,5 @@ public class CompileODPMojo extends AbstractMojo {
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * Adds server credential information from the user's settings.xml, if applicable.
-	 * 
-	 * @param the server ID to find credentials for
-	 * @param req the request to add credentials to
-	 * @return the effective username of the request
-	 * @throws MojoExecutionException if the server ID is specified but credentials cannot be found
-	 */
-	private String addAuthenticationInfo(String serverId, HttpRequest req) throws MojoExecutionException {
-		String userName;
-		if(serverId != null && !serverId.isEmpty()) {
-			// Look up credentials for the server
-			AuthenticationInfo info = wagonManager.getAuthenticationInfo(serverId);
-			if(info == null) {
-				throw new MojoExecutionException("Could not find server credentials for specified server ID: " + serverId);
-			}
-			userName = info.getUserName();
-			if(userName == null || userName.isEmpty()) {
-				// Then just use Anonymous
-				if(log.isDebugEnabled()) {
-					log.debug("Configured username is blank - acting as Anonymous");
-				}
-				userName = "Anonymous";
-			} else {
-				if(log.isDebugEnabled()) {
-					log.debug("Authenticating as user " + userName);
-				}
-				String password = info.getPassword();
-				
-				// Create a Basic auth header
-				// This is instead of HttpClient's credential handling because of how
-				//   Domino handles the auth handshake.
-				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
-				req.addHeader("Authorization", "Basic " + enc);
-			}
-		} else {
-			if(log.isDebugEnabled()) {
-				log.debug("No username specified - acting as Anonymous");
-			}
-			userName = "Anonymous";
-		}
-		return userName;
 	}
 }

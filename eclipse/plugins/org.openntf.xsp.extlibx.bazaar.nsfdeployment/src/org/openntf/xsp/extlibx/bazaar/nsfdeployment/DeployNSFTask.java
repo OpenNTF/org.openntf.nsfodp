@@ -54,7 +54,6 @@ public class DeployNSFTask implements Runnable {
 			
 			// TODO handle replace design
 			// TODO sign design
-			// TODO maybe don't crash Notes
 			dest = source.createFromTemplate(server, filePath, false);
 		} catch(NotesException ne) {
 			throw new RuntimeException("Encountered NotesException while deploying NSF", ne);
