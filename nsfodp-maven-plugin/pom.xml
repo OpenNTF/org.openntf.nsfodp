@@ -9,6 +9,10 @@
 	<packaging>maven-plugin</packaging>
 
 	<name>NSF ODP Maven Plugin</name>
+	<description>
+		Provides a Maven plugin that supports working with on-disk-project representations of IBM Domino
+		NSF applications.
+	</description>
 
 	<url>https://openntf.org</url>
 	<inceptionYear>2018</inceptionYear>
