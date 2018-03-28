@@ -23,6 +23,7 @@ package org.openntf.maven.odpcompiler;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
@@ -205,39 +206,7 @@ public class CompileODPMojo extends AbstractMojo {
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip");
 			
-			String compilerServer = this.compilerServer;
-			String userName;
-			if(compilerServer != null && !compilerServer.isEmpty()) {
-				// Look up credentials for the server
-				AuthenticationInfo info = wagonManager.getAuthenticationInfo(compilerServer);
-				if(info == null) {
-					throw new MojoExecutionException("Could not find server credentials for specified server ID: " + compilerServer);
-				}
-				userName = info.getUserName();
-				if(userName == null || userName.isEmpty()) {
-					// Then just use Anonymous
-					if(log.isDebugEnabled()) {
-						log.debug("Configured username is blank - acting as Anonymous");
-					}
-					userName = "Anonymous";
-				} else {
-					if(log.isDebugEnabled()) {
-						log.debug("Authenticating as user " + userName);
-					}
-					String password = info.getPassword();
-					
-					// Create a Basic auth header
-					// This is instead of HttpClient's credential handling because of how
-					//   Domino handles the auth handshake.
-					String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
-					post.addHeader("Authorization", "Basic " + enc);
-				}
-			} else {
-				if(log.isDebugEnabled()) {
-					log.debug("No username specified - acting as Anonymous");
-				}
-				userName = "Anonymous";
-			}
+			String userName = addAuthenticationInfo(this.compilerServer, post);
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);
@@ -300,5 +269,49 @@ public class CompileODPMojo extends AbstractMojo {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Adds server credential information from the user's settings.xml, if applicable.
+	 * 
+	 * @param the server ID to find credentials for
+	 * @param req the request to add credentials to
+	 * @return the effective username of the request
+	 * @throws MojoExecutionException if the server ID is specified but credentials cannot be found
+	 */
+	private String addAuthenticationInfo(String serverId, HttpRequest req) throws MojoExecutionException {
+		String userName;
+		if(serverId != null && !serverId.isEmpty()) {
+			// Look up credentials for the server
+			AuthenticationInfo info = wagonManager.getAuthenticationInfo(serverId);
+			if(info == null) {
+				throw new MojoExecutionException("Could not find server credentials for specified server ID: " + serverId);
+			}
+			userName = info.getUserName();
+			if(userName == null || userName.isEmpty()) {
+				// Then just use Anonymous
+				if(log.isDebugEnabled()) {
+					log.debug("Configured username is blank - acting as Anonymous");
+				}
+				userName = "Anonymous";
+			} else {
+				if(log.isDebugEnabled()) {
+					log.debug("Authenticating as user " + userName);
+				}
+				String password = info.getPassword();
+				
+				// Create a Basic auth header
+				// This is instead of HttpClient's credential handling because of how
+				//   Domino handles the auth handshake.
+				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
+				req.addHeader("Authorization", "Basic " + enc);
+			}
+		} else {
+			if(log.isDebugEnabled()) {
+				log.debug("No username specified - acting as Anonymous");
+			}
+			userName = "Anonymous";
+		}
+		return userName;
 	}
 }
