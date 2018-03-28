@@ -91,7 +91,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			Path odpFile = expandZip(odpZip);
 			
 			OnDiskProject odp = new OnDiskProject(odpFile);
-			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, System.out);
+			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, out);
 			
 			if(siteZip != null) {
 				Path siteFile = expandZip(siteZip);
