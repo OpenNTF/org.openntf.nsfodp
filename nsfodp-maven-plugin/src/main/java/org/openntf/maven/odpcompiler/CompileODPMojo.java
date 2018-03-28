@@ -21,21 +21,25 @@
  */
 package org.openntf.maven.odpcompiler;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.DefaultMavenProjectHelper;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.codehaus.plexus.util.IOUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -66,6 +70,9 @@ public class CompileODPMojo extends AbstractMojo {
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
 	
+	@Component
+	private WagonManager wagonManager;
+	
 	/**
 	 * Location of the generated NSF.
 	 */
@@ -74,7 +81,7 @@ public class CompileODPMojo extends AbstractMojo {
 	/**
 	 * File name of the generated NSF.
 	 */
-	@Parameter(defaultValue="output.nsf", required=true)
+	@Parameter(defaultValue="${project.build.finalName}.nsf", required=true)
 	private String outputFileName;
 	/**
 	 * Location of the ODP directory.
@@ -82,10 +89,16 @@ public class CompileODPMojo extends AbstractMojo {
 	@Parameter(defaultValue="odp", required=true)
 	private File odpDirectory;
 	/**
+	 * The server id in settings.xml to use when authenticating with the compiler server, or
+	 * <code>null</code> to authenticate as anonymous.
+	 */
+	@Parameter(property="nsfodp.compiler.server", required=false)
+	private String compilerServer;
+	/**
 	 * The base URL of the ODP compiler server, e.g. "http://my.server".
 	 */
-	@Parameter(property="odpcompiler.compilerServer", required=true)
-	private URL compilerServer;
+	@Parameter(property="nsfodp.compiler.serverUrl", required=true)
+	private URL compilerServerUrl;
 	/**
 	 * An update site whose contents to use when building the ODP.
 	 */
@@ -143,7 +156,8 @@ public class CompileODPMojo extends AbstractMojo {
 			MavenProjectHelper helper = new DefaultMavenProjectHelper();
 			MavenProject project = Objects.requireNonNull(this.project, "Maven project cannot be null");
 			helper.attachArtifact(project, outputFile.toFile(), "nsf");
-			
+		} catch(MojoExecutionException e) {
+			throw e;
 		} catch(Throwable t) {
 			throw new MojoExecutionException("Exception while compiling the NSF", t);
 		}
@@ -173,18 +187,57 @@ public class CompileODPMojo extends AbstractMojo {
 		return packageZip;
 	}
 	
-	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException {
+	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException {
 		if(log.isInfoEnabled()) {
 			log.info("Compiling ODP");
 		}
 		
+		URL compilerServerUrl = Objects.requireNonNull(this.compilerServerUrl);
+		if(log.isDebugEnabled()) {
+			log.debug("Using compiler server URL " + compilerServerUrl);
+		}
+		
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
-			URI servlet = compilerServer.toURI().resolve("/odpcompiler");
+			URI servlet = compilerServerUrl.toURI().resolve("/odpcompiler");
 			if(log.isInfoEnabled()) {
-				log.info("Uploading ODP to " + servlet);
+				log.info("Compiling ODP on server " + servlet);
 			}
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip");
+			
+			String compilerServer = this.compilerServer;
+			String userName;
+			if(compilerServer != null && !compilerServer.isEmpty()) {
+				// Look up credentials for the server
+				AuthenticationInfo info = wagonManager.getAuthenticationInfo(compilerServer);
+				if(info == null) {
+					throw new MojoExecutionException("Could not find server credentials for specified server ID: " + compilerServer);
+				}
+				userName = info.getUserName();
+				if(userName == null || userName.isEmpty()) {
+					// Then just use Anonymous
+					if(log.isDebugEnabled()) {
+						log.debug("Configured username is blank - acting as Anonymous");
+					}
+					userName = "Anonymous";
+				} else {
+					if(log.isDebugEnabled()) {
+						log.debug("Authenticating as user " + userName);
+					}
+					String password = info.getPassword();
+					
+					// Create a Basic auth header
+					// This is instead of HttpClient's credential handling because of how
+					//   Domino handles the auth handshake.
+					String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
+					post.addHeader("Authorization", "Basic " + enc);
+				}
+			} else {
+				if(log.isDebugEnabled()) {
+					log.debug("No username specified - acting as Anonymous");
+				}
+				userName = "Anonymous";
+			}
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);
@@ -207,6 +260,12 @@ public class CompileODPMojo extends AbstractMojo {
 				System.err.println(errorBody);
 				throw new IOException("Received unexpected HTTP response: " + res.getStatusLine());
 			}
+			
+			// Check for an auth form - Domino returns these as status 200
+			if(String.valueOf(res.getFirstHeader("Content-Type").getValue()).startsWith("text/html")) {
+				throw new IOException("Authentication failed for user " + userName);
+			}
+ 			
 			try(InputStream is = responseEntity.getContent()) {
 				Path result = Files.createTempFile("odpcompiler-output", ".nsf");
 				Files.copy(is, result, StandardCopyOption.REPLACE_EXISTING);

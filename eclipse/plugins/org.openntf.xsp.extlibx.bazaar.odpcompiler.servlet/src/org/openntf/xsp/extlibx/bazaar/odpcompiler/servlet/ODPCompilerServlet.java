@@ -28,7 +28,7 @@ import com.ibm.commons.util.io.StreamUtil;
 public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	public static boolean ALLOW_ANONYMOUS = true;
+	public static boolean ALLOW_ANONYMOUS = false;
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -41,8 +41,10 @@ public class ODPCompilerServlet extends HttpServlet {
 		PrintStream out = new PrintStream(baos);
 		try {
 			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) {
-				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				throw new UnsupportedOperationException("Anonymous access disallowed");
+				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				resp.setContentType("text/plain");
+				os.write("Anonymous access disallowed".getBytes());
+				return;
 			}
 			
 			String contentType = req.getContentType();
