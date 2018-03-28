@@ -105,7 +105,7 @@ public class DeployNSFMojo extends AbstractMojo {
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
 			URI servlet = deploymentServerUrl.toURI().resolve("/nsfdeployment");
 			if(log.isInfoEnabled()) {
-				log.info("Deploying ODP with server " + servlet);
+				log.info("Deploying NSF with server " + servlet);
 			}
 			HttpPost post = new HttpPost(servlet);
 			

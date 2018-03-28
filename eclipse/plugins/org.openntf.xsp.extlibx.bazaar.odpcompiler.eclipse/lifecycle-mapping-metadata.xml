@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lifecycleMappingMetadata>
+	<lifecycleMappings>
+		<!--  ODP packaging type -->
+		<lifecycleMapping>
+			<packagingType>domino-nsf</packagingType>
+			<lifecycleMappingId>org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e.odpLifecycleMapping</lifecycleMappingId>
+		</lifecycleMapping>
+	</lifecycleMappings>
+</lifecycleMappingMetadata>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <fragment>
+	<!-- UI commands -->
    <extension
          point="org.eclipse.ui.menus">
          <menuContribution
@@ -21,4 +22,24 @@
          </command>
    </extension>
 
+	<!-- m2e integration -->
+	<extension
+		point="org.eclipse.m2e.core.projectConfigurators">
+		<configurator
+			class="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e.ODPProjectConfigurator"
+			id="nsfodp-maven-plugin"
+			name="PDE integration for NSF ODP projects">
+		</configurator>
+	</extension>
+	<extension
+		point="org.eclipse.m2e.core.lifecycleMappings">
+		<lifecycleMapping
+			class="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e.ODPLifecycleMapping"
+			id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e.odpLifecycleMapping"
+			name="NSF ODP Lifecycle Mapping">
+		</lifecycleMapping>
+	</extension>
+	<extension
+		point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+	</extension>
 </fragment>
