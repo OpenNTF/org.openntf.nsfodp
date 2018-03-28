@@ -10,18 +10,34 @@
 	<name>XPages Bazaar</name>
 
 	<modules>
+		<!--
+			Core Bazaar 
+		-->
 		<module>plugins/com.ibm.xsp.extlibx.bazaar</module>
 		<module>plugins/com.ibm.xsp.extlibx.bazaar.codemirror</module>
 		<module>plugins/com.ibm.xsp.extlibx.bazaar.interpreter</module>
 		<module>features/com.ibm.xsp.extlibx.bazaar.feature</module>
 		
+		<!--
+			ODP Compiler 
+		-->
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.odpcompiler.feature</module>
+		<!--
+			ODP Compiler Eclipse Support (On Hold) 
+		-->
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.cli</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.odpcompiler.feature</module>
 		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
 		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.dependencies.feature</module>
+		
+		<!--
+			NSF Deployment 
+		-->
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment.servlet</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.nsfdeployment.feature</module>
 		
 		<module>releng/org.openntf.xsp.extlibx.bazaar.updatesite</module>
 		<module>releng/org.openntf.xsp.extlibx.bazaar.eclipse.updatesite</module>

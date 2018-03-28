@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<!--<extension id="org.openntf.xsp.extlibx.bazaar.odpcompiler.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
+		<servlet alias="/odpcompiler" class="org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet.ODPCompilerServlet"/>
+	</extension>-->
+</plugin>

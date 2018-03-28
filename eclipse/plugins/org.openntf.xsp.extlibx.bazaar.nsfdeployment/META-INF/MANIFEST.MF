@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NSF Deployment Tools
+Bundle-SymbolicName: org.openntf.xsp.extlibx.bazaar.nsfdeployment
+Automatic-Module-Name: org.openntf.xsp.extlibx.bazaar.nsfdeployment
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: OpenNTF
+Import-Package: org.eclipse.core.runtime,
+ org.osgi.framework
