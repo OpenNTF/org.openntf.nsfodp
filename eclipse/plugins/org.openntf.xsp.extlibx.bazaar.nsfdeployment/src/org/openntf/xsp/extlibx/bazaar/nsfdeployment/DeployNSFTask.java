@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import lotus.domino.Database;
 import lotus.domino.NotesException;
-import lotus.domino.NotesFactory;
 import lotus.domino.Session;
 
 /**
