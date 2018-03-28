@@ -7,6 +7,7 @@ import java.nio.file.Path;
 
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.CompositeDataUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.DXLUtil;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODPUtil;
 import org.openntf.xsp.extlibx.bazaar.odpcompiler.util.ODSConstants;
 import org.w3c.dom.Document;
 
@@ -43,13 +44,14 @@ public class ImageResource extends FileResource {
 		return dxlDoc;
 	}
 	
-	public byte[] getCompositeData() throws IOException {
+	public byte[] getCompositeData() throws IOException, XMLException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {
 			throw new IllegalArgumentException("Cannot read file " + file);
 		}
+		Document dxlDoc = ODPUtil.readXml(getDxlFile());
 		try(InputStream is = Files.newInputStream(file)) {
-			return CompositeDataUtil.getImageResourceData(file);
+			return CompositeDataUtil.getImageResourceData(file, dxlDoc);
 		}
 	}
 }

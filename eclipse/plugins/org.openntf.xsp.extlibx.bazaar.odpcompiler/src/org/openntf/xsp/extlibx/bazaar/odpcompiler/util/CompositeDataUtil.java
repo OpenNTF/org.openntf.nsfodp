@@ -12,6 +12,12 @@ import java.nio.file.Path;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.w3c.dom.Document;
+
+import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.xml.DOMUtil;
+import com.ibm.commons.xml.XMLException;
+
 public enum CompositeDataUtil {
 	;
 
@@ -66,13 +72,32 @@ public enum CompositeDataUtil {
 		return buf.array();
 	}
 
-	public static byte[] getImageResourceData(Path file) throws IOException {
+	public static byte[] getImageResourceData(Path file, Document dxlDoc) throws IOException, XMLException {
 		int fileLength = (int)Files.size(file);
 		// Load image info
 		File imageFile = file.toFile();
 		int height = 0; // true value not actually stored
 		int width = 0; // true value not actually stored
-		String mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
+		String mimeType;
+		// First, check the DXL file
+		mimeType = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$MimeType']/*[name()='text']/text()").getStringValue();
+		// Failing that, go by the ImageNames item
+		if(StringUtil.isEmpty(mimeType)) {
+			String imageNames = StringUtil.toString(DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$ImageNames']/*[name()='text']/text()").getStringValue()).toLowerCase();
+			if(imageNames.endsWith(".gif")) {
+				mimeType = "image/gif";
+			} else if(imageNames.endsWith(".bmp")) {
+				mimeType = "image/bmp";
+			} else if(imageNames.endsWith(".jpg") || imageNames.endsWith(".jpeg")) {
+				mimeType = "image/jpeg";
+			} else if(imageNames.endsWith(".png")) {
+				mimeType = "image/png";
+			}
+		}
+		// Finally, try to guess it
+		if(StringUtil.isEmpty(mimeType)) {
+			mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
+		}
 		if(mimeType == null) {
 			throw new RuntimeException("Cannot determine MIME type for " + file);
 		}

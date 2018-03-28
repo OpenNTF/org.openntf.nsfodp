@@ -69,7 +69,7 @@ public class AbstractSplitDesignElement {
 		return dxlDoc;
 	}
 	
-	public byte[] getCompositeData() throws IOException {
+	public byte[] getCompositeData() throws IOException, XMLException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {
 			throw new IllegalArgumentException("Cannot read file " + file);

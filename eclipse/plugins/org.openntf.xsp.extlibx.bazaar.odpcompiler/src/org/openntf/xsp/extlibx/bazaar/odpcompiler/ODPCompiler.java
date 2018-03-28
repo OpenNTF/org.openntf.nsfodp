@@ -100,7 +100,6 @@ import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -453,13 +452,13 @@ public class ODPCompiler {
 		lotus.domino.Database copied = tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
 		tempDatabase.remove();
 		lotus.domino.Document blankView = copied.getDocumentByID(NOTEID_UNTITLED_VIEW);
-		blankView.remove(true);
+		blankView.removePermanently(true);
 		copied.recycle();
 		
 		return nsf;
 	}
 	
-	private void importDbProperties(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
+	private void importDbProperties(DxlImporter importer, Database database) throws Exception {
 		// DB properties gets special handling
 		debug("Importing DB properties");
 		Path properties = odp.getDbPropertiesFile();
@@ -472,7 +471,7 @@ public class ODPCompiler {
 		importDxl(importer, dxl, database, "database.properties");
 	}
 	
-	private void importBasicElements(DxlImporter importer, Database database) throws NotesException, IOException {
+	private void importBasicElements(DxlImporter importer, Database database) throws Exception {
 		debug("Importing basic design elements");
 		for(Map.Entry<Path, String> entry : odp.getDirectDXLElements().entrySet()) {
 			if(StringUtil.isNotEmpty(entry.getValue())) {
@@ -485,7 +484,7 @@ public class ODPCompiler {
 		}
 	}
 	
-	private void importFileResources(DxlImporter importer, Database database) throws NotesException, XMLException, IOException {
+	private void importFileResources(DxlImporter importer, Database database) throws Exception {
 		debug("Importing file resources");
 		for(AbstractSplitDesignElement res : odp.getFileResources()) {
 			Document dxlDoc = res.getDxl();
@@ -511,7 +510,7 @@ public class ODPCompiler {
 		}
 	}
 	
-	private void importCustomControls(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws IOException, XMLException, NotesException {
+	private void importCustomControls(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		debug("Importing custom controls");
 		
 		List<CustomControl> ccs = odp.getCustomControls();
@@ -523,17 +522,17 @@ public class ODPCompiler {
 			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData);
 			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length);
 			
-			importer.importDxl(DOMUtil.getXMLString(dxlDoc), database);
+			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Custom Control " + cc.getPageName());
 		}
 	}
 	
-	private void importXPages(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws IOException, XMLException, NotesException {
+	private void importXPages(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		debug("Importing XPages");
 		
 		List<XPage> xpages = odp.getXPages();
 		for(XPage xpage : xpages) {
 			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, xpage);
-			importer.importDxl(DOMUtil.getXMLString(dxlDoc), database);
+			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "XPage " + xpage.getPageName());
 		}
 	}
 	
@@ -565,7 +564,7 @@ public class ODPCompiler {
 		return dxlDoc;
 	}
 	
-	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws FileNotFoundException, XMLException, IOException, NotesException, NumberFormatException, NotesAPIException {
+	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		debug("Importing Java design elements");
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
@@ -708,7 +707,7 @@ public class ODPCompiler {
 	
 	private static final boolean DEBUG_DXL = false;
 	
-	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws NotesException, IOException {
+	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws Exception {
 		try {
 			if(DEBUG_DXL) {
 				String tempFileName = "c:\\temp\\dxl\\" + name.replace('/', '-').replace('\\', '-') + ".xml";
@@ -724,8 +723,7 @@ public class ODPCompiler {
 			while(StringUtil.isNotEmpty(noteId)) {
 				lotus.domino.Document doc = database.getDocumentByID(noteId);
 				try {
-					doc.sign();
-					doc.save();
+					checkAndSign(doc);
 				} finally {
 					doc.recycle();
 				}
@@ -743,5 +741,14 @@ public class ODPCompiler {
 			}
 			throw ne;
 		}
+	}
+	
+	private void checkAndSign(lotus.domino.Document doc) throws Exception {
+		NotesGC.runWithAutoGC(() -> {
+			NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
+			notesNote.check();
+			notesNote.sign();
+			return null;
+		});
 	}
 }
