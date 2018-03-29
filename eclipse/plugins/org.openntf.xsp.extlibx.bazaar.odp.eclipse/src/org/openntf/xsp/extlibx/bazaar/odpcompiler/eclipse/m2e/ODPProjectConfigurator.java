@@ -11,7 +11,10 @@ import org.eclipse.m2e.core.project.configurator.MojoExecutionKey;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.jdt.IClasspathDescriptor;
 import org.eclipse.m2e.jdt.IJavaProjectConfigurator;
+import org.eclipse.pde.internal.core.util.CoreUtility;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.nature.OnDiskProjectNature;
 
+@SuppressWarnings("restriction")
 public class ODPProjectConfigurator extends AbstractProjectConfigurator implements IJavaProjectConfigurator {
 
 	@Override
@@ -29,6 +32,10 @@ public class ODPProjectConfigurator extends AbstractProjectConfigurator implemen
 		IProject project = request.getProject();
     	MavenProject mavenProject = request.getMavenProject();
 		ODPPDEUtil.INSTANCE.addPDENature(project, mavenProject, monitor);
+
+		if(!project.hasNature(OnDiskProjectNature.ID)) {
+			CoreUtility.addNatureToProject(project, OnDiskProjectNature.ID, null);
+		}
 	}
 
 	@Override

@@ -1,28 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <fragment>
-	<!-- UI commands -->
-   <extension
-         point="org.eclipse.ui.menus">
-         <menuContribution
-               locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
-               <command
-                     commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
-                     label="Compile On-Disk Project">
-               </command>
-         </menuContribution>
-   </extension>
+	<!--
+		UI commands
+	-->
+<!-- 	<extension -->
+<!-- 		point="org.eclipse.ui.menus"> -->
+<!-- 		<menuContribution -->
+<!-- 			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions"> -->
+<!-- 			<command -->
+<!-- 				commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP" -->
+<!-- 				label="Compile On-Disk Project"> -->
+<!-- 			</command> -->
+<!-- 		</menuContribution> -->
+<!-- 	</extension> -->
    
-   <extension
-         point="org.eclipse.ui.commands">
-         <command
-               id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
-               name="Compile On-Disk Project"
-               defaultHandler="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.CompileODPHandler">
-         </command>
-   </extension>
+<!-- 	<extension -->
+<!-- 		point="org.eclipse.ui.commands"> -->
+<!-- 		<command -->
+<!-- 			id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP" -->
+<!-- 			name="Compile On-Disk Project" -->
+<!-- 			defaultHandler="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.CompileODPHandler"> -->
+<!-- 		</command> -->
+<!-- 	</extension> -->
+	
+	<!--
+		ODP project nature 
+	-->
+	<extension
+		point="org.eclipse.core.resources.natures"
+		id="org.openntf.xsp.extlibx.bazaar.odp.nature"
+		name="NSF On-Disk Project">
+		<runtime>
+			<run class="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.nature.OnDiskProjectNature"/>
+		</runtime>
+		<content-type id="nsfodpDxl"/>
+		<content-type id="nsfodpDatabaseScript"/>
+		<content-type id="nsfodpDatabaseIcon"/>
+		<content-type id="nsfodpDatabaseProperties"/>
+		<content-type id="nsfodpMetadataFile"/>
+		<content-type id="nsfodpPage"/>
+		<content-type id="nsfodpFrameset"/>
+		<content-type id="nsfodpAboutDocument"/>
+		<content-type id="nsfodpUsingDocument"/>
+		<content-type id="nsfodpIconNote"/>
+		<content-type id="nsfodpSharedField"/>
+		<content-type id="nsfodpForm"/>
+		<content-type id="nsfodpView"/>
+		<content-type id="nsfodpJavaLibrary"/>
+		<content-type id="nsfodpSharedActions"/>
+		<content-type id="nsfodpFormulaAgent"/>
+		<content-type id="nsfodpLotusScriptAgent"/>
+		<content-type id="nsfodpSimpleActionAgent"/>
+		<content-type id="nsfodpJavaAgent"/>
+		<content-type id="nsfodpSubform"/>
+		<content-type id="nsfodpNavigator"/>
+		<content-type id="nsfodpOutline"/>
+		<content-type id="nsfodpXspConfig"/>
+		<content-type id="nsfodpXsp"/>
+		<content-type id="nsfodpXspTheme"/>
+		<content-type id="nsfodpSsjs"/>
+	</extension>
 
-	<!-- m2e integration -->
+	<!--
+		m2e integration
+	-->
 	<extension
 		point="org.eclipse.m2e.core.projectConfigurators">
 		<configurator
@@ -43,7 +85,9 @@
 		point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
 	</extension>
 	
-	<!-- Eclipse content type definitions -->
+	<!--
+		Content type definitions
+	-->
 	<extension point="org.eclipse.core.runtime.contentTypes">
 		<!-- DXL types -->
 		<content-type

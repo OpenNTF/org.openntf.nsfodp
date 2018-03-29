@@ -15,6 +15,8 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.configurator.AbstractCustomizableLifecycleMapping;
 import org.eclipse.m2e.core.project.configurator.ILifecycleMapping;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
+import org.eclipse.pde.internal.core.util.CoreUtility;
+import org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.nature.OnDiskProjectNature;
 
 @SuppressWarnings("restriction")
 public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping implements ILifecycleMapping, ILifecycleMapping2 {
@@ -41,6 +43,9 @@ public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping im
     	String packaging = mavenProject.getPackaging();
     	if("domino-nsf".equals(packaging)) {
     		ODPPDEUtil.INSTANCE.addPDENature(project, mavenProject, mon);
+    		if(!project.hasNature(OnDiskProjectNature.ID)) {
+    			CoreUtility.addNatureToProject(project, OnDiskProjectNature.ID, null);
+    		}
     	}
     }
             

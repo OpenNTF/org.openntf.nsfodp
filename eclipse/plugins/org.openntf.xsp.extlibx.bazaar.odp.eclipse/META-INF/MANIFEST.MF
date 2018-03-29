@@ -16,3 +16,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.pde.core,
  org.eclipse.jdt.core,
  org.eclipse.core.runtime
+Export-Package: org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse,
+ org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.content,
+ org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e,
+ org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.nature
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.Activator
