@@ -215,36 +215,31 @@ public enum ODPPDEUtil {
 		}
 
         // PDE can't handle default JDT classpath
-        IJavaProject javaProject = JavaCore.create( project );
-        javaProject.setOutputLocation( getOutputLocation( project, mavenProject, monitor ), monitor );
+        IJavaProject javaProject = JavaCore.create(project);
+        javaProject.setOutputLocation(getOutputLocation(project, mavenProject, monitor), monitor);
 		
 		 // see org.eclipse.pde.internal.ui.wizards.tools.UpdateClasspathJob
         // PDE populates the model cache lazily from WorkspacePluginModelManager.visit() ResourceChangeListenter
         // That means the model may be available or not at this point in the lifecycle.
         // If it is, update its classpath right away.
         // If not add the project to the list to be updated later based on model change events.
-        IPluginModelBase model = PluginRegistry.findModel( project );
-        if ( model != null )
-        {
-            setClasspath( project, model, monitor );
-        }
-        else
-        {
-            addProjectForUpdateClasspath( project );
+        IPluginModelBase model = PluginRegistry.findModel(project);
+        if(model != null) {
+            setClasspath(project, model, monitor);
+        } else {
+            addProjectForUpdateClasspath(project);
         }
 	}
 	
-    private IPath getOutputLocation( IProject project, MavenProject mavenProject, IProgressMonitor monitor )
-            throws CoreException
-        {
-            File outputDirectory = new File( mavenProject.getBuild().getOutputDirectory() );
-            outputDirectory.mkdirs();
-            IPath relPath =
-                MavenProjectUtils.getProjectRelativePath( project, mavenProject.getBuild().getOutputDirectory() );
-            IFolder folder = project.getFolder( relPath );
-            folder.refreshLocal( IResource.DEPTH_INFINITE, monitor );
-            return folder.getFullPath();
-        }
+	private IPath getOutputLocation(IProject project, MavenProject mavenProject, IProgressMonitor monitor)
+			throws CoreException {
+		File outputDirectory = new File(mavenProject.getBuild().getOutputDirectory());
+		outputDirectory.mkdirs();
+		IPath relPath = MavenProjectUtils.getProjectRelativePath(project, mavenProject.getBuild().getOutputDirectory());
+		IFolder folder = project.getFolder(relPath);
+		folder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		return folder.getFullPath();
+	}
 
 	private void addProjectForUpdateClasspath(IProject project) {
 		synchronized (projectsForUpdateClasspath) {
@@ -293,20 +288,17 @@ public enum ODPPDEUtil {
      * Returns bundle manifest as known to PDE project metadata. Returned file may not exist in the workspace or on the
      * filesystem. Never returns null.
      */
-    public static IFile getBundleManifest( IProject project ) throws CoreException {
-        // PDE API is very inconvenient, lets use internal classes instead
-        IContainer metainf = PDEProject.getBundleRoot( project );
-        if ( metainf == null || metainf instanceof IProject )
-        {
-            metainf = project.getFolder( "META-INF" );
-        }
-        else
-        {
-            metainf = metainf.getFolder( new Path( "META-INF" ) );
-        }
+	public static IFile getBundleManifest(IProject project) throws CoreException {
+		// PDE API is very inconvenient, lets use internal classes instead
+		IContainer metainf = PDEProject.getBundleRoot(project);
+		if (metainf == null || metainf instanceof IProject) {
+			metainf = project.getFolder("META-INF");
+		} else {
+			metainf = metainf.getFolder(new Path("META-INF"));
+		}
 
-        return metainf.getFile( new Path( "MANIFEST.MF" ) );
-    }
+		return metainf.getFile(new Path("MANIFEST.MF"));
+	}
     
     private static List<String> findSourceFolders(IProject project) throws FileNotFoundException, IOException, XMLException, CoreException {
 		IFolder odp = project.getFolder("odp"); // TODO read from config
