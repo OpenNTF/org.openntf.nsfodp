@@ -105,7 +105,7 @@ public enum ODPPDEUtil {
 			buildProperties.delete(false, null);
 		}
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			baos.write(("bin.includes = META-INF/\\,\n" + 
+			baos.write(("bin.includes = META-INF/,\\\n" + 
 					"               .\n" +
 					"output.. = target/classes\n").getBytes());
 			baos.write("source.. = ".getBytes());
