@@ -108,16 +108,13 @@ public enum ODPPDEUtil {
 			baos.write(("bin.includes = META-INF/\\,\n" + 
 					"               .\n" +
 					"output.. = target/classes\n").getBytes());
-			baos.write("source.. =".getBytes());
+			baos.write("source.. = ".getBytes());
 			List<String> sourceFolders = findSourceFolders(project);
-			for(int i = 0; i < sourceFolders.size(); i++) {
-				baos.write(' ');
-				baos.write(sourceFolders.get(i).getBytes());
-				if(i < sourceFolders.size()-1) {
-					baos.write(",\\".getBytes());
-				}
-				baos.write('\n');
-			}
+			baos.write(
+				sourceFolders.stream()
+					.collect(Collectors.joining(",\\\n "))
+					.getBytes()
+			);
 			try(InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
     			buildProperties.create(is, true, null);		
 			}
@@ -148,17 +145,15 @@ public enum ODPPDEUtil {
 						Document pluginXml = DOMUtil.createDocument(is);
 						Object[] nodes = DOMUtil.evaluateXPath(pluginXml, "/plugin/requires/import").getNodes();
 						if(nodes.length > 0) {
-							baos.write("Require-Bundle:".getBytes());
-							for(int i = 0; i < nodes.length; i++) {
-								Element e = (Element)nodes[i];
-								String plugin = e.getAttribute("plugin");
-								baos.write(' ');
-								baos.write(plugin.getBytes());
-								if(i < nodes.length-1) {
-									baos.write(',');
-								}
-								baos.write('\n');
-							}
+							baos.write("Require-Bundle: ".getBytes());
+							baos.write(
+								Arrays.stream(nodes)
+									.map(Element.class::cast)
+									.map(e -> e.getAttribute("plugin"))
+									.collect(Collectors.joining(",\n "))
+									.getBytes()
+							);
+							baos.write('\n');
 						}
 					} catch(XMLException e) {
 						throw new CoreException(new Status(IStatus.ERROR, "Exception while creating MANIFEST.MF", "", e));
@@ -194,16 +189,15 @@ public enum ODPPDEUtil {
 				}
 			}
 			if(!jarPaths.isEmpty()) {
-				baos.write("Bundle-Classpath:".getBytes());
-				for(int i = 0; i < jarPaths.size(); i++) {
-					baos.write(' ');
-					baos.write(jarPaths.get(i).getBytes());
-					if(i < jarPaths.size()-1) {
-						baos.write(',');
-					}
-					baos.write('\n');
-				}
+				baos.write("Bundle-Classpath: ".getBytes());
+				baos.write(
+						jarPaths.stream()
+						.collect(Collectors.joining(",\n "))
+						.getBytes()
+				);
+				baos.write('\n');
 			}
+			
 			
 			try(InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
 				manifestMf.create(is, true, null);		
