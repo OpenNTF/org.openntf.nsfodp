@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.openntf.xsp.extlibx.bazaar.eclipse.feature"
-      label="XPages Bazaar Eclipse Feature"
+      id="org.openntf.xsp.extlibx.bazaar.odp.compiler.feature"
+      label="XPages Bazaar ODP Compiler Feature"
       version="2.0.0.qualifier">
 
    <description url="https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar">
@@ -217,19 +217,21 @@
    limitations under the License.
    </license>
 
-   <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odp.eclipse"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+   <requires>
+      <import feature="com.ibm.xsp.extlibx.bazaar.feature"/>
+   </requires>
 
    <plugin
-         id="org.openntf.xsp.extlibx.bazaar.odp.eclipse.source"
+         id="org.openntf.xsp.extlibx.bazaar.odp.compiler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.openntf.xsp.extlibx.bazaar.odp.compiler.servlet"
          download-size="0"
          install-size="0"
          version="0.0.0"
          fragment="true"/>
-         
 
 </feature>

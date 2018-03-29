@@ -21,16 +21,15 @@
 		<!--
 			ODP Compiler 
 		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler</module>
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.odpcompiler.feature</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.servlet</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.cli</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.odp.compiler.feature</module>
 		<!--
-			ODP Compiler Eclipse Support (On Hold) 
+			Eclipse Support 
 		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.cli</module>
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse</module>
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.eclipse</module>
 		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.dependencies.feature</module>
 		
 		<!--
 			NSF Deployment 
