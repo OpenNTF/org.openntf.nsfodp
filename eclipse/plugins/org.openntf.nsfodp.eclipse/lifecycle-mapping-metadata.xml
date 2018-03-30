@@ -21,7 +21,7 @@
 		<!--  ODP packaging type -->
 		<lifecycleMapping>
 			<packagingType>domino-nsf</packagingType>
-			<lifecycleMappingId>org.openntf.nsdodp.compiler.eclipse.m2e.odpLifecycleMapping</lifecycleMappingId>
+			<lifecycleMappingId>org.openntf.nsfodp.eclipse.m2e.odpLifecycleMapping</lifecycleMappingId>
 		</lifecycleMapping>
 	</lifecycleMappings>
 </lifecycleMappingMetadata>

@@ -26,7 +26,7 @@
 		id="org.openntf.nsfodp.nature"
 		name="NSF On-Disk Project">
 		<runtime>
-			<run class="org.openntf.nsdodp.compiler.eclipse.nature.OnDiskProjectNature"/>
+			<run class="org.openntf.nsfodp.compiler.eclipse.nature.OnDiskProjectNature"/>
 		</runtime>
 		<content-type id="nsfodpDxl"/>
 		<content-type id="nsfodpDatabaseScript"/>
@@ -66,9 +66,6 @@
 			<command
 				commandId="org.openntf.nsfodp.eclipse.compileODP"
 				label="Compile On-Disk Project">
-				<visibleWhen>
-					<reference definitionId="org.openntf.nsfodp.hasOdpNature"/>
-				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
@@ -76,9 +73,9 @@
 	<extension
 		point="org.eclipse.ui.commands">
 		<command
-			id="org.openntf.nsfpdo.eclipse.compileODP"
+			id="org.openntf.nsfodp.eclipse.compileODP"
 			name="Compile On-Disk Project"
-			defaultHandler="org.openntf.nsdodp.compiler.eclipse.CompileODPHandler">
+			defaultHandler="org.openntf.nsfodp.compiler.eclipse.CompileODPHandler">
 		</command>
 	</extension>
 
@@ -100,7 +97,7 @@
 	<extension
 		point="org.eclipse.m2e.core.projectConfigurators">
 		<configurator
-			class="org.openntf.nsdodp.compiler.eclipse.m2e.ODPProjectConfigurator"
+			class="org.openntf.nsfodp.compiler.eclipse.m2e.ODPProjectConfigurator"
 			id="nsfodp-maven-plugin"
 			name="PDE integration for NSF ODP projects">
 		</configurator>
@@ -108,7 +105,7 @@
 	<extension
 		point="org.eclipse.m2e.core.lifecycleMappings">
 		<lifecycleMapping
-			class="org.openntf.nsdodp.compiler.eclipse.m2e.ODPLifecycleMapping"
+			class="org.openntf.nsfodp.compiler.eclipse.m2e.ODPLifecycleMapping"
 			id="org.openntf.nsfodp.eclipse.m2e.odpLifecycleMapping"
 			name="NSF ODP Lifecycle Mapping">
 		</lifecycleMapping>
@@ -127,154 +124,154 @@
 			name="DXL File"
 			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="dxl">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.DatabaseScriptContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.DatabaseScriptContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpDatabaseScript"
 			name="NSF ODP Database Script"
 			base-type="nsfodpDxl"
 			file-names="dbscript.lsdb">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.DatabaseScriptContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.DatabaseScriptContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpDatabaseIcon"
 			name="NSF ODP Database Icon"
 			base-type="nsfodpDxl"
 			file-names="$DbIcon">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.DatabaseIconContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.DatabaseIconContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpDatabaseProperties"
 			name="NSF ODP Database Properties"
 			base-type="nsfodpDxl"
 			file-names="database.properties">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.DatabaseIconContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.DatabaseIconContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpMetadataFile"
 			name="NSF ODP Metadata File"
 			base-type="nsfodpDxl"
 			file-extensions="metadata">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.MetadataContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.MetadataContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpPage"
 			name="NSF ODP Page"
 			base-type="nsfodpDxl"
 			file-extensions="page">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.PageContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.PageContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpFrameset"
 			name="NSF ODP Frameset"
 			base-type="nsfodpDxl"
 			file-extensions="page">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.FramesetContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.FramesetContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpAboutDocument"
 			name="NSF ODP About Document"
 			base-type="nsfodpDxl"
 			file-names="AboutDocument">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.AboutDocumentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.AboutDocumentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpUsingDocument"
 			name="NSF ODP Using Document"
 			base-type="nsfodpDxl"
 			file-names="UsingDocument">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.UsingDocumentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.UsingDocumentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpIconNote"
 			name="NSF ODP Icon Note"
 			base-type="nsfodpDxl"
 			file-names="IconNote">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.IconNoteContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.IconNoteContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpSharedField"
 			name="NSF ODP Shared Field"
 			base-type="nsfodpDxl"
 			file-extensions="field">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.SharedFieldContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.SharedFieldContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpForm"
 			name="NSF ODP Form"
 			base-type="nsfodpDxl"
 			file-extensions="form">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.FormContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.FormContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpView"
 			name="NSF ODP View"
 			base-type="nsfodpDxl"
 			file-extensions="view">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.ViewContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.ViewContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpJavaLibrary"
 			name="NSF ODP Java Library"
 			base-type="nsfodpDxl"
 			file-extensions="javalib">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.JavaLibraryContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.JavaLibraryContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpSharedActions"
 			name="NSF ODP Shared Actions"
 			base-type="nsfodpDxl"
 			file-names="Shared Actions">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.SharedActionsContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.SharedActionsContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpFormulaAgent"
 			name="NSF ODP Formula Agent"
 			base-type="nsfodpDxl"
 			file-extensions="fa">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.FormulaAgentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.FormulaAgentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpLotusScriptAgent"
 			name="NSF ODP LotusScript Agent"
 			base-type="nsfodpDxl"
 			file-extensions="lsa">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.LotusScriptAgentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.LotusScriptAgentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpSimpleActionAgent"
 			name="NSF ODP Simple Action Agent"
 			base-type="nsfodpDxl"
 			file-extensions="aa">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.SimpleActionAgentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.SimpleActionAgentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpJavaAgent"
 			name="NSF ODP Java Agent"
 			base-type="nsfodpDxl"
 			file-extensions="ja">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.JavaAgentContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.JavaAgentContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpSubform"
 			name="NSF ODP Subform"
 			base-type="nsfodpDxl"
 			file-extensions="subform">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.SubformContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.SubformContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpNavigator"
 			name="NSF ODP Navigator"
 			base-type="nsfodpDxl"
 			file-extensions="navigator">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.NavigatorContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.NavigatorContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpOutline"
 			name="NSF ODP Outline"
 			base-type="nsfodpDxl"
 			file-extensions="outline">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.OutlineContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.OutlineContentDescriber"/>
 		</content-type>
 		
 		<!-- XPages source elements -->
@@ -283,21 +280,21 @@
 			name="XPages Configuration File"
 			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="xsp-config">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.XspConfigContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.XspConfigContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpXsp"
 			name="XPages Source File"
 			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="xsp">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.XspConfigContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.XspConfigContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpXspTheme"
 			name="XPages Theme File"
 			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="theme">
-			<describer class="org.openntf.nsdodp.compiler.eclipse.content.ThemeContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.ThemeContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpSsjs"
