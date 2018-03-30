@@ -13,9 +13,9 @@ Bundle-ClassPath: .,
  lib/metadata-extractor-2.10.1.jar,
  lib-noncentral/domino-jna-0.9.16-SNAPSHOT.jar,
  lib/jna-4.4.0.jar
-Export-Package: org.openntf.xsp.extlibx.bazaar.odpcompiler,
- org.openntf.xsp.extlibx.bazaar.odpcompiler.odp,
- org.openntf.xsp.extlibx.bazaar.odpcompiler.update
+Export-Package: org.openntf.nsfodp.compiler,
+ org.openntf.nsfodp.compiler.odp,
+ org.openntf.nsfodp.compiler.update
 Import-Package: com.ibm.xsp.extlib.javacompiler,
  lotus.domino
 Require-Bundle: org.eclipse.osgi,
@@ -26,4 +26,4 @@ Require-Bundle: org.eclipse.osgi,
  com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.0",
  com.ibm.domino.napi;bundle-version="9.0.1"
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.openntf.xsp.extlibx.bazaar.odpcompiler.ODPCompilerActivator
+Bundle-Activator: org.openntf.nsfodp.compiler.ODPCompilerActivator

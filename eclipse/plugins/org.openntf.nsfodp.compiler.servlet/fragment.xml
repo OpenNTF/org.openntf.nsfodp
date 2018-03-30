@@ -19,6 +19,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension id="org.openntf.nsfodp.compiler.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
-		<servlet alias="/odpcompiler" class="org.openntf.xsp.extlibx.bazaar.odpcompiler.servlet.ODPCompilerServlet"/>
+		<servlet alias="/odpcompiler" class="org.openntf.nsfodp.compiler.servlet.ODPCompilerServlet"/>
 	</extension>
 </plugin>

@@ -19,9 +19,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.debug.core,
  org.eclipse.debug.ui
-Export-Package: org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse,
- org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.content,
- org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.m2e,
- org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.nature
+Export-Package: org.openntf.nsdodp.compiler.eclipse,
+ org.openntf.nsdodp.compiler.eclipse.content,
+ org.openntf.nsdodp.compiler.eclipse.m2e,
+ org.openntf.nsdodp.compiler.eclipse.nature
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.Activator
+Bundle-Activator: org.openntf.nsdodp.compiler.eclipse.Activator

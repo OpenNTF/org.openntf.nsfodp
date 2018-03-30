@@ -9,4 +9,4 @@ Import-Package: org.osgi.framework
 Require-Bundle: org.eclipse.core.runtime,
  com.ibm.notes.java.api,
  com.ibm.domino.osgi.core
-Export-Package: org.openntf.xsp.extlibx.bazaar.nsfdeployment
+Export-Package: org.openntf.nsfodp.deployment

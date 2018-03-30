@@ -19,6 +19,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension id="org.openntf.nsfodp.deployment.Servlet" name="nsfdeployment" point="org.eclipse.equinox.http.registry.servlets">
-		<servlet alias="/nsfdeployment" class="org.openntf.xsp.extlibx.bazaar.nsfdeployment.servlet.NSFDeploymentServlet"/>
+		<servlet alias="/nsfdeployment" class="org.openntf.nsfodp.deployment.servlet.NSFDeploymentServlet"/>
 	</extension>
 </plugin>
