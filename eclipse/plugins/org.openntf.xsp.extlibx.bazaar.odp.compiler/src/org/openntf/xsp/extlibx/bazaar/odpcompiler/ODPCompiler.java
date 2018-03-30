@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -631,12 +632,15 @@ public class ODPCompiler {
 		debug("- Compiling LotusScript");
 		// In lieu of a dependency graph, just keep bashing at the list until it's done
 		Queue<String> remaining = new ArrayDeque<>(noteIds);
+		Map<String, String> titles = new HashMap<>();
 		for(int i = 0; i < noteIds.size(); i++) {
 			Queue<String> nextPass = new ArrayDeque<>();
 			
 			String noteId;
 			while((noteId = remaining.poll()) != null) {
 				lotus.domino.Document doc = database.getDocumentByID(noteId);
+				String title = doc.getItemValueString("$TITLE");
+				titles.put(noteId, title);
 				try {
 					NotesGC.runWithAutoGC(() -> {
 						NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
@@ -646,6 +650,7 @@ public class ODPCompiler {
 					});
 				} catch(LotusScriptCompilationError err) {
 					nextPass.add(noteId);
+					titles.put(noteId, title + " - " + err);
 				} catch(NotesError err) {
 					if(err.getId() == 12051) { // Same as above, but not encapsulated
 						nextPass.add(noteId);
@@ -661,7 +666,10 @@ public class ODPCompiler {
 			}
 		}
 		if(!remaining.isEmpty()) {
-			throw new RuntimeException("Unable to compile LotusScript in note IDs: " + remaining);
+			String notes = remaining.stream()
+				.map(noteId -> titles.get(noteId) + " (" + noteId + ")")
+				.collect(Collectors.joining(", "));
+			throw new RuntimeException("Unable to compile LotusScript in notes: " + notes);
 		}
 	}
 	
