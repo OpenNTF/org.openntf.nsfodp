@@ -9,6 +9,31 @@
 
 	<name>NSF ODP Tooling</name>
 
+	<url>https://openntf.org</url>
+	<inceptionYear>2018</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	
+	<distributionManagement>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+	</distributionManagement>
+
+	<developers>
+		<developer>
+			<name>Jesse Gallagher</name>
+			<email>jesse@frostillic.us</email>
+		</developer>
+	</developers>
+
 	<modules>
 		<!--
 			ODP Compiler 
@@ -40,6 +65,10 @@
 		<tycho-version>1.0.0</tycho-version>
 		<compiler>1.8</compiler>
 	</properties>
+	
+	<prerequisites>
+		<maven>3.0.0</maven>
+	</prerequisites>
 
 	<repositories>
 		<repository>
@@ -182,6 +211,51 @@
 					</environments>
 					<resolver>p2</resolver>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<header>license.txt</header>
+					<excludes>
+						<exclude>**/pom.xml</exclude>
+			            <exclude>**/README</exclude>
+			            <exclude>src/test/resources/**</exclude>
+			            <exclude>src/main/resources/**</exclude>
+						<exclude>**/build.properties</exclude>
+					</excludes>
+					<properties>
+						<owner>Jesse Gallagher</owner>
+						<copyrightYear>2018</copyrightYear>
+					</properties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven-and-java</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>1.8.0</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 

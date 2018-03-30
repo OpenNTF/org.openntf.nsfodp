@@ -12,12 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Includes code derived from the JNoSQL Diana Couchbase driver and Artemis
- * extensions, copyright Otavio Santana and others and available from:
- *
- * https://github.com/eclipse/jnosql-diana-driver/tree/master/couchbase-driver
- * https://github.com/eclipse/jnosql-artemis-extension/tree/master/couchbase-extension
  */
 package org.openntf.maven.nsfodp;
 
