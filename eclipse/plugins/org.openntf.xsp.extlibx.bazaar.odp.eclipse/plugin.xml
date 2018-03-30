@@ -49,17 +49,9 @@
 			<command
 				commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
 				label="Compile On-Disk Project">
-      <!--<visibleWhen
-            checkEnabled="true">
-         <reference definitionId="org.openntf.xsp.extlibx.bazaar.odp.hasOdpNature"></reference>
-      </visibleWhen>-->
-				
-				<!--<test property="org.eclipse.core.resources.projectNature"
-					value="org.openntf.xsp.extlibx.bazaar.odp.nature">
-				</test>-->
-				<!--<visibleWhen>
+				<visibleWhen>
 					<reference definitionId="org.openntf.xsp.extlibx.bazaar.odp.hasOdpNature"/>
-				</visibleWhen>-->
+				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
