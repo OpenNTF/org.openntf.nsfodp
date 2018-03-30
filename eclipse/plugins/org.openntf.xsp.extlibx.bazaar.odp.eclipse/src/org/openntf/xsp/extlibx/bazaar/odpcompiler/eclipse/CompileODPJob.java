@@ -3,6 +3,7 @@ package org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse;
 import java.io.File;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -48,7 +49,7 @@ public class CompileODPJob extends Job {
 				}
 			}
 			
-			// TODO refresh to reflect new target file?
+			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch(Exception e) {
 			return new Status(IStatus.ERROR, "Error while executing Maven", "", e);
 		}
