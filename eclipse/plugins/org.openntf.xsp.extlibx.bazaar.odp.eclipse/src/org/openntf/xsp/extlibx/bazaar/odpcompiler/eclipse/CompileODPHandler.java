@@ -17,8 +17,6 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class CompileODPHandler extends AbstractHandler {
-	public static final MessageConsole console = findConsole(CompileODPHandler.class.getPackage().getName());
-
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
@@ -28,6 +26,7 @@ public class CompileODPHandler extends AbstractHandler {
 			job.schedule();
 			
 		} catch(Throwable t) {
+			MessageConsole console = findConsole(getClass().getPackage().getName());
 			MessageConsoleStream out = console.newMessageStream();
 			try(PrintWriter pw = new PrintWriter(out)) {
 				t.printStackTrace(pw);
