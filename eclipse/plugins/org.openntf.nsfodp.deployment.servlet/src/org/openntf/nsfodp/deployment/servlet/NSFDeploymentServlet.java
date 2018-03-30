@@ -33,7 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.deployment.DeployNSFTask;
 
 import com.ibm.commons.util.io.StreamUtil;
@@ -105,7 +105,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 			if(fileItem.isFormField()) {
 				throw new IllegalArgumentException(PARAM_FILE + " part must be a file");
 			}
-			Path nsf = Files.createTempFile("nsfdeployment", ".data");
+			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data");
 			nsf.toFile().deleteOnExit();
 			try(InputStream reqInputStream = fileItem.getInputStream()) {
 				try(OutputStream packageOut = Files.newOutputStream(nsf)) {

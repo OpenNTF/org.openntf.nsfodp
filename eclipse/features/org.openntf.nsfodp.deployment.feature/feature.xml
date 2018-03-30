@@ -218,7 +218,6 @@
       same &quot;printed page&quot; as the copyright notice for easier
       identification within third-party archives.
 
-   Portions Copyright 2012, 2013 IBM Corporation
    Copyright 2018 Jesse Gallagher
 
    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -234,17 +233,7 @@
    limitations under the License.
    </license>
 
-   <plugin
-         id="org.openntf.nsfodp.deployment"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.nsfodp.deployment.servlet"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+   <plugin id="org.openntf.nsfodp.deployment" version="0.0.0"/>
+   <plugin id="org.openntf.nsfodp.deployment.servlet" version="0.0.0" fragment="true"/>
 
 </feature>

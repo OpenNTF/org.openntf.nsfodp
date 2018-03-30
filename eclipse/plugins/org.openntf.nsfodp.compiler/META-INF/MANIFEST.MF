@@ -24,6 +24,7 @@ Require-Bundle: org.eclipse.osgi,
  com.ibm.commons,
  com.ibm.commons.xml,
  com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.0",
- com.ibm.domino.napi;bundle-version="9.0.1"
+ com.ibm.domino.napi;bundle-version="9.0.1",
+ org.openntf.nsfodp.commons
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.compiler.ODPCompilerActivator

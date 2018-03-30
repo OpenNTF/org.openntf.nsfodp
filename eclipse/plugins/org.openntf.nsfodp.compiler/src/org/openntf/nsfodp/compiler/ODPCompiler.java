@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.compiler.odp.AbstractSplitDesignElement;
 import org.openntf.nsfodp.compiler.odp.CustomControl;
 import org.openntf.nsfodp.compiler.odp.FileResource;
@@ -203,7 +204,7 @@ public class ODPCompiler {
 				if(f.isFile()) {
 					try(JarFile jar = new JarFile(f)) {
 						JarEntry notesJar = jar.getJarEntry("Notes.jar");
-						Path tempFile = Files.createTempFile("Notes", ".jar");
+						Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
 						Files.delete(tempFile);
 						try(InputStream is = jar.getInputStream(notesJar)) {
 							Files.copy(is, tempFile);
@@ -438,7 +439,7 @@ public class ODPCompiler {
 	 */
 	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException {
 		debug("Creating destination NSF");
-		Path temp = Files.createTempFile("odpcompilertemp", ".nsf");
+		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf");
 		temp.toFile().deleteOnExit();
 		
 		try(OutputStream os = Files.newOutputStream(temp)) {
@@ -447,7 +448,7 @@ public class ODPCompiler {
 			}
 		}
 		
-		Path nsf = Files.createTempFile("odpcompiler", ".nsf");
+		Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompiler", ".nsf");
 		Files.delete(nsf);
 		lotus.domino.Database tempDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
 		lotus.domino.Database copied = tempDatabase.createCopy("", nsf.toAbsolutePath().toString());

@@ -6,7 +6,8 @@ Automatic-Module-Name: org.openntf.nsfodp.deployment.servlet
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: OpenNTF
 Require-Bundle: org.eclipse.equinox.http.registry,
- com.ibm.commons
+ com.ibm.commons,
+ org.openntf.nsfodp.commons
 Import-Package: com.ibm.xsp.http.fileupload,
  com.ibm.xsp.http.fileupload.disk,
  com.ibm.xsp.http.fileupload.servlet,

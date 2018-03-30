@@ -31,7 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.odp.OnDiskProject;
@@ -67,7 +67,7 @@ public class ODPCompilerServlet extends HttpServlet {
 				throw new IllegalArgumentException("Content must be application/zip");
 			}
 			
-			Path packageFile = Files.createTempFile("package", ".zip");
+			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip");
 			try(InputStream reqInputStream = req.getInputStream()) {
 				try(OutputStream packageOut = Files.newOutputStream(packageFile)) {
 					StreamUtil.copyStream(reqInputStream, packageOut);
@@ -83,7 +83,7 @@ public class ODPCompilerServlet extends HttpServlet {
 					odpZip = packageFile;
 				} else {
 					// Then extract the ODP
-					odpZip = Files.createTempFile("odp", ".zip");
+					odpZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odp", ".zip");
 					try(InputStream odpIs = packageZip.getInputStream(odpEntry)) {
 						try(OutputStream odpOs = Files.newOutputStream(odpZip)) {
 							StreamUtil.copyStream(odpIs, odpOs);
@@ -93,7 +93,7 @@ public class ODPCompilerServlet extends HttpServlet {
 					// Look for an embedded update site
 					ZipEntry siteEntry = packageZip.getEntry("site.zip");
 					if(siteEntry != null) {
-						siteZip = Files.createTempFile("site", ".zip");
+						siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip");
 						try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
 							try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
 								StreamUtil.copyStream(siteIs, siteOs);
@@ -137,7 +137,7 @@ public class ODPCompilerServlet extends HttpServlet {
 	}
 	
 	public static Path expandZip(Path zipFilePath) throws IOException {
-		Path result = Files.createTempDirectory("zipFile");
+		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile");
 		
 		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
 			for(ZipEntry entry : Collections.list(zipFile.entries())) {

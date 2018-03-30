@@ -35,6 +35,8 @@
 	</developers>
 
 	<modules>
+		<module>plugins/org.openntf.nsfodp.commons</module>
+		
 		<!--
 			ODP Compiler 
 		-->
