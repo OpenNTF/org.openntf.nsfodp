@@ -2,34 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-	<artifactId>parent</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<groupId>org.openntf.nsfodp</groupId>
+	<artifactId>nsfodp</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>XPages Bazaar</name>
+	<name>NSF ODP Tooling</name>
 
 	<modules>
-		<!--
-			Core Bazaar 
-		-->
-		<module>plugins/com.ibm.xsp.extlibx.bazaar</module>
-		<module>plugins/com.ibm.xsp.extlibx.bazaar.codemirror</module>
-		<module>plugins/com.ibm.xsp.extlibx.bazaar.interpreter</module>
-		<module>features/com.ibm.xsp.extlibx.bazaar.feature</module>
-		
 		<!--
 			ODP Compiler 
 		-->
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.servlet</module>
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.cli</module>
+		<!-- <module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.cli</module> -->
 		<module>features/org.openntf.xsp.extlibx.bazaar.odp.compiler.feature</module>
-		<!--
-			Eclipse Support 
-		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.eclipse</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
 		
 		<!--
 			NSF Deployment 
@@ -37,10 +24,15 @@
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment</module>
 		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment.servlet</module>
 		<module>features/org.openntf.xsp.extlibx.bazaar.nsfdeployment.feature</module>
+
+		<!--
+			Eclipse Support
+		-->
+		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.eclipse</module>
+		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
 		
 		<module>releng/org.openntf.xsp.extlibx.bazaar.updatesite</module>
 		<module>releng/org.openntf.xsp.extlibx.bazaar.eclipse.updatesite</module>
-		<module>releng/bazaar-dist-domino</module>
 	</modules>
 
 	<properties>
@@ -59,6 +51,11 @@
 			<id>notes</id>
 			<layout>p2</layout>
 			<url>${notes-platform}</url>
+		</repository>
+		<repository>
+			<id>bazaar</id>
+			<layout>p2</layout>
+			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.0</url>
 		</repository>
 	</repositories>
 
