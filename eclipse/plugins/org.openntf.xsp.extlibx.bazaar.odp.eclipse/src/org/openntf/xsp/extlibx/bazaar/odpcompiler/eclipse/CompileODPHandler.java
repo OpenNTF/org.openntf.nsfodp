@@ -1,9 +1,15 @@
 package org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse;
 
 import java.io.PrintWriter;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -15,13 +21,30 @@ public class CompileODPHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		MessageConsoleStream out = console.newMessageStream();
 		try {
+			IProject project = getSelectedProject();
+			
+			CompileODPJob job = new CompileODPJob(project);
+			job.schedule();
 			
 		} catch(Throwable t) {
+			MessageConsoleStream out = console.newMessageStream();
 			try(PrintWriter pw = new PrintWriter(out)) {
 				t.printStackTrace(pw);
 				pw.flush();
+			}
+		}
+		return null;
+	}
+	
+	private static IProject getSelectedProject() {
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (window != null) {
+			IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
+			Object firstElement = selection.getFirstElement();
+			if (firstElement instanceof IAdaptable) {
+				IProject project = (IProject) ((IAdaptable) firstElement).getAdapter(IProject.class);
+				return project;
 			}
 		}
 		return null;

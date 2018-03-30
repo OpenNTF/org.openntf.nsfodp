@@ -2,29 +2,6 @@
 <?eclipse version="3.4"?>
 <fragment>
 	<!--
-		UI commands
-	-->
-<!-- 	<extension -->
-<!-- 		point="org.eclipse.ui.menus"> -->
-<!-- 		<menuContribution -->
-<!-- 			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions"> -->
-<!-- 			<command -->
-<!-- 				commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP" -->
-<!-- 				label="Compile On-Disk Project"> -->
-<!-- 			</command> -->
-<!-- 		</menuContribution> -->
-<!-- 	</extension> -->
-   
-<!-- 	<extension -->
-<!-- 		point="org.eclipse.ui.commands"> -->
-<!-- 		<command -->
-<!-- 			id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP" -->
-<!-- 			name="Compile On-Disk Project" -->
-<!-- 			defaultHandler="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.CompileODPHandler"> -->
-<!-- 		</command> -->
-<!-- 	</extension> -->
-	
-	<!--
 		ODP project nature 
 	-->
 	<extension
@@ -60,6 +37,52 @@
 		<content-type id="nsfodpXsp"/>
 		<content-type id="nsfodpXspTheme"/>
 		<content-type id="nsfodpSsjs"/>
+	</extension>
+	
+	<!--
+		UI commands
+	-->
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+			<command
+				commandId="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
+				label="Compile On-Disk Project">
+      <!--<visibleWhen
+            checkEnabled="true">
+         <reference definitionId="org.openntf.xsp.extlibx.bazaar.odp.hasOdpNature"></reference>
+      </visibleWhen>-->
+				
+				<!--<test property="org.eclipse.core.resources.projectNature"
+					value="org.openntf.xsp.extlibx.bazaar.odp.nature">
+				</test>-->
+				<!--<visibleWhen>
+					<reference definitionId="org.openntf.xsp.extlibx.bazaar.odp.hasOdpNature"/>
+				</visibleWhen>-->
+			</command>
+		</menuContribution>
+	</extension>
+   
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			id="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.compileODP"
+			name="Compile On-Disk Project"
+			defaultHandler="org.openntf.xsp.extlibx.bazaar.odpcompiler.eclipse.CompileODPHandler">
+		</command>
+	</extension>
+
+	<extension
+		point="org.eclipse.core.expressions.definitions">
+		<definition
+			id="org.openntf.xsp.extlibx.bazaar.odp.hasOdpNature">
+			<adapt type="org.eclipse.core.resources.IProject">
+				<test property="org.eclipse.core.resources.projectNature"
+					value="org.openntf.xsp.extlibx.bazaar.odp.nature">
+				</test>
+			</adapt>
+		</definition>
 	</extension>
 
 	<!--
