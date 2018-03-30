@@ -38,32 +38,33 @@
 		<!--
 			ODP Compiler 
 		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler</module>
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.servlet</module>
-		<!-- <module>plugins/org.openntf.xsp.extlibx.bazaar.odp.compiler.cli</module> -->
-		<module>features/org.openntf.xsp.extlibx.bazaar.odp.compiler.feature</module>
+		<module>plugins/org.openntf.nsfodp.compiler</module>
+		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
+		<!-- <module>plugins/org.openntf.nsfodp.compiler.cli</module> -->
+		<module>features/org.openntf.nsfodp.compiler.feature</module>
 		
 		<!--
 			NSF Deployment 
 		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment</module>
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.nsfdeployment.servlet</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.nsfdeployment.feature</module>
+		<module>plugins/org.openntf.nsfodp.deployment</module>
+		<module>plugins/org.openntf.nsfodp.deployment.servlet</module>
+		<module>features/org.openntf.nsfodp.deployment.feature</module>
+		
+		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
 
 		<!--
 			Eclipse Support
 		-->
-		<module>plugins/org.openntf.xsp.extlibx.bazaar.odp.eclipse</module>
-		<module>features/org.openntf.xsp.extlibx.bazaar.eclipse.feature</module>
-		
-		<module>releng/org.openntf.xsp.extlibx.bazaar.updatesite</module>
-		<module>releng/org.openntf.xsp.extlibx.bazaar.eclipse.updatesite</module>
+		<module>plugins/org.openntf.nsfodp.eclipse</module>
+		<module>features/org.openntf.nsfodp.eclipse.feature</module>
+		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>1.0.0</tycho-version>
 		<compiler>1.8</compiler>
+		<bazaar-version>2.0.0-SNAPSHOT</bazaar-version>
 	</properties>
 	
 	<prerequisites>
@@ -72,9 +73,9 @@
 
 	<repositories>
 		<repository>
-			<id>Luna</id>
+			<id>Neon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/luna/</url>
+			<url>http://download.eclipse.org/releases/neon/</url>
 		</repository>
 		<repository>
 			<id>notes</id>
