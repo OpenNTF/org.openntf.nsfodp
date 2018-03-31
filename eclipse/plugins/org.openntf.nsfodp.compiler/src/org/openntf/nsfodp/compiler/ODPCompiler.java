@@ -189,43 +189,47 @@ public class ODPCompiler {
 	public synchronized Path compile(ClassLoader cl) throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		try {
-			initRegistry();
-
-			// Compile Java classes
-			Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
-			
-			// Special support for Notes.jar
-			Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
-			if(bundle.isPresent()) {
-				File f = FileLocator.getBundleFile(bundle.get());
-				if(!f.exists()) {
-					throw new IllegalStateException("Could not locate Notes.jar");
-				}
-				if(f.isFile()) {
-					try(JarFile jar = new JarFile(f)) {
-						JarEntry notesJar = jar.getJarEntry("Notes.jar");
-						Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
-						Files.delete(tempFile);
-						try(InputStream is = jar.getInputStream(notesJar)) {
-							Files.copy(is, tempFile);
+			JavaSourceClassLoader classLoader = null;
+			boolean hasXPages = odp.hasXPagesElements();
+			if(hasXPages) {
+				initRegistry();
+	
+				// Compile Java classes
+				Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
+				
+				// Special support for Notes.jar
+				Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
+				if(bundle.isPresent()) {
+					File f = FileLocator.getBundleFile(bundle.get());
+					if(!f.exists()) {
+						throw new IllegalStateException("Could not locate Notes.jar");
+					}
+					if(f.isFile()) {
+						try(JarFile jar = new JarFile(f)) {
+							JarEntry notesJar = jar.getJarEntry("Notes.jar");
+							Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
+							Files.delete(tempFile);
+							try(InputStream is = jar.getInputStream(notesJar)) {
+								Files.copy(is, tempFile);
+							}
+							dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
 						}
+					} else {
+						Path path = f.toPath().resolve("Notes.jar");
+						Path tempFile = Files.createTempFile("Notes", ".jar");
+						Files.delete(tempFile);
+						Files.copy(path, tempFile);
 						dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
 					}
-				} else {
-					Path path = f.toPath().resolve("Notes.jar");
-					Path tempFile = Files.createTempFile("Notes", ".jar");
-					Files.delete(tempFile);
-					Files.copy(path, tempFile);
-					dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
 				}
+				
+				String[] classPath = dependencies.toArray(new String[dependencies.size()]);
+				classLoader = new JavaSourceClassLoader(cl, compilerOptions, classPath);
+				
+				compileJavaSources(classLoader);
+				compileCustomControls(classLoader);
+				compileXPages(classLoader);
 			}
-			
-			String[] classPath = dependencies.toArray(new String[dependencies.size()]);
-			JavaSourceClassLoader classLoader = new JavaSourceClassLoader(cl, compilerOptions, classPath);
-			
-			compileJavaSources(classLoader);
-			compileCustomControls(classLoader);
-			compileXPages(classLoader);
 			
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
 			try {
@@ -242,10 +246,12 @@ public class ODPCompiler {
 				importFileResources(importer, database);
 				importLotusScriptLibraries(importer, database);
 				
-				Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
-				importCustomControls(importer, database, classLoader, compiledClassNames);
-				importXPages(importer, database, classLoader, compiledClassNames);
-				importJavaElements(importer, database, classLoader, compiledClassNames);
+				if(hasXPages) {
+					Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
+					importCustomControls(importer, database, classLoader, compiledClassNames);
+					importXPages(importer, database, classLoader, compiledClassNames);
+					importJavaElements(importer, database, classLoader, compiledClassNames);
+				}
 				
 				
 				return file;

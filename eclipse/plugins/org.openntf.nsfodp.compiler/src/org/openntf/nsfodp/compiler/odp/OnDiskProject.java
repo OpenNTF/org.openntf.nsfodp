@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openntf.nsfodp.compiler.util.ODPUtil;
 import org.w3c.dom.Document;
@@ -232,6 +233,39 @@ public class OnDiskProject {
 		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
 			.map(path -> new LotusScriptLibrary(path))
 			.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Determines whether the on-disk project has any XPages elements that need to
+	 * be compiled, namely XPages, Custom Controls, and Java classes.
+	 * 
+	 * @return whether the ODP has any XPages elements
+	 * @throws IOException 
+	 * @throws XMLException 
+	 */
+	public boolean hasXPagesElements() throws IOException, XMLException {
+		Path xpages = baseDir.resolve("XPages");
+		if(Files.exists(xpages) && Files.list(xpages).count() > 0) {
+			return true;
+		}
+		Path ccs = baseDir.resolve("CustomControls");
+		if(Files.exists(ccs) && Files.list(ccs).count() > 0) {
+			return true;
+		}
+		boolean hasJava = findSourceFolders().stream()
+				.map(t -> {
+					try {
+						return Files.list(t);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.map(Stream::count)
+				.anyMatch(i -> i > 0);
+		if(hasJava) {
+			return true;
+		}
+		return false;
 	}
 	
 	// *******************************************************************************
