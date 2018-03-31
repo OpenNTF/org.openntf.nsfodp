@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
@@ -50,6 +49,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.compiler.odp.AbstractSplitDesignElement;
 import org.openntf.nsfodp.compiler.odp.CustomControl;
@@ -120,7 +120,7 @@ public class ODPCompiler {
 	private final OnDiskProject odp;
 	private final Set<UpdateSite> updateSites = new LinkedHashSet<>();
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
-	private final PrintStream out;
+	private final IProgressMonitor mon;
 	
 	// XSP compiler components
 	private final SharableRegistryImpl facesRegistry = new SharableRegistryImpl(getClass().getPackage().getName());
@@ -144,10 +144,10 @@ public class ODPCompiler {
 	private static final String BLANK_DB = "/res/blank.nsf";
 	private static final String NOTEID_UNTITLED_VIEW = "11A";
 	
-	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, PrintStream out) throws FileNotFoundException, XMLException, IOException {
+	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, IProgressMonitor mon) throws FileNotFoundException, XMLException, IOException {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
 		this.odp = Objects.requireNonNull(onDiskProject);
-		this.out = out;
+		this.mon = mon;
 		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), facesRegistry);
 		this.resourceBundleSource = new MultiPathResourceBundleSource(odp.getResourcePaths());
 	}
@@ -261,7 +261,7 @@ public class ODPCompiler {
 	// * Bundle manipulation methods
 	// *******************************************************************************
 	private Collection<Bundle> installBundles() {
-		debug("Installing bundles");
+		subTask("Installing bundles");
 		
 		Collection<Bundle> result = updateSites.stream()
 			.map(UpdateSite::getBundleURIs)
@@ -271,12 +271,12 @@ public class ODPCompiler {
 			.filter(Objects::nonNull)
 			.map(this::startBundle)
 			.collect(Collectors.toList());
-		debug(MessageFormat.format("- Installed {0,choice,0#no bundles|1# 1 bundle|1<{0} bundles}", result.size()));
+		subTask(MessageFormat.format("- Installed {0,choice,0#no bundles|1# 1 bundle|1<{0} bundles}", result.size()));
 		return result;
 	}
 	
 	private void uninstallBundles(Collection<Bundle> bundles) {
-		debug("Uninstalling bundles");
+		subTask("Uninstalling bundles");
 		
 		bundles.stream().forEach(t -> {
 			try {
@@ -291,7 +291,7 @@ public class ODPCompiler {
 	 * Initializes the internal Faces registry with the newly-added plugins.
 	 */
 	private void initRegistry() {
-		debug("Initializing libraries");
+		subTask("Initializing libraries");
 
 		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library");
 		libraries.stream()
@@ -345,7 +345,7 @@ public class ODPCompiler {
 	// *******************************************************************************
 	
 	private Map<String, Class<?>> compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
-		debug("Compiling Java source");
+		subTask("Compiling Java source");
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
 		if(javaSourceFiles.isEmpty()) {
@@ -364,7 +364,7 @@ public class ODPCompiler {
 			.flatMap(Set::stream)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		
-		debug(MessageFormat.format("- Compiling {0,choice,0#no classes|1# 1 class|1<{0} classes}", sources.size()));
+		subTask(MessageFormat.format("- Compiling {0,choice,0#no classes|1# 1 class|1<{0} classes}", sources.size()));
 		return classLoader.addClasses(sources);
 	}
 	
@@ -373,7 +373,7 @@ public class ODPCompiler {
 	// *******************************************************************************
 	
 	private Map<CustomControl, XSPCompilationResult> compileCustomControls(JavaSourceClassLoader classLoader) throws Exception {
-		debug("Compiling custom controls");
+		subTask("Compiling custom controls");
 		
 		ConfigParser configParser = ConfigParserFactory.getParserInstance();
 		FacesClassLoader facesClassLoader = new DynamicFacesClassLoader(dynamicXPageBean, classLoader);
@@ -414,7 +414,7 @@ public class ODPCompiler {
 	}
 	
 	private Map<XPage, XSPCompilationResult> compileXPages(JavaSourceClassLoader classLoader) throws Exception {
-		debug("Compiling XPages");
+		subTask("Compiling XPages");
 		Map<XPage, XSPCompilationResult> result = new LinkedHashMap<>();
 		
 		for(XPage xpage : odp.getXPages()) {
@@ -438,7 +438,7 @@ public class ODPCompiler {
 	 * @throws NotesException if there is an API-level problem creating the copy
 	 */
 	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException {
-		debug("Creating destination NSF");
+		subTask("Creating destination NSF");
 		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf");
 		temp.toFile().deleteOnExit();
 		
@@ -462,7 +462,7 @@ public class ODPCompiler {
 	
 	private void importDbProperties(DxlImporter importer, Database database) throws Exception {
 		// DB properties gets special handling
-		debug("Importing DB properties");
+		subTask("Importing DB properties");
 		Path properties = odp.getDbPropertiesFile();
 		Document dxlDoc = ODPUtil.readXml(properties);
 		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode();
@@ -474,7 +474,7 @@ public class ODPCompiler {
 	}
 	
 	private void importBasicElements(DxlImporter importer, Database database) throws Exception {
-		debug("Importing basic design elements");
+		subTask("Importing basic design elements");
 		for(Map.Entry<Path, String> entry : odp.getDirectDXLElements().entrySet()) {
 			if(StringUtil.isNotEmpty(entry.getValue())) {
 				try {
@@ -487,7 +487,7 @@ public class ODPCompiler {
 	}
 	
 	private void importFileResources(DxlImporter importer, Database database) throws Exception {
-		debug("Importing file resources");
+		subTask("Importing file resources");
 		for(AbstractSplitDesignElement res : odp.getFileResources()) {
 			Document dxlDoc = res.getDxl();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
@@ -513,7 +513,7 @@ public class ODPCompiler {
 	}
 	
 	private void importCustomControls(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
-		debug("Importing custom controls");
+		subTask("Importing custom controls");
 		
 		List<CustomControl> ccs = odp.getCustomControls();
 		for(CustomControl cc : ccs) {
@@ -529,7 +529,7 @@ public class ODPCompiler {
 	}
 	
 	private void importXPages(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
-		debug("Importing XPages");
+		subTask("Importing XPages");
 		
 		List<XPage> xpages = odp.getXPages();
 		for(XPage xpage : xpages) {
@@ -567,7 +567,7 @@ public class ODPCompiler {
 	}
 	
 	private void importJavaElements(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
-		debug("Importing Java design elements");
+		subTask("Importing Java design elements");
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
 		for(Map.Entry<Path, List<JavaSource>> entry : javaSourceFiles.entrySet()) {
@@ -612,7 +612,7 @@ public class ODPCompiler {
 	}
 	
 	private void importLotusScriptLibraries(DxlImporter importer, Database database) throws Exception {
-		debug("Importing LotusScript libraries");
+		subTask("Importing LotusScript libraries");
 		
 		List<String> noteIds = new ArrayList<>();
 		for(LotusScriptLibrary lib : odp.getLotusScriptLibraries()) {
@@ -630,7 +630,7 @@ public class ODPCompiler {
 			}
 		}
 
-		debug("- Compiling LotusScript");
+		subTask("- Compiling LotusScript");
 		// In lieu of a dependency graph, just keep bashing at the list until it's done
 		Queue<String> remaining = new ArrayDeque<>(noteIds);
 		Map<String, String> titles = new HashMap<>();
@@ -678,10 +678,8 @@ public class ODPCompiler {
 	// * Internal utility methods
 	// *******************************************************************************
 	
-	private void debug(Object message, Object... params) {
-		if(out != null) {
-			out.println(StringUtil.format(StringUtil.toString(message), params));
-		}
+	private void subTask(Object message, Object... params) {
+		mon.subTask(StringUtil.format(StringUtil.toString(message), params));
 	}
 	
 	private UpdatableLibrary getLibrary(String namespace) {
@@ -743,10 +741,10 @@ public class ODPCompiler {
 			return importedIds;
 		} catch(NotesException ne) {
 			if(ne.text.contains("DXL importer operation failed")) {
-				debug("Exception while importing " + name);
+				subTask("Exception while importing " + name);
 				String log = importer.getLog();
-				debug(log);
-				debug(dxl);
+				subTask(log);
+				subTask(dxl);
 			}
 			throw ne;
 		}

@@ -15,6 +15,7 @@
  */
 package org.openntf.maven.nsfodp;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -32,6 +33,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.IOUtil;
+import org.glassfish.json.JsonUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -52,6 +54,8 @@ import java.util.Objects;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.json.JsonObject;
 
 /**
  * Goal which compiles an on-disk project.
@@ -224,11 +228,15 @@ public class CompileODPMojo extends AbstractMojo {
 			}
 			
 			// Check for an auth form - Domino returns these as status 200
-			if(String.valueOf(res.getFirstHeader("Content-Type").getValue()).startsWith("text/html")) {
+			Header contentType = res.getFirstHeader("Content-Type");
+			if(contentType != null && String.valueOf(contentType.getValue()).startsWith("text/html")) {
 				throw new IOException("Authentication failed for user " + userName);
 			}
  			
 			try(InputStream is = responseEntity.getContent()) {
+				monitorResponse(is);
+				
+				// Now that we're here, the rest will be the compiler output
 				Path result = Files.createTempFile("odpcompiler-output", ".nsf");
 				Files.copy(is, result, StandardCopyOption.REPLACE_EXISTING);
 				return result;
@@ -262,5 +270,73 @@ public class CompileODPMojo extends AbstractMojo {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Reads the response for line-delimited JSON messages until the object's type
+	 * is "done", "cancel", or "error".
+	 * 
+	 * @param is the response input stream
+	 * @throws IOException if there is a problem reading the input stream
+	 * @throws RuntimeException if the work was canceled on the server
+	 */
+	private void monitorResponse(InputStream is) throws IOException {
+		// Start streaming the JSON responses until done
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		String line;
+		while((line = readLine(is, buffer)) != null) {
+			JsonObject obj = (JsonObject)JsonUtil.toJson(line);
+			switch(obj.getString("type")) {
+			case "beginTask":
+				if(log.isInfoEnabled()) {
+					log.info("Begin task: " + obj.getString("name"));
+				}
+				break;
+			case "internalWorked":
+				// Ignore
+				break;
+			case "task":
+				if(log.isInfoEnabled()) {
+					log.info("Begin task: " + obj.getString("name"));
+				}
+				break;
+			case "subTask":
+				if(log.isInfoEnabled()) {
+					log.info(obj.getString("name"));
+				}
+				break;
+			case "work":
+				// Ignore
+				break;
+			case "cancel":
+				throw new RuntimeException("Work was canceled on the server");
+			case "done":
+				return;
+			case "error":
+				System.err.println(obj.getString("stackTrace"));
+				throw new RuntimeException("Server reported an error");
+			default:
+				throw new IllegalArgumentException("Received unexpected JSON message: " + line);
+			}
+		}
+	}
+	
+	/**
+	 * Reads a line of text from the given input stream. This is used in lieu of BufferedReader
+	 * in order to not read into the trailing binary data.
+	 */
+	private static String readLine(InputStream is, ByteArrayOutputStream buffer) throws IOException {
+		buffer.reset();
+		while(true) {
+			int val = is.read();
+			if(val == '\n') {
+				break;
+			} else if(val == '\r') {
+				// ignore these
+			} else {
+				buffer.write(val);
+			}
+		}
+		return buffer.toString();
 	}
 }
