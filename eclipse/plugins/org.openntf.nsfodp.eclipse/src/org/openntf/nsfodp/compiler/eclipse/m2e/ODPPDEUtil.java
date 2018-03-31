@@ -148,6 +148,8 @@ public enum ODPPDEUtil {
 					"Bundle-ManifestVersion: 2\n" + 
 					"Bundle-Name: " + project.getName() + "\n" + 
 					"Bundle-SymbolicName: " + project.getName() + "\n" + 
+					"Automatic-Module-Name: " + project.getName() + "\n" +
+					"Bundle-RequiredExecutionEnvironment: JavaSE-1.8\n" +
 					"Bundle-Version: 1.0.0.qualifier\n").getBytes()); // TODO translate version
 			
 			// Look for dependencies in the plugin.xml
