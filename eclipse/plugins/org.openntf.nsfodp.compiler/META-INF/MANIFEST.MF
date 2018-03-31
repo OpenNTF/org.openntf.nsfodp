@@ -28,3 +28,4 @@ Require-Bundle: org.eclipse.osgi,
  org.openntf.nsfodp.commons
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.compiler.ODPCompilerActivator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

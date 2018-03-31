@@ -6,3 +6,4 @@ Automatic-Module-Name: org.openntf.nsfodp.compiler
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: OpenNTF
 Export-Package: org.openntf.nsfodp.commons
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
