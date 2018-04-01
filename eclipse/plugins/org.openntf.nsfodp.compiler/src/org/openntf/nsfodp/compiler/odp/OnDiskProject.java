@@ -81,7 +81,7 @@ public class OnDiskProject {
 			),
 			new GlobMatcher("Code/ScriptLibraries/*.js", path -> new JavaScriptLibrary(path)),
 			new GlobMatcher("Code/ScriptLibraries/*.jss", path -> new ServerJavaScriptLibrary(path)),
-			new GlobMatcher("META-INF/*", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("META-INF/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
 			new GlobMatcher("plugin.xml", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
 			new GlobMatcher("Resources/Files/*", path -> new FileResource(path)),
 			new GlobMatcher("Resources/Images/*", path -> new ImageResource(path)),
