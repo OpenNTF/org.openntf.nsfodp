@@ -128,7 +128,6 @@ public class ODPCompilerServlet extends HttpServlet {
 					StreamUtil.copyStream(is, gzos);
 				}
 			}
-			os.flush();
 			resp.flushBuffer();
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
