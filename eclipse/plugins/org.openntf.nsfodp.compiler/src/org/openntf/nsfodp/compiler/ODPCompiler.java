@@ -498,8 +498,16 @@ public class ODPCompiler {
 	private void importFileResources(DxlImporter importer, Database database) throws Exception {
 		subTask("Importing file resources");
 		for(AbstractSplitDesignElement res : odp.getFileResources()) {
-			Document dxlDoc = res.getDxl();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
+			
+			// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
+			if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) {
+				if(Files.size(res.getDataFile()) == 0) {
+					continue;
+				}
+			}
+			
+			Document dxlDoc = res.getDxl();
 			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath);
 			
 			if(res instanceof FileResource) {
