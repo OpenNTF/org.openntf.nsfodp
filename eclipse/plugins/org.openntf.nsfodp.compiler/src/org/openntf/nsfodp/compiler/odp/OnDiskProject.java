@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,7 @@ public class OnDiskProject {
 		this.FILE_RESOURCES = Arrays.asList(
 			new GlobMatcher(".classpath", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
 			new GlobMatcher(".settings/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))),
+			new GlobMatcher("Code/Jars/**", path -> new FileResource(path)),
 			new GlobMatcher("Code/Java/**", path -> 
 				path.toString().endsWith(".java") || path.toString().endsWith(AbstractSplitDesignElement.EXT_METADATA) ? null : new FileResource(path, true)
 			),
@@ -101,6 +103,33 @@ public class OnDiskProject {
 			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
 		}
 		return classpath;
+	}
+	
+	/**
+	 * Generates a collection of the Jar files inside this ODP to be used during compilation, including
+	 * those in Code/Jars as well as WEB-INF/lib.
+	 * 
+	 * @return a collection of {@link Path}s representing jar files to be used in compilation
+	 * @throws IOException 
+	 * @throws XMLException 
+	 */
+	public Collection<Path> getJars() throws IOException, XMLException {
+		List<Path> result = new ArrayList<>();
+		
+		Path jars = baseDir.resolve("Code").resolve("Jars");
+		if(Files.exists(jars) && Files.isDirectory(jars)) {
+			Files.find(jars, Integer.MAX_VALUE,
+					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar")
+				).forEach(result::add);
+		}
+		Path lib = baseDir.resolve("WebContent").resolve("WEB-INF").resolve("lib");
+		if(Files.exists(lib) && Files.isDirectory(lib)) {
+			Files.find(lib, Integer.MAX_VALUE,
+					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar")
+				).forEach(result::add);
+		}
+		result.addAll(this.findManualJars());
+		return result;
 	}
 	
 	public Path getDbPropertiesFile() {
@@ -293,6 +322,24 @@ public class OnDiskProject {
 			.map(path -> getBaseDirectory().resolve(path))
 			.filter(Files::exists)
 			.filter(Files::isDirectory)
+			.collect(Collectors.toList());
+	}
+	private List<Path> findManualJars() throws IOException, XMLException {
+		Path classpath = getClasspathFile();
+		if(!Files.exists(classpath)) {
+			return Collections.emptyList();
+		}
+		Document domDoc;
+		try(InputStream is = Files.newInputStream(classpath)) {
+			domDoc = DOMUtil.createDocument(is);
+		}
+		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=lib]");
+		return Arrays.stream(xresult.getNodes())
+			.map(node -> Element.class.cast(node))
+			.map(el -> el.getAttribute("path"))
+			.map(path -> getBaseDirectory().resolve(path))
+			.filter(Files::exists)
+			.filter(Files::isRegularFile)
 			.collect(Collectors.toList());
 	}
 }

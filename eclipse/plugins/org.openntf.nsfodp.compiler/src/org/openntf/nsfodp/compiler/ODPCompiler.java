@@ -197,7 +197,7 @@ public class ODPCompiler {
 			if(hasXPages) {
 				initRegistry();
 	
-				// Compile Java classes
+				// Build our classpath
 				Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
 				
 				// Special support for Notes.jar
@@ -215,20 +215,26 @@ public class ODPCompiler {
 							try(InputStream is = jar.getInputStream(notesJar)) {
 								Files.copy(is, tempFile);
 							}
-							dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
+							dependencies.add("jar:" + tempFile.toUri().toString());
 						}
 					} else {
 						Path path = f.toPath().resolve("Notes.jar");
 						Path tempFile = Files.createTempFile("Notes", ".jar");
 						Files.delete(tempFile);
 						Files.copy(path, tempFile);
-						dependencies.add("jar:" + tempFile.toUri().toString() + "!/");
+						dependencies.add("jar:" + tempFile.toUri().toString());
 					}
+				}
+				
+				// Add any Jars from the ODP
+				for(Path jar : odp.getJars()) {
+					dependencies.add("jar:" + jar.toUri());
 				}
 				
 				String[] classPath = dependencies.toArray(new String[dependencies.size()]);
 				classLoader = new JavaSourceClassLoader(cl, compilerOptions, classPath);
-				
+
+				// Compile Java classes
 				compileJavaSources(classLoader);
 				compileCustomControls(classLoader);
 				compileXPages(classLoader);
