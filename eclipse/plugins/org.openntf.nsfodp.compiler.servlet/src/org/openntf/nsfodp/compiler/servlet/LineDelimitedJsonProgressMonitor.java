@@ -124,7 +124,7 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	
 	public static String message(Object... parts) {
 		JsonObject json = new JsonJavaObject();
-		for(int i = 0; i < parts.length; i++) {
+		for(int i = 0; i < parts.length; i += 2) {
 			String key = StringUtil.toString(parts[i]);
 			Object val = i < parts.length-1 ? parts[i+1] : null;
 			json.putJsonProperty(key, val);
