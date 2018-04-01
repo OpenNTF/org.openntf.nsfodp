@@ -253,10 +253,6 @@ public class ODPCompiler {
 					importJavaElements(importer, database, classLoader, compiledClassNames);
 				}
 				
-				subTask("Cleaning database");
-				database.compact();
-				database.fixup();
-				database.recycle();
 				return file;
 			} finally {
 				lotusSession.recycle();
