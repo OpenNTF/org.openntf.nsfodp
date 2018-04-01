@@ -33,8 +33,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.IOUtil;
-import org.glassfish.json.JsonUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,8 +57,6 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.json.JsonObject;
 
 /**
  * Goal which compiles an on-disk project.
@@ -287,12 +287,16 @@ public class CompileODPMojo extends AbstractMojo {
 		// Start streaming the JSON responses until done
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		String line;
+		JsonParser parser = new JsonParser();
 		while((line = readLine(is, buffer)) != null) {
-			JsonObject obj = (JsonObject)JsonUtil.toJson(line);
-			switch(obj.getString("type")) {
+			if(log.isDebugEnabled()) {
+				log.debug("Received JSON message: " + line);
+			}
+			JsonObject obj = parser.parse(line).getAsJsonObject();
+			switch(obj.get("type").getAsString()) {
 			case "beginTask":
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.getString("name"));
+					log.info("Begin task: " + obj.get("name").getAsString());
 				}
 				break;
 			case "internalWorked":
@@ -300,12 +304,12 @@ public class CompileODPMojo extends AbstractMojo {
 				break;
 			case "task":
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.getString("name"));
+					log.info("Begin task: " + obj.get("name").getAsString());
 				}
 				break;
 			case "subTask":
 				if(log.isInfoEnabled()) {
-					log.info(obj.getString("name"));
+					log.info(obj.get("name").getAsString());
 				}
 				break;
 			case "work":
@@ -316,7 +320,7 @@ public class CompileODPMojo extends AbstractMojo {
 			case "done":
 				return;
 			case "error":
-				System.err.println(obj.getString("stackTrace"));
+				System.err.println(obj.get("stackTrace").getAsString());
 				throw new RuntimeException("Server reported an error");
 			default:
 				throw new IllegalArgumentException("Received unexpected JSON message: " + line);
