@@ -242,7 +242,7 @@ public enum CompositeDataUtil {
 					buf.putShort(SIG_CDBLOBPART);                     // Header.Signature
 					buf.putShort((short)(segSize + SIZE_CDBLOBPART)); // Header.Length
 					buf.putShort(SIG_CDEVENT);                        // OwnerSig
-					buf.putShort((short)dataSize);                     // Length
+					buf.putShort((short)segSize);                     // Length
 					buf.putShort((short)BLOBPART_SIZE_CAP);           // BlobMax
 					buf.put(new byte[8]);                             // Reserved
 					
