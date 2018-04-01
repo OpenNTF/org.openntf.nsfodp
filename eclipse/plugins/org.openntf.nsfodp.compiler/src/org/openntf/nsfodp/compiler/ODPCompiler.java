@@ -651,6 +651,7 @@ public class ODPCompiler {
 					NotesGC.runWithAutoGC(() -> {
 						NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
 						notesNote.compileLotusScript();
+						notesNote.sign();
 						notesNote.update();
 						return null;
 					});
@@ -761,6 +762,7 @@ public class ODPCompiler {
 			NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
 			notesNote.check();
 			notesNote.sign();
+			notesNote.update();
 			return null;
 		});
 	}
