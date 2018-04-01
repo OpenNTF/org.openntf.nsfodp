@@ -631,9 +631,8 @@ public class ODPCompiler {
 				Element el = DXLUtil.writeItemString(dxlDoc, "$ScriptLib", false, scriptChunk);
 				el.setAttribute("sign", "true");
 				el.setAttribute("summary", "false");
-				
-				noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + odp.getBaseDirectory().relativize(lib.getDataFile())));
 			}
+			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + odp.getBaseDirectory().relativize(lib.getDataFile())));
 		}
 
 		subTask("- Compiling LotusScript");
@@ -660,6 +659,7 @@ public class ODPCompiler {
 					titles.put(noteId, title + " - " + err);
 				} catch(NotesError err) {
 					if(err.getId() == 12051) { // Same as above, but not encapsulated
+						titles.put(noteId, title + " - " + err);
 						nextPass.add(noteId);
 					} else {
 						throw err;
@@ -674,9 +674,9 @@ public class ODPCompiler {
 		}
 		if(!remaining.isEmpty()) {
 			String notes = remaining.stream()
-				.map(noteId -> titles.get(noteId) + " (" + noteId + ")")
-				.collect(Collectors.joining(", "));
-			throw new RuntimeException("Unable to compile LotusScript in notes: " + notes);
+				.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId))
+				.collect(Collectors.joining("\n"));
+			throw new RuntimeException("Unable to compile LotusScript in notes:\n\n" + notes);
 		}
 	}
 	
