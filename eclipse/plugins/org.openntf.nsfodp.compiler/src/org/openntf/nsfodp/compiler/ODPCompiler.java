@@ -253,7 +253,10 @@ public class ODPCompiler {
 					importJavaElements(importer, database, classLoader, compiledClassNames);
 				}
 				
-				
+				subTask("Cleaning database");
+				database.compact();
+				database.fixup();
+				database.recycle();
 				return file;
 			} finally {
 				lotusSession.recycle();
@@ -735,13 +738,6 @@ public class ODPCompiler {
 			List<String> importedIds = new ArrayList<>();
 			String noteId = importer.getFirstImportedNoteID();
 			while(StringUtil.isNotEmpty(noteId)) {
-				lotus.domino.Document doc = database.getDocumentByID(noteId);
-				try {
-					checkAndSign(doc);
-				} finally {
-					doc.recycle();
-				}
-				
 				importedIds.add(noteId);
 				noteId = importer.getNextImportedNoteID(noteId);
 			}
@@ -755,15 +751,5 @@ public class ODPCompiler {
 			}
 			throw ne;
 		}
-	}
-	
-	private void checkAndSign(lotus.domino.Document doc) throws Exception {
-		NotesGC.runWithAutoGC(() -> {
-			NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
-			notesNote.check();
-			notesNote.sign();
-			notesNote.update();
-			return null;
-		});
 	}
 }
