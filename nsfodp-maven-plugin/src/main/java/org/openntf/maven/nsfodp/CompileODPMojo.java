@@ -52,6 +52,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -238,7 +239,9 @@ public class CompileODPMojo extends AbstractMojo {
 				
 				// Now that we're here, the rest will be the compiler output
 				Path result = Files.createTempFile("odpcompiler-output", ".nsf");
-				Files.copy(is, result, StandardCopyOption.REPLACE_EXISTING);
+				try(InputStream gzis = new GZIPInputStream(is)) {
+					Files.copy(gzis, result, StandardCopyOption.REPLACE_EXISTING);
+				}
 				return result;
 			}
 		}

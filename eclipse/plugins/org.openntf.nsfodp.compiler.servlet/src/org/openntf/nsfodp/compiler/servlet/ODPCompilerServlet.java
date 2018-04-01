@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -123,7 +124,9 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			// Now stream the NSF
 			try(InputStream is = Files.newInputStream(nsf)) {
-				StreamUtil.copyStream(is, os);
+				try(OutputStream gzos = new GZIPOutputStream(os)) {
+					StreamUtil.copyStream(is, gzos);
+				}
 			}
 			os.flush();
 			resp.flushBuffer();
