@@ -19,6 +19,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.openntf.nsfodp.compiler.util.CompositeDataUtil;
+import org.openntf.nsfodp.compiler.util.DXLUtil;
+import org.openntf.nsfodp.compiler.util.ODSConstants;
+import org.w3c.dom.Document;
+
+import com.ibm.commons.xml.XMLException;
 
 public class JavaScriptLibrary extends AbstractSourceDesignElement {
 
@@ -39,5 +44,15 @@ public class JavaScriptLibrary extends AbstractSourceDesignElement {
 	@Override
 	public byte[] getCompositeData() throws IOException {
 		return CompositeDataUtil.getJavaScriptLibraryData(getDataFile());
+	}
+	
+	@Override
+	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
+		byte[] data = getCompositeData();
+		String itemName = getFileDataItem();
+		
+		DXLUtil.writeItemDataRaw(dxlDoc, itemName, data, ODSConstants.PER_BLOB_ITEM_DATA_CAP, ODSConstants.SIZE_CDEVENT);
+		
+		return dxlDoc;
 	}
 }

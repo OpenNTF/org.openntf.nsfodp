@@ -49,7 +49,8 @@ public class ImageResource extends FileResource {
 	public String getFileSizeItem() {
 		return null;
 	}
-
+	
+	@Override
 	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
 		byte[] data = getCompositeData();
 		String itemName = getFileDataItem();
@@ -58,7 +59,8 @@ public class ImageResource extends FileResource {
 		
 		return dxlDoc;
 	}
-	
+
+	@Override
 	public byte[] getCompositeData() throws IOException, XMLException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {

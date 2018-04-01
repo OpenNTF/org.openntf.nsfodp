@@ -112,5 +112,5 @@ public enum ODSConstants {
 	
 	public static final int BLOBPART_SIZE_CAP = 20000;
 	/** The amount of data to store in each CD image record item */
-	public static final int PER_BLOG_ITEM_DATA_CAP = (SIZE_CDBLOBPART + BLOBPART_SIZE_CAP) * 2;
+	public static final int PER_BLOB_ITEM_DATA_CAP = (SIZE_CDBLOBPART + BLOBPART_SIZE_CAP) * 2;
 }

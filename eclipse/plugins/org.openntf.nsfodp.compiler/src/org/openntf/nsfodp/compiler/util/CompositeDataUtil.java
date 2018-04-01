@@ -211,8 +211,7 @@ public enum CompositeDataUtil {
 			segCount++;
 		}
 		
-		int paddedLength = fileLength + 1; // Make sure there's at least one \0 at the end(?)
-		int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + paddedLength + (paddedLength % 2);
+		int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + fileLength + (fileLength % 2);
 		
 		// Now create a CD record for the file data
 		// TODO this could be a little more efficient by writing to a Base64 wrapper and
@@ -220,14 +219,14 @@ public enum CompositeDataUtil {
 		ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
 		// CDEVENT
 		{
-			buf.putShort(SIG_CDEVENT);            // Header.Signature
-			buf.putShort(SIZE_CDEVENT);           // Header.Length
-			buf.putInt(0);                        // Flags
-			buf.putShort(HTML_EVENT_LIBRARY);     // EventType
-			buf.putShort(ACTION_TYPE_JAVASCRIPT); // ActionType
-			buf.putInt(paddedLength);               // ActionLength
-			buf.putShort((short)0);               // SignatureLength
-			buf.put(new byte[14]);                // Reserved
+			buf.putShort(SIG_CDEVENT);                 // Header.Signature
+			buf.putShort(SIZE_CDEVENT);                // Header.Length
+			buf.putInt(0);                             // Flags
+			buf.putShort(HTML_EVENT_LIBRARY);          // EventType
+			buf.putShort(ACTION_TYPE_JAVASCRIPT);      // ActionType
+			buf.putInt(fileLength + (fileLength % 2)); // ActionLength
+			buf.putShort((short)0);                    // SignatureLength
+			buf.put(new byte[14]);                     // Reserved
 		}
 		try(InputStream is = Files.newInputStream(file)) {
 			for(int i = 0; i < segCount; i++) {
@@ -235,7 +234,7 @@ public enum CompositeDataUtil {
 	
 				// Figure out our data and segment sizes
 				int dataOffset = BLOBPART_SIZE_CAP * i;
-				short dataSize = (short)Math.min((paddedLength - dataOffset), BLOBPART_SIZE_CAP);
+				short dataSize = (short)Math.min((fileLength - dataOffset), BLOBPART_SIZE_CAP);
 				short segSize = (short)(dataSize + (dataSize % 2));
 	
 				// CDBLOBPART
@@ -243,7 +242,7 @@ public enum CompositeDataUtil {
 					buf.putShort(SIG_CDBLOBPART);                     // Header.Signature
 					buf.putShort((short)(segSize + SIZE_CDBLOBPART)); // Header.Length
 					buf.putShort(SIG_CDEVENT);                        // OwnerSig
-					buf.putShort((short)segSize);                     // Length
+					buf.putShort((short)dataSize);                     // Length
 					buf.putShort((short)BLOBPART_SIZE_CAP);           // BlobMax
 					buf.put(new byte[8]);                             // Reserved
 					
@@ -251,7 +250,7 @@ public enum CompositeDataUtil {
 					is.read(segData);
 					buf.put(segData);
 					if(segSize > dataSize) {
-						buf.put(new byte[segSize-dataSize]);
+						buf.put((byte)0);
 					}
 				}
 			}
