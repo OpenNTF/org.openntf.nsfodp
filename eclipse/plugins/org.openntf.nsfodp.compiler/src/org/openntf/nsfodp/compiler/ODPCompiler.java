@@ -105,6 +105,8 @@ import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
+import com.ibm.domino.napi.NException;
+import com.ibm.domino.napi.c.Os;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -147,12 +149,22 @@ public class ODPCompiler {
 	private static final String BLANK_DB = "/res/blank.nsf";
 	private static final String NOTEID_UNTITLED_VIEW = "11A";
 	
+	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL";
+	private static boolean DEBUG_DXL = false;
+	
 	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, IProgressMonitor mon) throws FileNotFoundException, XMLException, IOException {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
 		this.odp = Objects.requireNonNull(onDiskProject);
 		this.mon = mon;
 		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), facesRegistry);
 		this.resourceBundleSource = new MultiPathResourceBundleSource(odp.getResourcePaths());
+		
+		try {
+			int debugDxl = Os.OSGetEnvironmentInt(INI_DEBUGDXL);
+			DEBUG_DXL = debugDxl > 0;
+		} catch(NException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public OnDiskProject getOnDiskProject() {
@@ -763,12 +775,10 @@ public class ODPCompiler {
 		}
 	}
 	
-	private static final boolean DEBUG_DXL = false;
-	
 	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws Exception {
 		try {
 			if(DEBUG_DXL) {
-				String tempFileName = "c:\\temp\\dxl\\" + name.replace('/', '-').replace('\\', '-') + ".xml";
+				String tempFileName = NSFODPUtil.getTempDirectory() + File.separator + name.replace('/', '-').replace('\\', '-') + ".xml";
 				try(OutputStream os = Files.newOutputStream(Paths.get(tempFileName))) {
 					os.write(dxl.getBytes());
 				}
@@ -785,10 +795,7 @@ public class ODPCompiler {
 			return importedIds;
 		} catch(NotesException ne) {
 			if(ne.text.contains("DXL importer operation failed")) {
-				subTask("Exception while importing " + name);
-				String log = importer.getLog();
-				subTask(log);
-				subTask(dxl);
+				throw new RuntimeException("DXL import failed for element '" + name + "':\n" + importer.getLog(), ne);
 			}
 			throw ne;
 		}
