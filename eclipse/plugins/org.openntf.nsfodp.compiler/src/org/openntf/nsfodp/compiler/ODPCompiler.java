@@ -43,6 +43,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -493,17 +494,40 @@ public class ODPCompiler {
 	
 	private void importFileResources(DxlImporter importer, Database database) throws Exception {
 		subTask("Importing file resources");
-		for(AbstractSplitDesignElement res : odp.getFileResources()) {
-			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
-			
-			// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
-			if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) {
-				if(Files.size(res.getDataFile()) == 0) {
-					continue;
+		
+		// Generate DXL in parallel
+		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
+			.parallel()
+			.filter(res -> {
+				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
+				
+				// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
+				if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) {
+					try {
+						if(Files.size(res.getDataFile()) == 0) {
+							return false;
+						}
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
 				}
-			}
-			
-			Document dxlDoc = res.getDxl();
+				return true;
+			})
+			.collect(Collectors.toMap(
+				Function.identity(),
+				res -> {
+					try {
+						return res.getDxl();
+					} catch (XMLException | IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			));
+		
+		for(Map.Entry<AbstractSplitDesignElement, Document> entry : elements.entrySet()) {
+			AbstractSplitDesignElement res = entry.getKey();
+			Document dxlDoc = entry.getValue();
+			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
 			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath);
 			
 			if(res instanceof FileResource) {
