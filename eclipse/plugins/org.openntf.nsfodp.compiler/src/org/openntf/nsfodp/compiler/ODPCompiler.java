@@ -21,6 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
@@ -258,6 +260,11 @@ public class ODPCompiler {
 			} finally {
 				lotusSession.recycle();
 			}
+		} catch(JavaCompilerException e) {
+			StringWriter o = new StringWriter();
+			PrintWriter errOut = new PrintWriter(o);
+			e.printExtraInformation(errOut);
+			throw new RuntimeException("Java compilation failed:\n" + o, e);
 		} finally {
 			uninstallBundles(bundles);
 		}
