@@ -311,7 +311,7 @@ public enum ODPPDEUtil {
 								IClasspathEntry.CPE_SOURCE,
 								eclipsePath,
 								new IPath[0],
-								new IPath[0],
+								new IPath[] { new Path("**/*.metadata") },
 								null,
 								null,
 								null, // TODO look up output entry
