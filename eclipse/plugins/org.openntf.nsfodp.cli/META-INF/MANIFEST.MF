@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: On-Disk-Project Compiler CLI
-Bundle-SymbolicName: org.openntf.nsfodp.compiler.cli;singleton:=true
+Bundle-SymbolicName: org.openntf.nsfodp.cli;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler.cli
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: OpenNTF
@@ -11,9 +11,8 @@ Require-Bundle: org.eclipse.osgi,
  com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  org.openntf.nsfodp.compiler
-Bundle-Activator: org.openntf.xsp.extlibx.bazaar.odp.compiler.cli.CLIActivator
-Bundle-ClassPath: .,
- lib/commons-cli-1.4.jar
-Main-Class: org.openntf.xsp.extlibx.bazaar.odpcompiler.cli.CLIApp
+Bundle-Activator: org.openntf.nsfodp.cli.CLIActivator
+Bundle-ClassPath: .
+Main-Class: org.openntf.nsfodp.cli.CLIApp
 Class-Path: lib/org.eclipse.osgi_3.12.50.v20170928-1321.jar
 Import-Package: lotus.domino

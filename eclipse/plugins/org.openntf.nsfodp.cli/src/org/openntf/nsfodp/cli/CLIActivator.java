@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.xsp.extlibx.bazaar.odpcompiler.cli;
+package org.openntf.nsfodp.cli;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.ODPCompiler;
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.odp.OnDiskProject;
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.FilesystemUpdateSite;
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.update.UpdateSite;
+import org.openntf.nsfodp.compiler.ODPCompiler;
+import org.openntf.nsfodp.compiler.odp.OnDiskProject;
+import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
+import org.openntf.nsfodp.compiler.update.UpdateSite;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -44,7 +44,7 @@ public class CLIActivator implements BundleActivator {
 		File siteFile = new File(siteDir);
 		UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 		
-		ODPCompiler compiler = new ODPCompiler(bundleContext, odp, System.out);
+		ODPCompiler compiler = new ODPCompiler(bundleContext, odp, null);
 		compiler.addUpdateSite(updateSite);
 		Path nsf = compiler.compile(getClass().getClassLoader());
 		System.out.println("Created NSF " + nsf);

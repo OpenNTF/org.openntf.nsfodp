@@ -42,7 +42,6 @@
 		-->
 		<module>plugins/org.openntf.nsfodp.compiler</module>
 		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
-		<!-- <module>plugins/org.openntf.nsfodp.compiler.cli</module> -->
 		<module>features/org.openntf.nsfodp.compiler.feature</module>
 		
 		<!--
@@ -60,6 +59,8 @@
 		<module>plugins/org.openntf.nsfodp.eclipse</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
+		
+		<module>plugins/org.openntf.nsfodp.cli</module>
 		
 		<!--
 			Distribution

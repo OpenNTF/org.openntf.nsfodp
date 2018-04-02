@@ -742,7 +742,9 @@ public class ODPCompiler {
 	// *******************************************************************************
 	
 	private void subTask(Object message, Object... params) {
-		mon.subTask(StringUtil.format(StringUtil.toString(message), params));
+		if(mon != null) {
+			mon.subTask(StringUtil.format(StringUtil.toString(message), params));
+		}
 	}
 	
 	private UpdatableLibrary getLibrary(String namespace) {

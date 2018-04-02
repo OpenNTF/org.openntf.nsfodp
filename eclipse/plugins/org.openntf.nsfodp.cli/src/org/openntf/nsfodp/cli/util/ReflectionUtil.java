@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.xsp.extlibx.bazaar.odpcompiler.cli.util;
+package org.openntf.nsfodp.cli.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 
-import org.openntf.xsp.extlibx.bazaar.odpcompiler.cli.CLIApp;
+import org.openntf.nsfodp.cli.CLIApp;
 
 /**
  * Utility methods for dealing with context objects reflectively

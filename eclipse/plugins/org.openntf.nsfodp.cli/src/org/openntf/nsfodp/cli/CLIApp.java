@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.xsp.extlibx.bazaar.odpcompiler.cli;
+package org.openntf.nsfodp.cli;
+
+import static org.openntf.nsfodp.cli.util.ReflectionUtil.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.openntf.xsp.extlibx.bazaar.odpcompiler.cli.util.ReflectionUtil.*;
 
 public class CLIApp {
 	
