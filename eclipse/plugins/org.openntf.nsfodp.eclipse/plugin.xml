@@ -68,14 +68,26 @@
 				label="Compile On-Disk Project">
 			</command>
 		</menuContribution>
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+			<command
+				commandId="org.openntf.nsfodp.eclipse.deployNSF"
+				label="Deploy NSF">
+			</command>
+		</menuContribution>
 	</extension>
    
 	<extension
 		point="org.eclipse.ui.commands">
 		<command
+			id="org.openntf.nsfodp.eclipse.deployNSF"
+			name="Deploy NSF"
+			defaultHandler="org.openntf.nsfodp.compiler.eclipse.handler.DeployNSFHandler">
+		</command>
+		<command
 			id="org.openntf.nsfodp.eclipse.compileODP"
 			name="Compile On-Disk Project"
-			defaultHandler="org.openntf.nsfodp.compiler.eclipse.CompileODPHandler">
+			defaultHandler="org.openntf.nsfodp.compiler.eclipse.handler.CompileODPHandler">
 		</command>
 	</extension>
 

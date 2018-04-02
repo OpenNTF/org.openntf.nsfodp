@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.servlet;
+package org.openntf.nsfodp.commons;
 
 import java.io.IOException;
 import java.io.OutputStream;

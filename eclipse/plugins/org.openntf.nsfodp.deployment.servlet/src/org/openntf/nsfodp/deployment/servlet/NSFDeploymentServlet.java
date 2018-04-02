@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -30,9 +31,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.deployment.DeployNSFTask;
 
@@ -62,10 +67,8 @@ public class NSFDeploymentServlet extends HttpServlet {
 		Principal user = req.getUserPrincipal();
 		resp.setBufferSize(0);
 		
-		OutputStream os = resp.getOutputStream();
+		ServletOutputStream os = resp.getOutputStream();
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream out = new PrintStream(baos);
 		try {
 			if("Anonymous".equalsIgnoreCase(user.getName())) {
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -128,20 +131,22 @@ public class NSFDeploymentServlet extends HttpServlet {
 				}
 			}
 			
+			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
+			
 			DeployNSFTask task = new DeployNSFTask(nsf, destPath, replaceDesign);
 			task.run();
 			
-			resp.setStatus(HttpServletResponse.SC_OK);
-			resp.setContentType("text/plain");
-			os.write(("NSF successfully deployed to " + destPath).getBytes());
+			mon.done();
 		} catch(Throwable e) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PrintWriter out = new PrintWriter(baos);
 			e.printStackTrace(out);
-			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			resp.setContentType("text/plain");
-			os.write(baos.toByteArray());
-		} finally {
 			out.flush();
-			out.close();
+			os.println(LineDelimitedJsonProgressMonitor.message(
+				"type", "error",
+				"stackTrace", baos.toString()
+				)
+			);
 		}
 	}
 }

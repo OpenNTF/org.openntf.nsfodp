@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;

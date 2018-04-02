@@ -7,3 +7,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: OpenNTF
 Export-Package: org.openntf.nsfodp.commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: javax.servlet;version="2.5.0",
+ javax.servlet.http;version="2.5.0",
+ lotus.domino
+Require-Bundle: org.eclipse.core.runtime,
+ com.ibm.commons

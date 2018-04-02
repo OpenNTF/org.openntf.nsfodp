@@ -19,6 +19,9 @@ import com.ibm.domino.osgi.core.context.ContextInfo;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+
+import lotus.domino.AdministrationProcess;
 import lotus.domino.Database;
 import lotus.domino.NotesException;
 import lotus.domino.Session;
@@ -51,7 +54,6 @@ public class DeployNSFTask implements Runnable {
 	public void run() {
 		try {
 			Session session = ContextInfo.getUserSession();
-			Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString());
 			
 			String server, filePath;
 			int bangIndex = destPath.indexOf("!!");
@@ -67,9 +69,19 @@ public class DeployNSFTask implements Runnable {
 				throw new IllegalStateException("Destination database exists but replaceDesign is false: " + destPath);
 			}
 			
-			// TODO handle replace design
-			// TODO sign design
-			dest = source.createFromTemplate(server, filePath, false);
+			if(dest.isOpen()) {
+				// Then do a replace design
+				ReplaceDesignTaskLocal task = new ReplaceDesignTaskLocal(filePath, nsfFile, new NullProgressMonitor());
+				task.run();
+			} else {
+				Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString());
+				dest = source.createFromTemplate(server, filePath, false);
+			}
+			AdministrationProcess adminp = session.createAdministrationProcess(server);
+			adminp.signDatabaseWithServerID(server, filePath);
+			session.sendConsoleCommand(server, "tell adminp p im");
+			
+			
 		} catch(NotesException ne) {
 			throw new RuntimeException("Encountered NotesException while deploying NSF", ne);
 		}

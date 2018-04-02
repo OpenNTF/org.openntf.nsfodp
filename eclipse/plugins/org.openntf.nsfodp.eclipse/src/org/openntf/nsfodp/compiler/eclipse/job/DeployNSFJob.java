@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse;
+package org.openntf.nsfodp.compiler.eclipse.job;
 
 import java.io.File;
 
@@ -35,12 +35,12 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 
 @SuppressWarnings("restriction")
-public class CompileODPJob extends Job {
+public class DeployNSFJob extends Job {
 	
 	private final IProject project;
 
-	public CompileODPJob(IProject project) {
-		super("Compile ODP");
+	public DeployNSFJob(IProject project) {
+		super("Deploy NSF");
 		this.project = project;
 	}
 
@@ -55,7 +55,7 @@ public class CompileODPJob extends Job {
 			ILaunchConfigurationType launchConfigurationType = launchManager.getLaunchConfigurationType(MavenLaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID);
 			ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, "Executing POM");
 			workingCopy.setAttribute(MavenLaunchConstants.ATTR_POM_DIR, pomFile.getParent());
-			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, "nsfodp:compile -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
+			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, "deploy -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
 			workingCopy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
 			ILaunch launch = workingCopy.launch("run", monitor, false, true); //$NON-NLS-1$
 			synchronized(workingCopy) {

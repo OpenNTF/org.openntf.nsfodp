@@ -15,7 +15,6 @@
  */
 package org.openntf.maven.nsfodp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +42,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.IOUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
+import org.openntf.maven.nsfodp.util.ResponseUtil;
 
 /**
  * Goal which compiles deploys an NSF to a Domino server.
@@ -124,7 +123,7 @@ public class DeployNSFMojo extends AbstractMojo {
 			}
 			HttpPost post = new HttpPost(servlet);
 			
-			String userName = ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.deployServer, post, this.log);
+			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.deployServer, post, this.log);
 			
 			HttpEntity entity = MultipartEntityBuilder.create()
 					.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
@@ -136,32 +135,10 @@ public class DeployNSFMojo extends AbstractMojo {
 			post.setEntity(entity);
 			
 			HttpResponse res = client.execute(post);
-			int status = res.getStatusLine().getStatusCode();
-			HttpEntity responseEntity = res.getEntity();
-			if(log.isDebugEnabled()) {
-				log.debug("Received entity: " + responseEntity);
-			}
-			
-			String responseBody;
-			try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-				try(InputStream is = responseEntity.getContent()) {
-					IOUtil.copy(is, baos);
-				}
-				responseBody = baos.toString();
-			}
-			if(status < 200 || status >= 300) {
-				System.err.println("Received error from server:");
-				System.err.println(responseBody);
-				throw new IOException("Received unexpected HTTP response: " + res.getStatusLine());
-			}
-			
-			// Check for an auth form - Domino returns these as status 200
-			if(String.valueOf(res.getFirstHeader("Content-Type").getValue()).startsWith("text/html")) {
-				throw new IOException("Authentication failed for user " + userName);
-			}
+			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
  			
-			if(log.isInfoEnabled()) {
-				log.info(responseBody);
+			try(InputStream is = responseEntity.getContent()) {
+				ResponseUtil.monitorResponse(log, is);
 			}
 		} catch(MojoExecutionException e) {
 			throw e;

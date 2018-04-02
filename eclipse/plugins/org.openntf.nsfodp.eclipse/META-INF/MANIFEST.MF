@@ -21,6 +21,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.ui
 Export-Package: org.openntf.nsfodp.compiler.eclipse,
  org.openntf.nsfodp.compiler.eclipse.content,
+ org.openntf.nsfodp.compiler.eclipse.handler,
  org.openntf.nsfodp.compiler.eclipse.m2e,
  org.openntf.nsfodp.compiler.eclipse.nature
 Bundle-ActivationPolicy: lazy
