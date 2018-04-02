@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,9 +44,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.m2e.core.project.MavenProjectUtils;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
@@ -267,33 +272,63 @@ public enum ODPPDEUtil {
 		}
 	}
 	
-	private static void setClasspath(IProject project, IPluginModelBase model, IProgressMonitor monitor)
-			throws CoreException {
-		IClasspathEntry[] entries = ClasspathComputer.getClasspath(project, model, null,
-				true /* clear existing entries */, true);
-		JavaCore.create(project).setRawClasspath(entries, null);
-		// workaround PDE sloppy model management during the first multimodule project
-		// import in eclipse session
-		// 1. m2e creates all modules as simple workspace projects without JDT or PDE
-		// natures
-		// 2. first call to
-		// org.eclipse.pde.internal.core.PluginModelManager.initializeTable() reads all
-		// workspace
-		// projects regardless of their natures (see
-		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=319268)
-		// 3. going through all projects one by one
-		// 3.1. m2e enables JDE and PDE natures and adds PDE classpath container
-		// 3.2. org.eclipse.pde.internal.core.PDEClasspathContainer.addProjectEntry
-		// ignores all project's dependencies
-		// that do not have JAVA nature. at this point PDE classpath is missing some/all
-		// workspace dependencies.
-		// 4. PDE does not re-resolve classpath when dependencies get JAVA nature
-		// enabled
-
-		// as a workaround, touch project bundle manifests to force PDE re-read the
-		// model, re-resolve dependencies
-		// and recalculate PDE classpath
-
+	private static void setClasspath(IProject project, IPluginModelBase model, IProgressMonitor monitor) throws CoreException {
+		IClasspathEntry[] entries = ClasspathComputer.getClasspath(project, model, null, true, true);
+		List<IClasspathEntry> resolvedEntries = new ArrayList<>(Arrays.asList(entries));
+		
+		// This may not have included the source folders from build.properties for some reason,
+		//  so compute them manually
+		IFile buildProperties = project.getFile("build.properties");
+		if(buildProperties.isAccessible()) {
+			Properties props = new Properties();
+			try(InputStream is = buildProperties.getContents()) {
+				props.load(is);
+			} catch (IOException e) {
+				throw new CoreException(new Status(IStatus.ERROR, "Exception while loading build.properties", e.toString(), e));
+			}
+			for(Map.Entry<Object, Object> entry : props.entrySet()) {
+				String key = String.valueOf(entry.getKey());
+				if(key.startsWith("source.")) {
+					if(entry.getValue() == null) {
+						continue;
+					}
+					
+					String val = String.valueOf(entry.getValue());
+					String[] paths = val.split(",");
+					for(String path : paths) {
+						if(
+							resolvedEntries.stream()
+								.map(e -> e.getPath().makeRelativeTo(project.getFullPath()))
+								.map(Object::toString)
+								.anyMatch(e -> e.equals(path))
+							) {
+							continue;
+						}
+						
+						IPath eclipsePath = new Path(path);
+						IClasspathEntry classpathEntry = new ClasspathEntry(
+								IPackageFragmentRoot.K_SOURCE,
+								IClasspathEntry.CPE_SOURCE,
+								eclipsePath,
+								new IPath[0],
+								new IPath[0],
+								null,
+								null,
+								null, // TODO look up output entry
+								true,
+								null,
+								false,
+								new IClasspathAttribute[0]
+						);
+						resolvedEntries.add(classpathEntry);
+					}
+				}
+			}
+		}
+		
+		JavaCore.create(project).setRawClasspath(resolvedEntries.toArray(new IClasspathEntry[resolvedEntries.size()]), null);
+		
+		// Try to kick PDE to update the classpath
 		IFile manifest = getBundleManifest(project);
 		if (manifest.isAccessible()) {
 			manifest.touch(monitor);
