@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component-set>
+	<components>
+		<!--
+			Register the "compile-odp" and installation phases 
+		-->
+		<component>
+			<role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+			<role-hint>domino-nsf</role-hint>
+			<implementation>
+				org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+			</implementation>
+			<configuration>
+				<lifecycles>
+					<lifecycle>
+						<id>default</id>
+						<phases>
+							<package>org.openntf.maven:nsfodp-maven-plugin:compile</package>
+							<install>org.apache.maven.plugins:maven-install-plugin:install</install>
+							<deploy>org.openntf.maven:nsfodp-maven-plugin:deploy</deploy>
+						</phases>
+					</lifecycle>
+				</lifecycles>
+			</configuration>
+		</component>
+		
+		<!--
+			Establish the "domino-nsf" packaging type 
+		--> 
+		<component>
+			<role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+			<role-hint>domino-nsf</role-hint>
+			<implementation>
+				org.apache.maven.artifact.handler.DefaultArtifactHandler
+			</implementation>
+			<configuration>
+				<type>domino-nsf</type>
+				<extension>nsf</extension>
+				<packaging>domino-nsf</packaging>
+			</configuration>
+		</component>
+	</components>
+</component-set>

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NSF ODP Common Tools
+Bundle-SymbolicName: org.openntf.nsfodp.commons
+Automatic-Module-Name: org.openntf.nsfodp.compiler
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: OpenNTF
+Export-Package: org.openntf.nsfodp.commons
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

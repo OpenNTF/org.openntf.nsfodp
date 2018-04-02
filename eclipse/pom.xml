@@ -2,36 +2,97 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-	<artifactId>parent</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<groupId>org.openntf.nsfodp</groupId>
+	<artifactId>nsfodp</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>XPages Bazaar</name>
+	<name>NSF ODP Tooling</name>
+
+	<url>https://openntf.org</url>
+	<inceptionYear>2018</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	
+	<distributionManagement>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+	</distributionManagement>
+
+	<developers>
+		<developer>
+			<name>Jesse Gallagher</name>
+			<email>jesse@frostillic.us</email>
+		</developer>
+	</developers>
 
 	<modules>
-		<module>plugins/com.ibm.xsp.extlibx.bazaar</module>
-		<module>plugins/com.ibm.xsp.extlibx.bazaar.codemirror</module>
-		<module>plugins/com.ibm.xsp.extlibx.bazaar.interpreter</module>
-		<module>features/com.ibm.xsp.extlibx.bazaar.feature</module>
+		<module>plugins/org.openntf.nsfodp.commons</module>
+		
+		<!--
+			ODP Compiler 
+		-->
+		<module>plugins/org.openntf.nsfodp.compiler</module>
+		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
+		<!-- <module>plugins/org.openntf.nsfodp.compiler.cli</module> -->
+		<module>features/org.openntf.nsfodp.compiler.feature</module>
+		
+		<!--
+			NSF Deployment 
+		-->
+		<module>plugins/org.openntf.nsfodp.deployment</module>
+		<module>plugins/org.openntf.nsfodp.deployment.servlet</module>
+		<module>features/org.openntf.nsfodp.deployment.feature</module>
+		
+		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
+
+		<!--
+			Eclipse Support
+		-->
+		<module>plugins/org.openntf.nsfodp.eclipse</module>
+		<module>features/org.openntf.nsfodp.eclipse.feature</module>
+		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
+		
+		<!--
+			Distribution
+		-->
+		<module>releng/nsfodp-dist</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>1.0.0</tycho-version>
-		<compiler>1.6</compiler>
+		<compiler>1.8</compiler>
+		<bazaar-version>2.0.0-SNAPSHOT</bazaar-version>
 	</properties>
+	
+	<prerequisites>
+		<maven>3.0.0</maven>
+	</prerequisites>
 
 	<repositories>
 		<repository>
-			<id>Luna</id>
+			<id>Neon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/luna/</url>
+			<url>http://download.eclipse.org/releases/neon/</url>
 		</repository>
 		<repository>
 			<id>notes</id>
 			<layout>p2</layout>
 			<url>${notes-platform}</url>
+		</repository>
+		<repository>
+			<id>bazaar</id>
+			<layout>p2</layout>
+			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.0</url>
 		</repository>
 	</repositories>
 
@@ -158,6 +219,51 @@
 					</environments>
 					<resolver>p2</resolver>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<header>license.txt</header>
+					<excludes>
+						<exclude>**/pom.xml</exclude>
+			            <exclude>**/README</exclude>
+			            <exclude>src/test/resources/**</exclude>
+			            <exclude>src/main/resources/**</exclude>
+						<exclude>**/build.properties</exclude>
+					</excludes>
+					<properties>
+						<owner>Jesse Gallagher</owner>
+						<copyrightYear>2018</copyrightYear>
+					</properties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven-and-java</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>1.8.0</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 
