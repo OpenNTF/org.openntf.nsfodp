@@ -52,6 +52,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -131,34 +132,51 @@ public class CompileODPMojo extends AbstractMojo {
 		if(outputFileName.isEmpty()) {
 			throw new IllegalArgumentException("outputFileName cannot be empty");
 		}
+
+		Path outputFile = outputDirectory.resolve(outputFileName);
+		boolean needsCompile = true;
+		if(Files.exists(outputFile)) {
+			// Check to see if we need compilation
+			try {
+				FileTime mod = Files.getLastModifiedTime(outputFile);
+				needsCompile = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0;
+			} catch(IOException e) {
+				throw new MojoExecutionException("Exception while checking existing files", e);
+			}
+		}
 		
-		try {
-			if(!Files.exists(outputDirectory)) {
-				Files.createDirectories(outputDirectory);
+		if(needsCompile) {
+			try {
+				if(!Files.exists(outputDirectory)) {
+					Files.createDirectories(outputDirectory);
+				}
+				
+				Path odpZip = zipDirectory(odpDirectory);
+				Path updateSiteZip = null;
+				if(updateSite != null) {
+					updateSiteZip = zipDirectory(updateSite);
+				}
+				
+				Path packageZip = createPackage(odpZip, updateSiteZip);
+				Path result = compileOdp(packageZip);
+				
+				Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
+				if(log.isInfoEnabled()) {
+					log.info("Generated NSF: " + outputFile);
+				}
+				
+				// Set the project artifact
+				Artifact artifact = project.getArtifact();
+				artifact.setFile(outputFile.toFile());
+			} catch(MojoExecutionException e) {
+				throw e;
+			} catch(Throwable t) {
+				throw new MojoExecutionException("Exception while compiling the NSF", t);
 			}
-			
-			Path odpZip = zipDirectory(odpDirectory);
-			Path updateSiteZip = null;
-			if(updateSite != null) {
-				updateSiteZip = zipDirectory(updateSite);
-			}
-			
-			Path packageZip = createPackage(odpZip, updateSiteZip);
-			Path result = compileOdp(packageZip);
-			
-			Path outputFile = outputDirectory.resolve(outputFileName);
-			Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
+		} else {
 			if(log.isInfoEnabled()) {
-				log.info("Generated NSF: " + outputFile);
+				log.info("No changes detected - skipping NSF compilation");
 			}
-			
-			// Set the project artifact
-			Artifact artifact = project.getArtifact();
-			artifact.setFile(outputFile.toFile());
-		} catch(MojoExecutionException e) {
-			throw e;
-		} catch(Throwable t) {
-			throw new MojoExecutionException("Exception while compiling the NSF", t);
 		}
 	}
 	
