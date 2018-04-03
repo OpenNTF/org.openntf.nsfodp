@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -89,7 +90,11 @@ import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
+import com.mindoo.domino.jna.NotesDatabase;
 import com.mindoo.domino.jna.NotesNote;
+import com.mindoo.domino.jna.NotesDatabase.Encryption;
+import com.mindoo.domino.jna.constants.CreateDatabase;
+import com.mindoo.domino.jna.constants.DBClass;
 import com.mindoo.domino.jna.errors.LotusScriptCompilationError;
 import com.mindoo.domino.jna.errors.NotesError;
 import com.mindoo.domino.jna.gc.NotesGC;
@@ -146,8 +151,6 @@ public class ODPCompiler {
 			"-parameters",
 			"-encoding", "utf-8"
 			);
-	private static final String BLANK_DB = "/res/blank.nsf";
-	private static final String NOTEID_UNTITLED_VIEW = "11A";
 	
 	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL";
 	private static boolean DEBUG_DXL = false;
@@ -472,23 +475,11 @@ public class ODPCompiler {
 		subTask("Creating destination NSF");
 		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf");
 		temp.toFile().deleteOnExit();
+		String filePath = temp.toAbsolutePath().toString();
 		
-		try(OutputStream os = Files.newOutputStream(temp)) {
-			try(InputStream is = getClass().getResourceAsStream(BLANK_DB)) {
-				StreamUtil.copyStream(is, os);
-			}
-		}
+		NotesDatabase.createDatabase("", filePath, DBClass.NOTEFILE, true, EnumSet.of(CreateDatabase.LARGE_UNKTABLE), Encryption.None, 0);
 		
-		Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompiler", ".nsf");
-		Files.delete(nsf);
-		lotus.domino.Database tempDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
-		lotus.domino.Database copied = tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
-		tempDatabase.remove();
-		lotus.domino.Document blankView = copied.getDocumentByID(NOTEID_UNTITLED_VIEW);
-		blankView.removePermanently(true);
-		copied.recycle();
-		
-		return nsf;
+		return temp;
 	}
 	
 	private void importDbProperties(DxlImporter importer, Database database) throws Exception {
