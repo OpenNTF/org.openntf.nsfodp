@@ -42,6 +42,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compiler>1.8</compiler>
+		<bazaar-version>2.0.0</bazaar-version>
+		<nsfodp-version>${project.version}</nsfodp-version>
 	</properties>
 	
 	<prerequisites>
@@ -52,7 +54,12 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0</version>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<version>3.5.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -70,6 +77,19 @@
 			<artifactId>plexus-utils</artifactId>
 			<version>3.0.8</version>
 		</dependency>
+		
+		<!--
+			General utilities
+		-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+		</dependency>
+		
+		<!--
+			Server communication
+		-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -84,6 +104,78 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.2</version>
+		</dependency>
+		
+		<!--
+			OSGi 
+		-->
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.equinox.launcher</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.12.100</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>3.13.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		
+		<!--
+			XPages Bazaar 
+		-->
+		<dependency>
+			<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+			<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
+			<version>${bazaar-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+			<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+			<version>${bazaar-version}</version>
+		</dependency>
+		
+		<!--
+			NSF ODP Tooling 
+		-->
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.commons</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.compiler</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.compiler.servlet</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.deployment</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.deployment.servlet</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.cli</artifactId>
+			<version>${nsfodp-version}</version>
 		</dependency>
 	</dependencies>
 

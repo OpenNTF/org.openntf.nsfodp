@@ -15,39 +15,21 @@
  */
 package org.openntf.nsfodp.cli;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.openntf.nsfodp.compiler.ODPCompiler;
-import org.openntf.nsfodp.compiler.odp.OnDiskProject;
-import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
-import org.openntf.nsfodp.compiler.update.UpdateSite;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-public class CLIActivator implements BundleActivator {
+public class CLIActivator extends Plugin {
+	private static CLIActivator instance;
+	
+	public static CLIActivator getDefault() {
+		return instance;
+	}
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		System.out.println(getClass().getName() + " starting up");
 		
-		Bundle systemBundle = bundleContext.getBundle(0);
-		System.out.println("System bundle: " + systemBundle);
-		System.out.println("headers: " + systemBundle.getHeaders().get("Export-Package"));
-		
-		String odpDir = System.getProperty(CLIApp.class.getPackage().getName() + "-odp");
-		String siteDir = System.getProperty(CLIApp.class.getPackage().getName() + "-updateSite");
-		Path odpFile = Paths.get(odpDir);
-		OnDiskProject odp = new OnDiskProject(odpFile);
-		File siteFile = new File(siteDir);
-		UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
-		
-		ODPCompiler compiler = new ODPCompiler(bundleContext, odp, null);
-		compiler.addUpdateSite(updateSite);
-		Path nsf = compiler.compile(getClass().getClassLoader());
-		System.out.println("Created NSF " + nsf);
+		instance = this;
 	}
 
 	@Override
