@@ -30,8 +30,11 @@ import javax.activation.MimetypesFileTypeMap;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
+import com.ibm.domino.napi.c.C;
+import com.ibm.domino.napi.c.NotesUtil;
 
 public enum CompositeDataUtil {
 	;
@@ -203,32 +206,44 @@ public enum CompositeDataUtil {
 	}
 	
 	public static byte[] getJavaScriptLibraryData(Path file) throws IOException {
-		int fileLength = (int)Files.size(file);
-		
-		// Spec out the structure
-		int segCount = fileLength / BLOBPART_SIZE_CAP;
-		if (fileLength % BLOBPART_SIZE_CAP > 0) {
-			segCount++;
-		}
-		
-		int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + fileLength + (fileLength % 2);
-		
-		// Now create a CD record for the file data
-		// TODO this could be a little more efficient by writing to a Base64 wrapper and
-		//   cutting off and making a new item node at size intervals
-		ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
-		// CDEVENT
-		{
-			buf.putShort(SIG_CDEVENT);                 // Header.Signature
-			buf.putShort(SIZE_CDEVENT);                // Header.Length
-			buf.putInt(0);                             // Flags
-			buf.putShort(HTML_EVENT_LIBRARY);          // EventType
-			buf.putShort(ACTION_TYPE_JAVASCRIPT);      // ActionType
-			buf.putInt(fileLength + (fileLength % 2)); // ActionLength
-			buf.putShort((short)0);                    // SignatureLength
-			buf.put(new byte[14]);                     // Reserved
-		}
+
+		// Read in the file data as an LMBCS string first
+		long lmbcsPtr;
 		try(InputStream is = Files.newInputStream(file)) {
+			String fileContent = StreamUtil.readString(is);
+			lmbcsPtr = NotesUtil.toLMBCS(fileContent);
+		}
+		if(lmbcsPtr == 0) {
+			return new byte[0];
+		}
+		
+		try {
+			int fileLength = C.strlen(lmbcsPtr, 0);
+			
+			// Spec out the structure
+			int segCount = fileLength / BLOBPART_SIZE_CAP;
+			if (fileLength % BLOBPART_SIZE_CAP > 0) {
+				segCount++;
+			}
+			
+			int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + fileLength + (fileLength % 2);
+			
+			
+			// Now create a CD record for the file data
+			// TODO this could be a little more efficient by writing to a Base64 wrapper and
+			//   cutting off and making a new item node at size intervals
+			ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
+			// CDEVENT
+			{
+				buf.putShort(SIG_CDEVENT);                 // Header.Signature
+				buf.putShort(SIZE_CDEVENT);                // Header.Length
+				buf.putInt(0);                             // Flags
+				buf.putShort(HTML_EVENT_LIBRARY);          // EventType
+				buf.putShort(ACTION_TYPE_JAVASCRIPT);      // ActionType
+				buf.putInt(fileLength + (fileLength % 2)); // ActionLength
+				buf.putShort((short)0);                    // SignatureLength
+				buf.put(new byte[14]);                     // Reserved
+			}
 			for(int i = 0; i < segCount; i++) {
 				// Each chunk begins with a CDBLOBPART
 	
@@ -247,14 +262,16 @@ public enum CompositeDataUtil {
 					buf.put(new byte[8]);                             // Reserved
 					
 					byte[] segData = new byte[dataSize];
-					is.read(segData);
+					C.readByteArray(segData, 0, lmbcsPtr, dataOffset, dataSize);
 					buf.put(segData);
 					if(segSize > dataSize) {
 						buf.put((byte)0);
 					}
 				}
 			}
+			return buf.array();
+		} finally {
+			C.free(lmbcsPtr);
 		}
-		return buf.array();
 	}
 }
