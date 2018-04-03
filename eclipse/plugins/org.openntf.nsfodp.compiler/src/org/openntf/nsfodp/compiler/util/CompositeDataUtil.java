@@ -225,8 +225,9 @@ public enum CompositeDataUtil {
 			if (fileLength % BLOBPART_SIZE_CAP > 0) {
 				segCount++;
 			}
-			
-			int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + fileLength + (fileLength % 2);
+
+			int paddedLength = fileLength + 1; // Make sure there's at least one \0 at the end
+			int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + paddedLength + (paddedLength % 2);
 			
 			
 			// Now create a CD record for the file data
@@ -235,21 +236,21 @@ public enum CompositeDataUtil {
 			ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
 			// CDEVENT
 			{
-				buf.putShort(SIG_CDEVENT);                 // Header.Signature
-				buf.putShort(SIZE_CDEVENT);                // Header.Length
-				buf.putInt(0);                             // Flags
-				buf.putShort(HTML_EVENT_LIBRARY);          // EventType
-				buf.putShort(ACTION_TYPE_JAVASCRIPT);      // ActionType
-				buf.putInt(fileLength + (fileLength % 2)); // ActionLength
-				buf.putShort((short)0);                    // SignatureLength
-				buf.put(new byte[14]);                     // Reserved
+				buf.putShort(SIG_CDEVENT);                     // Header.Signature
+				buf.putShort(SIZE_CDEVENT);                    // Header.Length
+				buf.putInt(0);                                 // Flags
+				buf.putShort(HTML_EVENT_LIBRARY);              // EventType
+				buf.putShort(ACTION_TYPE_JAVASCRIPT);          // ActionType
+				buf.putInt(paddedLength + (paddedLength % 2)); // ActionLength
+				buf.putShort((short)0);                        // SignatureLength
+				buf.put(new byte[14]);                         // Reserved
 			}
 			for(int i = 0; i < segCount; i++) {
 				// Each chunk begins with a CDBLOBPART
 	
 				// Figure out our data and segment sizes
 				int dataOffset = BLOBPART_SIZE_CAP * i;
-				short dataSize = (short)Math.min((fileLength - dataOffset), BLOBPART_SIZE_CAP);
+				short dataSize = (short)Math.min((paddedLength - dataOffset), BLOBPART_SIZE_CAP);
 				short segSize = (short)(dataSize + (dataSize % 2));
 	
 				// CDBLOBPART
@@ -265,7 +266,7 @@ public enum CompositeDataUtil {
 					C.readByteArray(segData, 0, lmbcsPtr, dataOffset, dataSize);
 					buf.put(segData);
 					if(segSize > dataSize) {
-						buf.put((byte)0);
+						buf.put(new byte[segSize-dataSize]);
 					}
 				}
 			}
