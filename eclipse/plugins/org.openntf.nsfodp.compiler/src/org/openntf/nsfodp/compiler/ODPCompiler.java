@@ -522,7 +522,7 @@ public class ODPCompiler {
 		
 		// Generate DXL in parallel
 		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
-			.parallel()
+//			.parallel()
 			.filter(res -> {
 				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
 				
