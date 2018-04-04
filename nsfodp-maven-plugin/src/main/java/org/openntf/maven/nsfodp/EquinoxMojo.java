@@ -83,11 +83,35 @@ public class EquinoxMojo extends AbstractMojo {
 				getDependencyJar("org.openntf.nsfodp.deployment.servlet"),
 				getDependencyJar("org.openntf.nsfodp.cli"),
 				getDependencyJar("org.eclipse.core.runtime"),
+				getDependencyJar("org.eclipse.equinox.http.jetty"),
+				getDependencyJar("org.eclipse.equinox.http.registry"),
+				getDependencyJar("org.eclipse.equinox.http.servlet"),
 				getDependencyJar("com.ibm.xsp.extlibx.bazaar"),
 				getDependencyJar("com.ibm.xsp.extlibx.bazaar.interpreter"),
+				getDependencyJar("jetty-http"),
+				getDependencyJar("jetty-util"),
+				getDependencyJar("jetty-io"),
+				getDependencyJar("jetty-server"),
+				getDependencyJar("jetty-servlet"),
+				getDependencyJar("jetty-jmx"),
+				getDependencyJar("jetty-security"),
+				getDependencyJar("slf4j-api"),
+				getDependencyJar("slf4j-simple"),
+				getDependencyJar("javax.servlet-api"),
 				createJempowerShim(notesProgram),
 				osgi
 			));
+			
+			List<String> skipBundles = Arrays.asList(
+				"org.eclipse.core.runtime",
+				"org.eclipse.osgi",
+				"org.eclipse.equinox.http.servlet",
+				"org.eclipse.equinox.http.registry",
+				"javax.servlet",
+				"com.ibm.pvc.webcontainer",
+				"com.ibm.rcp.spellcheck.remote",
+				"com.ibm.rcp.spellcheck.webapp"
+			);
 			
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
@@ -99,6 +123,7 @@ public class EquinoxMojo extends AbstractMojo {
 			}
 			Files.list(notesPlugins)
 				.filter(p -> p.getFileName().toString().endsWith(".jar"))
+				.filter(p -> !skipBundles.stream().anyMatch(b -> p.getFileName().toString().startsWith(b+"_")))
 				.forEach(platform::add);
 			
 			Path target = Paths.get(project.getBuild().getDirectory());
@@ -115,7 +140,7 @@ public class EquinoxMojo extends AbstractMojo {
 			config.put("osgi.bundles.defaultStartLevel", "4");
 			config.put("osgi.bundles",
 					platform.stream()
-					.map(path -> "reference:" + path.toUri() + "@start")
+					.map(path ->"reference:" + path.toUri())
 					.collect(Collectors.joining(","))
 			);
 			config.put("eclipse.application", "org.openntf.nsfodp.cli.CLIApplication");
@@ -133,6 +158,7 @@ public class EquinoxMojo extends AbstractMojo {
 			List<String> command = new ArrayList<>();
 			command.add(javaBin.toAbsolutePath().toString());
 			command.add("-Dosgi.frameworkParentClassloader=boot");
+			command.add("-Dorg.openntf.nsfodp.allowAnonymous=true");
 			command.add("org.eclipse.core.launcher.Main");
 			command.add("-framwork");
 			command.add(framework.toAbsolutePath().toString());
@@ -145,7 +171,8 @@ public class EquinoxMojo extends AbstractMojo {
 			
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
-					.redirectOutput(Redirect.INHERIT);
+					.redirectOutput(Redirect.INHERIT)
+					.redirectInput(Redirect.INHERIT);
 			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString());
 			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString());
 			builder.environment().put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString());

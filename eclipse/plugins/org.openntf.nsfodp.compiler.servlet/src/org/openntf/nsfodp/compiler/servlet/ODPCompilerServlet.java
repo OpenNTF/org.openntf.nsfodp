@@ -48,7 +48,7 @@ import com.ibm.commons.util.io.StreamUtil;
 public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	public static boolean ALLOW_ANONYMOUS = false;
+	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous"));
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

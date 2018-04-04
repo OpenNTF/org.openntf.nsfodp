@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -216,29 +217,26 @@ public class ODPCompiler {
 				Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
 				
 				// Special support for Notes.jar
-				Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
-				if(bundle.isPresent()) {
-					File f = FileLocator.getBundleFile(bundle.get());
-					if(!f.exists()) {
-						throw new IllegalStateException("Could not locate Notes.jar");
-					}
-					if(f.isFile()) {
-						try(JarFile jar = new JarFile(f)) {
-							JarEntry notesJar = jar.getJarEntry("Notes.jar");
-							Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
-							Files.delete(tempFile);
-							try(InputStream is = jar.getInputStream(notesJar)) {
-								Files.copy(is, tempFile);
-							}
-							dependencies.add("jar:" + tempFile.toUri().toString());
+				Bundle bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true)
+						.orElseThrow(() -> new IllegalStateException("Could not locate Java API fragment"));
+				File f = FileLocator.getBundleFile(bundle);
+				if(!f.exists()) {
+					throw new IllegalStateException("Could not locate Notes.jar");
+				}
+				if(f.isFile()) {
+					try(JarFile jar = new JarFile(f)) {
+						JarEntry notesJar = jar.getJarEntry("Notes.jar");
+						Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
+						try(InputStream is = jar.getInputStream(notesJar)) {
+							Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 						}
-					} else {
-						Path path = f.toPath().resolve("Notes.jar");
-						Path tempFile = Files.createTempFile("Notes", ".jar");
-						Files.delete(tempFile);
-						Files.copy(path, tempFile);
 						dependencies.add("jar:" + tempFile.toUri().toString());
 					}
+				} else {
+					Path path = f.toPath().resolve("Notes.jar");
+					Path tempFile = Files.createTempFile("Notes", ".jar");
+					Files.copy(path, tempFile, StandardCopyOption.REPLACE_EXISTING);
+					dependencies.add("jar:" + tempFile.toUri().toString());
 				}
 				
 				// Add any Jars from the ODP

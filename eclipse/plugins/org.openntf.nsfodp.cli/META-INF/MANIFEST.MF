@@ -10,9 +10,12 @@ Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,
  com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
- org.openntf.nsfodp.compiler
+ org.openntf.nsfodp.compiler,
+ org.eclipse.equinox.http.jetty,
+ org.eclipse.equinox.http.registry
 Bundle-Activator: org.openntf.nsfodp.cli.CLIActivator
 Bundle-ClassPath: .
 Main-Class: org.openntf.nsfodp.cli.CLIApp
 Class-Path: lib/org.eclipse.osgi_3.12.50.v20170928-1321.jar
-Import-Package: lotus.domino
+Import-Package: lotus.domino,
+ org.eclipse.equinox.http.jetty
