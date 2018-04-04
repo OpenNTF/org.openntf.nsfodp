@@ -55,9 +55,6 @@ public class EquinoxMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		Log log = getLog();
 		
-		log.info("hey there");
-		
-		
 		Path equinox = getDependencyJar("org.eclipse.equinox.launcher");
 		if(log.isDebugEnabled()) {
 			log.debug("Using Equinox launcher: " + equinox);
