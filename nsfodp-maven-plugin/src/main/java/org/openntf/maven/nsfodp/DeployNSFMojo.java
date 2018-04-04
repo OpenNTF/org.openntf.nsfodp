@@ -51,6 +51,8 @@ import org.openntf.maven.nsfodp.util.ResponseUtil;
 @Mojo(name="deploy", defaultPhase=LifecyclePhase.DEPLOY)
 public class DeployNSFMojo extends AbstractMojo {
 	
+	public static final String SERVLET_PATH = "/org.openntf.nsfosp/deployment";
+	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
 	
@@ -117,7 +119,7 @@ public class DeployNSFMojo extends AbstractMojo {
 		}
 		
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
-			URI servlet = deploymentServerUrl.toURI().resolve("/nsfdeployment");
+			URI servlet = deploymentServerUrl.toURI().resolve(SERVLET_PATH);
 			if(log.isInfoEnabled()) {
 				log.info("Deploying NSF with server " + servlet);
 			}

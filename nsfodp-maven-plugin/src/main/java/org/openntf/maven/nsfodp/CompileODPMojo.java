@@ -61,6 +61,7 @@ import java.util.zip.ZipOutputStream;
 public class CompileODPMojo extends AbstractMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf";
+	public static final String SERVLET_PATH = "/org.openntf.nsfosp/compiler";
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
@@ -210,7 +211,7 @@ public class CompileODPMojo extends AbstractMojo {
 		}
 		
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
-			URI servlet = compilerServerUrl.toURI().resolve("/odpcompiler");
+			URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
 			if(log.isInfoEnabled()) {
 				log.info("Compiling with server " + servlet);
 			}
