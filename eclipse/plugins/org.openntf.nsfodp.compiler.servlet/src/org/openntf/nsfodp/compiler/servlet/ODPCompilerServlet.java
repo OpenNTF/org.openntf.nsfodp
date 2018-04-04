@@ -44,6 +44,9 @@ import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
 import com.ibm.commons.util.io.StreamUtil;
+import com.mindoo.domino.jna.utils.Ref;
+
+import lotus.domino.NotesThread;
 
 public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -120,11 +123,23 @@ public class ODPCompilerServlet extends HttpServlet {
 				compiler.addUpdateSite(updateSite);
 			}
 			
-			Path nsf = compiler.compile();
-			mon.done();
+			Ref<Path> nsf = new Ref<>();
+			NotesThread notes = new NotesThread(() -> {
+				try {
+					nsf.set(compiler.compile());
+					mon.done();
+				} catch(RuntimeException e) {
+					throw e;
+				} catch(Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+			notes.run();
+			notes.join();
+			
 			
 			// Now stream the NSF
-			try(InputStream is = Files.newInputStream(nsf)) {
+			try(InputStream is = Files.newInputStream(nsf.get())) {
 				try(OutputStream gzos = new GZIPOutputStream(os)) {
 					StreamUtil.copyStream(is, gzos);
 				}
