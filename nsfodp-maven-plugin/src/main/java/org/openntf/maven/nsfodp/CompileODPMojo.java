@@ -18,9 +18,14 @@ package org.openntf.maven.nsfodp;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.plugin.AbstractMojo;
@@ -48,6 +53,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -95,6 +103,11 @@ public class CompileODPMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.compiler.serverUrl", required=true)
 	private URL compilerServerUrl;
+	/**
+	 * Whether or not to trust self-signed SSL certificates.
+	 */
+	@Parameter(property="nsfodp.compiler.serverTrustSelfSignedSsl", required=false)
+	private boolean compilerServerTrustSelfSignedSsl;
 	/**
 	 * An update site whose contents to use when building the ODP.
 	 */
@@ -200,7 +213,7 @@ public class CompileODPMojo extends AbstractMojo {
 		return packageZip;
 	}
 	
-	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException {
+	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 		if(log.isInfoEnabled()) {
 			log.info("Compiling ODP");
 		}
@@ -210,7 +223,15 @@ public class CompileODPMojo extends AbstractMojo {
 			log.debug("Using compiler server URL " + compilerServerUrl);
 		}
 		
-		try(CloseableHttpClient client = HttpClients.createDefault()) {
+		HttpClientBuilder httpBuilder = HttpClients.custom();
+		if(this.compilerServerTrustSelfSignedSsl) {
+			SSLContextBuilder sslBuilder = new SSLContextBuilder();
+			sslBuilder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslBuilder.build(), null, null, NoopHostnameVerifier.INSTANCE);
+			httpBuilder.setSSLSocketFactory(sslsf);
+		}
+		
+		try(CloseableHttpClient client = httpBuilder.build()) {
 			URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
 			if(log.isInfoEnabled()) {
 				log.info("Compiling with server " + servlet);
