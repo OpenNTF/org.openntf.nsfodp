@@ -57,6 +57,8 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -275,7 +277,9 @@ public class CompileODPMojo extends AbstractMojo {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 						if(attrs.isRegularFile()) {
-							ZipEntry entry = new ZipEntry(path.relativize(file).toString());
+							Path relativePath = path.relativize(file);
+							String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/"));
+							ZipEntry entry = new ZipEntry(unixPath);
 							zos.putNextEntry(entry);
 							Files.copy(file, zos);
 						}
