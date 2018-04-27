@@ -17,7 +17,7 @@
 
 -->
 <?eclipse version="3.4"?>
-<fragment>
+<plugin>
 	<!--
 		ODP project nature 
 	-->
@@ -335,4 +335,4 @@
 			<contentType id="org.eclipse.core.runtime.xml"/>			
 		</proposalComputer>         
 	</extension>
-</fragment>
+</plugin>
