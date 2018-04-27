@@ -22,7 +22,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.sse.ui;bundle-version="1.3.500",
  org.eclipse.wst.sse.core;bundle-version="1.1.1000",
  org.eclipse.wst.xml.core;bundle-version="1.1.1000",
- org.eclipse.jface.text;bundle-version="3.11.2"
+ org.eclipse.jface.text;bundle-version="3.11.2",
+ org.eclipse.wst.xml.ui,
+ org.eclipse.wst.html.ui
 Export-Package: org.openntf.nsfodp.compiler.eclipse,
  org.openntf.nsfodp.compiler.eclipse.content,
  org.openntf.nsfodp.compiler.eclipse.contentassist,
