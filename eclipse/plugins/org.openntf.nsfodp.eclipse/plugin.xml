@@ -299,7 +299,7 @@
 			name="XPages Source File"
 			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="xsp">
-			<describer class="org.openntf.nsfodp.compiler.eclipse.content.XspConfigContentDescriber"/>
+			<describer class="org.openntf.nsfodp.compiler.eclipse.content.XspContentDescriber"/>
 		</content-type>
 		<content-type
 			id="nsfodpXspTheme"
