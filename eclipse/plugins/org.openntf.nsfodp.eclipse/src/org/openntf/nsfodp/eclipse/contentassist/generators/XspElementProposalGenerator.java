@@ -34,12 +34,12 @@ import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.contentassist.XspCompletionProposalComputer;
 import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
+import org.openntf.nsfodp.eclipse.contentassist.proposals.CustomControlCompletionProposal;
 import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.AbstractItemProposalGenerator;
-import org.thymeleaf.extras.eclipse.contentassist.autocomplete.proposals.ElementProcessorCompletionProposal;
 import org.xml.sax.SAXException;
 
 @SuppressWarnings("restriction")
-public class XspElementProposalGenerator extends AbstractItemProposalGenerator<ElementProcessorCompletionProposal> {
+public class XspElementProposalGenerator extends AbstractItemProposalGenerator<CustomControlCompletionProposal> {
 
 	/**
 	 * Collect element processor suggestions.
@@ -51,7 +51,7 @@ public class XspElementProposalGenerator extends AbstractItemProposalGenerator<E
 	 * @throws BadLocationException
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<ElementProcessorCompletionProposal> computeElementProcessorSuggestions(
+	private static List<CustomControlCompletionProposal> computeElementProcessorSuggestions(
 		IDOMNode node, IStructuredDocument document, int cursorposition) throws BadLocationException {
 
 		String pattern = findProcessorNamePattern(document, cursorposition);
@@ -59,10 +59,9 @@ public class XspElementProposalGenerator extends AbstractItemProposalGenerator<E
 		try {
 			Collection<CustomControl> customControls = XspCompletionProposalComputer.getCustomControls();
 			if (!customControls.isEmpty()) {
-				List<ElementProcessorCompletionProposal> proposals = new ArrayList<>();
+				List<CustomControlCompletionProposal> proposals = new ArrayList<>();
 				for (CustomControl cc : customControls) {
-					proposals.add(new ElementProcessorCompletionProposal(cc.getPrefix() + ':' + cc.getTagName(),
-							pattern.length(), cursorposition));
+					proposals.add(new CustomControlCompletionProposal(cc, pattern.length(), cursorposition));
 				}
 				return proposals;
 			}
@@ -77,7 +76,7 @@ public class XspElementProposalGenerator extends AbstractItemProposalGenerator<E
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<ElementProcessorCompletionProposal> generateProposals(IDOMNode node,
+	public List<CustomControlCompletionProposal> generateProposals(IDOMNode node,
 		ITextRegion textregion, IStructuredDocumentRegion documentregion,
 		IStructuredDocument document, int cursorposition) throws BadLocationException {
 

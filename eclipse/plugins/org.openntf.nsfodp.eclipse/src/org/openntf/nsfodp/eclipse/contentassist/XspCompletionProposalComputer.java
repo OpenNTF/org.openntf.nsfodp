@@ -23,28 +23,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xerces.util.DOMUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
@@ -54,22 +45,13 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.html.ui.internal.contentassist.HTMLTagsCompletionProposalComputer;
-import org.eclipse.wst.sse.core.StructuredModelManager;
-import org.eclipse.wst.sse.core.internal.provisional.IModelManager;
-import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion;
 import org.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
 import org.eclipse.wst.sse.ui.contentassist.CompletionProposalInvocationContext;
 import org.eclipse.wst.sse.ui.contentassist.ICompletionProposalComputer;
 import org.eclipse.wst.sse.ui.internal.contentassist.ContentAssistUtils;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
-import org.eclipse.wst.xml.ui.internal.contentassist.AbstractXMLCompletionProposalComputer;
-import org.eclipse.wst.xml.ui.internal.contentassist.ContentAssistRequest;
-import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentModelGenerator;
 import org.openntf.domino.utils.xml.XMLDocument;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.contentassist.generators.XspElementProposalGenerator;
@@ -228,21 +210,21 @@ public class XspCompletionProposalComputer extends AbstractComputer implements I
 		String id = project.getFullPath().toString();
 		if (!CC_TAGS.containsKey(id)) {
 			Set<CustomControl> result = new TreeSet<>();
-			IFolder ccFolder = project.getFolder("odp/CustomControls"); // TODO look at configured path
+			IFolder ccFolder = project.getFolder("odp/CustomControls"); // TODO look at configured path //$NON-NLS-1$
 			if (ccFolder.exists()) {
 				for (IResource member : ccFolder.members()) {
 					if (member instanceof IFile) {
-						if (member.getName().endsWith(".xsp-config")) {
+						if (member.getName().endsWith(".xsp-config")) { //$NON-NLS-1$
 							// Then read in the XML
 							XMLDocument doc = new XMLDocument();
 							try (InputStream is = ((IFile) member).getContents()) {
 								doc.loadInputStream(is);
 							}
 							String namespaceUri = doc
-									.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText();
-							String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix")
+									.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText(); //$NON-NLS-1$
+							String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix") //$NON-NLS-1$
 									.getText();
-							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name")
+							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
 									.getText();
 
 							result.add(new CustomControl(namespaceUri, prefix, tagName));

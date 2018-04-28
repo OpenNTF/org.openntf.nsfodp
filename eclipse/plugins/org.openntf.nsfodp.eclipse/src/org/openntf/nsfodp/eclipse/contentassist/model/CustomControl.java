@@ -37,6 +37,10 @@ public class CustomControl implements Comparable<CustomControl> {
 	public String getTagName() {
 		return tagName;
 	}
+	
+	public String getPrefixedName() {
+		return getPrefix() + ':' + getTagName();
+	}
 
 	@Override
 	public int compareTo(CustomControl o) {
