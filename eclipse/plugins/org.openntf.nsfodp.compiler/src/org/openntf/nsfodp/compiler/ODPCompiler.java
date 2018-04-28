@@ -257,7 +257,7 @@ public class ODPCompiler {
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
 			try {
 				Path file = createDatabase(lotusSession);
-				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString());
+				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				DxlImporter importer = lotusSession.createDxlImporter();
 				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_CREATE);
 				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);

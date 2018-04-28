@@ -51,7 +51,7 @@ import lotus.domino.NotesThread;
 public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous"));
+	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -62,19 +62,19 @@ public class ODPCompilerServlet extends HttpServlet {
 		ServletOutputStream os = resp.getOutputStream();
 		
 		try {
-			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) {
+			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				resp.setContentType("text/plain");
+				resp.setContentType("text/plain"); //$NON-NLS-1$
 				os.println("Anonymous access disallowed");
 				return;
 			}
 			
 			String contentType = req.getContentType();
-			if(!"application/zip".equals(contentType)) {
+			if(!"application/zip".equals(contentType)) { //$NON-NLS-1$
 				throw new IllegalArgumentException("Content must be application/zip");
 			}
 			
-			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip");
+			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			try(InputStream reqInputStream = req.getInputStream()) {
 				try(OutputStream packageOut = Files.newOutputStream(packageFile)) {
 					StreamUtil.copyStream(reqInputStream, packageOut);
@@ -84,13 +84,13 @@ public class ODPCompilerServlet extends HttpServlet {
 			// Look for an ODP item
 			Path odpZip = null, siteZip = null;
 			try(ZipFile packageZip = new ZipFile(packageFile.toFile())) {
-				ZipEntry odpEntry = packageZip.getEntry("odp.zip");
+				ZipEntry odpEntry = packageZip.getEntry("odp.zip"); //$NON-NLS-1$
 				if(odpEntry == null) {
 					// Then the package is itself the ODP
 					odpZip = packageFile;
 				} else {
 					// Then extract the ODP
-					odpZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odp", ".zip");
+					odpZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odp", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 					try(InputStream odpIs = packageZip.getInputStream(odpEntry)) {
 						try(OutputStream odpOs = Files.newOutputStream(odpZip)) {
 							StreamUtil.copyStream(odpIs, odpOs);
@@ -98,9 +98,9 @@ public class ODPCompilerServlet extends HttpServlet {
 					}
 					
 					// Look for an embedded update site
-					ZipEntry siteEntry = packageZip.getEntry("site.zip");
+					ZipEntry siteEntry = packageZip.getEntry("site.zip"); //$NON-NLS-1$
 					if(siteEntry != null) {
-						siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip");
+						siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 						try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
 							try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
 								StreamUtil.copyStream(siteIs, siteOs);
@@ -151,15 +151,15 @@ public class ODPCompilerServlet extends HttpServlet {
 			e.printStackTrace(out);
 			out.flush();
 			os.println(LineDelimitedJsonProgressMonitor.message(
-				"type", "error",
-				"stackTrace", baos.toString()
+				"type", "error", //$NON-NLS-1$ //$NON-NLS-2$
+				"stackTrace", baos.toString() //$NON-NLS-1$
 				)
 			);
 		}
 	}
 	
 	public static Path expandZip(Path zipFilePath) throws IOException {
-		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile");
+		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile"); //$NON-NLS-1$
 		
 		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
 			for(ZipEntry entry : Collections.list(zipFile.entries())) {
