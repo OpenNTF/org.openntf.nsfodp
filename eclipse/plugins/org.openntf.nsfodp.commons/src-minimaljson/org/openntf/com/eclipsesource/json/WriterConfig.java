@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 EclipseSource.
+ * Copyright (c) 2015 EclipseSource.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,56 +19,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.eclipsesource.json;
+package org.openntf.com.eclipsesource.json;
 
-import java.io.IOException;
+import java.io.Writer;
 
 
-@SuppressWarnings("serial") // use default serial UID
-class JsonString extends JsonValue {
+/**
+ * Controls the formatting of the JSON output. Use one of the available constants.
+ */
+public abstract class WriterConfig {
 
-  private final String string;
-
-  JsonString(String string) {
-    if (string == null) {
-      throw new NullPointerException("string is null");
+  /**
+   * Write JSON in its minimal form, without any additional whitespace. This is the default.
+   */
+  public static WriterConfig MINIMAL = new WriterConfig() {
+    @Override
+    JsonWriter createWriter(Writer writer) {
+      return new JsonWriter(writer);
     }
-    this.string = string;
-  }
+  };
 
-  @Override
-  void write(JsonWriter writer) throws IOException {
-    writer.writeString(string);
-  }
+  /**
+   * Write JSON in pretty-print, with each value on a separate line and an indentation of two
+   * spaces.
+   */
+  public static WriterConfig PRETTY_PRINT = PrettyPrint.indentWithSpaces(2);
 
-  @Override
-  public boolean isString() {
-    return true;
-  }
-
-  @Override
-  public String asString() {
-    return string;
-  }
-
-  @Override
-  public int hashCode() {
-    return string.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
-    }
-    if (object == null) {
-      return false;
-    }
-    if (getClass() != object.getClass()) {
-      return false;
-    }
-    JsonString other = (JsonString)object;
-    return string.equals(other.string);
-  }
+  abstract JsonWriter createWriter(Writer writer);
 
 }

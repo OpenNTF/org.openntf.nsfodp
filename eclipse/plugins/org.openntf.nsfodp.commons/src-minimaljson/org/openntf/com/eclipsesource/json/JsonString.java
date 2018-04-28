@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 EclipseSource.
+ * Copyright (c) 2013, 2015 EclipseSource.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,58 +19,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.eclipsesource.json;
+package org.openntf.com.eclipsesource.json;
+
+import java.io.IOException;
 
 
-/**
- * An immutable object that represents a location in the parsed text.
- */
-public class Location {
+@SuppressWarnings("serial") // use default serial UID
+class JsonString extends JsonValue {
 
-  /**
-   * The absolute character index, starting at 0.
-   */
-  public final int offset;
+  private final String string;
 
-  /**
-   * The line number, starting at 1.
-   */
-  public final int line;
-
-  /**
-   * The column number, starting at 1.
-   */
-  public final int column;
-
-  Location(int offset, int line, int column) {
-    this.offset = offset;
-    this.column = column;
-    this.line = line;
+  JsonString(String string) {
+    if (string == null) {
+      throw new NullPointerException("string is null");
+    }
+    this.string = string;
   }
 
   @Override
-  public String toString() {
-    return line + ":" + column;
+  void write(JsonWriter writer) throws IOException {
+    writer.writeString(string);
+  }
+
+  @Override
+  public boolean isString() {
+    return true;
+  }
+
+  @Override
+  public String asString() {
+    return string;
   }
 
   @Override
   public int hashCode() {
-    return offset;
+    return string.hashCode();
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
+  public boolean equals(Object object) {
+    if (this == object) {
       return true;
     }
-    if (obj == null) {
+    if (object == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != object.getClass()) {
       return false;
     }
-    Location other = (Location)obj;
-    return offset == other.offset && column == other.column && line == other.line;
+    JsonString other = (JsonString)object;
+    return string.equals(other.string);
   }
 
 }

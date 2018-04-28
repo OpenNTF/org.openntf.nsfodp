@@ -20,8 +20,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-
-import com.eclipsesource.json.JsonObject;
+import org.openntf.com.eclipsesource.json.JsonObject;
 
 /**
  * An implementation of {@link IProgressMonitor} sends monitor messages to an {@link OutputStream}

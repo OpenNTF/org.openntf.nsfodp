@@ -36,16 +36,15 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.openntf.com.eclipsesource.json.Json;
+import org.openntf.com.eclipsesource.json.JsonArray;
+import org.openntf.com.eclipsesource.json.JsonObject;
+import org.openntf.com.eclipsesource.json.JsonValue;
 import org.openntf.domino.utils.xml.XMLDocument;
 import org.openntf.nsfodp.eclipse.contentassist.model.ComponentProperty;
 import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
 import org.openntf.nsfodp.eclipse.contentassist.model.StockComponent;
 import org.xml.sax.SAXException;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 public enum ComponentCache {
 	;

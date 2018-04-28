@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package com.eclipsesource.json;
+package org.openntf.com.eclipsesource.json;
 
 /**
  * An unchecked exception to indicate that an input does not qualify as valid JSON.
