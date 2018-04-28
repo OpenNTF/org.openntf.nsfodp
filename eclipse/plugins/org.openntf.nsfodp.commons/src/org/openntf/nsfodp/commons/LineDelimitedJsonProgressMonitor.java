@@ -19,13 +19,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import javax.servlet.ServletOutputStream;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.json.JsonJavaObject;
-import com.ibm.commons.util.io.json.JsonObject;
+import com.eclipsesource.json.JsonObject;
 
 /**
  * An implementation of {@link IProgressMonitor} sends monitor messages to an {@link OutputStream}
@@ -35,20 +31,20 @@ import com.ibm.commons.util.io.json.JsonObject;
  * @since 1.0.0
  */
 public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
-	private final ServletOutputStream out;
+	private final OutputStream out;
 	private boolean canceled = false;
 	
-	public LineDelimitedJsonProgressMonitor(ServletOutputStream out) {
+	public LineDelimitedJsonProgressMonitor(OutputStream out) {
 		this.out = Objects.requireNonNull(out);
 	}
 
 	@Override
 	public void beginTask(String name, int totalWork) {
 		try {
-			out.println(message(
-				"type", "beginTask",
-				"name", name,
-				"totalWork", totalWork
+			println(message(
+				"type", "beginTask", //$NON-NLS-1$ //$NON-NLS-2$
+				"name", name, //$NON-NLS-1$
+				"totalWork", totalWork //$NON-NLS-1$
 				));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -58,8 +54,8 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	@Override
 	public void done() {
 		try {
-			out.println(message(
-				"type", "done"
+			println(message(
+				"type", "done" //$NON-NLS-1$ //$NON-NLS-2$
 				));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -69,9 +65,9 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	@Override
 	public void internalWorked(double work) {
 		try {
-			out.println(message(
-				"type", "internalWorked",
-				"work", work
+			println(message(
+				"type", "internalWorked", //$NON-NLS-1$ //$NON-NLS-2$
+				"work", work //$NON-NLS-1$
 				));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -88,9 +84,9 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 		this.canceled = canceled;
 		if(canceled) {
 			try {
-				out.println(message(
-					"type", "cancel"
-					));
+				println(message(
+					"type", "cancel" //$NON-NLS-1$ //$NON-NLS-2$
+				));
 			} catch(IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -100,10 +96,10 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	@Override
 	public void setTaskName(String name) {
 		try {
-			out.println(message(
-				"type", "task",
-				"name", name
-				));
+			println(message(
+				"type", "task", //$NON-NLS-1$ //$NON-NLS-2$
+				"name", name //$NON-NLS-1$
+			));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -112,10 +108,10 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	@Override
 	public void subTask(String name) {
 		try {
-			out.println(message(
-				"type", "subTask",
-				"name", name
-				));
+			println(message(
+				"type", "subTask", //$NON-NLS-1$ //$NON-NLS-2$
+				"name", name //$NON-NLS-1$
+			));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -124,10 +120,10 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	@Override
 	public void worked(int work) {
 		try {
-			out.println(message(
-				"type", "worked",
-				"work", work
-				));
+			println(message(
+				"type", "worked", //$NON-NLS-1$ //$NON-NLS-2$
+				"work", work //$NON-NLS-1$
+			));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -137,12 +133,27 @@ public class LineDelimitedJsonProgressMonitor implements IProgressMonitor {
 	// * Utility methods
 	// *******************************************************************************
 	
+	private void println(String message) throws IOException {
+		out.write(message.getBytes());
+		out.write('\r');
+		out.write('\n');
+	}
+	
 	public static String message(Object... parts) {
-		JsonObject json = new JsonJavaObject();
+		JsonObject json = new JsonObject();
 		for(int i = 0; i < parts.length; i += 2) {
-			String key = StringUtil.toString(parts[i]);
+			String key = parts[i] == null ? "" : parts[i].toString(); //$NON-NLS-1$
 			Object val = i < parts.length-1 ? parts[i+1] : null;
-			json.putJsonProperty(key, val);
+			
+			if(val instanceof Integer) {
+				json.add(key, ((Integer)val).intValue());
+			} else if(val instanceof Number) {
+				json.add(key, ((Number)val).doubleValue());
+			} else if(val instanceof Boolean) {
+				json.add(key, ((Boolean)val).booleanValue());
+			} else {
+				json.add(key, val == null ? null : val.toString());
+			}
 		}
 		
 		return json.toString();

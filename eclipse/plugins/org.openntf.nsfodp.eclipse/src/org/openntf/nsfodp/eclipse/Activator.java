@@ -23,6 +23,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class Activator extends AbstractUIPlugin {
 	public static final String ICON_EMBLEM_SYSTEM = "icons/emblem-system.png"; //$NON-NLS-1$
+	public static final String ICON_SYSTEM_FILE_MANAGER = "icons/system-file-manager.png"; //$NON-NLS-1$
 	
 	private static Activator instance;
 	
@@ -43,6 +44,7 @@ public class Activator extends AbstractUIPlugin {
 		super.initializeImageRegistry(reg);
 		
 		reg.put(ICON_EMBLEM_SYSTEM, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), ICON_EMBLEM_SYSTEM));
+		reg.put(ICON_SYSTEM_FILE_MANAGER, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), ICON_SYSTEM_FILE_MANAGER));
 	}
 	
 	public static void logError(String message, Throwable throwable) {

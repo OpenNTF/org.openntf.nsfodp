@@ -30,8 +30,8 @@ public enum NSFODPUtil {
 	 * @return an appropriate temp directory for the system
 	 */
 	public static Path getTempDirectory() {
-		String osName = System.getProperty("os.name");
-		if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
+		String osName = System.getProperty("os.name"); //$NON-NLS-1$
+		if (osName.startsWith("Linux") || osName.startsWith("LINUX")) { //$NON-NLS-1$ //$NON-NLS-2$
 			return Paths.get("/tmp"); //$NON-NLS-1$
 		} else {
 			return Paths.get(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$

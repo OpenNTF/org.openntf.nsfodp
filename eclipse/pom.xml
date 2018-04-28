@@ -249,6 +249,7 @@
 			            <exclude>src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
 						<exclude>**/org/thymeleaf/**</exclude>
+						<exclude>**/com/eclipsesource/**</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>

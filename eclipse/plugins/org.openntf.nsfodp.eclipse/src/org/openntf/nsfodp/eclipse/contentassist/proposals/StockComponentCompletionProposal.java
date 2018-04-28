@@ -18,12 +18,12 @@ package org.openntf.nsfodp.eclipse.contentassist.proposals;
 
 import org.eclipse.swt.graphics.Image;
 import org.openntf.nsfodp.eclipse.Activator;
-import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
+import org.openntf.nsfodp.eclipse.contentassist.model.StockComponent;
 
 /**
- * Completion proposal provider for project Custom Controls
+ * Completion proposal provider for stock XPages components
  */
-public class CustomControlCompletionProposal extends AbstractComponentCompletionProposal<CustomControl> {
+public class StockComponentCompletionProposal extends AbstractComponentCompletionProposal<StockComponent> {
 
 	/**
 	 * Constructor, creates a completion proposal for an in-project custom control.
@@ -33,12 +33,12 @@ public class CustomControlCompletionProposal extends AbstractComponentCompletion
 	 * 						  entered by the user.
 	 * @param cursorposition  The user's current cursor position
 	 */
-	public CustomControlCompletionProposal(CustomControl customControl, int charsentered, int cursorposition) {
+	public StockComponentCompletionProposal(StockComponent customControl, int charsentered, int cursorposition) {
 		super(customControl, charsentered, cursorposition);
 	}
 
 	@Override
 	public Image getImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ICON_EMBLEM_SYSTEM);
+		return Activator.getDefault().getImageRegistry().get(Activator.ICON_SYSTEM_FILE_MANAGER);
 	}
 }

@@ -20,9 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion;
@@ -32,12 +29,11 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.contentassist.ComponentCache;
-import org.openntf.nsfodp.eclipse.contentassist.proposals.CustomControlCompletionProposal;
+import org.openntf.nsfodp.eclipse.contentassist.proposals.StockComponentCompletionProposal;
 import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.AbstractItemProposalGenerator;
-import org.xml.sax.SAXException;
 
 @SuppressWarnings("restriction")
-public class CustomControlProposalGenerator extends AbstractItemProposalGenerator<CustomControlCompletionProposal> {
+public class StockComponentsProposalGenerator extends AbstractItemProposalGenerator<StockComponentCompletionProposal> {
 
 	/**
 	 * Collect custom control suggestions.
@@ -49,25 +45,25 @@ public class CustomControlProposalGenerator extends AbstractItemProposalGenerato
 	 * @throws BadLocationException
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<CustomControlCompletionProposal> computeElementProcessorSuggestions(
+	private static List<StockComponentCompletionProposal> computeElementProcessorSuggestions(
 		IDOMNode node, IStructuredDocument document, int cursorposition) throws BadLocationException {
 
 		String pattern = findProcessorNamePattern(document, cursorposition);
 
 		try {
-			return ComponentCache.getCustomControls().stream()
+			return ComponentCache.getStockComponents().stream()
 				.filter(cc -> cc.getPrefixedName().startsWith(pattern))
-				.map(cc -> new CustomControlCompletionProposal(cc, pattern.length(), cursorposition))
+				.map(cc -> new StockComponentCompletionProposal(cc, pattern.length(), cursorposition))
 				.collect(Collectors.toList());
-		} catch (CoreException | SAXException | IOException | ParserConfigurationException e) {
-			Activator.logError("Error while composing CC suggestions", e);
+		} catch (IOException e) {
+			Activator.logError("Error while composing stock component suggestions", e);
 		}
 
 		return Collections.EMPTY_LIST;
 	}
 
 	@Override
-	public List<CustomControlCompletionProposal> generateProposals(IDOMNode node,
+	public List<StockComponentCompletionProposal> generateProposals(IDOMNode node,
 		ITextRegion textregion, IStructuredDocumentRegion documentregion,
 		IStructuredDocument document, int cursorposition) throws BadLocationException {
 
