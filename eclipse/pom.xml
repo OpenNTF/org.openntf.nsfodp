@@ -248,6 +248,7 @@
 			            <exclude>src/test/resources/**</exclude>
 			            <exclude>src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
+						<exclude>**/org/thymeleaf/**</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
