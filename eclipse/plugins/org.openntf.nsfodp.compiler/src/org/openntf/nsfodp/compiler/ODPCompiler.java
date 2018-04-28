@@ -326,7 +326,7 @@ public class ODPCompiler {
 	private void initRegistry() {
 		subTask("Initializing libraries");
 
-		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library");
+		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 		libraries.stream()
 			.filter(lib -> lib instanceof XspLibrary)
 			.map(XspLibrary.class::cast)
@@ -359,11 +359,11 @@ public class ODPCompiler {
 	}
 	private Bundle startBundle(Bundle bundle) {
 		try {
-			if(bundle.getHeaders().get("Eclipse-SourceBundle") == null && bundle.getHeaders().get("Fragment-Host") == null) {
+			if(bundle.getHeaders().get("Eclipse-SourceBundle") == null && bundle.getHeaders().get("Fragment-Host") == null) { //$NON-NLS-1$ //$NON-NLS-2$
 				bundle.start();
 			}
 		} catch (BundleException e) {
-			if(e.toString().contains("Another singleton bundle selected")) {
+			if(e.toString().contains("Another singleton bundle selected")) { //$NON-NLS-1$
 				// Ignore entirely
 			} else {
 				// Print the stack trace but move on
