@@ -29,12 +29,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -89,7 +91,11 @@ import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
+import com.mindoo.domino.jna.NotesDatabase;
 import com.mindoo.domino.jna.NotesNote;
+import com.mindoo.domino.jna.NotesDatabase.Encryption;
+import com.mindoo.domino.jna.constants.CreateDatabase;
+import com.mindoo.domino.jna.constants.DBClass;
 import com.mindoo.domino.jna.errors.LotusScriptCompilationError;
 import com.mindoo.domino.jna.errors.NotesError;
 import com.mindoo.domino.jna.gc.NotesGC;
@@ -140,16 +146,14 @@ public class ODPCompiler {
 	};
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
-			"-source", "1.8",
-			"-target", "1.8",
-			"-g",
-			"-parameters",
-			"-encoding", "utf-8"
+			"-source", "1.8", //$NON-NLS-1$ //$NON-NLS-2$
+			"-target", "1.8", //$NON-NLS-1$ //$NON-NLS-2$
+			"-g", //$NON-NLS-1$
+			"-parameters", //$NON-NLS-1$
+			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 			);
-	private static final String BLANK_DB = "/res/blank.nsf";
-	private static final String NOTEID_UNTITLED_VIEW = "11A";
 	
-	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL";
+	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL"; //$NON-NLS-1$
 	private static boolean DEBUG_DXL = false;
 	
 	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, IProgressMonitor mon) throws FileNotFoundException, XMLException, IOException {
@@ -213,34 +217,32 @@ public class ODPCompiler {
 				Collection<String> dependencies = ODPUtil.expandRequiredBundles(bundleContext, odp.getRequiredBundles());
 				
 				// Special support for Notes.jar
-				Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true);
+				Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true); //$NON-NLS-1$
 				if(bundle.isPresent()) {
 					File f = FileLocator.getBundleFile(bundle.get());
 					if(!f.exists()) {
-						throw new IllegalStateException("Could not locate Notes.jar");
+						throw new IllegalStateException("Could not locate Notes.jar"); //$NON-NLS-1$
 					}
 					if(f.isFile()) {
 						try(JarFile jar = new JarFile(f)) {
-							JarEntry notesJar = jar.getJarEntry("Notes.jar");
-							Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar");
-							Files.delete(tempFile);
+							JarEntry notesJar = jar.getJarEntry("Notes.jar"); //$NON-NLS-1$
+							Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 							try(InputStream is = jar.getInputStream(notesJar)) {
-								Files.copy(is, tempFile);
+								Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 							}
-							dependencies.add("jar:" + tempFile.toUri().toString());
+							dependencies.add("jar:" + tempFile.toUri().toString()); //$NON-NLS-1$
 						}
 					} else {
-						Path path = f.toPath().resolve("Notes.jar");
-						Path tempFile = Files.createTempFile("Notes", ".jar");
-						Files.delete(tempFile);
-						Files.copy(path, tempFile);
-						dependencies.add("jar:" + tempFile.toUri().toString());
+						Path path = f.toPath().resolve("Notes.jar"); //$NON-NLS-1$
+						Path tempFile = Files.createTempFile("Notes", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+						Files.copy(path, tempFile, StandardCopyOption.REPLACE_EXISTING);
+						dependencies.add("jar:" + tempFile.toUri().toString()); //$NON-NLS-1$
 					}
 				}
 				
 				// Add any Jars from the ODP
 				for(Path jar : odp.getJars()) {
-					dependencies.add("jar:" + jar.toUri());
+					dependencies.add("jar:" + jar.toUri()); //$NON-NLS-1$
 				}
 				
 				String[] classPath = dependencies.toArray(new String[dependencies.size()]);
@@ -255,7 +257,7 @@ public class ODPCompiler {
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
 			try {
 				Path file = createDatabase(lotusSession);
-				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString());
+				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				DxlImporter importer = lotusSession.createDxlImporter();
 				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_CREATE);
 				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
@@ -282,7 +284,7 @@ public class ODPCompiler {
 			StringWriter o = new StringWriter();
 			PrintWriter errOut = new PrintWriter(o);
 			e.printExtraInformation(errOut);
-			throw new RuntimeException("Java compilation failed:\n" + o, e);
+			throw new RuntimeException("Java compilation failed:\n" + o, e); //$NON-NLS-1$
 		} finally {
 			uninstallBundles(bundles);
 		}
@@ -324,7 +326,7 @@ public class ODPCompiler {
 	private void initRegistry() {
 		subTask("Initializing libraries");
 
-		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library");
+		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 		libraries.stream()
 			.filter(lib -> lib instanceof XspLibrary)
 			.map(XspLibrary.class::cast)
@@ -357,11 +359,11 @@ public class ODPCompiler {
 	}
 	private Bundle startBundle(Bundle bundle) {
 		try {
-			if(bundle.getHeaders().get("Eclipse-SourceBundle") == null && bundle.getHeaders().get("Fragment-Host") == null) {
+			if(bundle.getHeaders().get("Eclipse-SourceBundle") == null && bundle.getHeaders().get("Fragment-Host") == null) { //$NON-NLS-1$ //$NON-NLS-2$
 				bundle.start();
 			}
 		} catch (BundleException e) {
-			if(e.toString().contains("Another singleton bundle selected")) {
+			if(e.toString().contains("Another singleton bundle selected")) { //$NON-NLS-1$
 				// Ignore entirely
 			} else {
 				// Print the stack trace but move on
@@ -415,7 +417,7 @@ public class ODPCompiler {
 		for(CustomControl cc : ccs) {
 			Document xspConfig = cc.getXspConfig().get();
 			
-			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue());
+			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue()); //$NON-NLS-1$
 			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
 			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
 					facesProject,
@@ -470,25 +472,13 @@ public class ODPCompiler {
 	 */
 	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException {
 		subTask("Creating destination NSF");
-		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf");
+		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 		temp.toFile().deleteOnExit();
+		String filePath = temp.toAbsolutePath().toString();
 		
-		try(OutputStream os = Files.newOutputStream(temp)) {
-			try(InputStream is = getClass().getResourceAsStream(BLANK_DB)) {
-				StreamUtil.copyStream(is, os);
-			}
-		}
+		NotesDatabase.createDatabase("", filePath, DBClass.NOTEFILE, true, EnumSet.of(CreateDatabase.LARGE_UNKTABLE), Encryption.None, 0); //$NON-NLS-1$
 		
-		Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompiler", ".nsf");
-		Files.delete(nsf);
-		lotus.domino.Database tempDatabase = lotusSession.getDatabase("", temp.toAbsolutePath().toString());
-		lotus.domino.Database copied = tempDatabase.createCopy("", nsf.toAbsolutePath().toString());
-		tempDatabase.remove();
-		lotus.domino.Document blankView = copied.getDocumentByID(NOTEID_UNTITLED_VIEW);
-		blankView.removePermanently(true);
-		copied.recycle();
-		
-		return nsf;
+		return temp;
 	}
 	
 	private void importDbProperties(DxlImporter importer, Database database) throws Exception {
@@ -496,12 +486,12 @@ public class ODPCompiler {
 		subTask("Importing DB properties");
 		Path properties = odp.getDbPropertiesFile();
 		Document dxlDoc = ODPUtil.readXml(properties);
-		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode();
+		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode(); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}
 		String dxl = DOMUtil.getXMLString(dxlDoc);
-		importDxl(importer, dxl, database, "database.properties");
+		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}
 	
 	private void importBasicElements(DxlImporter importer, Database database) throws Exception {
@@ -511,7 +501,7 @@ public class ODPCompiler {
 				try {
 					importDxl(importer, entry.getValue(), database, "Basic element " + odp.getBaseDirectory().relativize(entry.getKey()));
 				} catch(NotesException ne) {
-					throw new NotesException(ne.id, "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey()), ne);
+					throw new NotesException(ne.id, "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey()), ne); //$NON-NLS-1$
 				}
 			}
 		}
@@ -522,12 +512,12 @@ public class ODPCompiler {
 		
 		// Generate DXL in parallel
 		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
-			.parallel()
+//			.parallel()
 			.filter(res -> {
 				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
 				
 				// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
-				if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) {
+				if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) { //$NON-NLS-1$
 					try {
 						if(Files.size(res.getDataFile()) == 0) {
 							return false;
@@ -564,11 +554,11 @@ public class ODPCompiler {
 						StreamUtil.copyStream(is, baos);
 					}
 					// Use expanded syntax due to the presence of the xmlns
-					String title = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").getStringValue();
+					String title = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").getStringValue(); //$NON-NLS-1$
 					if(StringUtil.isEmpty(title)) {
 						throw new IllegalStateException("Could not identify original title for file resource " + filePath);
 					}
-					ODPUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w");
+					ODPUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}
@@ -583,8 +573,8 @@ public class ODPCompiler {
 			
 			String xspConfig = cc.getXspConfigSource();
 			byte[] xspConfigData = xspConfig.getBytes();
-			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData);
-			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length);
+			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData); //$NON-NLS-1$
+			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length); //$NON-NLS-1$
 			
 			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Custom Control " + cc.getPageName());
 		}
@@ -603,7 +593,7 @@ public class ODPCompiler {
 	private Document importXSP(DxlImporter importer, Database database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws XMLException, IOException {
 		String className = xpage.getJavaClassName();
 		byte[] byteCode = classLoader.getClassByteCode(className);
-		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page";
+		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page"; //$NON-NLS-1$
 		byte[] innerByteCode = classLoader.getClassByteCode(innerClassName);
 
 		String xspSource = xpage.getSource();
@@ -611,15 +601,15 @@ public class ODPCompiler {
 		
 		Document dxlDoc = xpage.getDxl();
 		
-		DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
-		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
-		DXLUtil.writeItemFileData(dxlDoc, "$ClassData1", innerByteCode);
-		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize1", innerByteCode.length);
-		DXLUtil.writeItemFileData(dxlDoc, "$FileData", xspSourceData);
-		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", xspSourceData.length);
+		DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode); //$NON-NLS-1$
+		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length); //$NON-NLS-1$
+		DXLUtil.writeItemFileData(dxlDoc, "$ClassData1", innerByteCode); //$NON-NLS-1$
+		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize1", innerByteCode.length); //$NON-NLS-1$
+		DXLUtil.writeItemFileData(dxlDoc, "$FileData", xspSourceData); //$NON-NLS-1$
+		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", xspSourceData.length); //$NON-NLS-1$
 		
-		String[] classIndex = new String[] { "WEB-INF/classes/" + ODPUtil.toJavaPath(className), "WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName) };
-		DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndex);
+		String[] classIndex = new String[] { "WEB-INF/classes/" + ODPUtil.toJavaPath(className), "WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName) }; //$NON-NLS-1$ //$NON-NLS-2$
+		DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndex); //$NON-NLS-1$
 		
 		// Drain them from the later queue
 		compiledClassNames.remove(className);
@@ -641,25 +631,25 @@ public class ODPCompiler {
 				
 				Document dxlDoc = source.getDxl();
 				
-				DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode);
-				DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length);
+				DXLUtil.writeItemFileData(dxlDoc, "$ClassData0", byteCode); //$NON-NLS-1$
+				DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length); //$NON-NLS-1$
 				
 				List<String> classIndexItem = new ArrayList<>();
-				classIndexItem.add("WEB-INF/classes/" + ODPUtil.toJavaPath(className));
+				classIndexItem.add("WEB-INF/classes/" + ODPUtil.toJavaPath(className)); //$NON-NLS-1$
 				
 				// Also look for any inner classes that were compiled
 				List<String> innerClasses = classLoader.getCompiledClassNames().stream()
-						.filter(cname -> cname.matches("^" + Pattern.quote(className) + "[\\.\\$].+$"))
+						.filter(cname -> cname.matches("^" + Pattern.quote(className) + "[\\.\\$].+$")) //$NON-NLS-1$ //$NON-NLS-2$
 						.collect(Collectors.toList());
 				for(int i = 0; i < innerClasses.size(); i++) {
 					String innerClassName = innerClasses.get(i);
 					compiledClassNames.remove(innerClassName);
 					byte[] innerByteCode = classLoader.getClassByteCode(innerClassName);
-					DXLUtil.writeItemFileData(dxlDoc, "$ClassData" + (i+1), innerByteCode);
-					DXLUtil.writeItemNumber(dxlDoc, "$ClassSize" + (i+1), innerByteCode.length);
-					classIndexItem.add("WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName));
+					DXLUtil.writeItemFileData(dxlDoc, "$ClassData" + (i+1), innerByteCode); //$NON-NLS-1$
+					DXLUtil.writeItemNumber(dxlDoc, "$ClassSize" + (i+1), innerByteCode.length); //$NON-NLS-1$
+					classIndexItem.add("WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName)); //$NON-NLS-1$
 				}
-				DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndexItem.toArray(new CharSequence[classIndexItem.size()]));
+				DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndexItem.toArray(new CharSequence[classIndexItem.size()])); //$NON-NLS-1$
 				
 				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "Java class " + className);
 			}
@@ -667,9 +657,9 @@ public class ODPCompiler {
 		
 		// Create standalone class files for remaining classes
 		for(String leftoverClassName : compiledClassNames) {
-			String fileName = "WEB-INF/classes/" + ODPUtil.toJavaPath(leftoverClassName);
+			String fileName = "WEB-INF/classes/" + ODPUtil.toJavaPath(leftoverClassName); //$NON-NLS-1$
 			byte[] leftoverByteCode = classLoader.getClassByteCode(leftoverClassName);
-			ODPUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w");
+			ODPUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -684,9 +674,9 @@ public class ODPCompiler {
 			for(int startIndex = 0; startIndex < script.length(); startIndex += chunkSize) {
 				int endIndex = Math.min(startIndex+chunkSize, script.length());
 				String scriptChunk = script.substring(startIndex, endIndex);
-				Element el = DXLUtil.writeItemString(dxlDoc, "$ScriptLib", false, scriptChunk);
-				el.setAttribute("sign", "true");
-				el.setAttribute("summary", "false");
+				Element el = DXLUtil.writeItemString(dxlDoc, "$ScriptLib", false, scriptChunk); //$NON-NLS-1$
+				el.setAttribute("sign", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+				el.setAttribute("summary", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + odp.getBaseDirectory().relativize(lib.getDataFile())));
 		}
@@ -701,7 +691,7 @@ public class ODPCompiler {
 			String noteId;
 			while((noteId = remaining.poll()) != null) {
 				lotus.domino.Document doc = database.getDocumentByID(noteId);
-				String title = doc.getItemValueString("$TITLE");
+				String title = doc.getItemValueString("$TITLE"); //$NON-NLS-1$
 				titles.put(noteId, title);
 				try {
 					NotesGC.runWithAutoGC(() -> {
@@ -713,10 +703,10 @@ public class ODPCompiler {
 					});
 				} catch(LotusScriptCompilationError err) {
 					nextPass.add(noteId);
-					titles.put(noteId, title + " - " + err);
+					titles.put(noteId, title + " - " + err); //$NON-NLS-1$
 				} catch(NotesError err) {
 					if(err.getId() == 12051) { // Same as above, but not encapsulated
-						titles.put(noteId, title + " - " + err);
+						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
 						nextPass.add(noteId);
 					} else {
 						throw err;
@@ -731,9 +721,9 @@ public class ODPCompiler {
 		}
 		if(!remaining.isEmpty()) {
 			String notes = remaining.stream()
-				.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId))
-				.collect(Collectors.joining("\n"));
-			throw new RuntimeException("Unable to compile LotusScript in notes:\n\n" + notes);
+				.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
+				.collect(Collectors.joining("\n")); //$NON-NLS-1$
+			throw new RuntimeException("Unable to compile LotusScript in notes:\n\n" + notes); //$NON-NLS-1$
 		}
 	}
 	
@@ -742,7 +732,9 @@ public class ODPCompiler {
 	// *******************************************************************************
 	
 	private void subTask(Object message, Object... params) {
-		mon.subTask(StringUtil.format(StringUtil.toString(message), params));
+		if(mon != null) {
+			mon.subTask(StringUtil.format(StringUtil.toString(message), params));
+		}
 	}
 	
 	private UpdatableLibrary getLibrary(String namespace) {
@@ -752,7 +744,7 @@ public class ODPCompiler {
 				library = new FacesLibraryImpl(facesRegistry, namespace);
 				// TODO this is probably properly done by creating a FacesProjectImpl
 				// - it can then register the library fragments itself
-				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs");
+				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs"); //$NON-NLS-1$
 				localLibsField.setAccessible(true);
 				@SuppressWarnings("unchecked")
 				Map<String, UpdatableLibrary> localLibs = (Map<String, UpdatableLibrary>)localLibsField.get(facesRegistry);
@@ -778,7 +770,7 @@ public class ODPCompiler {
 	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws Exception {
 		try {
 			if(DEBUG_DXL) {
-				String tempFileName = NSFODPUtil.getTempDirectory() + File.separator + name.replace('/', '-').replace('\\', '-') + ".xml";
+				String tempFileName = NSFODPUtil.getTempDirectory() + File.separator + name.replace('/', '-').replace('\\', '-') + ".xml"; //$NON-NLS-1$
 				try(OutputStream os = Files.newOutputStream(Paths.get(tempFileName))) {
 					os.write(dxl.getBytes());
 				}
@@ -794,7 +786,7 @@ public class ODPCompiler {
 			}
 			return importedIds;
 		} catch(NotesException ne) {
-			if(ne.text.contains("DXL importer operation failed")) {
+			if(ne.text.contains("DXL importer operation failed")) { //$NON-NLS-1$
 				throw new RuntimeException("DXL import failed for element '" + name + "':\n" + importer.getLog(), ne);
 			}
 			throw ne;
