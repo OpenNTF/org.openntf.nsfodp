@@ -15,8 +15,10 @@
  */
 package org.openntf.nsfodp.eclipse.contentassist.model;
 
+import java.util.Collection;
+
 public class CustomControl extends AbstractComponent<CustomControl> {
-	public CustomControl(String namespaceUri, String prefix, String tagName) {
-		super(namespaceUri, prefix, tagName);
+	public CustomControl(String namespaceUri, String prefix, String tagName, Collection<ComponentProperty> attributes) {
+		super(namespaceUri, prefix, tagName, attributes);
 	}
 }

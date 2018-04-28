@@ -15,15 +15,25 @@
  */
 package org.openntf.nsfodp.eclipse.contentassist.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 public abstract class AbstractComponent<T extends AbstractComponent<T>> implements Comparable<T> {
 	private final String namespaceUri;
 	private final String prefix;
 	private final String tagName;
+	private final Collection<ComponentProperty> properties;
 	
-	public AbstractComponent(String namespaceUri, String prefix, String tagName) {
+	public AbstractComponent(String namespaceUri, String prefix, String tagName, Collection<ComponentProperty> properties) {
 		this.namespaceUri = namespaceUri;
 		this.prefix = prefix;
 		this.tagName = tagName;
+		if(properties == null) {
+			this.properties = Collections.emptyList();
+		} else {
+			this.properties = Collections.unmodifiableList(new ArrayList<>(properties));
+		}
 	}
 	
 	public String getNamespaceUri() {
@@ -36,6 +46,10 @@ public abstract class AbstractComponent<T extends AbstractComponent<T>> implemen
 	
 	public String getTagName() {
 		return tagName;
+	}
+	
+	public Collection<ComponentProperty> getProperties() {
+		return properties;
 	}
 	
 	public String getPrefixedName() {

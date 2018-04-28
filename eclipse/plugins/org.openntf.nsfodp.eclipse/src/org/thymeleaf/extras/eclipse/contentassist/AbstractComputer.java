@@ -47,8 +47,8 @@ public abstract class AbstractComputer {
 			NamedNodeMap attributes = node.getAttributes();
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String name = ((Attr)attributes.item(i)).getName();
-				if (name.startsWith("xmlns:")) {
-					namespaces.add(new QName(((Element)node).getAttribute(name), "", name.substring(6)));
+				if (name.startsWith("xmlns:")) { //$NON-NLS-1$
+					namespaces.add(new QName(((Element)node).getAttribute(name), "", name.substring(6))); //$NON-NLS-1$
 				}
 			}
 		}

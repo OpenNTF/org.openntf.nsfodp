@@ -31,6 +31,7 @@ import org.eclipse.wst.sse.ui.contentassist.ICompletionProposalComputer;
 import org.eclipse.wst.sse.ui.internal.contentassist.ContentAssistUtils;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.contentassist.generators.ComponentPropertyProposalGenerator;
 import org.openntf.nsfodp.eclipse.contentassist.generators.CustomControlProposalGenerator;
 import org.openntf.nsfodp.eclipse.contentassist.generators.StockComponentsProposalGenerator;
 import org.thymeleaf.extras.eclipse.contentassist.AbstractComputer;
@@ -41,7 +42,8 @@ public class XspCompletionProposalComputer extends AbstractComputer implements I
 
 	private static AbstractItemProposalGenerator<?>[] proposalgenerators = {
 		new CustomControlProposalGenerator(),
-		new StockComponentsProposalGenerator()
+		new StockComponentsProposalGenerator(),
+		new ComponentPropertyProposalGenerator()
 	};
 
 	@Override

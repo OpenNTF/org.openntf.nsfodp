@@ -15,10 +15,12 @@
  */
 package org.openntf.nsfodp.eclipse.contentassist.model;
 
+import java.util.Collection;
+
 public class StockComponent extends AbstractComponent<StockComponent> {
 
-	public StockComponent(String namespaceUri, String prefix, String tagName) {
-		super(namespaceUri, prefix, tagName);
+	public StockComponent(String namespaceUri, String prefix, String tagName, Collection<ComponentProperty> attributes) {
+		super(namespaceUri, prefix, tagName, attributes);
 	}
 
 }

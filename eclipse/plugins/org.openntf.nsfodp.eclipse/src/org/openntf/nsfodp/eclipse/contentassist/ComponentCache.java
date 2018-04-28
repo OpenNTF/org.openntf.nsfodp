@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -36,6 +37,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.openntf.domino.utils.xml.XMLDocument;
+import org.openntf.nsfodp.eclipse.contentassist.model.ComponentProperty;
 import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
 import org.openntf.nsfodp.eclipse.contentassist.model.StockComponent;
 import org.xml.sax.SAXException;
@@ -72,8 +74,17 @@ public enum ComponentCache {
 									.getText();
 							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
 									.getText();
+							
+							List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property")
+									.stream()
+									.map(prop -> {
+										String name = prop.selectSingleNode("property-name").getText();
+										String javaClass = prop.selectSingleNode("property-class").getText();
+										return new ComponentProperty(name, javaClass, false, null);
+									})
+									.collect(Collectors.toList());
 	
-							result.add(new CustomControl(namespaceUri, prefix, tagName));
+							result.add(new CustomControl(namespaceUri, prefix, tagName, attributes));
 						}
 					}
 				}
@@ -117,6 +128,25 @@ public enum ComponentCache {
 		String namespaceUri = o.getString("namespaceUri", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		String defaultPrefix = o.getString("defaultPrefix", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		String tagName = o.getString("tagName", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		return new StockComponent(namespaceUri, defaultPrefix, tagName);
+		
+		List<ComponentProperty> props = null;
+		JsonValue propsValue = o.get("properties"); //$NON-NLS-1$
+		if(propsValue != null && propsValue.isArray()) {
+			props = propsValue.asArray().values().stream()
+				.map(JsonValue::asObject)
+				.map(ComponentCache::toComponentProperty)
+				.collect(Collectors.toList());
+		}
+		
+		return new StockComponent(namespaceUri, defaultPrefix, tagName, props);
+	}
+	
+	private static ComponentProperty toComponentProperty(JsonObject o) {
+		String name = o.getString("name", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		String javaClass = o.getString("class", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		boolean required = o.getBoolean("required", false); //$NON-NLS-1$
+		JsonValue sinceVal = o.get("since"); //$NON-NLS-1$
+		String since = sinceVal.isString() ? sinceVal.asString() : null;
+		return new ComponentProperty(name, javaClass, required, since);
 	}
 }

@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 public enum ContentAssistUtil {
 	;
 
-	static IProject getActiveProject() {
+	public static IProject getActiveProject() {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
 	
@@ -58,7 +58,7 @@ public enum ContentAssistUtil {
 		return project;
 	}
 
-	static Element getRootElement(Node node) {
+	public static Element getRootElement(Node node) {
 		Node parent = node;
 		while (parent.getParentNode() != null && parent.getParentNode().getNodeType() == 1) {
 			parent = parent.getParentNode();
@@ -66,7 +66,7 @@ public enum ContentAssistUtil {
 		return (Element) parent;
 	}
 
-	static boolean isXsp(CompletionProposalInvocationContext context) {
+	public static boolean isXsp(CompletionProposalInvocationContext context) {
 		Node selectedNode = (Node) ContentAssistUtils.getNodeAt(context.getViewer(), context.getInvocationOffset());
 		Element root = getRootElement(selectedNode);
 		if (!NSFODPConstants.XP_NS.equals(root.getNamespaceURI())) {
@@ -75,7 +75,7 @@ public enum ContentAssistUtil {
 		return true;
 	}
 
-	static boolean isTargetProject() {
+	public static boolean isTargetProject() {
 		IProject project = getActiveProject();
 		if (project == null) {
 			return false;
