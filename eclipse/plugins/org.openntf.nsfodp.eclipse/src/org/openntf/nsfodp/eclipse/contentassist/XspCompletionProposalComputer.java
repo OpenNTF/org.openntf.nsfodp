@@ -54,7 +54,7 @@ import org.eclipse.wst.sse.ui.internal.contentassist.ContentAssistUtils;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.openntf.domino.utils.xml.XMLDocument;
 import org.openntf.nsfodp.eclipse.Activator;
-import org.openntf.nsfodp.eclipse.contentassist.generators.XspElementProposalGenerator;
+import org.openntf.nsfodp.eclipse.contentassist.generators.CustomControlProposalGenerator;
 import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
 import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
 import org.thymeleaf.extras.eclipse.contentassist.AbstractComputer;
@@ -75,7 +75,7 @@ public class XspCompletionProposalComputer extends AbstractComputer implements I
 	private static final Map<String, Collection<CustomControl>> CC_TAGS = Collections.synchronizedMap(new HashMap<>());
 
 	private static AbstractItemProposalGenerator<?>[] proposalgenerators = {
-		new XspElementProposalGenerator()
+		new CustomControlProposalGenerator()
 	};
 
 	/**

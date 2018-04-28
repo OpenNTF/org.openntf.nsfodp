@@ -39,15 +39,15 @@ import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.Abstra
 import org.xml.sax.SAXException;
 
 @SuppressWarnings("restriction")
-public class XspElementProposalGenerator extends AbstractItemProposalGenerator<CustomControlCompletionProposal> {
+public class CustomControlProposalGenerator extends AbstractItemProposalGenerator<CustomControlCompletionProposal> {
 
 	/**
-	 * Collect element processor suggestions.
+	 * Collect custom control suggestions.
 	 * 
-	 * @param node
-	 * @param document
-	 * @param cursorposition
-	 * @return List of element processor suggestions.
+	 * @param node the active DOM node from the editor
+	 * @param document the active document from the editor
+	 * @param cursorposition the position of the cursor in the editor
+	 * @return List of custom control suggestions.
 	 * @throws BadLocationException
 	 */
 	@SuppressWarnings("unchecked")
@@ -72,9 +72,6 @@ public class XspElementProposalGenerator extends AbstractItemProposalGenerator<C
 		return Collections.EMPTY_LIST;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<CustomControlCompletionProposal> generateProposals(IDOMNode node,
 		ITextRegion textregion, IStructuredDocumentRegion documentregion,
@@ -86,14 +83,14 @@ public class XspElementProposalGenerator extends AbstractItemProposalGenerator<C
 	}
 
 	/**
-	 * Check if, given everything, element processor suggestions should be made.
+	 * Check if, given everything, custom control suggestions should be made.
 	 * 
 	 * @param node
 	 * @param textregion
 	 * @param documentregion
 	 * @param document
 	 * @param cursorposition
-	 * @return <tt>true</tt> if element processor suggestions should be made.
+	 * @return <code>true</code> if custom control suggestions should be made.
 	 * @throws BadLocationException
 	 */
 	private static boolean makeElementProcessorSuggestions(IDOMNode node, ITextRegion textregion,
