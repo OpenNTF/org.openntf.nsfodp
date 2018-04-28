@@ -18,11 +18,11 @@
 -->
 <site>
 	<!-- ODP Compiler -->
-	<feature url="features/org.openntf.nsfodp.compiler.feature_1.0.0.qualifier.jar" id="org.openntf.nsfodp.compiler.feature" version="1.0.0.qualifier">
+	<feature url="features/org.openntf.nsfodp.compiler.feature_1.1.0.qualifier.jar" id="org.openntf.nsfodp.compiler.feature" version="1.1.0.qualifier">
 		<category name="NSF ODP Tooling"/>
 	</feature>
 	<!-- NSF Deployment -->
-	<feature url="features/org.openntf.nsfodp.deployment.feature_1.0.0.qualifier.jar" id="org.openntf.nsfodp.deployment.feature" version="1.0.0.qualifier">
+	<feature url="features/org.openntf.nsfodp.deployment.feature_1.1.0.qualifier.jar" id="org.openntf.nsfodp.deployment.feature" version="1.1.0.qualifier">
 		<category name="NSF ODP Tooling"/>
 	</feature>
    

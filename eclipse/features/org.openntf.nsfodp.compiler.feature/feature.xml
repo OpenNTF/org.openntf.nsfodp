@@ -19,7 +19,7 @@
 <feature
       id="org.openntf.nsfodp.compiler.feature"
       label="ODP Compiler Feature"
-      version="1.0.0.qualifier">
+      version="1.1.0.qualifier">
 
    <description url="https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar">
       [Enter Feature Description here.]
@@ -237,8 +237,23 @@
       <import feature="com.ibm.xsp.extlibx.bazaar.feature"/>
    </requires>
 
-   <plugin id="org.openntf.nsfodp.commons" version="0.0.0"/>
-   <plugin id="org.openntf.nsfodp.compiler" version="0.0.0"/>
-   <plugin id="org.openntf.nsfodp.compiler.servlet" version="0.0.0" fragment="true"/>
+   <plugin
+         id="org.openntf.nsfodp.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.openntf.nsfodp.compiler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.openntf.nsfodp.compiler.servlet"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
 
 </feature>
