@@ -39,6 +39,6 @@ public class CustomControlCompletionProposal extends AbstractComponentCompletion
 
 	@Override
 	public Image getImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ICON_EMBLEM_SYSTEM);
+		return Activator.getDefault().getImageRegistry().get(Activator.ICON_CUSTOM_CONTROL);
 	}
 }

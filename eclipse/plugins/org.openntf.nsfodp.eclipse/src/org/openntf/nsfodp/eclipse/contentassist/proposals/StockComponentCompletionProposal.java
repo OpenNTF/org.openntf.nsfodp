@@ -39,6 +39,6 @@ public class StockComponentCompletionProposal extends AbstractComponentCompletio
 
 	@Override
 	public Image getImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ICON_SYSTEM_FILE_MANAGER);
+		return Activator.getDefault().getImageRegistry().get(Activator.ICON_STOCK_COMPONENT);
 	}
 }

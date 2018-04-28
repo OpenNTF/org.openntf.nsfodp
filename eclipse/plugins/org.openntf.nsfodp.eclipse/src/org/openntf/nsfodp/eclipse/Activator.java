@@ -22,8 +22,8 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class Activator extends AbstractUIPlugin {
-	public static final String ICON_EMBLEM_SYSTEM = "icons/emblem-system.png"; //$NON-NLS-1$
-	public static final String ICON_SYSTEM_FILE_MANAGER = "icons/system-file-manager.png"; //$NON-NLS-1$
+	public static final String ICON_CUSTOM_CONTROL = "icon-custom-control"; //$NON-NLS-1$
+	public static final String ICON_STOCK_COMPONENT = "icon-stock-component"; //$NON-NLS-1$
 	
 	private static Activator instance;
 	
@@ -43,8 +43,8 @@ public class Activator extends AbstractUIPlugin {
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
 		
-		reg.put(ICON_EMBLEM_SYSTEM, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), ICON_EMBLEM_SYSTEM));
-		reg.put(ICON_SYSTEM_FILE_MANAGER, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), ICON_SYSTEM_FILE_MANAGER));
+		reg.put(ICON_CUSTOM_CONTROL, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/emblem-system.png")); //$NON-NLS-1$
+		reg.put(ICON_STOCK_COMPONENT, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/system-file-manager.png")); //$NON-NLS-1$
 	}
 	
 	public static void logError(String message, Throwable throwable) {
