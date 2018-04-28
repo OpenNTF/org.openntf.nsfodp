@@ -2,7 +2,7 @@
 
 This project contains tooling for dealing with NSF on-disk-project representations in Maven and Eclipse.
 
-There are three main components: a Maven plugin, a set of Domino OSGi plugins, and a set of Eclipse plugins. In tandem, they provide two main features:
+There are three main components: a Maven plugin, a set of Domino OSGi plugins, and a set of Eclipse plugins. In tandem, they provide three main features:
 
 ### ODP Compiler
 
@@ -13,6 +13,14 @@ To use this, install the Domino plugins on an otherwise-clean Domino server - th
 ### NSF Deployment
 
 The NSF deployment service allows for deployment of an NSF to a Domino server without involving the Notes client. Currently, this will only deploy new databases, but the plan is to have this also be able to perform a design replace on an existing database.
+
+### Eclipse Tooling
+
+The Eclipse plugins provide the Eclipse IDE with basic knowledge of the ODP and autocompletion capabilities for XPages and Custom Controls.
+
+Currently, autocompletion knows about the stock components and Extension Library that ship with 9.0.1 FP10 as well as any Custom Controls inside the same project.
+
+Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the context menu, which are shortcuts for the equivalent Maven goals.
 
 ## Usage
 
@@ -94,6 +102,8 @@ For deployment, add `nsfodp.deploy.server` and and `nsfodp.deploy.serverUrl` pro
 			</plugin>
 			...
 ```
+
+By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.
 
 ## Requirements
 
