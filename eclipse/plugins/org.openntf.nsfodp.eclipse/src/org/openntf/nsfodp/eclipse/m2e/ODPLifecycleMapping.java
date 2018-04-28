@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.m2e;
+package org.openntf.nsfodp.eclipse.m2e;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ import org.eclipse.m2e.core.project.configurator.AbstractCustomizableLifecycleMa
 import org.eclipse.m2e.core.project.configurator.ILifecycleMapping;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.pde.internal.core.util.CoreUtility;
-import org.openntf.nsfodp.compiler.eclipse.nature.OnDiskProjectNature;
+import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
 
 @SuppressWarnings("restriction")
 public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping implements ILifecycleMapping, ILifecycleMapping2 {

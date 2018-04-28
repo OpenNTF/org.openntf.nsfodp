@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.contentassist;
+package org.openntf.nsfodp.eclipse.contentassist;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +42,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -69,15 +71,18 @@ import org.eclipse.wst.xml.ui.internal.contentassist.AbstractXMLCompletionPropos
 import org.eclipse.wst.xml.ui.internal.contentassist.ContentAssistRequest;
 import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentModelGenerator;
 import org.openntf.domino.utils.xml.XMLDocument;
-import org.openntf.nsfodp.compiler.eclipse.Activator;
-import org.openntf.nsfodp.compiler.eclipse.contentassist.model.CustomControl;
-import org.openntf.nsfodp.compiler.eclipse.nature.OnDiskProjectNature;
+import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.contentassist.generators.XspElementProposalGenerator;
+import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
+import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
+import org.thymeleaf.extras.eclipse.contentassist.AbstractComputer;
+import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.AbstractItemProposalGenerator;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 @SuppressWarnings("restriction")
-public class XspCompletionProposalComputer extends HTMLTagsCompletionProposalComputer {
+public class XspCompletionProposalComputer extends AbstractComputer implements ICompletionProposalComputer {
 
 	public static final String XP_NS = "http://www.ibm.com/xsp/core"; //$NON-NLS-1$
 	public static final String XC_NS = "http://www.ibm.com/xsp/custom"; //$NON-NLS-1$
@@ -85,98 +90,64 @@ public class XspCompletionProposalComputer extends HTMLTagsCompletionProposalCom
 	public static final String XL_NS = "http://www.ibm.com/xsp/labs"; //$NON-NLS-1$
 	public static final String BZ_NS = "http://www.ibm.com/xsp/bazaar"; //$NON-NLS-1$
 
-	private ILog log = Platform.getLog(Activator.getDefault().getBundle());
-	
 	private static final Map<String, Collection<CustomControl>> CC_TAGS = Collections.synchronizedMap(new HashMap<>());
 
+	private static AbstractItemProposalGenerator<?>[] proposalgenerators = {
+		new XspElementProposalGenerator()
+	};
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected void addTagNameProposals(ContentAssistRequest contentAssistRequest, int childPosition, CompletionProposalInvocationContext context) {
-		if(!isTargetProject() || !isXsp(context)) { return; }
-		
-		IProject project = getActiveProject();
+	public List<?> computeCompletionProposals(CompletionProposalInvocationContext context, IProgressMonitor monitor) {
+		if(!isTargetProject() || !isXsp(context)) {
+			return Collections.emptyList();
+		}
+
+		ArrayList<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
 
 		try {
-			Collection<CustomControl> ccs = getCustomControls(project);
-			List<String> ccTags = ccs.stream().map(cc -> cc.getPrefix() + ":" + cc.getTagName()).collect(Collectors.toList());
-			
-			IStructuredModel model = null;
-			if(context.getDocument() instanceof IStructuredDocument) {
-				model = StructuredModelManager.getModelManager().getModelForRead((IStructuredDocument)context.getDocument());
+			ITextViewer viewer = context.getViewer();
+			IStructuredDocument document = (IStructuredDocument) context.getDocument();
+			int cursorposition = context.getInvocationOffset();
+
+			IDOMNode node = (IDOMNode) ContentAssistUtils.getNodeAt(viewer, cursorposition);
+			IStructuredDocumentRegion documentregion = ContentAssistUtils.getStructuredDocumentRegion(viewer,
+					cursorposition);
+			ITextRegion textregion = documentregion.getRegionAtCharacterOffset(cursorposition);
+
+			// Create proposals from the generators given to us by the computers
+			for (AbstractItemProposalGenerator<?> proposalgenerator : proposalgenerators) {
+				proposals.addAll(proposalgenerator.generateProposals(node, textregion, documentregion, document,
+						cursorposition));
 			}
-			if(model != null) {
-				IDOMDocument doc = ((IDOMModel) model).getDocument();
-				
-				for(String tag : ccTags) {
-					String proposalText = "<" + tag + "></" + tag + ">";
-					CompletionProposal proposal = new CompletionProposal(proposalText, context.getInvocationOffset(), 0, tag.length());
-					contentAssistRequest.addProposal(proposal);
-				}
-			}
-			
-		} catch(Exception e) {
-			throw new RuntimeException(e);
+		} catch (BadLocationException ex) {
+			Activator.logError("Unable to retrieve data at the current document position", ex);
 		}
+
+		return proposals;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<?> computeContextInformation(CompletionProposalInvocationContext context, IProgressMonitor monitor) {
+		return Collections.emptyList();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected void addTagInsertionProposals(ContentAssistRequest contentAssistRequest, int childPosition, CompletionProposalInvocationContext context) {
-		if(!isTargetProject() || !isXsp(context)) { return; }
-		
+	public String getErrorMessage() {
+		return null;
 	}
-	
-	@Override
-	protected void addTagCloseProposals(ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		if(!isTargetProject() || !isXsp(context)) { return; }
-		
-	}
-
-	@Override
-	protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		// TODO look up control attributes
-		super.addAttributeNameProposals(contentAssistRequest, context);
-	}
-
-	@Override
-	protected void addAttributeValueProposals(ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		// TODO maybe add EL proposals one day
-		super.addAttributeValueProposals(contentAssistRequest, context);
-	}
-
-	@Override
-	protected void addEmptyDocumentProposals(ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		// No need here
-	}
-
-	@Override
-	protected void addEntityProposals(ContentAssistRequest contentAssistRequest, ITextRegion completionRegion, IDOMNode treeNode,
-			CompletionProposalInvocationContext context) {
-		// XSP doesn't actually support HTML entities
-	}
-
-	@Override
-	protected void addEntityProposals(@SuppressWarnings("rawtypes") Vector proposals, Properties map, String key, int nodeOffset,
-			IStructuredDocumentRegion sdRegion, ITextRegion completionRegion, CompletionProposalInvocationContext context) {
-		// XSP doesn't actually support HTML entities
-	}
-
-	@Override
-	protected void addPCDATAProposal(String nodeName, ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		// Could potentially look for EL/SSJS blocks
-		super.addPCDATAProposal(nodeName, contentAssistRequest, context);
-	}
-
-	@Override
-	protected void addStartDocumentProposals(ContentAssistRequest contentAssistRequest, CompletionProposalInvocationContext context) {
-		// I guess this could add <xp:view/>, but that's not very important
-	}
-
 
 	@Override
 	public void sessionEnded() {
 		// NOP
 	}
-
 
 	@Override
 	public void sessionStarted() {
@@ -186,39 +157,39 @@ public class XspCompletionProposalComputer extends HTMLTagsCompletionProposalCom
 	// *******************************************************************************
 	// * Internal utility methods
 	// *******************************************************************************
-	
+
 	private static boolean isTargetProject() {
 		IProject project = getActiveProject();
-		if(project == null) {
+		if (project == null) {
 			return false;
 		}
 		// Make sure we're working with an ODP project
 		try {
-			if(!project.hasNature(OnDiskProjectNature.ID)) {
+			if (!project.hasNature(OnDiskProjectNature.ID)) {
 				return false;
 			}
-		} catch(CoreException e) {
+		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		IMavenProjectRegistry projectManager = MavenPlugin.getMavenProjectRegistry();
 		IMavenProjectFacade mavenProject = projectManager.getProject(project);
-		if(mavenProject == null) {
+		if (mavenProject == null) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	private boolean isXsp(CompletionProposalInvocationContext context) {
 		Node selectedNode = (Node) ContentAssistUtils.getNodeAt(context.getViewer(), context.getInvocationOffset());
 		Element root = getRootElement(selectedNode);
-		if(!XP_NS.equals(root.getNamespaceURI())) {
+		if (!XP_NS.equals(root.getNamespaceURI())) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	private static IProject getActiveProject() {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
@@ -239,37 +210,41 @@ public class XspCompletionProposalComputer extends HTMLTagsCompletionProposalCom
 		}
 		return project;
 	}
-	
+
 	private Element getRootElement(Node node) {
 		Node parent = node;
-		while(parent.getParentNode() != null && parent.getParentNode().getNodeType() == 1) {
+		while (parent.getParentNode() != null && parent.getParentNode().getNodeType() == 1) {
 			parent = parent.getParentNode();
 		}
-		return (Element)parent;
+		return (Element) parent;
 	}
 	
-	private void debug(String message) {
-		log.log(new Status(IStatus.WARNING, message, message));
+	public static Collection<CustomControl> getCustomControls() throws CoreException, SAXException, IOException, ParserConfigurationException {
+		return getCustomControls(getActiveProject());
 	}
-	
-	private static synchronized Collection<CustomControl> getCustomControls(IProject project) throws CoreException, SAXException, IOException, ParserConfigurationException {
+
+	public static synchronized Collection<CustomControl> getCustomControls(IProject project)
+			throws CoreException, SAXException, IOException, ParserConfigurationException {
 		String id = project.getFullPath().toString();
-		if(!CC_TAGS.containsKey(id)) {
+		if (!CC_TAGS.containsKey(id)) {
 			Set<CustomControl> result = new TreeSet<>();
 			IFolder ccFolder = project.getFolder("odp/CustomControls"); // TODO look at configured path
-			if(ccFolder.exists()) {
-				for(IResource member : ccFolder.members()) {
-					if(member instanceof IFile) {
-						if(member.getName().endsWith(".xsp-config")) {
+			if (ccFolder.exists()) {
+				for (IResource member : ccFolder.members()) {
+					if (member instanceof IFile) {
+						if (member.getName().endsWith(".xsp-config")) {
 							// Then read in the XML
 							XMLDocument doc = new XMLDocument();
-							try(InputStream is = ((IFile) member).getContents()) {
+							try (InputStream is = ((IFile) member).getContents()) {
 								doc.loadInputStream(is);
 							}
-							String namespaceUri = doc.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText();
-							String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix").getText();
-							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name").getText();
-							
+							String namespaceUri = doc
+									.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText();
+							String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix")
+									.getText();
+							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name")
+									.getText();
+
 							result.add(new CustomControl(namespaceUri, prefix, tagName));
 						}
 					}

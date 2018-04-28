@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.m2e;
+package org.openntf.nsfodp.eclipse.m2e;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.m2e;
+package org.openntf.nsfodp.eclipse.m2e;
 
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IProject;
@@ -27,7 +27,7 @@ import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.jdt.IClasspathDescriptor;
 import org.eclipse.m2e.jdt.IJavaProjectConfigurator;
 import org.eclipse.pde.internal.core.util.CoreUtility;
-import org.openntf.nsfodp.compiler.eclipse.nature.OnDiskProjectNature;
+import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
 
 @SuppressWarnings("restriction")
 public class ODPProjectConfigurator extends AbstractProjectConfigurator implements IJavaProjectConfigurator {

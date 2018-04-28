@@ -1,4 +1,4 @@
-package org.openntf.nsfodp.compiler.eclipse.contentassist.model;
+package org.openntf.nsfodp.eclipse.contentassist.model;
 
 public class CustomControl implements Comparable<CustomControl> {
 	private final String namespaceUri;

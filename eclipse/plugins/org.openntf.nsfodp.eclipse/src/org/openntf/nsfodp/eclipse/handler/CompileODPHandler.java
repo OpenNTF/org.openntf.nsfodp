@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.handler;
+package org.openntf.nsfodp.eclipse.handler;
 
 import java.io.PrintWriter;
 
@@ -30,7 +30,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.openntf.nsfodp.compiler.eclipse.job.CompileODPJob;
+import org.openntf.nsfodp.eclipse.job.CompileODPJob;
 
 public class CompileODPHandler extends AbstractHandler {
 	@Override

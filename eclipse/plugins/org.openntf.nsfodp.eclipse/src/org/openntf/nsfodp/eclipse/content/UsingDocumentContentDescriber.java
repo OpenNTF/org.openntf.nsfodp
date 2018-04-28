@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.compiler.eclipse.content;
+package org.openntf.nsfodp.eclipse.content;
 
 public class UsingDocumentContentDescriber extends DXLContentDescriber {
 
