@@ -37,6 +37,7 @@ import com.ibm.commons.util.io.json.JsonObject;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
+import com.ibm.xsp.registry.FacesComponentDefinition;
 import com.ibm.xsp.registry.FacesProperty;
 import com.ibm.xsp.registry.SharableRegistryImpl;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
@@ -56,6 +57,7 @@ public class StockComponentsServlet extends HttpServlet {
 
 		try {
 			if(componentInfo == null) {
+				
 				SharableRegistryImpl facesRegistry = new SharableRegistryImpl(getClass().getPackage().getName());
 				List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 				libraries.stream()
@@ -74,6 +76,7 @@ public class StockComponentsServlet extends HttpServlet {
 				componentInfo = new JsonJavaObject();
 				JsonArray defs = new JsonJavaArray();
 				facesRegistry.findComponentDefs().stream()
+					.filter(FacesComponentDefinition::isTag)
 					.map(def -> {
 						try {
 							JsonObject defObj = new JsonJavaObject();
@@ -86,6 +89,19 @@ public class StockComponentsServlet extends HttpServlet {
 							defObj.putJsonProperty("facetNames", facetNames); //$NON-NLS-1$
 							defObj.putJsonProperty("since", def.getSince()); //$NON-NLS-1$
 							defObj.putJsonProperty("defaultPrefix", def.getFirstDefaultPrefix()); //$NON-NLS-1$
+							defObj.putJsonProperty("componentFamily", def.getComponentFamily()); //$NON-NLS-1$
+							defObj.putJsonProperty("componentType", def.getComponentType()); //$NON-NLS-1$
+							defObj.putJsonProperty("id", def.getId()); //$NON-NLS-1$
+							
+							FacesProperty defaultProp = def.getDefaultFacesProperty();
+							if(defaultProp != null) {
+								JsonObject defaultPropObj = new JsonJavaObject();
+								defaultPropObj.putJsonProperty("name", defaultProp.getName()); //$NON-NLS-1$
+								defaultPropObj.putJsonProperty("since", defaultProp.getSince()); //$NON-NLS-1$
+								defaultPropObj.putJsonProperty("class", defaultProp.getJavaClass().getName()); //$NON-NLS-1$
+								defaultPropObj.putJsonProperty("required", defaultProp.isRequired()); //$NON-NLS-1$
+								defaultPropObj.putJsonProperty("attribute", defaultProp.isAttribute()); //$NON-NLS-1$
+							}
 							
 							JsonArray properties = new JsonJavaArray();
 							for(String propName : def.getPropertyNames()) {
@@ -94,9 +110,12 @@ public class StockComponentsServlet extends HttpServlet {
 								propObj.putJsonProperty("name", propName); //$NON-NLS-1$
 								propObj.putJsonProperty("class", prop.getJavaClass().getName()); //$NON-NLS-1$
 								propObj.putJsonProperty("since", prop.getSince()); //$NON-NLS-1$
+								propObj.putJsonProperty("required", prop.isRequired()); //$NON-NLS-1$
+								propObj.putJsonProperty("attribute", prop.isAttribute()); //$NON-NLS-1$
 								properties.add(propObj);
 							}
 							defObj.putJsonProperty("properties", properties); //$NON-NLS-1$
+							
 							
 							return defObj;
 						} catch (JsonException e) {
