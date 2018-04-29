@@ -188,6 +188,11 @@
 			            <exclude>src/test/resources/**</exclude>
 			            <exclude>src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
+						<exclude>**/odp/plugin.xml</exclude>
+						<exclude>**/odp/AppProperties/database.properties</exclude>
+						<exclude>**/odp/AppProperties/xspdesign.properties</exclude>
+						<exclude>**/odp/WebContent/WEB-INF/faces-config.xml</exclude>
+						<exclude>**/odp/WebContent/WEB-INF/xsp.properties</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
