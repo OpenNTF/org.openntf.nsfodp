@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.openntf.nsfodp</groupId>
-    <artifactId>example-project</artifactId>
-    <version>1.0.0</version>
-    <packaging>pom</packaging>
-	
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openntf.nsfodp</groupId>
+	<artifactId>example-project</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
 	<name>NSF ODP Tooling Example Project</name>
 
 	<url>https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling</url>
@@ -24,8 +26,8 @@
 			<email>jesse@frostillic.us</email>
 		</developer>
 	</developers>
- 
-    <modules>
+
+	<modules>
 		<module>bundles/org.openntf.nsfodp.example</module>
 		<module>features/org.openntf.nsfodp.example.feature</module>
 		<module>releng/org.openntf.nsfodp.example.updatesite</module>
@@ -33,30 +35,30 @@
 		<module>releng/example-dist</module>
 	</modules>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho-version>1.1.0</tycho-version>
-        <compiler>1.8</compiler>
-    </properties>
-	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-version>1.1.0</tycho-version>
+		<compiler>1.8</compiler>
+	</properties>
+
 	<prerequisites>
 		<maven>3.0.1</maven>
 	</prerequisites>
- 
-    <repositories>
+
+	<repositories>
 		<repository>
 			<id>notes</id>
 			<layout>p2</layout>
 			<url>${notes-platform}</url>
 		</repository>
-    </repositories>
-    <pluginRepositories>
+	</repositories>
+	<pluginRepositories>
 		<pluginRepository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
 		</pluginRepository>
-    </pluginRepositories>
+	</pluginRepositories>
 
 	<build>
 		<plugins>
@@ -167,7 +169,7 @@
 					<includeAllDependencies>true</includeAllDependencies>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.openntf.maven</groupId>
 				<artifactId>nsfodp-maven-plugin</artifactId>
@@ -184,9 +186,9 @@
 					<header>license.txt</header>
 					<excludes>
 						<exclude>**/pom.xml</exclude>
-			            <exclude>**/README</exclude>
-			            <exclude>src/test/resources/**</exclude>
-			            <exclude>src/main/resources/**</exclude>
+						<exclude>**/README</exclude>
+						<exclude>src/test/resources/**</exclude>
+						<exclude>src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
 						<exclude>**/odp/plugin.xml</exclude>
 						<exclude>**/odp/AppProperties/database.properties</exclude>
@@ -263,8 +265,8 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
-				
-				
+
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
@@ -300,7 +302,7 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>
 				</plugin>
-				
+
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -328,11 +330,9 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-    
+
 	<profiles>
-		<!--
-			These profiles add support for specific platforms for tests
-		-->
+		<!-- These profiles add support for specific platforms for tests -->
 		<profile>
 			<id>tests-windows</id>
 			<activation>
@@ -343,16 +343,16 @@
 					<name>notes-program</name>
 				</property>
 			</activation>
-		
+
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-surefire-plugin</artifactId>
-						
+
 						<configuration>
 							<skip>false</skip>
-							
+
 							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
 							<environmentVariables>
 								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
@@ -373,16 +373,16 @@
 					<name>notes-program</name>
 				</property>
 			</activation>
-		
+
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-surefire-plugin</artifactId>
-						
+
 						<configuration>
 							<skip>false</skip>
-							
+
 							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
 							<environmentVariables>
 								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
@@ -402,16 +402,16 @@
 					<name>notes-program</name>
 				</property>
 			</activation>
-		
+
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-surefire-plugin</artifactId>
-						
+
 						<configuration>
 							<skip>false</skip>
-							
+
 							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
 							<environmentVariables>
 								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
@@ -435,29 +435,33 @@
 					<name>notes-program</name>
 				</property>
 			</activation>
-		
+
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-surefire-plugin</artifactId>
 						<version>${tycho-version}</version>
-						
+
 						<configuration>
 							<skip>false</skip>
-							
-							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
+
+							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8
+								-Djava.library.path="${notes-program}"</argLine>
 							<environmentVariables>
-								<!-- The res/C path entry is important for loading formula language properly -->
+								<!-- The res/C path entry is important for loading formula language 
+									properly -->
 								<PATH>${notes-program}${path.separator}${notes-program}/res/C${path.separator}${notes-data}${path.separator}${env.PATH}</PATH>
 								<LD_LIBRARY_PATH>${notes-program}${path.separator}${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
-								
+
 								<!-- Notes-standard environment variable to specify the program directory -->
 								<Notes_ExecDirectory>${notes-program}</Notes_ExecDirectory>
 								<Directory>${notes-data}</Directory>
-								
-								<!-- Linux generally requires that the notes.ini path be specified manually, since it's difficult to determine automatically -->
-								<!-- This variable is a convention used in the NAPI test classes, not Notes-standard -->
+
+								<!-- Linux generally requires that the notes.ini path be specified 
+									manually, since it's difficult to determine automatically -->
+								<!-- This variable is a convention used in the NAPI test classes, 
+									not Notes-standard -->
 								<NotesINI>${notes-ini}</NotesINI>
 							</environmentVariables>
 						</configuration>
@@ -465,13 +469,13 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>java9</id>
 			<activation>
 				<jdk>[9,</jdk>
 			</activation>
-			
+
 			<repositories>
 				<repository>
 					<id>oxygen</id>
@@ -480,13 +484,13 @@
 				</repository>
 			</repositories>
 		</profile>
-		
+
 		<profile>
 			<id>java10</id>
 			<activation>
 				<jdk>[10,</jdk>
 			</activation>
-			
+
 			<properties>
 				<tycho-version>1.2.0-SNAPSHOT</tycho-version>
 			</properties>
