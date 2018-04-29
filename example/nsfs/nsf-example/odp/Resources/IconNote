@@ -16,13 +16,19 @@ EREdd3fRERER8AAAAAAA////Ed3dEf///wAAAAAAAAAAAPERER8AAAAAAAAAAAAAAAAP///wAAAA
 AAAAUEECICABAAD/////+A4DgA==
 </rawitemdata>
   </item>
-  <item name="$Flags">
-    <text>J7</text>
-  </item>
   <item name="$Daos">
+    <text>0</text>
+  </item>
+  <item name="$LargeSummary">
     <text>0</text>
   </item>
   <item name="$TITLE">
     <text>NSF ODP Tooling Example</text>
+  </item>
+  <item name="$Flags">
+    <text>J7</text>
+  </item>
+  <item name="$FlagsNoRefresh">
+    <text>rv</text>
   </item>
 </note>
