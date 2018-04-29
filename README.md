@@ -29,30 +29,30 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
 ```xml
 <?xml version="1.0"?>
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.example</groupId>
-	<artifactId>example-nsf</artifactId>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>example-nsf</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-	<packaging>domino-nsf</packaging>
+    <packaging>domino-nsf</packaging>
 
     <pluginRepositories>
-		<pluginRepository>
-			<id>artifactory.openntf.org</id>
-			<name>artifactory.openntf.org</name>
-			<url>https://artifactory.openntf.org/openntf</url>
-		</pluginRepository>
+        <pluginRepository>
+            <id>artifactory.openntf.org</id>
+            <name>artifactory.openntf.org</name>
+            <url>https://artifactory.openntf.org/openntf</url>
+        </pluginRepository>
     </pluginRepositories>
     
     <build>
         <plugins>
-			<plugin>
-				<groupId>org.openntf.maven</groupId>
-				<artifactId>nsfodp-maven-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-				<extensions>true</extensions>
-			</plugin>
+            <plugin>
+                <groupId>org.openntf.maven</groupId>
+                <artifactId>nsfodp-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <extensions>true</extensions>
+            </plugin>
         </plugins>
     </build>
 </project>
@@ -62,25 +62,27 @@ Then, add `nsfodp.compiler.server` and `nsfodp.compiler.serverUrl` properties to
 
 ```xml
 <?xml version="1.0"?>
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-	<profiles>
-		<profile>
-			<id>main</id>
-			<properties>
-				<nsfodp.compiler.server>someserver</nsfodp.compiler.server>
-				<nsfodp.compiler.serverUrl>http://some.server/</nsfodp.compiler.serverUrl>
-			</properties>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>main</id>
+            <properties>
+                <nsfodp.compiler.server>someserver</nsfodp.compiler.server>
+                <nsfodp.compiler.serverUrl>http://some.server/</nsfodp.compiler.serverUrl>
+            </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        	<activeProfile>main</activeProfile>
+        <activeProfile>main</activeProfile>
     </activeProfiles>
     <servers>
         <server>
-			<id>someserver</id>
-			<username>builduser</username>
-			<password>buildpassword</password>
-		</server>
+            <id>someserver</id>
+            <username>builduser</username>
+            <password>buildpassword</password>
+        </server>
     </servers>
 </settings>
 ```
@@ -88,19 +90,19 @@ Then, add `nsfodp.compiler.server` and `nsfodp.compiler.serverUrl` properties to
 For deployment, add `nsfodp.deploy.server` and and `nsfodp.deploy.serverUrl` properties in the same manner. Additionally, expand your project's pom to include configuration information for deployment:
 
 ```xml
-			...
-			<plugin>
-				<groupId>org.openntf.maven</groupId>
-				<artifactId>nsfodp-maven-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-				<extensions>true</extensions>
-				<configuration>
-					<!-- This can be on the target Domino server a remote one -->
-					<deployDestPath>someserver!!someapp.nsf</deployDestPath>
-					<deployReplaceDesign>true</deployReplaceDesign>
-				</configuration>
-			</plugin>
-			...
+    ...
+    <plugin>
+        <groupId>org.openntf.maven</groupId>
+        <artifactId>nsfodp-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <extensions>true</extensions>
+        <configuration>
+            <!-- This can be on the target Domino server a remote one -->
+            <deployDestPath>someserver!!someapp.nsf</deployDestPath>
+            <deployReplaceDesign>true</deployReplaceDesign>
+        </configuration>
+    </plugin>
+    ...
 ```
 
 By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.

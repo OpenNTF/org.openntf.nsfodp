@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
-	<artifactId>nsfodp</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<artifactId>example-project</artifactId>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
-	<name>NSF ODP Tooling</name>
+	<name>NSF ODP Tooling Example Project</name>
 
 	<url>https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling</url>
 	<inceptionYear>2018</inceptionYear>
@@ -18,14 +19,6 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	
-	<distributionManagement>
-		<repository>
-			<id>artifactory.openntf.org</id>
-			<name>artifactory.openntf.org</name>
-			<url>https://artifactory.openntf.org/openntf</url>
-		</repository>
-	</distributionManagement>
 
 	<developers>
 		<developer>
@@ -35,106 +28,40 @@
 	</developers>
 
 	<modules>
-		<module>plugins/org.openntf.nsfodp.commons</module>
-		
-		<!--
-			ODP Compiler 
-		-->
-		<module>plugins/org.openntf.nsfodp.compiler</module>
-		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
-		<module>features/org.openntf.nsfodp.compiler.feature</module>
-		
-		<!--
-			NSF Deployment 
-		-->
-		<module>plugins/org.openntf.nsfodp.deployment</module>
-		<module>plugins/org.openntf.nsfodp.deployment.servlet</module>
-		<module>features/org.openntf.nsfodp.deployment.feature</module>
-		
-		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
-
-		<!--
-			Eclipse Support
-		-->
-		<module>plugins/org.openntf.nsfodp.eclipse</module>
-		<module>features/org.openntf.nsfodp.eclipse.feature</module>
-		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
-		
-		<module>plugins/org.openntf.nsfodp.cli</module>
-		
-		<!--
-			Distribution
-		-->
-		<module>releng/nsfodp-dist</module>
+		<module>bundles/org.openntf.nsfodp.example</module>
+		<module>features/org.openntf.nsfodp.example.feature</module>
+		<module>releng/org.openntf.nsfodp.example.updatesite</module>
+		<module>nsfs/nsf-example</module>
+		<module>releng/example-dist</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>1.1.0</tycho-version>
 		<compiler>1.8</compiler>
-		<bazaar-version>2.0.0-SNAPSHOT</bazaar-version>
-		
-		<!-- Maven API version. This version should be supported by m2e -->
-		<maven.api.version>3.3.9</maven.api.version>
 	</properties>
-	
+
 	<prerequisites>
 		<maven>3.0.1</maven>
 	</prerequisites>
 
 	<repositories>
 		<repository>
-			<id>Neon</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/neon/</url>
-		</repository>
-		<repository>
 			<id>notes</id>
 			<layout>p2</layout>
 			<url>${notes-platform}</url>
 		</repository>
-		<repository>
-			<id>bazaar</id>
-			<layout>p2</layout>
-			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.0</url>
-		</repository>
 	</repositories>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.api.version}</version>
-		</dependency>
-	</dependencies>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0-jboss-1</version>
-				<configuration>
-					<source>${compiler}</source>
-					<target>${compiler}</target>
-					<compilerArgument>-err:-forbidden,discouraged,deprecation</compilerArgument>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<source>${compiler}</source>
-					<target>${compiler}</target>
-					<compilerArgument>-err:-forbidden,discouraged,deprecation</compilerArgument>
-				</configuration>
-			</plugin>
 			<plugin>
 				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
@@ -234,6 +161,21 @@
 					<resolver>p2</resolver>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.openntf.maven</groupId>
+				<artifactId>nsfodp-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<extensions>true</extensions>
+			</plugin>
 
 			<plugin>
 				<groupId>com.mycila</groupId>
@@ -244,12 +186,15 @@
 					<header>license.txt</header>
 					<excludes>
 						<exclude>**/pom.xml</exclude>
-			            <exclude>**/README</exclude>
-			            <exclude>src/test/resources/**</exclude>
-			            <exclude>src/main/resources/**</exclude>
+						<exclude>**/README</exclude>
+						<exclude>src/test/resources/**</exclude>
+						<exclude>src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
-						<exclude>**/org/thymeleaf/**</exclude>
-						<exclude>**/com/eclipsesource/**</exclude>
+						<exclude>**/odp/plugin.xml</exclude>
+						<exclude>**/odp/AppProperties/database.properties</exclude>
+						<exclude>**/odp/AppProperties/xspdesign.properties</exclude>
+						<exclude>**/odp/WebContent/WEB-INF/faces-config.xml</exclude>
+						<exclude>**/odp/WebContent/WEB-INF/xsp.properties</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
@@ -285,67 +230,18 @@
 
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<!-- javadoc configuration -->
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.0</version>
-					<configuration>
-						<!-- Activated by profile below -->
-						<skip>true</skip>
-
-						<failOnError>false</failOnError>
-						<excludePackageNames>com.sun.*:com.ibm.commons.*:com.ibm.sbt.core.*:com.ibm.sbt.plugin.*:com.ibm.sbt.jslibrray.*:com.ibm.sbt.proxy.*:com.ibm.sbt.security.*:*.util.*:com.ibm.sbt.portlet.*:com.ibm.sbt.playground.*:demo.*:acme.*</excludePackageNames>
-
-						<charset>UTF-8</charset>
-						<encoding>UTF-8</encoding>
-						<docencoding>UTF-8</docencoding>
-						<breakiterator>true</breakiterator>
-						<version>true</version>
-						<author>true</author>
-						<keywords>true</keywords>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.0.2</version>
-					<configuration>
-						<archive>
-							<manifestFile>${manifest-location}/MANIFEST.MF</manifestFile>
-						</archive>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.21.0</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-						<inputEncoding>UTF-8</inputEncoding>
-						<outputEncoding>UTF-8</outputEncoding>
-						<argLine>-ea -Dfile.encoding=UTF-8</argLine>
-					</configuration>
-				</plugin>
 				<!-- This is to enable test execution only on supported platforms below -->
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
-					
+
 					<configuration>
 						<skip>true</skip>
 						<encoding>UTF-8</encoding>
 						<inputEncoding>UTF-8</inputEncoding>
 						<outputEncoding>UTF-8</outputEncoding>
-						<argLine>-Dfile.encoding=UTF-8</argLine>
+						<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8</argLine>
 						<providerHint>junit4</providerHint>
 					</configuration>
 				</plugin>
@@ -369,8 +265,8 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
-				
-				
+
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
@@ -406,7 +302,7 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>
 				</plugin>
-				
+
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -434,4 +330,199 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<profiles>
+		<!-- These profiles add support for specific platforms for tests -->
+		<profile>
+			<id>tests-windows</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+				<property>
+					<name>notes-program</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+
+						<configuration>
+							<skip>false</skip>
+
+							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
+							<environmentVariables>
+								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
+							</environmentVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- Windows sometimes refers to itself as "dos" -->
+		<profile>
+			<id>tests-dos</id>
+			<activation>
+				<os>
+					<family>dos</family>
+				</os>
+				<property>
+					<name>notes-program</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+
+						<configuration>
+							<skip>false</skip>
+
+							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
+							<environmentVariables>
+								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
+							</environmentVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+				<property>
+					<name>notes-program</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+
+						<configuration>
+							<skip>false</skip>
+
+							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8 -Djava.library.path="${notes-program}"</argLine>
+							<environmentVariables>
+								<PATH>${notes-program}${path.separator}${env.PATH}</PATH>
+								<LD_LIBRARY_PATH>${notes-program}${path.separator}${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
+								<DYLD_LIBRARY_PATH>${notes-program}${path.separator}${env.DYLD_LIBRARY_PATH}</DYLD_LIBRARY_PATH>
+								<Notes_ExecDirectory>${notes-program}</Notes_ExecDirectory>
+							</environmentVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+					<name>linux</name>
+				</os>
+				<property>
+					<name>notes-program</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<version>${tycho-version}</version>
+
+						<configuration>
+							<skip>false</skip>
+
+							<argLine>${tycho.testArgLine} -Dfile.encoding=UTF-8
+								-Djava.library.path="${notes-program}"</argLine>
+							<environmentVariables>
+								<!-- The res/C path entry is important for loading formula language 
+									properly -->
+								<PATH>${notes-program}${path.separator}${notes-program}/res/C${path.separator}${notes-data}${path.separator}${env.PATH}</PATH>
+								<LD_LIBRARY_PATH>${notes-program}${path.separator}${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
+
+								<!-- Notes-standard environment variable to specify the program directory -->
+								<Notes_ExecDirectory>${notes-program}</Notes_ExecDirectory>
+								<Directory>${notes-data}</Directory>
+
+								<!-- Linux generally requires that the notes.ini path be specified 
+									manually, since it's difficult to determine automatically -->
+								<!-- This variable is a convention used in the NAPI test classes, 
+									not Notes-standard -->
+								<NotesINI>${notes-ini}</NotesINI>
+							</environmentVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>java9</id>
+			<activation>
+				<jdk>[9,</jdk>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>oxygen</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/oxygen</url>
+				</repository>
+			</repositories>
+		</profile>
+
+		<profile>
+			<id>java10</id>
+			<activation>
+				<jdk>[10,</jdk>
+			</activation>
+
+			<properties>
+				<tycho-version>1.2.0-SNAPSHOT</tycho-version>
+			</properties>
+
+			<pluginRepositories>
+				<pluginRepository>
+					<id>tycho-snapshots</id>
+					<url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+				</pluginRepository>
+			</pluginRepositories>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-compiler-plugin</artifactId>
+						<dependencies>
+							<!-- use BETA JAVA10 binaries of JDT -->
+							<dependency>
+								<groupId>org.eclipse.tycho</groupId>
+								<artifactId>org.eclipse.jdt.core</artifactId>
+								<version>3.13.102.v20180320-1701_BETA_JAVA10</version>
+							</dependency>
+							<dependency>
+								<groupId>org.eclipse.tycho</groupId>
+								<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
+								<version>1.3.60.v20180316-1720_BETA_JAVA10</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
