@@ -125,23 +125,23 @@ public class CompileODPMojo extends AbstractMojo {
 		
 		Path odpDirectory = Objects.requireNonNull(this.odpDirectory, "odpDirectory cannot be null").toPath(); //$NON-NLS-1$
 		if(!Files.exists(odpDirectory)) {
-			throw new IllegalArgumentException("Specified ODP directory does not exist: " + odpDirectory.toAbsolutePath());
+			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.odpDirDoesNotExist", odpDirectory.toAbsolutePath())); //$NON-NLS-1$
 		}
 		if(!Files.isDirectory(odpDirectory)) {
-			throw new IllegalArgumentException("Specified ODP path is not a directory: " + odpDirectory.toAbsolutePath());
+			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.odpDirNotADir", odpDirectory.toAbsolutePath())); //$NON-NLS-1$
 		}
 		Path updateSite = this.updateSite == null ? null : this.updateSite.toPath();
 		if(updateSite != null) {
 			if(!Files.exists(updateSite)) {
-				throw new IllegalArgumentException("Specified Update Site directory does not exist: " + updateSite.toAbsolutePath());
+				throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirDoesNotExist", updateSite.toAbsolutePath())); //$NON-NLS-1$
 			}
 			if(!Files.isDirectory(updateSite)) {
-				throw new IllegalArgumentException("Specified Update Site path is not a directory: " + updateSite.toAbsolutePath());
+				throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirNotADir", updateSite.toAbsolutePath())); //$NON-NLS-1$
 			}
 		}
 		String outputFileName = Objects.requireNonNull(this.outputFileName, "outputFileName cannot be null"); //$NON-NLS-1$
 		if(outputFileName.isEmpty()) {
-			throw new IllegalArgumentException("outputFileName cannot be empty");
+			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.outputFileNameEmpty")); //$NON-NLS-1$
 		}
 
 		Path outputFile = outputDirectory.resolve(outputFileName);
@@ -152,7 +152,7 @@ public class CompileODPMojo extends AbstractMojo {
 				FileTime mod = Files.getLastModifiedTime(outputFile);
 				needsCompile = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0;
 			} catch(IOException e) {
-				throw new MojoExecutionException("Exception while checking existing files", e);
+				throw new MojoExecutionException(Messages.getString("CompileODPMojo.exceptionCheckingFiles"), e); //$NON-NLS-1$
 			}
 		}
 		
@@ -173,16 +173,16 @@ public class CompileODPMojo extends AbstractMojo {
 				
 				Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				if(log.isInfoEnabled()) {
-					log.info("Generated NSF: " + outputFile);
+					log.info(Messages.getString("CompileODPMojo.generatedNsf") + outputFile); //$NON-NLS-1$
 				}
 			} catch(MojoExecutionException e) {
 				throw e;
 			} catch(Throwable t) {
-				throw new MojoExecutionException("Exception while compiling the NSF", t);
+				throw new MojoExecutionException(Messages.getString("CompileODPMojo.exceptionCompiling"), t); //$NON-NLS-1$
 			}
 		} else {
 			if(log.isInfoEnabled()) {
-				log.info("No changes detected - skipping NSF compilation");
+				log.info(Messages.getString("CompileODPMojo.skippingCompilation")); //$NON-NLS-1$
 			}
 		}
 		
@@ -193,7 +193,7 @@ public class CompileODPMojo extends AbstractMojo {
 	
 	private Path createPackage(Path odpZip, Path updateSiteZip) throws IOException {
 		if(log.isDebugEnabled()) {
-			log.debug("Creating package from odpZip=" + odpZip + ", updateSiteZip=" + updateSiteZip);
+			log.debug(Messages.getString("CompileODPMojo.creatingPackage") + odpZip + ", updateSiteZip=" + updateSiteZip); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -217,12 +217,12 @@ public class CompileODPMojo extends AbstractMojo {
 	
 	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 		if(log.isInfoEnabled()) {
-			log.info("Compiling ODP");
+			log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
 		}
 		
 		URL compilerServerUrl = Objects.requireNonNull(this.compilerServerUrl);
 		if(log.isDebugEnabled()) {
-			log.debug("Using compiler server URL " + compilerServerUrl);
+			log.debug(Messages.getString("CompileODPMojo.usingServerUrl", compilerServerUrl)); //$NON-NLS-1$
 		}
 		
 		HttpClientBuilder httpBuilder = HttpClients.custom();
@@ -236,7 +236,7 @@ public class CompileODPMojo extends AbstractMojo {
 		try(CloseableHttpClient client = httpBuilder.build()) {
 			URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
 			if(log.isInfoEnabled()) {
-				log.info("Compiling with server " + servlet);
+				log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
 			}
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -264,7 +264,7 @@ public class CompileODPMojo extends AbstractMojo {
 	
 	private Path zipDirectory(Path path) throws IOException {
 		if(log.isDebugEnabled()) {
-			log.debug("Zipping path " + path.toString());
+			log.debug(Messages.getString("CompileODPMojo.zippingPath", path.toString())); //$NON-NLS-1$
 		}
 		
 		Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$

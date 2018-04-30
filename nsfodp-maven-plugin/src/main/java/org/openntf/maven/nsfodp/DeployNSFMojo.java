@@ -92,13 +92,13 @@ public class DeployNSFMojo extends AbstractMojo {
 		File artifactFile = artifact.getFile();
 		if(!artifactFile.exists()) {
 			if(log.isInfoEnabled()) {
-				log.info("Artifact file does not exist; skipping deployment");
+				log.info(Messages.getString("DeployNSFMojo.artifactDoesNotExist")); //$NON-NLS-1$
 			}
 			return;
 		}
 		if(!artifactFile.isFile()) {
 			if(log.isInfoEnabled()) {
-				log.info("Artifact file is not a regular file; skipping deployment");
+				log.info(Messages.getString("DeployNSFMojo.artifactNotRegularFile")); //$NON-NLS-1$
 			}
 			return;
 		}
@@ -106,14 +106,14 @@ public class DeployNSFMojo extends AbstractMojo {
 		URL deploymentServerUrl = this.deployServerUrl;
 		if(deploymentServerUrl == null || deploymentServerUrl.toString().isEmpty()) {
 			if(log.isInfoEnabled()) {
-				log.info("Deployment server URL is empty; skipping deployment");
+				log.info(Messages.getString("DeployNSFMojo.deploymentUrlEmpty")); //$NON-NLS-1$
 			}
 			return;
 		}
 		String deployDestPath = this.deployDestPath;
 		if(deployDestPath == null || deployDestPath.isEmpty()) {
 			if(log.isInfoEnabled()) {
-				log.info("Deployment dest path is empty; skipping deployment");
+				log.info(Messages.getString("DeployNSFMojo.deploymentDestEmpty")); //$NON-NLS-1$
 			}
 			return;
 		}
@@ -121,7 +121,7 @@ public class DeployNSFMojo extends AbstractMojo {
 		try(CloseableHttpClient client = HttpClients.createDefault()) {
 			URI servlet = deploymentServerUrl.toURI().resolve(SERVLET_PATH);
 			if(log.isInfoEnabled()) {
-				log.info("Deploying NSF with server " + servlet);
+				log.info(Messages.getString("DeployNSFMojo.deployingWithServer", servlet)); //$NON-NLS-1$
 			}
 			HttpPost post = new HttpPost(servlet);
 			
@@ -145,7 +145,7 @@ public class DeployNSFMojo extends AbstractMojo {
 		} catch(MojoExecutionException e) {
 			throw e;
 		} catch(IOException | URISyntaxException e) {
-			throw new MojoExecutionException("Exception while deploying artifact", e);
+			throw new MojoExecutionException(Messages.getString("DeployNSFMojo.exceptionDeployingArtifact"), e); //$NON-NLS-1$
 		}
 	}
 

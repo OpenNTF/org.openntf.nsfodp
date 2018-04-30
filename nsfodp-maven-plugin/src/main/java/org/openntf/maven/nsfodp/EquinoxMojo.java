@@ -72,7 +72,7 @@ public class EquinoxMojo extends AbstractMojo {
 		
 		Path equinox = getDependencyJar("org.eclipse.equinox.launcher"); //$NON-NLS-1$
 		if(log.isDebugEnabled()) {
-			log.debug("Using Equinox launcher: " + equinox);
+			log.debug(Messages.getString("EquinoxMojo.usingEquinoxLauncher", equinox)); //$NON-NLS-1$
 		}
 		
 		Path javaBin = getJavaBinary();
@@ -83,7 +83,7 @@ public class EquinoxMojo extends AbstractMojo {
 			
 			Path notesProgram = Paths.get(this.notesProgram);
 			if(!Files.exists(notesProgram)) {
-				throw new MojoExecutionException("Notes program directory does not exist: " + notesProgram);
+				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesProgramDirDoesNotExist", notesProgram)); //$NON-NLS-1$
 			}
 
 			Path osgi = getDependencyJar("org.eclipse.osgi"); //$NON-NLS-1$
@@ -127,11 +127,11 @@ public class EquinoxMojo extends AbstractMojo {
 			
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
-				throw new MojoExecutionException("Notes platform does not exist: " + notesPlatform);
+				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesPlatformDoesNotExist", notesPlatform)); //$NON-NLS-1$
 			}
 			Path notesPlugins = notesPlatform.resolve("plugins"); //$NON-NLS-1$
 			if(!Files.exists(notesPlugins)) {
-				throw new MojoExecutionException("Notes plugins directory does not exist: " + notesPlugins);
+				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesPluginsDirDoesNotExist", notesPlugins)); //$NON-NLS-1$
 			}
 			Files.list(notesPlugins)
 				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
@@ -141,7 +141,7 @@ public class EquinoxMojo extends AbstractMojo {
 			Path target = Paths.get(project.getBuild().getDirectory());
 			Path framework = target.resolve("nsfodpequinox"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
-				log.debug("Creating OSGi framework: " + framework);
+				log.debug(Messages.getString("EquinoxMojo.creatingOsgi", framework)); //$NON-NLS-1$
 			}
 			Files.createDirectories(framework);
 			
@@ -178,7 +178,7 @@ public class EquinoxMojo extends AbstractMojo {
 			command.add(configuration.toAbsolutePath().toString());
 			
 			if(log.isDebugEnabled()) {
-				log.debug("Launching Equinox with command " + command.stream().collect(Collectors.joining(" "))); //$NON-NLS-2$
+				log.debug(Messages.getString("EquinoxMojo.launchingEquinox", command.stream().collect(Collectors.joining(" "))));  //$NON-NLS-1$//$NON-NLS-2$
 			}
 			
 			ProcessBuilder builder = new ProcessBuilder()
@@ -198,7 +198,7 @@ public class EquinoxMojo extends AbstractMojo {
 			Process proc = builder.start();
 			proc.waitFor();
 		} catch(IOException | URISyntaxException e) {
-			throw new MojoExecutionException("Encountered exception while launching application", e);
+			throw new MojoExecutionException(Messages.getString("EquinoxMojo.exceptionLaunching"), e); //$NON-NLS-1$
 		} catch (InterruptedException e) {
 			
 		}
@@ -209,7 +209,7 @@ public class EquinoxMojo extends AbstractMojo {
 		ComponentDependency dep = dependencies.stream()
 				.filter(a -> artifactId.equals(a.getArtifactId()))
 				.findFirst()
-				.orElseThrow(() -> new MojoExecutionException("Could not find dependency for " + artifactId));
+				.orElseThrow(() -> new MojoExecutionException(Messages.getString("EquinoxMojo.couldNotFindDependency", artifactId))); //$NON-NLS-1$
 		Artifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), "", dep.getType(), "", new DefaultArtifactHandler()); //$NON-NLS-1$ //$NON-NLS-2$
 		art = mavenSession.getLocalRepository().find(art);
 		File file = art.getFile();
@@ -220,7 +220,7 @@ public class EquinoxMojo extends AbstractMojo {
 			result = Paths.get(file.toString()+".jar"); //$NON-NLS-1$
 		}
 		if(!Files.exists(result)) {
-			throw new MojoExecutionException("Dependency jar does not exist: " + result);
+			throw new MojoExecutionException(Messages.getString("EquinoxMojo.dependencyJarDoesNotExist", result)); //$NON-NLS-1$
 		}
 		return result;
 	}
@@ -234,7 +234,7 @@ public class EquinoxMojo extends AbstractMojo {
 		}
 		Path javaBin = SystemUtils.getJavaHome().toPath().resolve("bin").resolve(javaBinName); //$NON-NLS-1$
 		if(!Files.exists(javaBin)) {
-			throw new MojoExecutionException("Unable to locate Java binary at path " + javaBin);
+			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
 		}
 		return javaBin;
 	}
