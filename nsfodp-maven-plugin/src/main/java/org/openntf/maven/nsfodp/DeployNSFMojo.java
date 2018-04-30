@@ -51,7 +51,7 @@ import org.openntf.maven.nsfodp.util.ResponseUtil;
 @Mojo(name="deploy", defaultPhase=LifecyclePhase.DEPLOY)
 public class DeployNSFMojo extends AbstractMojo {
 	
-	public static final String SERVLET_PATH = "/org.openntf.nsfosp/deployment";
+	public static final String SERVLET_PATH = "/org.openntf.nsfosp/deployment"; //$NON-NLS-1$
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
@@ -87,7 +87,7 @@ public class DeployNSFMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		log = getLog();
 		
-		MavenProject project = Objects.requireNonNull(this.project, "project cannot be null");
+		MavenProject project = Objects.requireNonNull(this.project, "project cannot be null"); //$NON-NLS-1$
 		Artifact artifact = project.getArtifact();
 		File artifactFile = artifact.getFile();
 		if(!artifactFile.exists()) {
@@ -130,9 +130,9 @@ public class DeployNSFMojo extends AbstractMojo {
 			HttpEntity entity = MultipartEntityBuilder.create()
 					.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
 					.setContentType(ContentType.MULTIPART_FORM_DATA)
-					.addTextBody("replaceDesign", String.valueOf(this.deployReplaceDesign))
-					.addTextBody("destPath", deployDestPath)
-					.addBinaryBody("file", artifactFile)
+					.addTextBody("replaceDesign", String.valueOf(this.deployReplaceDesign)) //$NON-NLS-1$
+					.addTextBody("destPath", deployDestPath) //$NON-NLS-1$
+					.addBinaryBody("file", artifactFile) //$NON-NLS-1$
 					.build();
 			post.setEntity(entity);
 			

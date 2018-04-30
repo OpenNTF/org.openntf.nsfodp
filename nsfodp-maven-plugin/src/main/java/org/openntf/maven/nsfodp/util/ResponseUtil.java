@@ -51,8 +51,8 @@ public enum ResponseUtil {
 		}
 		
 		// Check for an auth form - Domino returns these as status 200
-		Header contentType = res.getFirstHeader("Content-Type");
-		if(contentType != null && String.valueOf(contentType.getValue()).startsWith("text/html")) {
+		Header contentType = res.getFirstHeader("Content-Type"); //$NON-NLS-1$
+		if(contentType != null && String.valueOf(contentType.getValue()).startsWith("text/html")) { //$NON-NLS-1$
 			throw new IOException("Authentication failed for specified user");
 		}
 		
@@ -77,34 +77,34 @@ public enum ResponseUtil {
 				log.debug("Received JSON message: " + line);
 			}
 			JsonObject obj = parser.parse(line).getAsJsonObject();
-			switch(obj.get("type").getAsString()) {
-			case "beginTask":
+			switch(obj.get("type").getAsString()) { //$NON-NLS-1$
+			case "beginTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.get("name").getAsString());
+					log.info("Begin task: " + obj.get("name").getAsString()); //$NON-NLS-2$
 				}
 				break;
-			case "internalWorked":
+			case "internalWorked": //$NON-NLS-1$
 				// Ignore
 				break;
-			case "task":
+			case "task": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.get("name").getAsString());
+					log.info("Begin task: " + obj.get("name").getAsString()); //$NON-NLS-2$
 				}
 				break;
-			case "subTask":
+			case "subTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info(obj.get("name").getAsString());
+					log.info(obj.get("name").getAsString()); //$NON-NLS-1$
 				}
 				break;
-			case "work":
+			case "work": //$NON-NLS-1$
 				// Ignore
 				break;
-			case "cancel":
+			case "cancel": //$NON-NLS-1$
 				throw new RuntimeException("Work was canceled on the server");
-			case "done":
+			case "done": //$NON-NLS-1$
 				return;
-			case "error":
-				System.err.println(obj.get("stackTrace").getAsString());
+			case "error": //$NON-NLS-1$
+				System.err.println(obj.get("stackTrace").getAsString()); //$NON-NLS-1$
 				throw new RuntimeException("Server reported an error");
 			default:
 				throw new IllegalArgumentException("Received unexpected JSON message: " + line);

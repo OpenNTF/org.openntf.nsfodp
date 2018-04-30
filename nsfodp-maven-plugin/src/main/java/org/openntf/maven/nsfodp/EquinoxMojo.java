@@ -70,7 +70,7 @@ public class EquinoxMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		Log log = getLog();
 		
-		Path equinox = getDependencyJar("org.eclipse.equinox.launcher");
+		Path equinox = getDependencyJar("org.eclipse.equinox.launcher"); //$NON-NLS-1$
 		if(log.isDebugEnabled()) {
 			log.debug("Using Equinox launcher: " + equinox);
 		}
@@ -86,113 +86,113 @@ public class EquinoxMojo extends AbstractMojo {
 				throw new MojoExecutionException("Notes program directory does not exist: " + notesProgram);
 			}
 
-			Path osgi = getDependencyJar("org.eclipse.osgi");
+			Path osgi = getDependencyJar("org.eclipse.osgi"); //$NON-NLS-1$
 			List<Path> platform = new ArrayList<>(Arrays.asList(
-				getDependencyJar("org.openntf.nsfodp.commons"),
-				getDependencyJar("org.openntf.nsfodp.compiler"),
-				getDependencyJar("org.openntf.nsfodp.compiler.servlet"),
-				getDependencyJar("org.openntf.nsfodp.deployment"),
-				getDependencyJar("org.openntf.nsfodp.deployment.servlet"),
-				getDependencyJar("org.openntf.nsfodp.cli"),
-				getDependencyJar("org.eclipse.core.runtime"),
-				getDependencyJar("org.eclipse.equinox.http.jetty"),
-				getDependencyJar("org.eclipse.equinox.http.registry"),
-				getDependencyJar("org.eclipse.equinox.http.servlet"),
-				getDependencyJar("com.ibm.xsp.extlibx.bazaar"),
-				getDependencyJar("com.ibm.xsp.extlibx.bazaar.interpreter"),
-				getDependencyJar("jetty-http"),
-				getDependencyJar("jetty-util"),
-				getDependencyJar("jetty-io"),
-				getDependencyJar("jetty-server"),
-				getDependencyJar("jetty-servlet"),
-				getDependencyJar("jetty-jmx"),
-				getDependencyJar("jetty-security"),
-				getDependencyJar("slf4j-api"),
-				getDependencyJar("slf4j-simple"),
-				getDependencyJar("javax.servlet-api"),
+				getDependencyJar("org.openntf.nsfodp.commons"), //$NON-NLS-1$
+				getDependencyJar("org.openntf.nsfodp.compiler"), //$NON-NLS-1$
+				getDependencyJar("org.openntf.nsfodp.compiler.servlet"), //$NON-NLS-1$
+				getDependencyJar("org.openntf.nsfodp.deployment"), //$NON-NLS-1$
+				getDependencyJar("org.openntf.nsfodp.deployment.servlet"), //$NON-NLS-1$
+				getDependencyJar("org.openntf.nsfodp.cli"), //$NON-NLS-1$
+				getDependencyJar("org.eclipse.core.runtime"), //$NON-NLS-1$
+				getDependencyJar("org.eclipse.equinox.http.jetty"), //$NON-NLS-1$
+				getDependencyJar("org.eclipse.equinox.http.registry"), //$NON-NLS-1$
+				getDependencyJar("org.eclipse.equinox.http.servlet"), //$NON-NLS-1$
+				getDependencyJar("com.ibm.xsp.extlibx.bazaar"), //$NON-NLS-1$
+				getDependencyJar("com.ibm.xsp.extlibx.bazaar.interpreter"), //$NON-NLS-1$
+				getDependencyJar("jetty-http"), //$NON-NLS-1$
+				getDependencyJar("jetty-util"), //$NON-NLS-1$
+				getDependencyJar("jetty-io"), //$NON-NLS-1$
+				getDependencyJar("jetty-server"), //$NON-NLS-1$
+				getDependencyJar("jetty-servlet"), //$NON-NLS-1$
+				getDependencyJar("jetty-jmx"), //$NON-NLS-1$
+				getDependencyJar("jetty-security"), //$NON-NLS-1$
+				getDependencyJar("slf4j-api"), //$NON-NLS-1$
+				getDependencyJar("slf4j-simple"), //$NON-NLS-1$
+				getDependencyJar("javax.servlet-api"), //$NON-NLS-1$
 				createJempowerShim(notesProgram),
 				osgi
 			));
 			
 			List<String> skipBundles = Arrays.asList(
-				"org.eclipse.core.runtime",
-				"org.eclipse.osgi",
-				"org.eclipse.equinox.http.servlet",
-				"org.eclipse.equinox.http.registry",
-				"javax.servlet",
-				"com.ibm.pvc.webcontainer",
-				"com.ibm.rcp.spellcheck.remote",
-				"com.ibm.rcp.spellcheck.webapp"
+				"org.eclipse.core.runtime", //$NON-NLS-1$
+				"org.eclipse.osgi", //$NON-NLS-1$
+				"org.eclipse.equinox.http.servlet", //$NON-NLS-1$
+				"org.eclipse.equinox.http.registry", //$NON-NLS-1$
+				"javax.servlet", //$NON-NLS-1$
+				"com.ibm.pvc.webcontainer", //$NON-NLS-1$
+				"com.ibm.rcp.spellcheck.remote", //$NON-NLS-1$
+				"com.ibm.rcp.spellcheck.webapp" //$NON-NLS-1$
 			);
 			
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
 				throw new MojoExecutionException("Notes platform does not exist: " + notesPlatform);
 			}
-			Path notesPlugins = notesPlatform.resolve("plugins");
+			Path notesPlugins = notesPlatform.resolve("plugins"); //$NON-NLS-1$
 			if(!Files.exists(notesPlugins)) {
 				throw new MojoExecutionException("Notes plugins directory does not exist: " + notesPlugins);
 			}
 			Files.list(notesPlugins)
-				.filter(p -> p.getFileName().toString().endsWith(".jar"))
-				.filter(p -> !skipBundles.stream().anyMatch(b -> p.getFileName().toString().startsWith(b+"_")))
+				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+				.filter(p -> !skipBundles.stream().anyMatch(b -> p.getFileName().toString().startsWith(b+"_"))) //$NON-NLS-1$
 				.forEach(platform::add);
 			
 			Path target = Paths.get(project.getBuild().getDirectory());
-			Path framework = target.resolve("nsfodpequinox");
+			Path framework = target.resolve("nsfodpequinox"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
 				log.debug("Creating OSGi framework: " + framework);
 			}
 			Files.createDirectories(framework);
 			
-			Path configuration = framework.resolve("configuration");
+			Path configuration = framework.resolve("configuration"); //$NON-NLS-1$
 			Files.createDirectories(configuration);
-			Path configIni = configuration.resolve("config.ini");
+			Path configIni = configuration.resolve("config.ini"); //$NON-NLS-1$
 			Properties config = new Properties();
-			config.put("osgi.bundles.defaultStartLevel", "4");
-			config.put("osgi.bundles",
+			config.put("osgi.bundles.defaultStartLevel", "4"); //$NON-NLS-1$ //$NON-NLS-2$
+			config.put("osgi.bundles", //$NON-NLS-1$
 					platform.stream()
-					.map(path ->"reference:" + path.toUri())
-					.collect(Collectors.joining(","))
+					.map(path ->"reference:" + path.toUri()) //$NON-NLS-1$
+					.collect(Collectors.joining(",")) //$NON-NLS-1$
 			);
-			config.put("eclipse.application", "org.openntf.nsfodp.cli.CLIApplication");
-			config.put("osgi.configuration.cascaded", "false");
-			config.put("osgi.install.area", framework.toUri().toString());
-			config.put("osgi.framework", osgi.toUri().toString());
-			config.put("eclipse.log.level", "ERROR");
+			config.put("eclipse.application", "org.openntf.nsfodp.cli.CLIApplication"); //$NON-NLS-1$ //$NON-NLS-2$
+			config.put("osgi.configuration.cascaded", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
+			config.put("osgi.framework", osgi.toUri().toString()); //$NON-NLS-1$
+			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
 			try(OutputStream os = Files.newOutputStream(configIni)) {
-				config.store(os, "NSF ODP OSGi Configuration");
+				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
 			}
 			
-			Path plugins = framework.resolve("plugins");
+			Path plugins = framework.resolve("plugins"); //$NON-NLS-1$
 			Files.createDirectories(plugins);
 			
 			List<String> command = new ArrayList<>();
 			command.add(javaBin.toAbsolutePath().toString());
-			command.add("-Dosgi.frameworkParentClassloader=boot");
-			command.add("-Dorg.openntf.nsfodp.allowAnonymous=true");
-			command.add("org.eclipse.core.launcher.Main");
-			command.add("-framwork");
+			command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
+			command.add("-Dorg.openntf.nsfodp.allowAnonymous=true"); //$NON-NLS-1$
+			command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
+			command.add("-framwork"); //$NON-NLS-1$
 			command.add(framework.toAbsolutePath().toString());
-			command.add("-configuration");
+			command.add("-configuration"); //$NON-NLS-1$
 			command.add(configuration.toAbsolutePath().toString());
 			
 			if(log.isDebugEnabled()) {
-				log.debug("Launching Equinox with command " + command.stream().collect(Collectors.joining(" ")));
+				log.debug("Launching Equinox with command " + command.stream().collect(Collectors.joining(" "))); //$NON-NLS-2$
 			}
 			
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
 					.redirectOutput(Redirect.INHERIT)
 					.redirectInput(Redirect.INHERIT);
-			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString());
-			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString());
-			builder.environment().put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString());
-			builder.environment().put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString());
-			builder.environment().put("CLASSPATH",
+			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			builder.environment().put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			builder.environment().put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			builder.environment().put("CLASSPATH", //$NON-NLS-1$
 					classpath.stream()
 					.map(path -> path.toString())
-					.collect(Collectors.joining(":"))
+					.collect(Collectors.joining(":")) //$NON-NLS-1$
 			);
 			
 			Process proc = builder.start();
@@ -210,14 +210,14 @@ public class EquinoxMojo extends AbstractMojo {
 				.filter(a -> artifactId.equals(a.getArtifactId()))
 				.findFirst()
 				.orElseThrow(() -> new MojoExecutionException("Could not find dependency for " + artifactId));
-		Artifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), "", dep.getType(), "", new DefaultArtifactHandler());
+		Artifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), "", dep.getType(), "", new DefaultArtifactHandler()); //$NON-NLS-1$ //$NON-NLS-2$
 		art = mavenSession.getLocalRepository().find(art);
 		File file = art.getFile();
 		Path result;
-		if(file.toString().endsWith(".jar")) {
+		if(file.toString().endsWith(".jar")) { //$NON-NLS-1$
 			result = file.toPath();
 		} else {
-			result = Paths.get(file.toString()+".jar");
+			result = Paths.get(file.toString()+".jar"); //$NON-NLS-1$
 		}
 		if(!Files.exists(result)) {
 			throw new MojoExecutionException("Dependency jar does not exist: " + result);
@@ -228,11 +228,11 @@ public class EquinoxMojo extends AbstractMojo {
 	private static Path getJavaBinary() throws MojoExecutionException {
 		String javaBinName;
 		if(SystemUtils.IS_OS_WINDOWS) {
-			javaBinName = "java.exe";
+			javaBinName = "java.exe"; //$NON-NLS-1$
 		} else {
-			javaBinName = "java";
+			javaBinName = "java"; //$NON-NLS-1$
 		}
-		Path javaBin = SystemUtils.getJavaHome().toPath().resolve("bin").resolve(javaBinName);
+		Path javaBin = SystemUtils.getJavaHome().toPath().resolve("bin").resolve(javaBinName); //$NON-NLS-1$
 		if(!Files.exists(javaBin)) {
 			throw new MojoExecutionException("Unable to locate Java binary at path " + javaBin);
 		}
@@ -240,16 +240,16 @@ public class EquinoxMojo extends AbstractMojo {
 	}
 	
 	public static Path createJempowerShim(Path notesBin) throws IOException {
-		Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar");
-		Path tempBundle = Files.createTempFile("njempcl", ".jar");
+		Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 		try(OutputStream os = Files.newOutputStream(tempBundle)) {
 			try(JarOutputStream jos = new JarOutputStream(os)) {
-				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF");
+				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
 				jos.putNextEntry(entry);
-				try(InputStream is = EquinoxMojo.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) {
+				try(InputStream is = EquinoxMojo.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) { //$NON-NLS-1$
 					copyStream(is, jos, 8192);
 				}
-				JarEntry njempclEntry = new JarEntry("lib/njempcl.jar");
+				JarEntry njempclEntry = new JarEntry("lib/njempcl.jar"); //$NON-NLS-1$
 				jos.putNextEntry(njempclEntry);
 				try(InputStream is = Files.newInputStream(njempcl)) {
 					copyStream(is, jos, 8192);

@@ -70,8 +70,8 @@ import java.util.zip.ZipOutputStream;
 @Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE)
 public class CompileODPMojo extends AbstractMojo {
 	
-	public static final String CLASSIFIER_NSF = "nsf";
-	public static final String SERVLET_PATH = "/org.openntf.nsfosp/compiler";
+	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
+	public static final String SERVLET_PATH = "/org.openntf.nsfosp/compiler"; //$NON-NLS-1$
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
@@ -121,9 +121,9 @@ public class CompileODPMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException {
 		log = getLog();
 		
-		Path outputDirectory = Objects.requireNonNull(this.outputDirectory, "outputDirectory cannot be null").toPath();
+		Path outputDirectory = Objects.requireNonNull(this.outputDirectory, "outputDirectory cannot be null").toPath(); //$NON-NLS-1$
 		
-		Path odpDirectory = Objects.requireNonNull(this.odpDirectory, "odpDirectory cannot be null").toPath();
+		Path odpDirectory = Objects.requireNonNull(this.odpDirectory, "odpDirectory cannot be null").toPath(); //$NON-NLS-1$
 		if(!Files.exists(odpDirectory)) {
 			throw new IllegalArgumentException("Specified ODP directory does not exist: " + odpDirectory.toAbsolutePath());
 		}
@@ -139,7 +139,7 @@ public class CompileODPMojo extends AbstractMojo {
 				throw new IllegalArgumentException("Specified Update Site path is not a directory: " + updateSite.toAbsolutePath());
 			}
 		}
-		String outputFileName = Objects.requireNonNull(this.outputFileName, "outputFileName cannot be null");
+		String outputFileName = Objects.requireNonNull(this.outputFileName, "outputFileName cannot be null"); //$NON-NLS-1$
 		if(outputFileName.isEmpty()) {
 			throw new IllegalArgumentException("outputFileName cannot be empty");
 		}
@@ -196,17 +196,17 @@ public class CompileODPMojo extends AbstractMojo {
 			log.debug("Creating package from odpZip=" + odpZip + ", updateSiteZip=" + updateSiteZip);
 		}
 		
-		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip");
+		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 		packageZip.toFile().deleteOnExit();
 		try(OutputStream fos = Files.newOutputStream(packageZip)) {
 			try(ZipOutputStream zos = new ZipOutputStream(fos)) {
 				zos.setLevel(Deflater.BEST_COMPRESSION);
-				ZipEntry entry = new ZipEntry("odp.zip");
+				ZipEntry entry = new ZipEntry("odp.zip"); //$NON-NLS-1$
 				zos.putNextEntry(entry);
 				Files.copy(odpZip, zos);
 				
 				if(updateSiteZip != null) {
-					entry = new ZipEntry("site.zip");
+					entry = new ZipEntry("site.zip"); //$NON-NLS-1$
 					zos.putNextEntry(entry);
 					Files.copy(updateSiteZip, zos);
 				}
@@ -239,7 +239,7 @@ public class CompileODPMojo extends AbstractMojo {
 				log.info("Compiling with server " + servlet);
 			}
 			HttpPost post = new HttpPost(servlet);
-			post.addHeader("Content-Type", "application/zip");
+			post.addHeader("Content-Type", "application/zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.compilerServer, post, this.log);
 			
@@ -253,7 +253,7 @@ public class CompileODPMojo extends AbstractMojo {
 				ResponseUtil.monitorResponse(log, is);
 				
 				// Now that we're here, the rest will be the compiler output
-				Path result = Files.createTempFile("odpcompiler-output", ".nsf");
+				Path result = Files.createTempFile("odpcompiler-output", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 				try(InputStream gzis = new GZIPInputStream(is)) {
 					Files.copy(gzis, result, StandardCopyOption.REPLACE_EXISTING);
 				}
@@ -267,7 +267,7 @@ public class CompileODPMojo extends AbstractMojo {
 			log.debug("Zipping path " + path.toString());
 		}
 		
-		Path result = Files.createTempFile("odpcompiler-dir", ".zip");
+		Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 		result.toFile().deleteOnExit();
 		
 		try(OutputStream fos = Files.newOutputStream(result)) {
@@ -278,7 +278,7 @@ public class CompileODPMojo extends AbstractMojo {
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 						if(attrs.isRegularFile()) {
 							Path relativePath = path.relativize(file);
-							String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/"));
+							String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/")); //$NON-NLS-1$
 							ZipEntry entry = new ZipEntry(unixPath);
 							zos.putNextEntry(entry);
 							Files.copy(file, zos);

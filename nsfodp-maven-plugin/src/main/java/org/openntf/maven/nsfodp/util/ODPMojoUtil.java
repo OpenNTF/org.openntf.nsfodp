@@ -49,7 +49,7 @@ public enum ODPMojoUtil {
 				if(log.isDebugEnabled()) {
 					log.debug("Configured username is blank - acting as Anonymous");
 				}
-				userName = "Anonymous";
+				userName = "Anonymous"; //$NON-NLS-1$
 			} else {
 				if(log.isDebugEnabled()) {
 					log.debug("Authenticating as user " + userName);
@@ -59,14 +59,14 @@ public enum ODPMojoUtil {
 				// Create a Basic auth header
 				// This is instead of HttpClient's credential handling because of how
 				//   Domino handles the auth handshake.
-				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
-				req.addHeader("Authorization", "Basic " + enc);
+				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes()); //$NON-NLS-1$
+				req.addHeader("Authorization", "Basic " + enc); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} else {
 			if(log.isDebugEnabled()) {
 				log.debug("No username specified - acting as Anonymous");
 			}
-			userName = "Anonymous";
+			userName = "Anonymous"; //$NON-NLS-1$
 		}
 		return userName;
 	}
