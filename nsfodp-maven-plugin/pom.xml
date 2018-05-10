@@ -54,6 +54,15 @@
 		<maven>3.0.1</maven>
 	</prerequisites>
 
+
+	<repositories>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
