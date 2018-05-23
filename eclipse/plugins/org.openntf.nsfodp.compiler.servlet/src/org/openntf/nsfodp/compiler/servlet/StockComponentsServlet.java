@@ -82,16 +82,18 @@ public class StockComponentsServlet extends HttpServlet {
 							JsonObject defObj = new JsonJavaObject();
 							defObj.putJsonProperty("namespaceUri", def.getNamespaceUri()); //$NON-NLS-1$
 							defObj.putJsonProperty("tagName", def.getTagName()); //$NON-NLS-1$
-							JsonArray facetNames = new JsonJavaArray();
-							for(String facetName : def.getFacetNames()) {
-								facetNames.add(facetName);
-							}
-							defObj.putJsonProperty("facetNames", facetNames); //$NON-NLS-1$
+							defObj.putJsonProperty("class", def.getJavaClass().getName()); //$NON-NLS-1$
 							defObj.putJsonProperty("since", def.getSince()); //$NON-NLS-1$
 							defObj.putJsonProperty("defaultPrefix", def.getFirstDefaultPrefix()); //$NON-NLS-1$
 							defObj.putJsonProperty("componentFamily", def.getComponentFamily()); //$NON-NLS-1$
 							defObj.putJsonProperty("componentType", def.getComponentType()); //$NON-NLS-1$
 							defObj.putJsonProperty("id", def.getId()); //$NON-NLS-1$
+
+							JsonArray facetNames = new JsonJavaArray();
+							for(String facetName : def.getFacetNames()) {
+								facetNames.add(facetName);
+							}
+							defObj.putJsonProperty("facetNames", facetNames); //$NON-NLS-1$
 							
 							FacesProperty defaultProp = def.getDefaultFacesProperty();
 							if(defaultProp != null) {
