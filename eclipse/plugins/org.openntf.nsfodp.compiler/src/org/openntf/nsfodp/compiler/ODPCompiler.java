@@ -52,6 +52,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -124,7 +125,7 @@ import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
  * <p>This class is the primary entry point for ODP compilation.</p>
  * 
  * @author Jesse Gallagher
- * @since 2.0.0
+ * @since 1.0.0
  */
 public class ODPCompiler {
 	private final BundleContext bundleContext;
@@ -132,6 +133,7 @@ public class ODPCompiler {
 	private final Set<UpdateSite> updateSites = new LinkedHashSet<>();
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
 	private final IProgressMonitor mon;
+	private String compilerLevel = DEFAULT_COMPILER_LEVEL;
 	
 	// XSP compiler components
 	private final SharableRegistryImpl facesRegistry = new SharableRegistryImpl(getClass().getPackage().getName());
@@ -146,12 +148,11 @@ public class ODPCompiler {
 	};
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
-			"-source", "1.8", //$NON-NLS-1$ //$NON-NLS-2$
-			"-target", "1.8", //$NON-NLS-1$ //$NON-NLS-2$
 			"-g", //$NON-NLS-1$
 			"-parameters", //$NON-NLS-1$
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 			);
+	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
 	
 	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL"; //$NON-NLS-1$
 	private static boolean DEBUG_DXL = false;
@@ -179,12 +180,46 @@ public class ODPCompiler {
 		this.updateSites.add(updateSite);
 	}
 	
+	/**
+	 * Sets the options to pass to the compiler, in the same format as used by
+	 * {@code javac}.
+	 * 
+	 * <p>Note: to set the JRE compilation level, use {@link #setCompilerLevel(String)}.</p>
+	 * 
+	 * @param compilerOptions the compiler options to set, or {@code} null to reset to
+	 *        the default
+	 * @since 1.0.0
+	 */
 	public void setCompilerOptions(Collection<String> compilerOptions) {
 		if(compilerOptions == null) {
 			this.compilerOptions = DEFAULT_COMPILER_OPTIONS;
 		} else {
 			this.compilerOptions = new ArrayList<>(compilerOptions);
 		}
+	}
+	
+	/**
+	 * Sets the compiler source and binary JRE level.
+	 * 
+	 * @param compilerLevel the compiler level to target, e.g. "1.6", "1.8", "10", etc., 
+	 *        or {@code null} to reset to the default
+	 * @since 1.1.0
+	 */
+	public void setCompilerLevel(String compilerLevel) {
+		if(StringUtil.isEmpty(compilerLevel)) {
+			this.compilerLevel = DEFAULT_COMPILER_LEVEL;
+		} else {
+			this.compilerLevel = compilerLevel;
+		}
+	}
+	
+	/**
+	 * 
+	 * @return the current targetted compiler level
+	 * @since 1.1.0
+	 */
+	public String getCompilerLevel() {
+		return compilerLevel;
 	}
 	
 	/**
@@ -200,11 +235,28 @@ public class ODPCompiler {
 	 * 
 	 * @return a {@link Path} representing the created database
 	 * @throws Exception if there is a problem compiling any component
+	 * @since 1.0.0
 	 */
 	public synchronized Path compile() throws Exception {
 		return compile(getClass().getClassLoader());
 	}
 	
+	/**
+	 * Runs the compilation process:
+	 * 
+	 * <ol>
+	 * 	<li>Installs all bundles from the provided update sites</li>
+	 *	<li>Initializes plugin contributions from installed bundles</li>
+	 * 	<li>Compiles all XPage artifacts</li>
+	 * 	<li>Constructs the NSF from the on-disk project</li>
+	 * 	<li>Uninstalls any installed bundles</li>
+	 * </ol>
+	 * 
+	 * @param cl the base {@link ClassLoader} to use during compilation
+	 * @return a {@link Path} representing the created database
+	 * @throws Exception if there is a problem compiling any component
+	 * @since 1.0.0
+	 */
 	public synchronized Path compile(ClassLoader cl) throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		try {
@@ -246,7 +298,11 @@ public class ODPCompiler {
 				}
 				
 				String[] classPath = dependencies.toArray(new String[dependencies.size()]);
-				classLoader = new JavaSourceClassLoader(cl, compilerOptions, classPath);
+				List<String> options = Stream.concat(
+						compilerOptions.stream(),
+						Stream.of("-source", compilerLevel, "-target", compilerLevel) //$NON-NLS-1$ //$NON-NLS-2$
+					).collect(Collectors.toList());
+				classLoader = new JavaSourceClassLoader(cl, options, classPath);
 
 				// Compile Java classes
 				compileJavaSources(classLoader);
