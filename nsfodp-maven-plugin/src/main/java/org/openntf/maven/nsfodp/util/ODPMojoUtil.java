@@ -21,6 +21,7 @@ import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
+import org.openntf.maven.nsfodp.Messages;
 
 public enum ODPMojoUtil {
 	;
@@ -41,32 +42,32 @@ public enum ODPMojoUtil {
 			// Look up credentials for the server
 			AuthenticationInfo info = wagonManager.getAuthenticationInfo(serverId);
 			if(info == null) {
-				throw new MojoExecutionException("Could not find server credentials for specified server ID: " + serverId);
+				throw new MojoExecutionException(Messages.getString("ODPMojoUtil.couldNotFindServerCredentials", serverId)); //$NON-NLS-1$
 			}
 			userName = info.getUserName();
 			if(userName == null || userName.isEmpty()) {
 				// Then just use Anonymous
 				if(log.isDebugEnabled()) {
-					log.debug("Configured username is blank - acting as Anonymous");
+					log.debug(Messages.getString("ODPMojoUtil.usernameIsBlank")); //$NON-NLS-1$
 				}
-				userName = "Anonymous";
+				userName = "Anonymous"; //$NON-NLS-1$
 			} else {
 				if(log.isDebugEnabled()) {
-					log.debug("Authenticating as user " + userName);
+					log.debug(Messages.getString("ODPMojoUtil.authenticatingAsUser", userName)); //$NON-NLS-1$
 				}
 				String password = info.getPassword();
 				
 				// Create a Basic auth header
 				// This is instead of HttpClient's credential handling because of how
 				//   Domino handles the auth handshake.
-				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes());
-				req.addHeader("Authorization", "Basic " + enc);
+				String enc = Base64.encodeBase64String((userName + ":" + password).getBytes()); //$NON-NLS-1$
+				req.addHeader("Authorization", "Basic " + enc); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} else {
 			if(log.isDebugEnabled()) {
-				log.debug("No username specified - acting as Anonymous");
+				log.debug(Messages.getString("ODPMojoUtil.noUsernameSpecified")); //$NON-NLS-1$
 			}
-			userName = "Anonymous";
+			userName = "Anonymous"; //$NON-NLS-1$
 		}
 		return userName;
 	}

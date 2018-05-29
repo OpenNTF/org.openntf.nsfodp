@@ -20,13 +20,12 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
 public class OnDiskProjectNature implements IProjectNature {
-	public static final String ID = "org.openntf.nsfodp.nature";
+	public static final String ID = "org.openntf.nsfodp.nature"; //$NON-NLS-1$
 	
 	private IProject project;
 
 	@Override
 	public void configure() throws CoreException {
-
 	}
 
 	@Override

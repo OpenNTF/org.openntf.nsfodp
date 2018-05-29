@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
+import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
@@ -45,6 +46,7 @@ import org.openntf.nsfodp.compiler.update.UpdateSite;
 
 import com.ibm.commons.util.io.StreamUtil;
 import com.mindoo.domino.jna.utils.Ref;
+import com.mindoo.domino.jna.utils.StringUtil;
 
 import lotus.domino.NotesThread;
 
@@ -69,6 +71,9 @@ public class ODPCompilerServlet extends HttpServlet {
 				return;
 			}
 			
+			// Developer's note: multipart/form-data with files broken out would be nice,
+			//   but Domino as of 9.0.1FP10 behaves poorly with them; for now, it's safer
+			//   to use a combined ZIP and pass options in headers
 			String contentType = req.getContentType();
 			if(!"application/zip".equals(contentType)) { //$NON-NLS-1$
 				throw new IllegalArgumentException("Content must be application/zip");
@@ -116,6 +121,12 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			OnDiskProject odp = new OnDiskProject(odpFile);
 			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
+			
+			// See if the client requested a specific compiler level
+			String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
+			if(StringUtil.isNotEmpty(compilerLevel)) {
+				compiler.setCompilerLevel(compilerLevel);
+			}
 			
 			if(siteZip != null) {
 				Path siteFile = expandZip(siteZip);

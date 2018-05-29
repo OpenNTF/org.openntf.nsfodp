@@ -24,6 +24,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.IOUtil;
+import org.openntf.maven.nsfodp.Messages;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,7 +36,7 @@ public enum ResponseUtil {
 		int status = res.getStatusLine().getStatusCode();
 		HttpEntity responseEntity = res.getEntity();
 		if(log.isDebugEnabled()) {
-			log.debug("Received entity: " + responseEntity);
+			log.debug(Messages.getString("ResponseUtil_receivedEntity", responseEntity)); //$NON-NLS-1$
 		}
 		if(status < 200 || status >= 300) {
 			String errorBody;
@@ -45,15 +46,15 @@ public enum ResponseUtil {
 				}
 				errorBody = baos.toString();
 			}
-			System.err.println("Received error from server:");
+			System.err.println(Messages.getString("ResponseUtil_receivedError")); //$NON-NLS-1$
 			System.err.println(errorBody);
-			throw new IOException("Received unexpected HTTP response: " + res.getStatusLine());
+			throw new IOException(Messages.getString("ResponseUtil_unexpectedHttpResponse", res.getStatusLine())); //$NON-NLS-1$
 		}
 		
 		// Check for an auth form - Domino returns these as status 200
-		Header contentType = res.getFirstHeader("Content-Type");
-		if(contentType != null && String.valueOf(contentType.getValue()).startsWith("text/html")) {
-			throw new IOException("Authentication failed for specified user");
+		Header contentType = res.getFirstHeader("Content-Type"); //$NON-NLS-1$
+		if(contentType != null && String.valueOf(contentType.getValue()).startsWith("text/html")) { //$NON-NLS-1$
+			throw new IOException(Messages.getString("ResponseUtil_authFailed")); //$NON-NLS-1$
 		}
 		
 		return responseEntity;
@@ -74,40 +75,40 @@ public enum ResponseUtil {
 		JsonParser parser = new JsonParser();
 		while((line = readLine(is, buffer)) != null) {
 			if(log.isDebugEnabled()) {
-				log.debug("Received JSON message: " + line);
+				log.debug(Messages.getString("ResponseUtil_jsonMessage", line)); //$NON-NLS-1$
 			}
 			JsonObject obj = parser.parse(line).getAsJsonObject();
-			switch(obj.get("type").getAsString()) {
-			case "beginTask":
+			switch(obj.get("type").getAsString()) { //$NON-NLS-1$
+			case "beginTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.get("name").getAsString());
+					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name").getAsString()));  //$NON-NLS-1$//$NON-NLS-2$
 				}
 				break;
-			case "internalWorked":
+			case "internalWorked": //$NON-NLS-1$
 				// Ignore
 				break;
-			case "task":
+			case "task": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info("Begin task: " + obj.get("name").getAsString());
+					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name").getAsString()));  //$NON-NLS-1$//$NON-NLS-2$
 				}
 				break;
-			case "subTask":
+			case "subTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info(obj.get("name").getAsString());
+					log.info(obj.get("name").getAsString()); //$NON-NLS-1$
 				}
 				break;
-			case "work":
+			case "work": //$NON-NLS-1$
 				// Ignore
 				break;
-			case "cancel":
-				throw new RuntimeException("Work was canceled on the server");
-			case "done":
+			case "cancel": //$NON-NLS-1$
+				throw new RuntimeException(Messages.getString("ResponseUtil_workCanceled")); //$NON-NLS-1$
+			case "done": //$NON-NLS-1$
 				return;
-			case "error":
-				System.err.println(obj.get("stackTrace").getAsString());
-				throw new RuntimeException("Server reported an error");
+			case "error": //$NON-NLS-1$
+				System.err.println(obj.get("stackTrace").getAsString()); //$NON-NLS-1$
+				throw new RuntimeException(Messages.getString("ResponseUtil_serverError")); //$NON-NLS-1$
 			default:
-				throw new IllegalArgumentException("Received unexpected JSON message: " + line);
+				throw new IllegalArgumentException(Messages.getString("ResponseUtil_unexpectedJsonMessage", line)); //$NON-NLS-1$
 			}
 		}
 	}
