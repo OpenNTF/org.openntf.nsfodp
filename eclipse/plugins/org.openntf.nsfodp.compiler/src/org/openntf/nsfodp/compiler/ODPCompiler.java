@@ -154,6 +154,10 @@ public class ODPCompiler {
 			);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
 	
+	/**
+	 * Notes.ini property to set to "1" to output debug information about imported DXL
+	 * files.
+	 */
 	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL"; //$NON-NLS-1$
 	private static boolean DEBUG_DXL = false;
 	
@@ -259,8 +263,8 @@ public class ODPCompiler {
 	 */
 	public synchronized Path compile(ClassLoader cl) throws Exception {
 		Collection<Bundle> bundles = installBundles();
+		JavaSourceClassLoader classLoader = null;
 		try {
-			JavaSourceClassLoader classLoader = null;
 			boolean hasXPages = odp.hasXPagesElements();
 			if(hasXPages) {
 				initRegistry();
@@ -340,7 +344,7 @@ public class ODPCompiler {
 			StringWriter o = new StringWriter();
 			PrintWriter errOut = new PrintWriter(o);
 			e.printExtraInformation(errOut);
-			throw new RuntimeException("Java compilation failed:\n" + o, e); //$NON-NLS-1$
+			throw new RuntimeException("Java compilation failed:\n\n" + o, e);
 		} finally {
 			uninstallBundles(bundles);
 		}

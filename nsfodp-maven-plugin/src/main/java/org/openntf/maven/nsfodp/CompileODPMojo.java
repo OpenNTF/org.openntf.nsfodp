@@ -38,6 +38,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
+import org.openntf.nsfodp.commons.NSFODPConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,6 +116,12 @@ public class CompileODPMojo extends AbstractMojo {
 	 */
 	@Parameter(required=false)
 	private File updateSite;
+	
+	/**
+	 * The compiler level to target, e.g. "1.6", "1.8", "10", etc.
+	 */
+	@Parameter(property="nsfodp.compiler.compilerLevel", required=false)
+	private String compilerLevel;
 	
 	private Log log;
 
@@ -242,6 +249,10 @@ public class CompileODPMojo extends AbstractMojo {
 			post.addHeader("Content-Type", "application/zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.compilerServer, post, this.log);
+			
+			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
+			}
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);
