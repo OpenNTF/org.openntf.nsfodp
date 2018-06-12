@@ -362,7 +362,6 @@ public class ODPCompiler {
 					importXPages(importer, database, classLoader, compiledClassNames);
 					importJavaElements(importer, database, classLoader, compiledClassNames);
 				}
-				
 
 				// Append a timestamp if requested
 				if(this.isAppendTimestampToTitle()) {
