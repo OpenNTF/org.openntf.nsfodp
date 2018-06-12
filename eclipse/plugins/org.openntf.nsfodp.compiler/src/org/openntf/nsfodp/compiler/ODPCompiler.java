@@ -67,6 +67,7 @@ import org.openntf.nsfodp.compiler.odp.XPage;
 import org.openntf.nsfodp.compiler.odp.XSPCompilationResult;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 import org.openntf.nsfodp.compiler.util.DXLUtil;
+import org.openntf.nsfodp.compiler.util.LibraryWeightComparator;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.openntf.nsfodp.compiler.util.ODPUtil;
 import org.osgi.framework.Bundle;
@@ -390,6 +391,7 @@ public class ODPCompiler {
 		libraries.stream()
 			.filter(lib -> lib instanceof XspLibrary)
 			.map(XspLibrary.class::cast)
+			.sorted(LibraryWeightComparator.INSTANCE)
 			.map(lib -> new LibraryWrapper(lib.getLibraryId(), lib))
 			.map(wrapper -> {
 				SimpleRegistryProvider provider = new SimpleRegistryProvider();
@@ -397,6 +399,7 @@ public class ODPCompiler {
 				return provider;
 			})
 			.map(XspRegistryProvider::getRegistry)
+			
 			.forEach(facesRegistry::addDepend);
 		facesRegistry.refreshReferences();
 	}
