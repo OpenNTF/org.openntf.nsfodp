@@ -57,6 +57,9 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -73,6 +76,8 @@ public class CompileODPMojo extends AbstractMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfosp/compiler"; //$NON-NLS-1$
+	
+	private static final ThreadLocal<DateFormat> SNAPSHOT_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddhhmm")); //$NON-NLS-1$
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;
@@ -129,6 +134,16 @@ public class CompileODPMojo extends AbstractMojo {
 	 */
 	@Parameter(required=false)
 	private boolean appendTimestampToTitle = false;
+	
+	/**
+	 * A name to set in the database for use as a master template.
+	 * 
+	 * <p>Note: this is the name
+	 * used by this database when it is a template for others, not the name of a template
+	 * to inherit from.</p>
+	 */
+	@Parameter(required=false)
+	private String templateName;
 	
 	private Log log;
 
@@ -261,6 +276,20 @@ public class CompileODPMojo extends AbstractMojo {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
 			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
+			if(this.templateName != null && !this.templateName.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
+				
+				// Use a Tycho-provided version if present; otherwise, generate one
+				String version = this.project.getProperties().getProperty("qualifiedVersion"); //$NON-NLS-1$
+				if(version == null || version.isEmpty()) {
+					version = this.project.getVersion();
+					if(version.endsWith("-SNAPSHOT")) { //$NON-NLS-1$
+						version = version.substring(0, version.length()-"-SNAPSHOT".length()); //$NON-NLS-1$
+						version += '.' + SNAPSHOT_FORMAT.get().format(new Date());
+					}
+				}
+				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, version);
+			}
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);

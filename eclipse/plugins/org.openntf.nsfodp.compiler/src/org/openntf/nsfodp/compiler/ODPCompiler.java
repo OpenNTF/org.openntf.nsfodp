@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -107,7 +108,9 @@ import com.mindoo.domino.jna.gc.NotesGC;
 import com.mindoo.domino.jna.utils.LegacyAPIUtils;
 
 import lotus.domino.Database;
+import lotus.domino.DateTime;
 import lotus.domino.DxlImporter;
+import lotus.domino.NoteCollection;
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
@@ -151,6 +154,8 @@ public class ODPCompiler {
 		}
 	};
 	private boolean appendTimestampToTitle = false;
+	private String templateName;
+	private String templateVersion;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -251,6 +256,39 @@ public class ODPCompiler {
 	 */
 	public boolean isAppendTimestampToTitle() {
 		return appendTimestampToTitle;
+	}
+	
+	/**
+	 * Sets a name for this database to act as a master template.
+	 * 
+	 * @param templateName the name to set, or <code>null</code> to un-set it
+	 */
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+	
+	/**
+	 * @return the name this database will use as a master template
+	 */
+	public String getTemplateName() {
+		return templateName;
+	}
+	
+	/**
+	 * Sets a version for this database to use when {@link #setTemplateName(String)} is
+	 * configured.
+	 * 
+	 * @param templateVersion the version to use, or <code>null</code> to un-set it
+	 */
+	public void setTemplateVersion(String templateVersion) {
+		this.templateVersion = templateVersion;
+	}
+	
+	/**
+	 * @return the version this database will use when a master template
+	 */
+	public String getTemplateVersion() {
+		return templateVersion;
 	}
 	
 	/**
@@ -366,6 +404,40 @@ public class ODPCompiler {
 				// Append a timestamp if requested
 				if(this.isAppendTimestampToTitle()) {
 					database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
+				}
+				
+				// Set the template info if requested
+				String templateName = this.getTemplateName();
+				if(StringUtil.isNotEmpty(templateName)) {
+					NoteCollection notes = database.createNoteCollection(false);
+					notes.selectAllDesignElements(true);
+					notes.setSelectionFormula("$TITLE='$TemplateBuild'"); //$NON-NLS-1$
+					notes.buildCollection();
+					String noteId = notes.getFirstNoteID();
+
+					lotus.domino.Document doc;
+					if(StringUtil.isNotEmpty(noteId)) {
+						doc = database.getDocumentByID(noteId);
+					} else {
+						// Import an empty one
+						try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+							String dxl = StreamUtil.readString(is);
+							List<String> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
+							doc = database.getDocumentByID(ids.get(0));
+						}
+					}
+					String version = this.getTemplateVersion();
+					if(StringUtil.isNotEmpty(version)) {
+						doc.replaceItemValue("$TemplateBuild", version); //$NON-NLS-1$
+					}
+					doc.replaceItemValue("$TemplateBuildName", templateName); //$NON-NLS-1$
+					DateTime dt = database.getParent().createDateTime(Calendar.getInstance());
+					try {
+						doc.replaceItemValue("$TemplateBuildDate", dt); //$NON-NLS-1$
+					} finally {
+						dt.recycle();
+					}
+					doc.save();
 				}
 				
 				return file;
@@ -864,6 +936,13 @@ public class ODPCompiler {
 		}
 	}
 	
+	/**
+	 * @param importer the importer to use during the process
+	 * @param dxl an XML string to import
+	 * @param database the database to import to
+	 * @param name a human-readable name of the element, for logging
+	 * @return a {@link List} of imported note IDs
+	 */
 	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws Exception {
 		try {
 			if(DEBUG_DXL) {
