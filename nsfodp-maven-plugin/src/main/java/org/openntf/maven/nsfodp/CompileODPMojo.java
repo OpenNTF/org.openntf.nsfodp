@@ -124,6 +124,8 @@ public class CompileODPMojo extends AbstractMojo {
 	
 	/**
 	 * The compiler level to target, e.g. "1.6", "1.8", "10", etc.
+	 * 
+	 * <p>If unspecified, this defaults to the server's JRE version.</p>
 	 */
 	@Parameter(property="nsfodp.compiler.compilerLevel", required=false)
 	private String compilerLevel;
@@ -144,6 +146,17 @@ public class CompileODPMojo extends AbstractMojo {
 	 */
 	@Parameter(required=false)
 	private String templateName;
+	
+	/**
+	 * Whether to set production options in the xsp.properties file. Currently, this sets:
+	 * 
+	 * <ul>
+	 * 	<li><code>xsp.resources.aggregate=true</code></li>
+	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
+	 * </ul>
+	 */
+	@Parameter(required=false)
+	private boolean setProductionXspOptions = false;
 	
 	private Log log;
 
@@ -290,6 +303,7 @@ public class CompileODPMojo extends AbstractMojo {
 				}
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, version);
 			}
+			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);

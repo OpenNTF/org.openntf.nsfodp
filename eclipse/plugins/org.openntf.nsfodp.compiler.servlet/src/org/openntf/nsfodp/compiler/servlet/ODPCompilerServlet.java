@@ -139,6 +139,10 @@ public class ODPCompilerServlet extends HttpServlet {
 					compiler.setTemplateVersion(templateVersion);
 				}
 			}
+			String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
+			if("true".equals(setXspOptions)) { //$NON-NLS-1$
+				compiler.setSetProductionXspOptions(true);
+			}
 			
 			if(siteZip != null) {
 				Path siteFile = expandZip(siteZip);

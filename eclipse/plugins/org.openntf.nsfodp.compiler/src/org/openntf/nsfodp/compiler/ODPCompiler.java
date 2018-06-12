@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
@@ -156,6 +157,7 @@ public class ODPCompiler {
 	private boolean appendTimestampToTitle = false;
 	private String templateName;
 	private String templateVersion;
+	private boolean setProductionXspOptions = false;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -289,6 +291,27 @@ public class ODPCompiler {
 	 */
 	public String getTemplateVersion() {
 		return templateVersion;
+	}
+	
+	/**
+	 * Sets whether to set production options in the xsp.properties file. Currently, this sets:
+	 * 
+	 * <ul>
+	 * 	<li><code>xsp.resources.aggregate=true</code></li>
+	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
+	 * </ul>
+	 * 
+	 * @param setProductionXspOptions whether to set production XSP options
+	 */
+	public void setSetProductionXspOptions(boolean setProductionXspOptions) {
+		this.setProductionXspOptions = setProductionXspOptions;
+	}
+	
+	/**
+	 * @return whether the compiler is set to specify production XSP options
+	 */
+	public boolean isSetProductionXspOptions() {
+		return setProductionXspOptions;
 	}
 	
 	/**
@@ -679,14 +702,14 @@ public class ODPCompiler {
 	private void importFileResources(DxlImporter importer, Database database) throws Exception {
 		subTask("Importing file resources");
 		
-		// Generate DXL in parallel
 		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
-//			.parallel()
 			.filter(res -> {
 				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
+				String normalizedPath = filePath.toString().replace('\\', '/');
 				
-				// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
-				if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) { //$NON-NLS-1$
+				switch(normalizedPath) {
+				case "META-INF/MANIFEST.MF": { //$NON-NLS-1$
+					// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
 					try {
 						if(Files.size(res.getDataFile()) == 0) {
 							return false;
@@ -694,7 +717,28 @@ public class ODPCompiler {
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
+				} break;
+				case "WebContent/WEB-INF/xsp.properties": { //$NON-NLS-1$
+					// Special handling of xsp.properties to set production options
+					if(this.isSetProductionXspOptions()) {
+						try(InputStream is = Files.newInputStream(res.getDataFile())) {
+							Properties props = new Properties();
+							props.load(is);
+							props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+							props.put("xsp.client.resources.uncompressed", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+							try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+								props.store(baos, null);
+								baos.flush();
+								res.setOverrideData(baos.toByteArray());
+							}
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
 				}
+				}
+				
+				
 				return true;
 			})
 			.collect(Collectors.toMap(
