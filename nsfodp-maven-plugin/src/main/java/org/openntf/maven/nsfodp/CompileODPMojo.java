@@ -187,7 +187,7 @@ public class CompileODPMojo extends AbstractMojo {
 				
 				Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				if(log.isInfoEnabled()) {
-					log.info(Messages.getString("CompileODPMojo.generatedNsf") + outputFile); //$NON-NLS-1$
+					log.info(Messages.getString("CompileODPMojo.generatedNsf", outputFile)); //$NON-NLS-1$
 				}
 			} catch(MojoExecutionException e) {
 				throw e;
