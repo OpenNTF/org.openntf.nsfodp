@@ -15,6 +15,7 @@
  */
 package org.openntf.nsfodp.compiler.odp;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,10 +39,11 @@ import com.ibm.commons.xml.XMLException;
  * @since 2.0.0
  */
 public class AbstractSplitDesignElement {
-	public static final String EXT_METADATA = ".metadata";
+	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
 	
 	private final Path dataFile;
 	private final Path dxlFile;
+	private byte[] overrideData;
 	
 	public AbstractSplitDesignElement(Path dataFile) {
 		this.dataFile = Objects.requireNonNull(dataFile);
@@ -57,10 +59,10 @@ public class AbstractSplitDesignElement {
 	}
 	
 	public String getFileDataItem() {
-		return "$FileData";
+		return "$FileData"; //$NON-NLS-1$
 	}
 	public String getFileSizeItem() {
-		return "$FileSize";
+		return "$FileSize"; //$NON-NLS-1$
 	}
 	
 	public Document getDxl() throws XMLException, IOException {
@@ -69,6 +71,10 @@ public class AbstractSplitDesignElement {
 		} else {
 			throw new IllegalStateException("Could not locate DXL file for " + dataFile);
 		}
+	}
+	
+	public void setOverrideData(byte[] overrideData) {
+		this.overrideData = overrideData;
 	}
 	
 	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
@@ -85,12 +91,18 @@ public class AbstractSplitDesignElement {
 	}
 	
 	public byte[] getCompositeData() throws IOException, XMLException {
-		Path file = getDataFile();
-		if(!Files.isRegularFile(file)) {
-			throw new IllegalArgumentException("Cannot read file " + file);
-		}
-		try(InputStream is = Files.newInputStream(file)) {
-			return CompositeDataUtil.getFileResourceData(is, (int)Files.size(file));
+		if(this.overrideData != null) {
+			try(InputStream is = new ByteArrayInputStream(this.overrideData)) {
+				return CompositeDataUtil.getFileResourceData(is, this.overrideData.length);
+			}
+		} else {
+			Path file = getDataFile();
+			if(!Files.isRegularFile(file)) {
+				throw new IllegalArgumentException("Cannot read file " + file);
+			}
+			try(InputStream is = Files.newInputStream(file)) {
+				return CompositeDataUtil.getFileResourceData(is, (int)Files.size(file));
+			}
 		}
 	}
 }

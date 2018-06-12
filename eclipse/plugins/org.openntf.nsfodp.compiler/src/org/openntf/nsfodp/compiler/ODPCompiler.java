@@ -30,12 +30,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
@@ -67,6 +72,7 @@ import org.openntf.nsfodp.compiler.odp.XPage;
 import org.openntf.nsfodp.compiler.odp.XSPCompilationResult;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 import org.openntf.nsfodp.compiler.util.DXLUtil;
+import org.openntf.nsfodp.compiler.util.LibraryWeightComparator;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.openntf.nsfodp.compiler.util.ODPUtil;
 import org.osgi.framework.Bundle;
@@ -103,7 +109,9 @@ import com.mindoo.domino.jna.gc.NotesGC;
 import com.mindoo.domino.jna.utils.LegacyAPIUtils;
 
 import lotus.domino.Database;
+import lotus.domino.DateTime;
 import lotus.domino.DxlImporter;
+import lotus.domino.NoteCollection;
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
@@ -146,6 +154,10 @@ public class ODPCompiler {
 			return null;
 		}
 	};
+	private boolean appendTimestampToTitle = false;
+	private String templateName;
+	private String templateVersion;
+	private boolean setProductionXspOptions = false;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -153,6 +165,12 @@ public class ODPCompiler {
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 			);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
+	
+	private static final ThreadLocal<DateFormat> TIMESTAMP = new ThreadLocal<DateFormat>() {
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd h:mm a zzz"); //$NON-NLS-1$
+		}
+	};
 	
 	/**
 	 * Notes.ini property to set to "1" to output debug information about imported DXL
@@ -224,6 +242,76 @@ public class ODPCompiler {
 	 */
 	public String getCompilerLevel() {
 		return compilerLevel;
+	}
+	
+	/**
+	 * Set whether or not to append a timestamp to the generated NSF's title.
+	 * 
+	 * @param appendTimestampToTitle whether or not to append a timestamp to the generated NSF's title
+	 */
+	public void setAppendTimestampToTitle(boolean appendTimestampToTitle) {
+		this.appendTimestampToTitle = appendTimestampToTitle;
+	}
+	
+	/**
+	 * @return whether the compiler is configured to append a timestamp to the NSF's title
+	 */
+	public boolean isAppendTimestampToTitle() {
+		return appendTimestampToTitle;
+	}
+	
+	/**
+	 * Sets a name for this database to act as a master template.
+	 * 
+	 * @param templateName the name to set, or <code>null</code> to un-set it
+	 */
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+	
+	/**
+	 * @return the name this database will use as a master template
+	 */
+	public String getTemplateName() {
+		return templateName;
+	}
+	
+	/**
+	 * Sets a version for this database to use when {@link #setTemplateName(String)} is
+	 * configured.
+	 * 
+	 * @param templateVersion the version to use, or <code>null</code> to un-set it
+	 */
+	public void setTemplateVersion(String templateVersion) {
+		this.templateVersion = templateVersion;
+	}
+	
+	/**
+	 * @return the version this database will use when a master template
+	 */
+	public String getTemplateVersion() {
+		return templateVersion;
+	}
+	
+	/**
+	 * Sets whether to set production options in the xsp.properties file. Currently, this sets:
+	 * 
+	 * <ul>
+	 * 	<li><code>xsp.resources.aggregate=true</code></li>
+	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
+	 * </ul>
+	 * 
+	 * @param setProductionXspOptions whether to set production XSP options
+	 */
+	public void setSetProductionXspOptions(boolean setProductionXspOptions) {
+		this.setProductionXspOptions = setProductionXspOptions;
+	}
+	
+	/**
+	 * @return whether the compiler is set to specify production XSP options
+	 */
+	public boolean isSetProductionXspOptions() {
+		return setProductionXspOptions;
 	}
 	
 	/**
@@ -335,6 +423,45 @@ public class ODPCompiler {
 					importXPages(importer, database, classLoader, compiledClassNames);
 					importJavaElements(importer, database, classLoader, compiledClassNames);
 				}
+
+				// Append a timestamp if requested
+				if(this.isAppendTimestampToTitle()) {
+					database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
+				}
+				
+				// Set the template info if requested
+				String templateName = this.getTemplateName();
+				if(StringUtil.isNotEmpty(templateName)) {
+					NoteCollection notes = database.createNoteCollection(false);
+					notes.selectAllDesignElements(true);
+					notes.setSelectionFormula("$TITLE='$TemplateBuild'"); //$NON-NLS-1$
+					notes.buildCollection();
+					String noteId = notes.getFirstNoteID();
+
+					lotus.domino.Document doc;
+					if(StringUtil.isNotEmpty(noteId)) {
+						doc = database.getDocumentByID(noteId);
+					} else {
+						// Import an empty one
+						try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+							String dxl = StreamUtil.readString(is);
+							List<String> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
+							doc = database.getDocumentByID(ids.get(0));
+						}
+					}
+					String version = this.getTemplateVersion();
+					if(StringUtil.isNotEmpty(version)) {
+						doc.replaceItemValue("$TemplateBuild", version); //$NON-NLS-1$
+					}
+					doc.replaceItemValue("$TemplateBuildName", templateName); //$NON-NLS-1$
+					DateTime dt = database.getParent().createDateTime(Calendar.getInstance());
+					try {
+						doc.replaceItemValue("$TemplateBuildDate", dt); //$NON-NLS-1$
+					} finally {
+						dt.recycle();
+					}
+					doc.save();
+				}
 				
 				return file;
 			} finally {
@@ -390,6 +517,7 @@ public class ODPCompiler {
 		libraries.stream()
 			.filter(lib -> lib instanceof XspLibrary)
 			.map(XspLibrary.class::cast)
+			.sorted(LibraryWeightComparator.INSTANCE)
 			.map(lib -> new LibraryWrapper(lib.getLibraryId(), lib))
 			.map(wrapper -> {
 				SimpleRegistryProvider provider = new SimpleRegistryProvider();
@@ -397,6 +525,7 @@ public class ODPCompiler {
 				return provider;
 			})
 			.map(XspRegistryProvider::getRegistry)
+			
 			.forEach(facesRegistry::addDepend);
 		facesRegistry.refreshReferences();
 	}
@@ -546,10 +675,13 @@ public class ODPCompiler {
 		subTask("Importing DB properties");
 		Path properties = odp.getDbPropertiesFile();
 		Document dxlDoc = ODPUtil.readXml(properties);
+		
+		// Strip out any FT search settings, since these cause an exception on import
 		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode(); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}
+		
 		String dxl = DOMUtil.getXMLString(dxlDoc);
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}
@@ -570,14 +702,14 @@ public class ODPCompiler {
 	private void importFileResources(DxlImporter importer, Database database) throws Exception {
 		subTask("Importing file resources");
 		
-		// Generate DXL in parallel
 		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
-//			.parallel()
 			.filter(res -> {
 				Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
+				String normalizedPath = filePath.toString().replace('\\', '/');
 				
-				// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
-				if("META-INF/MANIFEST.MF".equals(filePath.toString().replace('\\', '/'))) { //$NON-NLS-1$
+				switch(normalizedPath) {
+				case "META-INF/MANIFEST.MF": { //$NON-NLS-1$
+					// Special handling of MANIFEST.MF, which can cause trouble in FP10 when blank
 					try {
 						if(Files.size(res.getDataFile()) == 0) {
 							return false;
@@ -585,7 +717,28 @@ public class ODPCompiler {
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
+				} break;
+				case "WebContent/WEB-INF/xsp.properties": { //$NON-NLS-1$
+					// Special handling of xsp.properties to set production options
+					if(this.isSetProductionXspOptions()) {
+						try(InputStream is = Files.newInputStream(res.getDataFile())) {
+							Properties props = new Properties();
+							props.load(is);
+							props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+							props.put("xsp.client.resources.uncompressed", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+							try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+								props.store(baos, null);
+								baos.flush();
+								res.setOverrideData(baos.toByteArray());
+							}
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
 				}
+				}
+				
+				
 				return true;
 			})
 			.collect(Collectors.toMap(
@@ -827,6 +980,13 @@ public class ODPCompiler {
 		}
 	}
 	
+	/**
+	 * @param importer the importer to use during the process
+	 * @param dxl an XML string to import
+	 * @param database the database to import to
+	 * @param name a human-readable name of the element, for logging
+	 * @return a {@link List} of imported note IDs
+	 */
 	private List<String> importDxl(DxlImporter importer, String dxl, Database database, String name) throws Exception {
 		try {
 			if(DEBUG_DXL) {

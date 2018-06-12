@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NSF Deployment Tools
 Bundle-SymbolicName: org.openntf.nsfodp.deployment;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: OpenNTF
 Import-Package: org.osgi.framework
 Require-Bundle: org.eclipse.core.runtime,

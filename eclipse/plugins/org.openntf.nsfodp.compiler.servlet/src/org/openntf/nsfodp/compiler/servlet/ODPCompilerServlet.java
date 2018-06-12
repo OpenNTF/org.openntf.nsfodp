@@ -127,6 +127,22 @@ public class ODPCompilerServlet extends HttpServlet {
 			if(StringUtil.isNotEmpty(compilerLevel)) {
 				compiler.setCompilerLevel(compilerLevel);
 			}
+			String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
+			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
+				compiler.setAppendTimestampToTitle(true);
+			}
+			String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
+			if(StringUtil.isNotEmpty(templateName)) {
+				compiler.setTemplateName(templateName);
+				String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
+				if(StringUtil.isNotEmpty(templateVersion)) {
+					compiler.setTemplateVersion(templateVersion);
+				}
+			}
+			String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
+			if("true".equals(setXspOptions)) { //$NON-NLS-1$
+				compiler.setSetProductionXspOptions(true);
+			}
 			
 			if(siteZip != null) {
 				Path siteFile = expandZip(siteZip);

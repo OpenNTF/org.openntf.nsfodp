@@ -71,19 +71,19 @@ public class FileResource extends AbstractSplitDesignElement {
 			}
 			
 			Document dxlDoc = DOMUtil.createDocument();
-			Element note = DOMUtil.createElement(dxlDoc, "note");
-			note.setAttribute("class", "form");
-			note.setAttribute("xmlns", "http://www.lotus.com/dxl");
+			Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
+			note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$
+			note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
 			if(StringUtil.isNotEmpty(flags)) {
-				DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags);
+				DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags); //$NON-NLS-1$
 			}
 			if(StringUtil.isNotEmpty(flagsExt)) {
-				DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt);
+				DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt); //$NON-NLS-1$
 			}
 			String title = nameProvider.apply(getDataFile());
 			if(StringUtil.isNotEmpty(title)) {
-				DXLUtil.writeItemString(dxlDoc, "$TITLE", false, title);
-				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, title);
+				DXLUtil.writeItemString(dxlDoc, "$TITLE", false, title); //$NON-NLS-1$
+				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, title); //$NON-NLS-1$
 			}
 			
 			return attachFileData(dxlDoc);
