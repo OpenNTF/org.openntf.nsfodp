@@ -25,4 +25,5 @@ public enum NSFODPConstants {
 	public static final String BZ_NS = "http://www.ibm.com/xsp/bazaar"; //$NON-NLS-1$
 
 	public static final String HEADER_COMPILER_LEVEL = "X-CompilerLevel"; //$NON-NLS-1$
+	public static final String HEADER_APPEND_TIMESTAMP = "X-AppendTimestamp"; //$NON-NLS-1$
 }

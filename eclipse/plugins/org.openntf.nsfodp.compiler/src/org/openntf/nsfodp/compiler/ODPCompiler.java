@@ -30,12 +30,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -147,6 +150,7 @@ public class ODPCompiler {
 			return null;
 		}
 	};
+	private boolean appendTimestampToTitle = false;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -154,6 +158,12 @@ public class ODPCompiler {
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 			);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
+	
+	private static final ThreadLocal<DateFormat> TIMESTAMP = new ThreadLocal<DateFormat>() {
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd h:mm a zzz"); //$NON-NLS-1$
+		}
+	};
 	
 	/**
 	 * Notes.ini property to set to "1" to output debug information about imported DXL
@@ -225,6 +235,22 @@ public class ODPCompiler {
 	 */
 	public String getCompilerLevel() {
 		return compilerLevel;
+	}
+	
+	/**
+	 * Set whether or not to append a timestamp to the generated NSF's title.
+	 * 
+	 * @param appendTimestampToTitle whether or not to append a timestamp to the generated NSF's title
+	 */
+	public void setAppendTimestampToTitle(boolean appendTimestampToTitle) {
+		this.appendTimestampToTitle = appendTimestampToTitle;
+	}
+	
+	/**
+	 * @return whether the compiler is configured to append a timestamp to the NSF's title
+	 */
+	public boolean isAppendTimestampToTitle() {
+		return appendTimestampToTitle;
 	}
 	
 	/**
@@ -335,6 +361,12 @@ public class ODPCompiler {
 					importCustomControls(importer, database, classLoader, compiledClassNames);
 					importXPages(importer, database, classLoader, compiledClassNames);
 					importJavaElements(importer, database, classLoader, compiledClassNames);
+				}
+				
+
+				// Append a timestamp if requested
+				if(this.isAppendTimestampToTitle()) {
+					database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
 				}
 				
 				return file;
@@ -549,10 +581,13 @@ public class ODPCompiler {
 		subTask("Importing DB properties");
 		Path properties = odp.getDbPropertiesFile();
 		Document dxlDoc = ODPUtil.readXml(properties);
+		
+		// Strip out any FT search settings, since these cause an exception on import
 		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode(); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}
+		
 		String dxl = DOMUtil.getXMLString(dxlDoc);
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}

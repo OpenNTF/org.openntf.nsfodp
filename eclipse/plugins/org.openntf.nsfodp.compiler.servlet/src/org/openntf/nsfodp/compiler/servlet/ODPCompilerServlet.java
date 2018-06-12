@@ -127,6 +127,10 @@ public class ODPCompilerServlet extends HttpServlet {
 			if(StringUtil.isNotEmpty(compilerLevel)) {
 				compiler.setCompilerLevel(compilerLevel);
 			}
+			String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
+			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
+				compiler.setAppendTimestampToTitle(true);
+			}
 			
 			if(siteZip != null) {
 				Path siteFile = expandZip(siteZip);

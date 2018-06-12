@@ -123,6 +123,13 @@ public class CompileODPMojo extends AbstractMojo {
 	@Parameter(property="nsfodp.compiler.compilerLevel", required=false)
 	private String compilerLevel;
 	
+	/**
+	 * Whether or not to append a timestamp to the generated NSF's title. Defaults to
+	 * {@value}.
+	 */
+	@Parameter(required=false)
+	private boolean appendTimestampToTitle = false;
+	
 	private Log log;
 
 	public void execute() throws MojoExecutionException {
@@ -253,6 +260,7 @@ public class CompileODPMojo extends AbstractMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
+			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
 			
 			FileEntity fileEntity = new FileEntity(packageZip.toFile());
 			post.setEntity(fileEntity);
