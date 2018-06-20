@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -352,6 +353,7 @@ public class ODPCompiler {
 	public synchronized Path compile(ClassLoader cl) throws Exception {
 		Collection<Bundle> bundles = installBundles();
 		JavaSourceClassLoader classLoader = null;
+		Set<Path> cleanup = new HashSet<>();
 		try {
 			boolean hasXPages = odp.hasXPagesElements();
 			if(hasXPages) {
@@ -371,6 +373,7 @@ public class ODPCompiler {
 						try(JarFile jar = new JarFile(f)) {
 							JarEntry notesJar = jar.getJarEntry("Notes.jar"); //$NON-NLS-1$
 							Path tempFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "Notes", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+							cleanup.add(tempFile);
 							try(InputStream is = jar.getInputStream(notesJar)) {
 								Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 							}
@@ -379,6 +382,7 @@ public class ODPCompiler {
 					} else {
 						Path path = f.toPath().resolve("Notes.jar"); //$NON-NLS-1$
 						Path tempFile = Files.createTempFile("Notes", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+						cleanup.add(tempFile);
 						Files.copy(path, tempFile, StandardCopyOption.REPLACE_EXISTING);
 						dependencies.add("jar:" + tempFile.toUri().toString()); //$NON-NLS-1$
 					}
@@ -474,6 +478,20 @@ public class ODPCompiler {
 			throw new RuntimeException("Java compilation failed:\n\n" + o, e);
 		} finally {
 			uninstallBundles(bundles);
+			
+			for(Path path : cleanup) {
+				if(Files.isDirectory(path)) {
+					Files.walk(path)
+					    .sorted(Comparator.reverseOrder())
+					    .map(Path::toFile)
+					    .forEach(File::delete);
+				}
+				Files.deleteIfExists(path);
+			}
+			
+			if(classLoader != null) {
+				classLoader.close();
+			}
 		}
 	}
 	
