@@ -16,6 +16,7 @@
 package org.openntf.nsfodp.compiler.servlet;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,7 +24,11 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -63,6 +68,7 @@ public class ODPCompilerServlet extends HttpServlet {
 		
 		ServletOutputStream os = resp.getOutputStream();
 		
+		Set<Path> cleanup = new HashSet<>();
 		try {
 			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -80,6 +86,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			}
 			
 			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+			cleanup.add(packageFile);
 			try(InputStream reqInputStream = req.getInputStream()) {
 				try(OutputStream packageOut = Files.newOutputStream(packageFile)) {
 					StreamUtil.copyStream(reqInputStream, packageOut);
@@ -96,6 +103,7 @@ public class ODPCompilerServlet extends HttpServlet {
 				} else {
 					// Then extract the ODP
 					odpZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odp", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+					cleanup.add(odpZip);
 					try(InputStream odpIs = packageZip.getInputStream(odpEntry)) {
 						try(OutputStream odpOs = Files.newOutputStream(odpZip)) {
 							StreamUtil.copyStream(odpIs, odpOs);
@@ -106,6 +114,7 @@ public class ODPCompilerServlet extends HttpServlet {
 					ZipEntry siteEntry = packageZip.getEntry("site.zip"); //$NON-NLS-1$
 					if(siteEntry != null) {
 						siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+						cleanup.add(siteZip);
 						try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
 							try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
 								StreamUtil.copyStream(siteIs, siteOs);
@@ -117,7 +126,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
 			
-			Path odpFile = expandZip(odpZip);
+			Path odpFile = expandZip(odpZip, cleanup);
 			
 			OnDiskProject odp = new OnDiskProject(odpFile);
 			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
@@ -145,7 +154,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			}
 			
 			if(siteZip != null) {
-				Path siteFile = expandZip(siteZip);
+				Path siteFile = expandZip(siteZip, cleanup);
 				UpdateSite updateSite = new FilesystemUpdateSite(siteFile.toFile());
 				compiler.addUpdateSite(updateSite);
 			}
@@ -166,6 +175,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			
 			// Now stream the NSF
+			cleanup.add(nsf.get());
 			try(InputStream is = Files.newInputStream(nsf.get())) {
 				try(OutputStream gzos = new GZIPOutputStream(os)) {
 					StreamUtil.copyStream(is, gzos);
@@ -182,11 +192,22 @@ public class ODPCompilerServlet extends HttpServlet {
 				"stackTrace", baos.toString() //$NON-NLS-1$
 				)
 			);
+		} finally {
+			for(Path path : cleanup) {
+				if(Files.isDirectory(path)) {
+					Files.walk(path)
+					    .sorted(Comparator.reverseOrder())
+					    .map(Path::toFile)
+					    .forEach(File::delete);
+				}
+				Files.deleteIfExists(path);
+			}
 		}
 	}
 	
-	public static Path expandZip(Path zipFilePath) throws IOException {
+	public static Path expandZip(Path zipFilePath, Collection<Path> cleanup) throws IOException {
 		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile"); //$NON-NLS-1$
+		cleanup.add(result);
 		
 		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
 			for(ZipEntry entry : Collections.list(zipFile.entries())) {
