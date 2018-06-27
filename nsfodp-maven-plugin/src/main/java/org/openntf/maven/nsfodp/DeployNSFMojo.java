@@ -51,7 +51,7 @@ import org.openntf.maven.nsfodp.util.ResponseUtil;
 @Mojo(name="deploy", defaultPhase=LifecyclePhase.DEPLOY)
 public class DeployNSFMojo extends AbstractMojo {
 	
-	public static final String SERVLET_PATH = "/org.openntf.nsfosp/deployment"; //$NON-NLS-1$
+	public static final String SERVLET_PATH = "/org.openntf.nsfodp/deployment"; //$NON-NLS-1$
 	
 	@Parameter(defaultValue="${project}", readonly=true)
 	private MavenProject project;

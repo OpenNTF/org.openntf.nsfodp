@@ -75,7 +75,7 @@ import java.util.zip.ZipOutputStream;
 public class CompileODPMojo extends AbstractMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
-	public static final String SERVLET_PATH = "/org.openntf.nsfosp/compiler"; //$NON-NLS-1$
+	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
 	
 	private static final ThreadLocal<DateFormat> SNAPSHOT_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddhhmm")); //$NON-NLS-1$
 	
