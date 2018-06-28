@@ -36,6 +36,7 @@
 
 	<modules>
 		<module>plugins/org.openntf.nsfodp.commons</module>
+		<module>plugins/org.openntf.nsfodp.commons.odp</module>
 		
 		<!--
 			ODP Compiler 
@@ -43,6 +44,13 @@
 		<module>plugins/org.openntf.nsfodp.compiler</module>
 		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
 		<module>features/org.openntf.nsfodp.compiler.feature</module>
+		
+		<!--
+			ODP Exporter 
+		-->
+		<module>plugins/org.openntf.nsfodp.exporter</module>
+		<module>plugins/org.openntf.nsfodp.exporter.servlet</module>
+		<module>features/org.openntf.nsfodp.exporter.feature</module>
 		
 		<!--
 			NSF Deployment 

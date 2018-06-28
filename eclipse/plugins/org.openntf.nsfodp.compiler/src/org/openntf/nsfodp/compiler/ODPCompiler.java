@@ -63,19 +63,19 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.compiler.odp.AbstractSplitDesignElement;
-import org.openntf.nsfodp.compiler.odp.CustomControl;
-import org.openntf.nsfodp.compiler.odp.FileResource;
-import org.openntf.nsfodp.compiler.odp.JavaSource;
-import org.openntf.nsfodp.compiler.odp.LotusScriptLibrary;
-import org.openntf.nsfodp.compiler.odp.OnDiskProject;
-import org.openntf.nsfodp.compiler.odp.XPage;
-import org.openntf.nsfodp.compiler.odp.XSPCompilationResult;
+import org.openntf.nsfodp.commons.odp.AbstractSplitDesignElement;
+import org.openntf.nsfodp.commons.odp.CustomControl;
+import org.openntf.nsfodp.commons.odp.FileResource;
+import org.openntf.nsfodp.commons.odp.JavaSource;
+import org.openntf.nsfodp.commons.odp.LotusScriptLibrary;
+import org.openntf.nsfodp.commons.odp.OnDiskProject;
+import org.openntf.nsfodp.commons.odp.XPage;
+import org.openntf.nsfodp.commons.odp.XSPCompilationResult;
+import org.openntf.nsfodp.commons.odp.util.DXLUtil;
+import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
-import org.openntf.nsfodp.compiler.util.DXLUtil;
 import org.openntf.nsfodp.compiler.util.LibraryWeightComparator;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
-import org.openntf.nsfodp.compiler.util.ODPUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -789,7 +789,7 @@ public class ODPCompiler {
 					if(StringUtil.isEmpty(title)) {
 						throw new IllegalStateException("Could not identify original title for file resource " + filePath);
 					}
-					ODPUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					DXLUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}
@@ -890,7 +890,7 @@ public class ODPCompiler {
 		for(String leftoverClassName : compiledClassNames) {
 			String fileName = "WEB-INF/classes/" + ODPUtil.toJavaPath(leftoverClassName); //$NON-NLS-1$
 			byte[] leftoverByteCode = classLoader.getClassByteCode(leftoverClassName);
-			ODPUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$
+			DXLUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

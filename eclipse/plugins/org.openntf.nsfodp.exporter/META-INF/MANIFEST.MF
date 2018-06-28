@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: On-Disk-Project Exporter
+Bundle-SymbolicName: org.openntf.nsfodp.exporter;singleton:=true
+Automatic-Module-Name: org.openntf.nsfodp.exporter.servlet
+Bundle-Version: 1.4.0.qualifier
+Bundle-Vendor: OpenNTF
+Require-Bundle: org.openntf.nsfodp.commons,
+ com.ibm.commons;bundle-version="9.0.1",
+ com.ibm.domino.napi;bundle-version="9.0.1"
+Import-Package: lotus.domino,
+ org.eclipse.core.runtime,
+ org.osgi.framework
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.openntf.nsfodp.exporter
