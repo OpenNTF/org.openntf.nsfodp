@@ -26,10 +26,6 @@ import org.openntf.nsfodp.exporter.ODPExporter;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesSession;
-import com.ibm.domino.osgi.core.context.ContextInfo;
-
-import lotus.domino.Database;
-import lotus.domino.Session;
 
 public class ODPExporterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -74,6 +70,7 @@ public class ODPExporterServlet extends HttpServlet {
 					database.open();
 					
 					ODPExporter exporter = new ODPExporter(database);
+					exporter.setBinaryDxl(true);
 					
 					Path result = exporter.export();
 					resp.setContentType("text/plain"); //$NON-NLS-1$

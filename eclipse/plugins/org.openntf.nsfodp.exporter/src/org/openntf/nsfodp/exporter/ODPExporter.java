@@ -1,17 +1,14 @@
 package org.openntf.nsfodp.exporter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.openntf.nsfodp.commons.h.NsfDb;
 import org.openntf.nsfodp.commons.h.StdNames;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.designer.domino.napi.NotesAPIException;
-import com.ibm.designer.domino.napi.NotesCollection;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesDatetime;
 import com.ibm.designer.domino.napi.NotesFormula;
@@ -70,7 +67,7 @@ public class ODPExporter {
 			try {
 				designCollection.create();
 				
-				database.search(designCollection, 32766, (NotesFormula)null, (String)null, 0, (NotesDatetime)null);
+				database.search(designCollection, NsfNote.NOTE_CLASS_ALLNONDATA, (NotesFormula)null, (String)null, 0, (NotesDatetime)null);
 				
 				IdTable.IDEnumerate(designCollection.getHandle(), new IDENUMERATEPROC() {
 					@Override
@@ -92,147 +89,73 @@ public class ODPExporter {
 			exporter.recycle();
 		}
 		
-//		DxlExporter exporter = database.getParent().createDxlExporter();
-//		try {
-//			exporter.setForceNoteFormat(isBinaryDxl());
-//			
-//			NoteCollection notes = database.createNoteCollection(false);
-//			try {
-//				notes.selectAllDesignElements(true);
-//				notes.buildCollection();
-//				
-//				String id = notes.getFirstNoteID();
-//				while(StringUtil.isNotEmpty(id)) {
-//					Document doc = database.getDocumentByID(id);
-//					try {
-//						exportNote(doc, exporter, result);
-//					} finally {
-//						doc.recycle();
-//					}
-//					
-//					id = notes.getNextNoteID(id);
-//				}
-//			} finally {
-//				notes.recycle();
-//			}
-//		} finally {
-//			exporter.recycle();
-//		}
-		
 		return result;
 	}
 
 	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException {
-		switch(NoteType.forNote(note)) {
+		NoteType type = NoteType.forNote(note);
+		switch(type) {
 		case AboutDocument:
-			exportExplicitNote(note, exporter, baseDir.resolve("Resources").resolve("AboutDocument")); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
-		case CustomControl:
-			// Contents + metadata
-			break;
-		case DBScript:
-			// Special handling
-			break;
-		case FileResource:
-			// Contents + metadata
+		case UsingDocument:
+		case SharedActions:
+		case DBIcon:
+			exportExplicitNote(note, exporter, baseDir, type.path);
 			break;
 		case Form:
-			exportNamedNote(note, exporter, baseDir.resolve("Forms"), "form"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
 		case Frameset:
-			exportNamedNote(note, exporter, baseDir.resolve("Framesets"), "frameset"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
-		case GenericFile:
-			// These float freely with no metadata
-			break;
-		case Icon:
-			// VERY special behavior, since this exists in several places
-			break;
-		case ImageResource:
-			// Contents + metadata
-			break;
-		case Java:
-			// Contents + metadata
-			break;
 		case JavaLibrary:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("ScriptLibraries"), "javalib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
-		case JavaScriptLibrary:
-			// Contents + metadata
-			break;
-		case LotusScriptLibrary:
-			// Contents + metadata
-			break;
 		case Outline:
-			exportNamedNote(note, exporter, baseDir.resolve("Outlines"), "outline"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
 		case Page:
-			exportNamedNote(note, exporter, baseDir.resolve("Pages"), "page"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
-		case SharedFields:
-			exportNamedNote(note, exporter, baseDir.resolve("SharedElements").resolve("Fields"), "field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
-		case StyleSheet:
-			// Contents + metadata
-			break;
-		case Theme:
-			// Contents + metadata
-			break;
-		case UsingDocument:
-			exportExplicitNote(note, exporter, baseDir.resolve("Resources").resolve("UsingDocument")); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
+		case SharedField:
 		case View:
-			exportNamedNote(note, exporter, baseDir.resolve("Views"), "view"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
-		case XPage:
-			// Contents + metadata
-			break;
-		case XSPDesign:
-			// Special handling: contents only at AppProperties/xspdesign.properties
-			break;
-		case ServerJavaScriptLibrary:
-			// Contents + metadata, I think
-			break;
 		case ImportedJavaAgent:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("ScriptLibraries"), "ija"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
 		case JavaAgent:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("Agents"), "ja"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
+		case JavaWebService:
 		case Folder:
-			exportNamedNote(note, exporter, baseDir.resolve("Folders"), "folder"); //$NON-NLS-1$ //$NON-NLS-2$
+		case LotusScriptAgent:
+		case LotusScriptWebService:
+		case JavaWebServiceConsumer:
+		case LotusScriptWebServiceConsumer:
+		case SharedColumn:
+		case Subform:
+		case SimpleActionAgent:
+		case FormulaAgent:
+		case Navigator:
+		case DB2AccessView:
+		case DataConnection:
+			exportNamedNote(note, exporter, baseDir, type);
 			break;
+		case CustomControl:
+		case FileResource:
+		case ImageResource:
+		case JavaScriptLibrary:
+		case Java:
+		case LotusScriptLibrary:
+		case StyleSheet:
+		case Theme:
+		case XPage:
+		case ServerJavaScriptLibrary:
 		case Jar:
 			// Contents + metadata
 			break;
-		case JavaWebService:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("WebServices"), "jws"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		case WebContentFile:
+		case GenericFile:
+			// These float freely with no metadata
+		case DBScript:
+			// Special handling
 			break;
-		case LotusScriptAgent:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("ScriptLibraries"), "lss"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		case IconNote:
+			// VERY special behavior, since this exists in several places
 			break;
-		case LotusScriptWebService:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("WebServices"), "lws"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
-		case SharedActions:
-			// Special handling to break this note up
-			break;
-		case SharedColumn:
-			// TODO verify this
-			exportNamedNote(note, exporter, baseDir.resolve("SharedElements").resolve("Columns"), "column"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
-		case Subform:
-			exportNamedNote(note, exporter, baseDir.resolve("Subforms"), "subform"); //$NON-NLS-1$ //$NON-NLS-2$
-			break;
-		case SimpleActionAgent:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("Agents"), "aa"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			break;
-		case FormulaAgent:
-			exportNamedNote(note, exporter, baseDir.resolve("Code").resolve("Agents"), "fa"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		case DesignCollection:
+		case ACL:
+			// Nothing to do here
 			break;
 		case Unknown:
 		default:
-			System.out.println("Unknown note, flags=" + note.getItemValueAsString("$Flags") + ", title=" + note.getItemValueAsString("$TITLE"));
+			String flags = note.isItemPresent(StdNames.DESIGN_FLAGS) ? note.getItemValueAsString(StdNames.DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
+			String title = note.isItemPresent(StdNames.FIELD_TITLE) ? note.getItemValueAsString(StdNames.FIELD_TITLE) : String.valueOf(note.getNoteId());
+			System.out.println("Unknown note, flags=" + flags + ", title=" + title + ", class=" + (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT));
 			//throw new UnsupportedOperationException("Unhandled note: " + doc.getUniversalID() + ", flags " + doc.getItemValueString("$Flags")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
@@ -243,22 +166,23 @@ public class ODPExporter {
 	 * 
 	 * @param note the note to export
 	 * @param exporter the exporter to use for the process
-	 * @param baseDir the directory to export to
-	 * @param extension the file extension to add to the file
+	 * @param baseDir the base directory for export operations
+	 * @param type the NoteType enum for the note
 	 * @throws IOException 
 	 * @throws NotesAPIException 
 	 */
-	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, String extension) throws IOException, NotesAPIException {
+	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
 		String name = cleanName(note.getItemValueAsString(StdNames.FIELD_TITLE));
-		if(StringUtil.isNotEmpty(extension)) {
-			name += '.' + extension;
+		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
+			name += '.' + type.extension;
 		}
-		exportExplicitNote(note, exporter, baseDir.resolve(name));
+		exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
 	}
 	
 	private String cleanName(String title) {
 		int pipe = title.indexOf('|');
 		String clean = pipe > -1 ? title.substring(0, pipe) : title;
+		clean = clean.isEmpty() ? "(Untitled)" : clean; //$NON-NLS-1$
 		
 		// TODO replace with a proper algorithm 
 		return clean
@@ -271,14 +195,16 @@ public class ODPExporter {
 	 * 
 	 * @param note the note to export
 	 * @param exporter the exporter to use for the process
-	 * @param path the file path to export to
+	 * @param baseDir the base directory for export operations
+	 * @param path the relative file path to export to within the base dir
 	 * @throws IOException 
 	 * @throws NotesAPIException 
 	 */
-	private void exportExplicitNote(NotesNote note, DXLExporter exporter, Path path) throws IOException, NotesAPIException {
-		Files.createDirectories(path.getParent());
+	private void exportExplicitNote(NotesNote note, DXLExporter exporter, Path baseDir, Path path) throws IOException, NotesAPIException {
+		Path fullPath = baseDir.resolve(path);
+		Files.createDirectories(fullPath.getParent());
 		
-		try(OutputStream os = Files.newOutputStream(path)) {
+		try(OutputStream os = Files.newOutputStream(fullPath)) {
 			exporter.exportNote(os, note);
 		}
 	}

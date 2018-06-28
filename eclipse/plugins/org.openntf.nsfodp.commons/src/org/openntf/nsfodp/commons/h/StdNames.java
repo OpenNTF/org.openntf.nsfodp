@@ -7,7 +7,9 @@ package org.openntf.nsfodp.commons.h;
  */
 public interface StdNames {
 	public static final String DESIGN_FLAGS = "$Flags"; //$NON-NLS-1$
+	public static final String DESIGN_FLAGS_EXTENDED = "$FlagsExt"; //$NON-NLS-1$
 	public static final String FIELD_TITLE = "$TITLE"; //$NON-NLS-1$
+	public static final String IMAGE_NEW_DBICON_NAME = "IMAGE_NEW_DBICON_NAME"; //$NON-NLS-1$
 	
 	/**	Type of assistant - related to action type */
 	public static final String ASSIST_TYPE_ITEM = "$AssistType"; //$NON-NLS-1$
@@ -230,6 +232,13 @@ public interface StdNames {
 	public static final char DESIGN_FLAG_WIDGET = '_';
 	/**  Java design element  */
 	public static final char DESIGN_FLAG_JAVAFILE = '[';
+	
+	public static final char DESIGN_FLAG_JARFILE = ','; // Not actually documented
+	
+	/** Scriptlib is a web service consumer lib*/
+	public static final char DESIGN_FLAGEXT_WEBSERVICELIB = 'W';
+	/** for files, indicates it's in the web content directory */
+	public static final char DESIGN_FLAGEXT_WEBCONTENTFILE = 'w';
 	
 	/**  display things editable at V4 search bar; version filtering  */
 	public static final String DFLAGPAT_V4SEARCHBAR = "(+Qq-Bst5nmz*"; //$NON-NLS-1$
