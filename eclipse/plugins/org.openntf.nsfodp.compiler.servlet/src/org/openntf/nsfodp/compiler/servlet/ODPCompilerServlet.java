@@ -16,7 +16,6 @@
 package org.openntf.nsfodp.compiler.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +25,6 @@ import java.nio.file.Path;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
@@ -193,15 +191,7 @@ public class ODPCompilerServlet extends HttpServlet {
 				)
 			);
 		} finally {
-			for(Path path : cleanup) {
-				if(Files.isDirectory(path)) {
-					Files.walk(path)
-					    .sorted(Comparator.reverseOrder())
-					    .map(Path::toFile)
-					    .forEach(File::delete);
-				}
-				Files.deleteIfExists(path);
-			}
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 	

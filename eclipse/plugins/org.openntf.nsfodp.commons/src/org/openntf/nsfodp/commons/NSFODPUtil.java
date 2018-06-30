@@ -15,8 +15,13 @@
  */
 package org.openntf.nsfodp.commons;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Comparator;
 
 public enum NSFODPUtil {
 	;
@@ -35,6 +40,18 @@ public enum NSFODPUtil {
 			return Paths.get("/tmp"); //$NON-NLS-1$
 		} else {
 			return Paths.get(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
+		}
+	}
+	
+	public static void deltree(Collection<Path> paths) throws IOException {
+		for(Path path : paths) {
+			if(Files.isDirectory(path)) {
+				Files.walk(path)
+				    .sorted(Comparator.reverseOrder())
+				    .map(Path::toFile)
+				    .forEach(File::delete);
+			}
+			Files.deleteIfExists(path);
 		}
 	}
 }

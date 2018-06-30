@@ -1,7 +1,6 @@
 package org.openntf.nsfodp.exporter.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,7 +8,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -21,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
@@ -45,11 +44,17 @@ public class ODPExporterServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doPost(req, resp);
+		handle(req, resp);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handle(req, resp);
+	}
+	
+	protected void handle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		boolean post = "POST".equals(req.getMethod()); //$NON-NLS-1$
+		
 		Principal user = req.getUserPrincipal();
 		resp.setBufferSize(0);
 		resp.setStatus(HttpServletResponse.SC_OK);
@@ -70,7 +75,7 @@ public class ODPExporterServlet extends HttpServlet {
 			try {
 				NotesDatabase database;
 				
-				if("POST".equals(req.getMethod())) { //$NON-NLS-1$
+				if(post) {
 					// Then read the NSF from the body
 					
 					String contentType = req.getContentType();
@@ -110,6 +115,9 @@ public class ODPExporterServlet extends HttpServlet {
 				try {
 					database.open();
 					
+					// POSTing indicates that it's not coming via Maven
+					IProgressMonitor mon = post ? null : new LineDelimitedJsonProgressMonitor(os);
+					
 					ODPExporter exporter = new ODPExporter(database);
 					
 					String binaryDxl = req.getHeader(NSFODPConstants.HEADER_BINARY_DXL);
@@ -123,12 +131,16 @@ public class ODPExporterServlet extends HttpServlet {
 					
 					Path result = exporter.export();
 					cleanup.add(result);
-					resp.setContentType("application/zip"); //$NON-NLS-1$
+					if(mon != null) { mon.done(); }
 					
 					try(ZipOutputStream zos = new ZipOutputStream(os)) {
 						Files.walk(result)
 							.forEach(path -> {
-								ZipEntry entry = new ZipEntry(result.relativize(path).toString().replace('\\', '/'));
+								String name = result.relativize(path).toString().replace('\\', '/');
+								if(Files.isDirectory(path)) {
+									name += '/';
+								}
+								ZipEntry entry = new ZipEntry(name);
 								try {
 									zos.putNextEntry(entry);
 	
@@ -144,7 +156,7 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					
 				} finally {
-					if("POST".equals(req.getMethod())) { //$NON-NLS-1$
+					if(post) {
 						database.delete();
 					}
 				}
@@ -163,15 +175,7 @@ public class ODPExporterServlet extends HttpServlet {
 				)
 			);
 		} finally {
-			for(Path path : cleanup) {
-				if(Files.isDirectory(path)) {
-					Files.walk(path)
-					    .sorted(Comparator.reverseOrder())
-					    .map(Path::toFile)
-					    .forEach(File::delete);
-				}
-				Files.deleteIfExists(path);
-			}
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 
