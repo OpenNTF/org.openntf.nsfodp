@@ -25,6 +25,7 @@ import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
@@ -383,6 +384,17 @@ public class ODPExporter {
 					NReadScriptContent.invoke(null, note.getHandle(), type.fileItem, os);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					throw new NotesAPIException(e, "Exception when reading script content"); //$NON-NLS-1$
+				}
+				break;
+			case CustomControl:
+				// Special behavior: also export the config data field
+				FileAccess.readFileContent(note, os);
+				
+				Path configPath = fullPath.getParent().resolve(fullPath.getFileName()+"-config"); //$NON-NLS-1$
+				try(OutputStream configOut = Files.newOutputStream(configPath)) {
+					try(InputStream configIn = FileAccess.readFileContentAsInputStream(note, ITEM_NAME_CONFIG_FILE_DATA)) {
+						StreamUtil.copyStream(configIn, configOut);
+					}
 				}
 				break;
 			default:

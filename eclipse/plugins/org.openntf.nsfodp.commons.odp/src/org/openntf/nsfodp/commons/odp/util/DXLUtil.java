@@ -140,7 +140,6 @@ public enum DXLUtil {
 		List<String> result = new ArrayList<>();
 		
 		Object[] nodes = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='" + escapeXPathValue(itemName) + "']/*[name()='text']").getNodes(); //$NON-NLS-1$ //$NON-NLS-2$
-		System.out.println("Got nodes " + Arrays.asList(nodes));
 		for(Object nodeObj : nodes) {
 			Node node = (Node)nodeObj;
 			result.add(node.getTextContent());
