@@ -1,7 +1,9 @@
 package org.openntf.nsfodp.exporter;
 
 import static org.openntf.nsfodp.commons.h.StdNames.*;
+import static com.ibm.designer.domino.napi.NotesConstants.*;
 import static org.openntf.nsfodp.commons.NSFODPConstants.JAVA_ITEM_IGNORE_PATTERN;
+import static com.ibm.designer.domino.napi.util.NotesUtils.CmemflagTest;
 import static com.ibm.designer.domino.napi.util.NotesUtils.CmemflagTestMultiple;
 
 import java.nio.file.Path;
@@ -120,11 +122,11 @@ public enum NoteType {
 		case NsfNote.NOTE_CLASS_ICON:
 			return IconNote;
 		case NsfNote.NOTE_CLASS_VIEW:
-			if(matchesFlagsPattern(flags, DFLAGPAT_FOLDER_DESIGN)) {
+			if(CmemflagTestMultiple(flags, DFLAGPAT_FOLDER_DESIGN)) {
 				return Folder;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_VIEWMAP_DESIGN)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_VIEWMAP_DESIGN)) {
 				return Navigator;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SHARED_COLS)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SHARED_COLS)) {
 				return SharedColumn;
 			} else {
 				return View;
@@ -138,31 +140,31 @@ public enum NoteType {
 		case NsfNote.NOTE_CLASS_FILTER:
 			// "filter" is a dumping ground for pre-XPages code elements
 			
-			if(flags.indexOf(DESIGN_FLAG_DATABASESCRIPT) > -1) {
+			if(CmemflagTest(flags, DESIGN_FLAG_DATABASESCRIPT)) {
 				return DBScript;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SITEMAP)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SITEMAP)) {
 				return Outline;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SCRIPTLIB_LS)) {
-				if(flagsExt.indexOf(DESIGN_FLAGEXT_WEBSERVICELIB) > -1) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_LS)) {
+				if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBSERVICELIB)) {
 					return LotusScriptWebServiceConsumer;
 				} else {
 					return LotusScriptLibrary; 
 				}
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SCRIPTLIB_JAVA)) {
-				if(flagsExt.indexOf(DESIGN_FLAGEXT_WEBSERVICELIB) > -1) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_JAVA)) {
+				if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBSERVICELIB)) {
 					return JavaWebServiceConsumer;
 				} else {
 					return JavaLibrary;
 				}
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SCRIPTLIB_JS)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_JS)) {
 				return JavaScriptLibrary;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SCRIPTLIB_SERVER_JS)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_SERVER_JS)) {
 				return ServerJavaScriptLibrary;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_JAVA_WEBSERVICE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_JAVA_WEBSERVICE)) {
 				return JavaWebService;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_LS_WEBSERVICE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_LS_WEBSERVICE)) {
 				return LotusScriptWebService;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_DATA_CONNECTION_RESOURCE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_DATA_CONNECTION_RESOURCE)) {
 				return DataConnection;
 			}
 			
@@ -177,9 +179,9 @@ public enum NoteType {
 				}
 			}
 			
-			if(flags.indexOf(DESIGN_FLAG_LOTUSSCRIPT_AGENT) > -1) {
+			if(CmemflagTest(flags, DESIGN_FLAG_LOTUSSCRIPT_AGENT)) {
 				return LotusScriptAgent;
-			} else if(flags.indexOf(DESIGN_FLAG_JAVA_AGENT) > -1 || flags.indexOf(DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) > -1 || assistType == ASSIST_TYPE_JAVA) {
+			} else if(CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT) || CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) || assistType == ASSIST_TYPE_JAVA) {
 				// There's not a proper pattern for distinguishing between these two, so look for another marker
 				if(note.isItemPresent(ITEM_NAME_JAVA_COMPILER_SOURCE)) {
 					return JavaAgent;
@@ -196,47 +198,51 @@ public enum NoteType {
 			if(flags.isEmpty()) {
 				// Definitely an actual form
 				return Form;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_IMAGE_RESOURCE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_IMAGE_RESOURCE)) {
 				if(IMAGE_NEW_DBICON_NAME.equals(title)) {
 					return DBIcon;
 				}
 				return ImageResource;
-			} else if(flags.indexOf(DESIGN_FLAG_JARFILE) > -1) {
+			} else if(CmemflagTest(flags, DESIGN_FLAG_JARFILE)) {
 				return Jar;			
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_COMPDEF)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_COMPDEF)) {
 				return WiringProperties;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_COMPAPP)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_COMPAPP)) {
 				return CompositeApplication;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_WIDGET)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WIDGET)) {
 				return CompositeComponent;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_XSPPAGE_NOPROPS)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPPAGE_NOPROPS)) {
 				// TODO figure out XPages properties files
 				return XPage;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_XSPCC)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPCC)) {
 				return CustomControl;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_STYLEKIT)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_STYLEKIT)) {
 				return Theme;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_WEBPAGE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WEBPAGE)) {
 				return Page;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_IMAGE_RESOURCE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_IMAGE_RESOURCE)) {
 				return ImageResource;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_STYLE_SHEET_RESOURCE)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_STYLE_SHEET_RESOURCE)) {
 				return StyleSheet;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SUBFORM_DESIGN)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SUBFORM_DESIGN)) {
 				return Subform;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_FRAMESET)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_FRAMESET)) {
 				return Frameset;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_DB2ACCESSVIEW)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_DB2ACCESSVIEW)) {
 				return DB2AccessView;
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_FILE)) {
-				if(flagsExt.indexOf(DESIGN_FLAGEXT_WEBCONTENTFILE) > -1) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_FILE)) {
+				if(!CmemflagTest(flags, DESIGN_FLAG_HIDEFROMDESIGNLIST)) {
+					return FileResource;
+				} else if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBCONTENTFILE)) {
 					return WebContentFile;
+				} else if(CmemflagTestMultiple(flags, DFLAGPAT_JAVAFILE)) {
+					return Java;
 				} else {
 					return GenericFile;
 				}
-			} else if(matchesFlagsPattern(flags, DFLAGPAT_SACTIONS_DESIGN)) {
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SACTIONS_DESIGN)) {
 				return SharedActions;
-			} else if(flags.indexOf(DESIGN_FLAG_JAVA_RESOURCE) > -1) {
+			} else if(CmemflagTest(flags, DESIGN_FLAG_JAVA_RESOURCE)) {
 				return Applet;
 			} else {
 				return Form;
@@ -244,91 +250,5 @@ public enum NoteType {
 		}
 		
 		return Unknown;
-	}
-	
-	/**
-	 * @param flags a design flag value to test
-	 * @param pattern a flag pattern to test against (DFLAGPAT_*)
-	 * @return whether the flags match the pattern
-	 */
-	private static boolean matchesFlagsPattern(String flags, String pattern) {
-		if(StringUtil.isEmpty(pattern)) {
-			return false;
-		}
-		if(true) {
-			return CmemflagTestMultiple(flags, pattern);
-		}
-		
-		String toTest = flags == null ? StringUtil.EMPTY_STRING : flags;
-		
-		// Patterns start with one of four characters:
-		// "+" (match any)
-		// "-" (match none)
-		// "*" (match all)
-		// "(" (multi-part test)
-		String matchers = null;
-		String antiMatchers = null;
-		String allMatchers = null;
-		char first = pattern.charAt(0);
-		switch(first) {
-		case '+':
-			matchers = pattern.substring(1);
-			antiMatchers = StringUtil.EMPTY_STRING;
-			allMatchers = StringUtil.EMPTY_STRING;
-			break;
-		case '-':
-			matchers = StringUtil.EMPTY_STRING;
-			antiMatchers = pattern.substring(1);
-			allMatchers = StringUtil.EMPTY_STRING;
-			break;
-		case '*':
-			matchers = StringUtil.EMPTY_STRING;
-			antiMatchers = StringUtil.EMPTY_STRING;
-			allMatchers = pattern.substring(1);
-		case '(':
-			// The order is always +-*
-			int plusIndex = pattern.indexOf('+');
-			int minusIndex = pattern.indexOf('-');
-			int starIndex = pattern.indexOf('*');
-			
-			matchers = pattern.substring(plusIndex+1, minusIndex == -1 ? pattern.length() : minusIndex);
-			antiMatchers = minusIndex == -1 ? StringUtil.EMPTY_STRING : pattern.substring(minusIndex+1, starIndex == -1 ? pattern.length() : starIndex);
-			allMatchers = starIndex == -1 ? StringUtil.EMPTY_STRING : pattern.substring(starIndex+1);
-			break;
-		}
-		if(matchers == null) { matchers = StringUtil.EMPTY_STRING; }
-		if(antiMatchers == null) { antiMatchers = StringUtil.EMPTY_STRING; }
-		if(allMatchers == null) { allMatchers = StringUtil.EMPTY_STRING; }
-		
-		// Test "match against any" and fail if it doesn't
-		boolean matchedAny = matchers.isEmpty();
-		for(int i = 0; i < matchers.length(); i++) {
-			if(toTest.indexOf(matchers.charAt(i)) > -1) {
-				matchedAny = true;
-				break;
-			}
-		}
-		if(!matchedAny) {
-			return false;
-		}
-		
-		// Test "match none" and fail if it does
-		for(int i = 0; i < antiMatchers.length(); i++) {
-			if(toTest.indexOf(antiMatchers.charAt(i)) > -1) {
-				// Exit immediately
-				return false;
-			}
-		}
-		
-		// Test "match all" and fail if it doesn't
-		for(int i = 0; i < allMatchers.length(); i++) {
-			if(toTest.indexOf(allMatchers.charAt(i)) == -1) {
-				// Exit immediately
-				return false;
-			}
-		}
-		
-		// If we survived to here, it must match
-		return true;
 	}
 }

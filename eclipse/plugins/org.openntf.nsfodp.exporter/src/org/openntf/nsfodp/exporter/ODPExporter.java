@@ -1,19 +1,23 @@
 package org.openntf.nsfodp.exporter;
 
 import static org.openntf.nsfodp.commons.h.StdNames.*;
+import static com.ibm.designer.domino.napi.NotesConstants.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesDatetime;
@@ -37,6 +41,20 @@ import com.ibm.domino.napi.c.callback.IDENUMERATEPROC;
  */
 public class ODPExporter {
 	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
+	
+	// Get handles on some FileAccess methods, since the public ones use the wrong item name
+	private static Method NReadScriptContent;
+	static {
+		try {
+			AccessController.doPrivileged((PrivilegedExceptionAction<Void>)() -> {
+				NReadScriptContent = FileAccess.class.getDeclaredMethod("NReadScriptContent", int.class, String.class, OutputStream.class); //$NON-NLS-1$
+				NReadScriptContent.setAccessible(true);
+				return null;
+			});
+		} catch (PrivilegedActionException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private final NotesDatabase database;
 	private boolean binaryDxl = false;
@@ -69,8 +87,15 @@ public class ODPExporter {
 		DXLExporter exporter = new DXLExporter(database);
 		try {
 			exporter.open();
+
+			Path databaseProperties = result.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+			Files.createDirectories(databaseProperties.getParent());
+			try(OutputStream os = Files.newOutputStream(databaseProperties)) {
+				exporter.exportDbProperties(os, database);
+			}
 			
 			exporter.setExporterProperty(DXLExporter.eForceNoteFormat, isBinaryDxl() ? 1 : 0);
+			
 			
 			NotesIDTable designCollection = new NotesIDTable(database);
 			try {
@@ -108,6 +133,8 @@ public class ODPExporter {
 		case UsingDocument:
 		case SharedActions:
 		case DBIcon:
+		case IconNote:
+		case DBScript:
 			exportExplicitNote(note, exporter, baseDir, type.path);
 			break;
 		case Form:
@@ -153,13 +180,7 @@ public class ODPExporter {
 			break;
 		case WebContentFile:
 		case GenericFile:
-			// These float freely with no metadata
-			break;
-		case DBScript:
-			// Special handling
-			break;
-		case IconNote:
-			// VERY special behavior, since this exists in several places
+			exportNamedData(note, baseDir, type);
 			break;
 		case DesignCollection:
 		case ACL:
@@ -190,9 +211,16 @@ public class ODPExporter {
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
+		
 		exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
 	}
 	
+	/**
+	 * Converted a VFS-style file name to an FS-friendly version.
+	 * 
+	 * @param title the $TITLE value
+	 * @return an FS-friendly version of the title
+	 */
 	private String cleanName(String title) {
 		int pipe = title.indexOf('|');
 		String clean = pipe > -1 ? title.substring(0, pipe) : title;
@@ -204,13 +232,48 @@ public class ODPExporter {
 			.replace("*", "_2a"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException {
+	/**
+	 * Exports the file data of the provided note, without the metadata file.
+	 * 
+	 * @param note the note to export
+	 * @param baseDir the base directory for export operations
+	 * @param type the NoteType enum for the note
+	 * @throws NotesAPIException
+	 * @throws IOException
+	 */
+	private void exportNamedData(NotesNote note, Path baseDir, NoteType type) throws NotesAPIException, IOException {
 		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
 		
+		// These are normal files in the NSF, but should not be exported
+		if(name.startsWith("WebContent/WEB-INF/classes") || name.startsWith("WEB-INF/classes")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		} else if(name.equals("build.properties")) { //$NON-NLS-1$
+			return;
+		}
+		
 		exportFileData(note, baseDir, type.path.resolve(name), type);
+	}
+	
+	/**
+	 * Exports the file data of the provided note, plus a neighboring ".metadata" file.
+	 * 
+	 * @param note the note to export
+	 * @param exporter the exporter to use for the process
+	 * @param baseDir the base directory for export operations
+	 * @param type the NoteType enum for the note
+	 * @throws NotesAPIException
+	 * @throws IOException
+	 */
+	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException {
+		exportNamedData(note, baseDir, type);
+		
+		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
+		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
+			name += '.' + type.extension;
+		}
 		
 		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX));
 		// Some of these will have pattern-based item ignores
@@ -232,18 +295,38 @@ public class ODPExporter {
 		}
 	}
 	
+	/**
+	 * Exports the file data of the provided note to the specified path.
+	 * 
+	 * @param note the note to export
+	 * @param baseDir the base directory for export operations
+	 * @param path the relative file path to export to within the base dir
+	 * @param type the NoteType enum for the note
+	 * @throws NotesAPIException
+	 * @throws IOException
+	 */
 	private void exportFileData(NotesNote note, Path baseDir, Path path, NoteType type) throws NotesAPIException, IOException {
 		Path fullPath = baseDir.resolve(path);
 		Files.createDirectories(fullPath.getParent());
 		
 		try(OutputStream os = Files.newOutputStream(fullPath)) {
-			FileAccess.readFileContent(note, os);
+			// readFileContent works for some but not all file types
+			switch(type) {
+			case LotusScriptLibrary:
+			case JavaScriptLibrary:
+			case ServerJavaScriptLibrary:
+				try {
+					NReadScriptContent.invoke(null, note.getHandle(), type.fileItem, os);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+					throw new NotesAPIException(e, "Exception when reading script content"); //$NON-NLS-1$
+				}
+				break;
+			default:
+				FileAccess.readFileContent(note, os);
+				break;
+			}
 		}
-//		try(InputStream is = FileAccess.readFileContentAsInputStream(note, type.fileItem)) {
-//			try(OutputStream os = Files.newOutputStream(fullPath)) {
-//				StreamUtil.copyStream(is, os);
-//			}
-//		}
 	}
 	
 	/**
