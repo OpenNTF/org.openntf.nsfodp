@@ -21,6 +21,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.w3c.dom.Document;
 
@@ -68,6 +78,8 @@ public class ODPExporter {
 	
 	private final NotesDatabase database;
 	private boolean binaryDxl = false;
+	private boolean swiperFilter = false;
+	private Templates swiper;
 
 	public ODPExporter(NotesDatabase database) {
 		this.database = database;
@@ -89,6 +101,34 @@ public class ODPExporter {
 	 */
 	public boolean isBinaryDxl() {
 		return binaryDxl;
+	}
+	
+	/**
+	 * Sets whether to filter exported DXL using the XSLT files from Swiper.
+	 * 
+	 * @param swiperFilter the value to set
+	 * @throws IOException if there is a problem initializing Swiper
+	 * @throws TransformerFactoryConfigurationError if there is a problem initializing Swiper
+	 * @throws TransformerConfigurationException if there is a problem initializing Swiper
+	 */
+	public void setSwiperFilter(boolean swiperFilter) throws IOException, TransformerConfigurationException, TransformerFactoryConfigurationError {
+		this.swiperFilter = swiperFilter;
+		if(swiperFilter && swiper == null) {
+			// Initialize Swiper now
+			try(InputStream is = getClass().getResourceAsStream("/res/SwiperDXLClean.xsl")) { //$NON-NLS-1$
+				swiper = TransformerFactory.newInstance().newTemplates(new StreamSource(is));
+			}
+		}
+	}
+	
+	/**
+	 * Whether the export is configured to filter exported DXL using the
+	 * XSLT files from Swiper.
+	 * 
+	 * @return the current Swiper filter setting
+	 */
+	public boolean isSwiperFilter() {
+		return swiperFilter;
 	}
 	
 	public Path export() throws IOException, NotesAPIException, NException {
@@ -418,8 +458,63 @@ public class ODPExporter {
 		Path fullPath = baseDir.resolve(path);
 		Files.createDirectories(fullPath.getParent());
 		
-		try(OutputStream os = Files.newOutputStream(fullPath)) {
+		try(OutputStream os = new SwiperOutputStream(fullPath)) {
 			exporter.exportNote(os, note);
+		}
+	}
+	
+	/**
+	 * This OutputStream implementation toggles its behavior depending on whether or not Swiper is
+	 * enabled for this exporter.
+	 * 
+	 * @since 1.4.0
+	 */
+	private class SwiperOutputStream extends OutputStream {
+		
+		private final Path path;
+		private OutputStream os;
+		private final boolean isSwiper;
+		
+		public SwiperOutputStream(Path path) throws IOException {
+			this.path = path;
+			this.isSwiper = isSwiperFilter();
+			if(this.isSwiper) {
+				os = new ByteArrayOutputStream();
+			} else {
+				os = Files.newOutputStream(path);
+			}
+		}
+
+		@Override
+		public void write(int b) throws IOException {
+			os.write(b);
+		}
+		
+		@Override
+		public void close() throws IOException {
+			super.close();
+			
+			// Either close the underlying stream and be done or do Swiper transformations
+			if(this.isSwiper) {
+				os.close();
+				byte[] xml = ((ByteArrayOutputStream)os).toByteArray();
+				try(InputStream is = new ByteArrayInputStream(xml)) {
+					try(OutputStream os = Files.newOutputStream(path)) {
+						Transformer transformer = swiper.newTransformer();
+
+						transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+						transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+
+						transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes"); //$NON-NLS-1$
+						
+						transformer.transform(new StreamSource(is), new StreamResult(os));
+					} catch (TransformerException e) {
+						throw new IOException(e);
+					}
+				}
+			} else {
+				os.close();
+			}
 		}
 	}
 }

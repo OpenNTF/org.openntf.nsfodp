@@ -258,6 +258,7 @@
 						<exclude>**/build.properties</exclude>
 						<exclude>**/org/thymeleaf/**</exclude>
 						<exclude>**/com/eclipsesource/**</exclude>
+                        <exclude>**/res/SwiperDXLClean.xsl</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>

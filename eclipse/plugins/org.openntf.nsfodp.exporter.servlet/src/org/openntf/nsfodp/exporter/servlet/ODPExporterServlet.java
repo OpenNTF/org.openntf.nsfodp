@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
+import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
 
@@ -70,7 +71,15 @@ public class ODPExporterServlet extends HttpServlet {
 					database.open();
 					
 					ODPExporter exporter = new ODPExporter(database);
-					exporter.setBinaryDxl(true);
+					
+					String binaryDxl = req.getHeader(NSFODPConstants.HEADER_BINARY_DXL);
+					if("true".equals(binaryDxl)) { //$NON-NLS-1$
+						exporter.setBinaryDxl(true);
+					}
+					String swiperFilter = req.getHeader(NSFODPConstants.HEADER_SWIPER_FILTER);
+					if("true".equals(swiperFilter)) { //$NON-NLS-1$
+						exporter.setSwiperFilter(true);
+					}
 					
 					Path result = exporter.export();
 					resp.setContentType("text/plain"); //$NON-NLS-1$
