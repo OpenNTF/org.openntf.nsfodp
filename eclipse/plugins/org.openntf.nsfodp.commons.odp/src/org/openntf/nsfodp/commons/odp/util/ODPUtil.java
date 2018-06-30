@@ -43,6 +43,10 @@ import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 
+import lotus.domino.Database;
+import lotus.domino.NotesException;
+import lotus.domino.Session;
+
 public enum ODPUtil {
 	;
 	
@@ -174,5 +178,19 @@ public enum ODPUtil {
 
 	public static String toBasicFilePath(Path baseDir, Path file) {
 		return baseDir.relativize(file).toString().replace(File.separatorChar, '/');
+	}
+	
+	public static Database getDatabase(Session session, String databasePath) throws NotesException {
+		if(StringUtil.isEmpty(databasePath)) {
+			return session.getDatabase(StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING);
+		}
+		int bangIndex = databasePath.indexOf("!!"); //$NON-NLS-1$
+		if(bangIndex > -1) {
+			String server = databasePath.substring(0, bangIndex);
+			String filePath = databasePath.substring(bangIndex+2);
+			return session.getDatabase(server, filePath);
+		} else {
+			return session.getDatabase(StringUtil.EMPTY_STRING, databasePath);
+		}
 	}
 }

@@ -24,11 +24,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesSession;
+import com.ibm.designer.domino.napi.util.NotesUtils;
+import com.ibm.domino.osgi.core.context.ContextInfo;
+
+import lotus.domino.ACL;
+import lotus.domino.Database;
+import lotus.domino.Session;
 
 public class ODPExporterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -57,22 +65,48 @@ public class ODPExporterServlet extends HttpServlet {
 				return;
 			}
 			
-			String contentType = req.getContentType();
-			if(!"application/octet-stream".equals(contentType)) { //$NON-NLS-1$
-				throw new IllegalArgumentException("Content must be application/octet-stream");
-			}
-			
-			Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
-			cleanup.add(nsfFile);
-			try(InputStream reqInputStream = req.getInputStream()) {
-				try(OutputStream packageOut = Files.newOutputStream(nsfFile)) {
-					StreamUtil.copyStream(reqInputStream, packageOut);
-				}
-			}
 			
 			NotesSession session = new NotesSession();
 			try {
-				NotesDatabase database = session.getDatabaseByPath(nsfFile.toString());
+				NotesDatabase database;
+				
+				if("POST".equals(req.getMethod())) { //$NON-NLS-1$
+					// Then read the NSF from the body
+					
+					String contentType = req.getContentType();
+					if("application/octet-stream".equals(contentType)) { //$NON-NLS-1$
+						throw new IllegalArgumentException("Content must be application/octet-stream when POSTing an NSF (did you mean GET with " + NSFODPConstants.HEADER_DATABASE_PATH + "?)");
+					}
+					
+					Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
+					cleanup.add(nsfFile);
+					try(InputStream reqInputStream = req.getInputStream()) {
+						try(OutputStream packageOut = Files.newOutputStream(nsfFile)) {
+							StreamUtil.copyStream(reqInputStream, packageOut);
+						}
+					}
+					
+					database = session.getDatabaseByPath(nsfFile.toString());
+				} else {
+					// Then look for an NSF path in the headers
+					String databasePath = req.getHeader(NSFODPConstants.HEADER_DATABASE_PATH);
+					if(StringUtil.isEmpty(databasePath)) {
+						throw new IllegalArgumentException("GET requests must specify " + NSFODPConstants.HEADER_DATABASE_PATH);
+					}
+					
+					// Verify that the user can indeed export this DB
+					Session lotusSession = ContextInfo.getUserSession();
+					Database lotusDatabase = ODPUtil.getDatabase(lotusSession, databasePath);
+					if(!lotusDatabase.isOpen()) {
+						throw new UnsupportedOperationException("Unable to open database " + databasePath);
+					} else if(lotusDatabase.queryAccess(lotusSession.getEffectiveUserName()) < ACL.LEVEL_DESIGNER) {
+						// Note: this uses queryAccess to skip past Maximum Internet Access levels
+						throw new UnsupportedOperationException("User " + NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()) + " must have at least Designer access to " + databasePath);
+					}
+
+					database = session.getDatabaseByPath(databasePath);
+				}
+				
 				try {
 					database.open();
 					
@@ -110,7 +144,9 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					
 				} finally {
-					database.delete();
+					if("POST".equals(req.getMethod())) { //$NON-NLS-1$
+						database.delete();
+					}
 				}
 			} finally {
 				session.recycle();

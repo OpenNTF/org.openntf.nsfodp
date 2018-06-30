@@ -272,7 +272,7 @@ public class ODPExporter {
 	 * @throws NotesAPIException 
 	 */
 	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
-		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
+		String name = getCleanName(note);
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
@@ -283,10 +283,16 @@ public class ODPExporter {
 	/**
 	 * Converted a VFS-style file name to an FS-friendly version.
 	 * 
-	 * @param title the $TITLE value
+	 * @param note the note to get a title for
 	 * @return an FS-friendly version of the title
+	 * @throws NotesAPIException 
 	 */
-	private String cleanName(String title) {
+	private String getCleanName(NotesNote note) throws NotesAPIException {
+		if(!note.isItemPresent(FIELD_TITLE)) {
+			return "(Untitled)";
+		}
+		String title = note.getItemAsTextList(FIELD_TITLE).get(0);
+		
 		int pipe = title.indexOf('|');
 		String clean = pipe > -1 ? title.substring(0, pipe) : title;
 		clean = clean.isEmpty() ? "(Untitled)" : clean; //$NON-NLS-1$
@@ -310,7 +316,7 @@ public class ODPExporter {
 	 * @throws XMLException 
 	 */
 	private void exportNamedData(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
-		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
+		String name = getCleanName(note);
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
@@ -340,7 +346,7 @@ public class ODPExporter {
 	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		exportNamedData(note, exporter, baseDir, type);
 		
-		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
+		String name = getCleanName(note);
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}

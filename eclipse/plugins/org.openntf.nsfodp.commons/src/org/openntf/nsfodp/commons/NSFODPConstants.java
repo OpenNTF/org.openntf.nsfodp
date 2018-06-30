@@ -31,6 +31,10 @@ public enum NSFODPConstants {
 	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$
 	
 	/**
+	 * The HTTP header name used to specify the source NSF path in the ODP Exporter servlet
+	 */
+	public static final String HEADER_DATABASE_PATH = "X-DatabasePath"; //$NON-NLS-1$
+	/**
 	 * The HTTP header name used to specify binary DXL behavior in the ODP Exporter servlet.
 	 */
 	public static final String HEADER_BINARY_DXL = "X-BinaryDXL"; //$NON-NLS-1$
