@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: On-Disk-Project Exporter Servlet
 Bundle-SymbolicName: org.openntf.nsfodp.exporter.servlet;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.exporter.servlet
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.5.0.qualifier
 Bundle-Vendor: OpenNTF
 Import-Package: javax.servlet;version="2.5.0",
  javax.servlet.http;version="2.5.0",

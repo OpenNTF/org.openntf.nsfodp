@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: On-Disk-Project Compiler
 Bundle-SymbolicName: org.openntf.nsfodp.compiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.5.0.qualifier
 Bundle-Vendor: OpenNTF
 Bundle-ClassPath: .,
  lib/cglib-3.2.5.jar,
