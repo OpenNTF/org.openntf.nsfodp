@@ -12,6 +12,8 @@ import java.security.Principal;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -33,6 +35,11 @@ public class ODPExporterServlet extends HttpServlet {
 	
 	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous")); //$NON-NLS-1$ //$NON-NLS-2$
 
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doPost(req, resp);
+	}
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Principal user = req.getUserPrincipal();
@@ -63,7 +70,6 @@ public class ODPExporterServlet extends HttpServlet {
 				}
 			}
 			
-//			Session session = ContextInfo.getUserSession();
 			NotesSession session = new NotesSession();
 			try {
 				NotesDatabase database = session.getDatabaseByPath(nsfFile.toString());
@@ -82,10 +88,27 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					
 					Path result = exporter.export();
-					resp.setContentType("text/plain"); //$NON-NLS-1$
+					cleanup.add(result);
+					resp.setContentType("application/zip"); //$NON-NLS-1$
 					
-					// TODO have this feed back the zip
-					os.println("Exported to " + result);
+					try(ZipOutputStream zos = new ZipOutputStream(os)) {
+						Files.walk(result)
+							.forEach(path -> {
+								ZipEntry entry = new ZipEntry(result.relativize(path).toString().replace('\\', '/'));
+								try {
+									zos.putNextEntry(entry);
+	
+									if(Files.isRegularFile(path)) {
+										try(InputStream is = Files.newInputStream(path)) {
+											StreamUtil.copyStream(is, zos);
+										}
+									}
+								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
+							});
+					}
+					
 				} finally {
 					database.delete();
 				}
