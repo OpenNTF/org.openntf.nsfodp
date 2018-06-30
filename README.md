@@ -2,7 +2,7 @@
 
 This project contains tooling for dealing with NSF on-disk-project representations in Maven and Eclipse.
 
-There are three main components: a Maven plugin, a set of Domino OSGi plugins, and a set of Eclipse plugins. In tandem, they provide three main features:
+There are three main components: a Maven plugin, a set of Domino OSGi plugins, and a set of Eclipse plugins. In tandem, they provide several features:
 
 ### ODP Compiler
 
@@ -21,6 +21,10 @@ The Eclipse plugins provide the Eclipse IDE with basic knowledge of the ODP and 
 Currently, autocompletion knows about the stock components and Extension Library that ship with 9.0.1 FP10 as well as any Custom Controls inside the same project.
 
 Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the context menu, which are shortcuts for the equivalent Maven goals.
+
+### ODP Exporter
+
+The ODP exporter allows the use of a Domino server to export an NSF into a Designer-compatible ODP format.
 
 ## Usage
 
@@ -106,6 +110,18 @@ For deployment, add `nsfodp.deploy.server` and and `nsfodp.deploy.serverUrl` pro
 ```
 
 By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.
+
+### ODP Exporter
+
+The ODP exporter is triggered manually, and does not require a Maven project in the current directory (though it will use the settings of an active project if present).
+
+To export an ODP from the command line, execute the mojo directory:
+
+```shell
+mvn org.openntf.maven:nsfodp-maven-plugin:1.4.0:generateODP -Dnsfodp.exporter.server=someserver -Dnsfodp.exporter.serverUrl=http://some.server.url -Dnsfodp.exporter.databasePath=names.nsf
+```
+
+This mojo will create or replace the `odp` directory in the current or project directory with the contents of the specified database. The directory path can be overridden by specifying the `nsfodp.exporter.odpDirectory` property in the execution.
 
 ## Requirements
 
