@@ -19,7 +19,7 @@
 <feature
       id="org.openntf.nsfodp.compiler.feature"
       label="ODP Compiler Feature"
-      version="1.3.0.qualifier">
+      version="1.4.0.qualifier">
 
    <description url="https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling">
       [Enter Feature Description here.]
@@ -239,6 +239,12 @@
 
    <plugin
          id="org.openntf.nsfodp.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+         
+   <plugin
+         id="org.openntf.nsfodp.commons.odp"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

@@ -16,7 +16,6 @@
 package org.openntf.nsfodp.compiler.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +25,6 @@ import java.nio.file.Path;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
@@ -43,9 +41,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
-import org.openntf.nsfodp.compiler.odp.OnDiskProject;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
@@ -193,15 +191,7 @@ public class ODPCompilerServlet extends HttpServlet {
 				)
 			);
 		} finally {
-			for(Path path : cleanup) {
-				if(Files.isDirectory(path)) {
-					Files.walk(path)
-					    .sorted(Comparator.reverseOrder())
-					    .map(Path::toFile)
-					    .forEach(File::delete);
-				}
-				Files.deleteIfExists(path);
-			}
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 	

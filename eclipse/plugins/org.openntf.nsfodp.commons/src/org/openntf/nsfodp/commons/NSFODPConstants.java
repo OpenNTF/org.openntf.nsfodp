@@ -29,4 +29,19 @@ public enum NSFODPConstants {
 	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
 	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$
+	
+	/**
+	 * The HTTP header name used to specify the source NSF path in the ODP Exporter servlet
+	 */
+	public static final String HEADER_DATABASE_PATH = "X-DatabasePath"; //$NON-NLS-1$
+	/**
+	 * The HTTP header name used to specify binary DXL behavior in the ODP Exporter servlet.
+	 */
+	public static final String HEADER_BINARY_DXL = "X-BinaryDXL"; //$NON-NLS-1$
+	/**
+	 * The HTTP header name used to specify Swiper XSLT filter behavior in the ODP Exporter servlet.
+	 */
+	public static final String HEADER_SWIPER_FILTER = "X-SwiperFilter"; //$NON-NLS-1$
+	
+	public static final String JAVA_ITEM_IGNORE_PATTERN = "^(\\$ClassData|\\$ClassSize)\\d+$"; //$NON-NLS-1$
 }
