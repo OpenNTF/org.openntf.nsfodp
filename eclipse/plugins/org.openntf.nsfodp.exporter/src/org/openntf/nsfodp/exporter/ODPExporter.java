@@ -3,8 +3,12 @@ package org.openntf.nsfodp.exporter;
 import static org.openntf.nsfodp.commons.h.StdNames.*;
 import static com.ibm.designer.domino.napi.NotesConstants.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -17,7 +21,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.openntf.nsfodp.commons.odp.util.DXLUtil;
+import org.w3c.dom.Document;
+
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.xml.DOMUtil;
+import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesDatetime;
@@ -96,7 +105,7 @@ public class ODPExporter {
 			
 			exporter.setExporterProperty(DXLExporter.eForceNoteFormat, isBinaryDxl() ? 1 : 0);
 			
-			
+			final Throwable[] err = new Throwable[1];
 			NotesIDTable designCollection = new NotesIDTable(database);
 			try {
 				designCollection.create();
@@ -109,8 +118,10 @@ public class ODPExporter {
 						try {
 							NotesNote note = database.openNote(noteId, NsfNote.OPEN_RAW_MIME);
 							exportNote(note, exporter, result);
-						} catch (NotesAPIException | IOException e) {
-							throw new RuntimeException(e);
+						} catch (Throwable e) {
+							e.printStackTrace();
+							err[0] = e;
+							return 1;
 						}
 						
 						return 0;
@@ -119,6 +130,19 @@ public class ODPExporter {
 			} finally {
 				designCollection.recycle();
 			}
+			if(err[0] != null) {
+				if(err[0] instanceof RuntimeException) {
+					throw (RuntimeException)err[0];
+				} else if(err[0] instanceof IOException) {
+					throw (IOException)err[0];
+				} else if(err[0] instanceof NotesAPIException) {
+					throw (NotesAPIException)err[0];
+				} else if(err[0] instanceof NException) {
+					throw (NException)err[0];
+				} else {
+					throw new RuntimeException(err[0]);
+				}
+			}
 		} finally {
 			exporter.recycle();
 		}
@@ -126,7 +150,7 @@ public class ODPExporter {
 		return result;
 	}
 
-	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException {
+	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException, NException, XMLException {
 		NoteType type = NoteType.forNote(note);
 		switch(type) {
 		case AboutDocument:
@@ -180,7 +204,7 @@ public class ODPExporter {
 			break;
 		case WebContentFile:
 		case GenericFile:
-			exportNamedData(note, baseDir, type);
+			exportNamedData(note, exporter, baseDir, type);
 			break;
 		case DesignCollection:
 		case ACL:
@@ -236,12 +260,15 @@ public class ODPExporter {
 	 * Exports the file data of the provided note, without the metadata file.
 	 * 
 	 * @param note the note to export
+	 * @param exporter the exporter to use for the process
 	 * @param baseDir the base directory for export operations
 	 * @param type the NoteType enum for the note
 	 * @throws NotesAPIException
 	 * @throws IOException
+	 * @throws NException 
+	 * @throws XMLException 
 	 */
-	private void exportNamedData(NotesNote note, Path baseDir, NoteType type) throws NotesAPIException, IOException {
+	private void exportNamedData(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
@@ -254,7 +281,7 @@ public class ODPExporter {
 			return;
 		}
 		
-		exportFileData(note, baseDir, type.path.resolve(name), type);
+		exportFileData(note, exporter, baseDir, type.path.resolve(name), type);
 	}
 	
 	/**
@@ -266,16 +293,18 @@ public class ODPExporter {
 	 * @param type the NoteType enum for the note
 	 * @throws NotesAPIException
 	 * @throws IOException
+	 * @throws NException 
+	 * @throws XMLException 
 	 */
-	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException {
-		exportNamedData(note, baseDir, type);
+	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
+		exportNamedData(note, exporter, baseDir, type);
 		
 		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
 		
-		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX));
+		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT));
 		// Some of these will have pattern-based item ignores
 		if(StringUtil.isNotEmpty(type.itemNameIgnorePattern)) {
 			for(String itemName : note.getItemNames()) {
@@ -299,13 +328,16 @@ public class ODPExporter {
 	 * Exports the file data of the provided note to the specified path.
 	 * 
 	 * @param note the note to export
+	 * @param exporter the exporter to use for the process
 	 * @param baseDir the base directory for export operations
 	 * @param path the relative file path to export to within the base dir
 	 * @param type the NoteType enum for the note
 	 * @throws NotesAPIException
 	 * @throws IOException
+	 * @throws NException 
+	 * @throws XMLException 
 	 */
-	private void exportFileData(NotesNote note, Path baseDir, Path path, NoteType type) throws NotesAPIException, IOException {
+	private void exportFileData(NotesNote note, DXLExporter exporter, Path baseDir, Path path, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		Path fullPath = baseDir.resolve(path);
 		Files.createDirectories(fullPath.getParent());
 		
@@ -313,12 +345,43 @@ public class ODPExporter {
 			// readFileContent works for some but not all file types
 			switch(type) {
 			case LotusScriptLibrary:
+				// This is actually just a set of text items. The NAPI wrapper, however, doesn't
+				//   properly handle multiple text items of the same name, so we have to do it
+				//   manually
+				try(PrintWriter writer = new PrintWriter(os)) {
+					// TODO replace with better NAPI implementation. Using the direct NAPI methods for
+					//   item info led to UnsatisfiedLinkErrors. The legacy API also falls on its face,
+					//   with iterating over the items properly finding the right count, but then returning
+					//   the value for only the first each time
+					byte[] dxl;
+					try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+						if(!isBinaryDxl()) {
+							exporter.setExporterProperty(DXLExporter.eForceNoteFormat, 1);
+						}
+						
+						exporter.exportNote(baos, note);
+						
+						if(!isBinaryDxl()) {
+							exporter.setExporterProperty(DXLExporter.eForceNoteFormat, 0);
+						}
+						
+						dxl = baos.toByteArray();
+					}
+					
+					try(InputStream in = new ByteArrayInputStream(dxl)) {
+						Document doc = DOMUtil.createDocument(in);
+						for(String bit : DXLUtil.getItemValueStrings(doc, type.fileItem)) {
+							writer.write(bit);
+						}
+					}
+				}
+				
+				break;
 			case JavaScriptLibrary:
 			case ServerJavaScriptLibrary:
 				try {
 					NReadScriptContent.invoke(null, note.getHandle(), type.fileItem, os);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
 					throw new NotesAPIException(e, "Exception when reading script content"); //$NON-NLS-1$
 				}
 				break;

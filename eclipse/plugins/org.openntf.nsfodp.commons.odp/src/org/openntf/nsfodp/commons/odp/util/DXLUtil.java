@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 import org.openntf.nsfodp.commons.h.Ods;
 import org.w3c.dom.Document;
@@ -132,6 +134,19 @@ public enum DXLUtil {
 		} else {
 			return null;
 		}
+	}
+	
+	public static List<String> getItemValueStrings(Document dxlDoc, String itemName) throws XMLException {
+		List<String> result = new ArrayList<>();
+		
+		Object[] nodes = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='" + escapeXPathValue(itemName) + "']/*[name()='text']").getNodes(); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("Got nodes " + Arrays.asList(nodes));
+		for(Object nodeObj : nodes) {
+			Node node = (Node)nodeObj;
+			result.add(node.getTextContent());
+		}
+		
+		return result;
 	}
 	
 	public static void deleteItems(Document dxlDoc, String itemName) throws XMLException {

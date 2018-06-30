@@ -7,6 +7,7 @@ package org.openntf.nsfodp.commons.h;
  */
 public interface StdNames {
 	public static final String SCRIPTLIB_ITEM_NAME = "$ScriptLib"; //$NON-NLS-1$
+	public static final String SCRIPTLIB_OBJECT = "$ScriptLib_O"; //$NON-NLS-1$
 	public static final String JAVASCRIPTLIBRARY_CODE = "$JavaScriptLibrary"; //$NON-NLS-1$
 	public static final String SERVER_JAVASCRIPTLIBRARY_CODE = "$ServerJavaScriptLibrary"; //$NON-NLS-1$
 	/**	Type of assistant - related to action type */
