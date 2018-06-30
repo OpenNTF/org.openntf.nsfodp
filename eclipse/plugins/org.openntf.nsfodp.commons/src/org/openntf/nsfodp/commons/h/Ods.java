@@ -1,7 +1,7 @@
 package org.openntf.nsfodp.commons.h;
 
 /**
- * Useful constants from ods.h and derivatives.
+ * Useful constants and derivatives from ods.h.
  * 
  * @since 1.4.0
  */

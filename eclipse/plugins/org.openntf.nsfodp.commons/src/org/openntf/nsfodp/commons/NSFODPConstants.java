@@ -29,4 +29,6 @@ public enum NSFODPConstants {
 	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
 	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$
+	
+	public static final String JAVA_ITEM_IGNORE_PATTERN = "^(\\$ClassData|\\$ClassSize)\\d+$"; //$NON-NLS-1$
 }

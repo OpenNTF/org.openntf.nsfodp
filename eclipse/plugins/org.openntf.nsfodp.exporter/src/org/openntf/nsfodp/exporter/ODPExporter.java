@@ -1,19 +1,26 @@
 package org.openntf.nsfodp.exporter;
 
+import static org.openntf.nsfodp.commons.h.StdNames.*;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.openntf.nsfodp.commons.h.StdNames;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesDatetime;
 import com.ibm.designer.domino.napi.NotesFormula;
 import com.ibm.designer.domino.napi.NotesIDTable;
 import com.ibm.designer.domino.napi.NotesNote;
+import com.ibm.designer.domino.napi.design.FileAccess;
 import com.ibm.designer.domino.napi.dxl.DXLExporter;
 import com.ibm.domino.napi.NException;
 import com.ibm.domino.napi.c.IdTable;
@@ -29,6 +36,8 @@ import com.ibm.domino.napi.c.callback.IDENUMERATEPROC;
  * @since 1.4.0
  */
 public class ODPExporter {
+	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
+	
 	private final NotesDatabase database;
 	private boolean binaryDxl = false;
 
@@ -123,6 +132,7 @@ public class ODPExporter {
 		case Navigator:
 		case DB2AccessView:
 		case DataConnection:
+		case Applet:
 			exportNamedNote(note, exporter, baseDir, type);
 			break;
 		case CustomControl:
@@ -136,11 +146,15 @@ public class ODPExporter {
 		case XPage:
 		case ServerJavaScriptLibrary:
 		case Jar:
-			// Contents + metadata
+		case WiringProperties:
+		case CompositeApplication:
+		case CompositeComponent:
+			exportNamedDataAndMetadata(note, exporter, baseDir, type);
 			break;
 		case WebContentFile:
 		case GenericFile:
 			// These float freely with no metadata
+			break;
 		case DBScript:
 			// Special handling
 			break;
@@ -153,8 +167,8 @@ public class ODPExporter {
 			break;
 		case Unknown:
 		default:
-			String flags = note.isItemPresent(StdNames.DESIGN_FLAGS) ? note.getItemValueAsString(StdNames.DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
-			String title = note.isItemPresent(StdNames.FIELD_TITLE) ? note.getItemValueAsString(StdNames.FIELD_TITLE) : String.valueOf(note.getNoteId());
+			String flags = note.isItemPresent(DESIGN_FLAGS) ? note.getItemValueAsString(DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
+			String title = note.isItemPresent(FIELD_TITLE) ? note.getItemValueAsString(FIELD_TITLE) : String.valueOf(note.getNoteId());
 			System.out.println("Unknown note, flags=" + flags + ", title=" + title + ", class=" + (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT));
 			//throw new UnsupportedOperationException("Unhandled note: " + doc.getUniversalID() + ", flags " + doc.getItemValueString("$Flags")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -172,7 +186,7 @@ public class ODPExporter {
 	 * @throws NotesAPIException 
 	 */
 	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
-		String name = cleanName(note.getItemValueAsString(StdNames.FIELD_TITLE));
+		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
 		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
 			name += '.' + type.extension;
 		}
@@ -188,6 +202,48 @@ public class ODPExporter {
 		return clean
 			.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
 			.replace("*", "_2a"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException {
+		String name = cleanName(note.getItemAsTextList(FIELD_TITLE).get(0));
+		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
+			name += '.' + type.extension;
+		}
+		
+		exportFileData(note, baseDir, type.path.resolve(name), type);
+		
+		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX));
+		// Some of these will have pattern-based item ignores
+		if(StringUtil.isNotEmpty(type.itemNameIgnorePattern)) {
+			for(String itemName : note.getItemNames()) {
+				if(Pattern.matches(type.itemNameIgnorePattern, itemName)) {
+					ignoreItems.add(itemName);
+				}
+			}
+		}
+		
+		exporter.setExporterListProperty(DXLExporter.eOmitItemNames, ignoreItems.toArray(new String[ignoreItems.size()]));
+		exporter.setExporterProperty(38, 1);
+		try {
+			exportExplicitNote(note, exporter, baseDir, type.path.resolve(name + EXT_METADATA));
+		} finally {
+			exporter.setExporterListProperty(DXLExporter.eOmitItemNames, StringUtil.EMPTY_STRING_ARRAY);
+			exporter.setExporterProperty(38, 0);
+		}
+	}
+	
+	private void exportFileData(NotesNote note, Path baseDir, Path path, NoteType type) throws NotesAPIException, IOException {
+		Path fullPath = baseDir.resolve(path);
+		Files.createDirectories(fullPath.getParent());
+		
+		try(OutputStream os = Files.newOutputStream(fullPath)) {
+			FileAccess.readFileContent(note, os);
+		}
+//		try(InputStream is = FileAccess.readFileContentAsInputStream(note, type.fileItem)) {
+//			try(OutputStream os = Files.newOutputStream(fullPath)) {
+//				StreamUtil.copyStream(is, os);
+//			}
+//		}
 	}
 	
 	/**
