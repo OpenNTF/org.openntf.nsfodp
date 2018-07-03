@@ -115,7 +115,7 @@ By default, compilation binds to the `compile` phase and deployment binds to the
 
 The ODP exporter is triggered manually, and does not require a Maven project in the current directory (though it will use the settings of an active project if present).
 
-To export an ODP from the command line, execute the mojo directory:
+To export an ODP from the command line, execute the mojo directly:
 
 ```shell
 mvn org.openntf.maven:nsfodp-maven-plugin:1.4.0:generateODP -Dnsfodp.exporter.server=someserver -Dnsfodp.exporter.serverUrl=http://some.server.url -Dnsfodp.exporter.databasePath=names.nsf
