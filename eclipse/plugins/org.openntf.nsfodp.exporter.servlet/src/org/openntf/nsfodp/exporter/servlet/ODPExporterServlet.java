@@ -94,8 +94,8 @@ public class ODPExporterServlet extends HttpServlet {
 					// Then read the NSF from the body
 					
 					String contentType = req.getContentType();
-					if("application/octet-stream".equals(contentType)) { //$NON-NLS-1$
-						throw new IllegalArgumentException("Content must be application/octet-stream when POSTing an NSF (did you mean GET with " + NSFODPConstants.HEADER_DATABASE_PATH + "?)");
+					if(!"application/octet-stream".equals(contentType)) { //$NON-NLS-1$
+						throw new IllegalArgumentException("Content must be application/octet-stream when POSTing an NSF (did you mean GET with " + NSFODPConstants.HEADER_DATABASE_PATH + "?); received " + contentType);
 					}
 					
 					Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
