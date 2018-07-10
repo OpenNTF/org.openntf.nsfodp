@@ -37,9 +37,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -102,8 +105,11 @@ public class GenerateODPMojo extends AbstractMojo {
 	/**
 	 * The database path for the remote server to export.
 	 */
-	@Parameter(property="nsfodp.exporter.databasePath", required=true)
+	@Parameter(property="nsfodp.exporter.databasePath", required=false)
 	private String databasePath;
+	
+	@Parameter(property="file", required=false)
+	private File file;
 	
 	/**
 	 * Whether or not to run the DXL through a Swiper filter. Defaults to <code>true</code>.
@@ -134,7 +140,11 @@ public class GenerateODPMojo extends AbstractMojo {
 			odpDir = base.resolve(odpDirectory.toPath());
 		}
 		
-		String databasePath = Objects.requireNonNull(this.databasePath);
+		String databasePath = this.databasePath;
+		File databaseFile = this.file;
+		if((databasePath == null || databasePath.isEmpty()) && databaseFile == null) {
+			throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
+		}
 		if(log.isInfoEnabled()) {
 			log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databasePath)); //$NON-NLS-1$
 		}
@@ -197,15 +207,25 @@ public class GenerateODPMojo extends AbstractMojo {
 			if(log.isInfoEnabled()) {
 				log.info(Messages.getString("GenerateODPMojo.generatingWithServer", servlet)); //$NON-NLS-1$
 			}
-			HttpGet get = new HttpGet(servlet);
 			
-			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.exporterServer, get, this.log);
+			File databaseFile = this.file;
+			HttpUriRequest req;
+			if(databaseFile != null) {
+				req = new HttpPost(servlet);
+				FileEntity fileEntity = new FileEntity(databaseFile);
+				fileEntity.setContentType("application/octet-stream"); //$NON-NLS-1$
+				((HttpPost)req).setEntity(fileEntity);
+			} else {
+				req = new HttpGet(servlet);
+				req.addHeader(NSFODPConstants.HEADER_DATABASE_PATH, this.databasePath);
+			}
 			
-			get.addHeader(NSFODPConstants.HEADER_DATABASE_PATH, this.databasePath);
-			get.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
-			get.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
+			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.exporterServer, req, this.log);
 			
-			HttpResponse res = client.execute(get);
+			req.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
+			req.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
+			
+			HttpResponse res = client.execute(req);
 			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
  			
 			try(InputStream is = responseEntity.getContent()) {

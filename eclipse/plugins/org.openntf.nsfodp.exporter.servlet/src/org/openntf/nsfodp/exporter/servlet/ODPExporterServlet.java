@@ -130,8 +130,7 @@ public class ODPExporterServlet extends HttpServlet {
 				try {
 					database.open();
 					
-					// POSTing indicates that it's not coming via Maven
-					IProgressMonitor mon = post ? null : new LineDelimitedJsonProgressMonitor(os);
+					IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
 					
 					ODPExporter exporter = new ODPExporter(database);
 					
@@ -146,7 +145,7 @@ public class ODPExporterServlet extends HttpServlet {
 					
 					Path result = exporter.export();
 					cleanup.add(result);
-					if(mon != null) { mon.done(); }
+					mon.done();
 					
 					try(ZipOutputStream zos = new ZipOutputStream(os)) {
 						Files.walk(result)
