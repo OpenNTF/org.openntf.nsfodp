@@ -17,7 +17,7 @@
 
 -->
 <site>
-   <feature url="features/org.openntf.nsfodp.eclipse.feature_1.5.0.qualifier.jar" id="org.openntf.nsfodp.eclipse.feature" version="1.5.0.qualifier">
+   <feature url="features/org.openntf.nsfodp.eclipse.feature_2.0.0.qualifier.jar" id="org.openntf.nsfodp.eclipse.feature" version="2.0.0.qualifier">
       <category name="NSF ODP Tooling"/>
    </feature>
    
