@@ -43,6 +43,7 @@
 		-->
 		<module>plugins/org.openntf.nsfodp.compiler</module>
 		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
+		<module>plugins/org.openntf.nsfodp.compiler.equinox</module>
 		<module>features/org.openntf.nsfodp.compiler.feature</module>
 		
 		<!--
@@ -59,6 +60,7 @@
 		<module>plugins/org.openntf.nsfodp.deployment.servlet</module>
 		<module>features/org.openntf.nsfodp.deployment.feature</module>
 		
+		<module>releng/org.openntf.nsfodp.domino.source.updatesite</module>
 		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
 
 		<!--
@@ -67,8 +69,6 @@
 		<module>plugins/org.openntf.nsfodp.eclipse</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
-		
-		<module>plugins/org.openntf.nsfodp.cli</module>
 		
 		<!--
 			Distribution
@@ -106,6 +106,11 @@
 			<layout>p2</layout>
 			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.0</url>
 		</repository>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
 	</repositories>
 	
 	<dependencies>
@@ -118,6 +123,22 @@
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
 			<version>${maven.api.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.darwino.domino</groupId>
+			<artifactId>com.darwino.domino.napi</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.darwino.domino</groupId>
+			<artifactId>com.darwino.domino.napi.xsp</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.darwino.domino</groupId>
+			<artifactId>com.darwino.domino.napi.feature</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -186,6 +207,38 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<version>${tycho-version}</version>
+		
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includeBinaryFeature>false</includeBinaryFeature>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attached-p2-metadata</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
@@ -197,7 +250,7 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>com.ibm.notes.java.api.win32.linux</id>
-								<versionRange>[9.0.1,9.0.2)</versionRange>
+								<versionRange>9.0.1</versionRange>
 							</requirement>
 						</extraRequirements>
 						<optionalDependencies>ignore</optionalDependencies>

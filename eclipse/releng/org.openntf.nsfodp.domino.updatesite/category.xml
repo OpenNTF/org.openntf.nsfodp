@@ -18,17 +18,23 @@
 -->
 <site>
 	<!-- ODP Compiler -->
-	<feature url="features/org.openntf.nsfodp.compiler.feature_2.0.0.qualifier.jar" id="org.openntf.nsfodp.compiler.feature" version="2.0.0.qualifier">
+	<feature id="org.openntf.nsfodp.compiler.feature">
 		<category name="NSF ODP Tooling"/>
 	</feature>
 	<!-- NSF Deployment -->
-	<feature url="features/org.openntf.nsfodp.deployment.feature_2.0.0.qualifier.jar" id="org.openntf.nsfodp.deployment.feature" version="2.0.0.qualifier">
+	<feature id="org.openntf.nsfodp.deployment.feature">
 		<category name="NSF ODP Tooling"/>
 	</feature>
 	<!-- ODP Exporter -->
-	<feature url="features/org.openntf.nsfodp.exporter.feature_2.0.0.qualifier.jar" id="org.openntf.nsfodp.exporter.feature" version="2.0.0.qualifier">
+	<feature id="org.openntf.nsfodp.exporter.feature">
 		<category name="NSF ODP Tooling"/>
+	</feature>
+	
+	<!-- Darwino Domino NAPI -->
+	<feature id="com.darwino.domino.napi.feature">
+		<category name="Darwino"/>
 	</feature>
    
 	<category-def name="NSF ODP Tooling" label="NSF ODP Tooling"/>
+	<category-def name="Darwino" label="Darwino"/>
 </site>

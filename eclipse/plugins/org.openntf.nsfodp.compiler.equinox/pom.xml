@@ -7,6 +7,6 @@
 		<version>2.0.0-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
-	<artifactId>org.openntf.nsfodp.cli</artifactId>
+	<artifactId>org.openntf.nsfodp.compiler.equinox</artifactId>
 	<packaging>eclipse-plugin</packaging>
 </project>

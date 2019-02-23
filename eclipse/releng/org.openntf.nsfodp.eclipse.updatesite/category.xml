@@ -16,11 +16,13 @@
     limitations under the License.
 
 -->
-<?eclipse version="3.4"?>
-<plugin>
-	<extension id="org.openntf.nsfodp.cli.CLIApplication" point="org.eclipse.core.runtime.applications">
-		<application>
-			<run class="org.openntf.nsfodp.cli.CLIApplication"/>
-		</application>
-	</extension>
-</plugin>
+<site>
+   <feature id="org.openntf.nsfodp.eclipse.feature">
+      <category name="NSF ODP Tooling"/>
+   </feature>
+   <feature id="org.openntf.nsfodp.eclipse.feature.source">
+      <category name="NSF ODP Tooling"/>
+   </feature>
+   
+   <category-def name="NSF ODP Tooling" label="NSF ODP Tooling"/>
+</site>

@@ -15,16 +15,23 @@
  */
 package org.openntf.maven.nsfodp.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpRequest;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.openntf.maven.nsfodp.Messages;
 
 public enum ODPMojoUtil {
 	;
+	
+	private static final ThreadLocal<DateFormat> SNAPSHOT_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddhhmm")); //$NON-NLS-1$
 	
 	/**
 	 * Adds server credential information from the user's settings.xml, if applicable.
@@ -70,5 +77,18 @@ public enum ODPMojoUtil {
 			userName = "Anonymous"; //$NON-NLS-1$
 		}
 		return userName;
+	}
+	
+	public static String calculateVersion(MavenProject project) {
+		// Use a Tycho-provided version if present; otherwise, generate one
+		String version = project.getProperties().getProperty("qualifiedVersion"); //$NON-NLS-1$
+		if(version == null || version.isEmpty()) {
+			version = project.getVersion();
+			if(version.endsWith("-SNAPSHOT")) { //$NON-NLS-1$
+				version = version.substring(0, version.length()-"-SNAPSHOT".length()); //$NON-NLS-1$
+				version += '.' + SNAPSHOT_FORMAT.get().format(new Date());
+			}
+		}
+		return version;
 	}
 }

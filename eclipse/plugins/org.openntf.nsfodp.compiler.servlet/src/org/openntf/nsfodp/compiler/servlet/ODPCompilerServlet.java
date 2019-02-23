@@ -47,9 +47,8 @@ import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.mindoo.domino.jna.utils.Ref;
-import com.mindoo.domino.jna.utils.StringUtil;
 
 import lotus.domino.NotesThread;
 
@@ -157,10 +156,10 @@ public class ODPCompilerServlet extends HttpServlet {
 				compiler.addUpdateSite(updateSite);
 			}
 			
-			Ref<Path> nsf = new Ref<>();
+			Path[] nsf = new Path[1];
 			NotesThread notes = new NotesThread(() -> {
 				try {
-					nsf.set(compiler.compile());
+					nsf[0] = compiler.compile();
 					mon.done();
 				} catch(RuntimeException e) {
 					throw e;
@@ -173,8 +172,8 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			
 			// Now stream the NSF
-			cleanup.add(nsf.get());
-			try(InputStream is = Files.newInputStream(nsf.get())) {
+			cleanup.add(nsf[0]);
+			try(InputStream is = Files.newInputStream(nsf[0])) {
 				try(OutputStream gzos = new GZIPOutputStream(os)) {
 					StreamUtil.copyStream(is, gzos);
 				}

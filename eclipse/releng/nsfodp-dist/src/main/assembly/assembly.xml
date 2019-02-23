@@ -46,8 +46,19 @@
 			</includes>
 			
 			<binaries>
-				<attachmentClassifier>assembly</attachmentClassifier>
-				<outputDirectory>domino</outputDirectory>
+				<outputDirectory>Domino</outputDirectory>
+				<unpack>true</unpack>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>org.openntf.nsfodp:org.openntf.nsfodp.domino.source.updatesite</include>
+			</includes>
+			
+			<binaries>
+				<outputDirectory>DominoSource</outputDirectory>
 				<unpack>true</unpack>
 				<includeDependencies>false</includeDependencies>
 			</binaries>
@@ -59,8 +70,7 @@
 			</includes>
 			
 			<binaries>
-				<attachmentClassifier>assembly</attachmentClassifier>
-				<outputDirectory>eclipse</outputDirectory>
+				<outputDirectory>Eclipse</outputDirectory>
 				<unpack>true</unpack>
 				<includeDependencies>false</includeDependencies>
 			</binaries>

@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -99,15 +98,6 @@ import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
-import com.mindoo.domino.jna.NotesDatabase;
-import com.mindoo.domino.jna.NotesNote;
-import com.mindoo.domino.jna.NotesDatabase.Encryption;
-import com.mindoo.domino.jna.constants.CreateDatabase;
-import com.mindoo.domino.jna.constants.DBClass;
-import com.mindoo.domino.jna.errors.LotusScriptCompilationError;
-import com.mindoo.domino.jna.errors.NotesError;
-import com.mindoo.domino.jna.gc.NotesGC;
-import com.mindoo.domino.jna.utils.LegacyAPIUtils;
 
 import lotus.domino.Database;
 import lotus.domino.DateTime;
@@ -116,6 +106,13 @@ import lotus.domino.NoteCollection;
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
+import com.darwino.domino.napi.DominoAPI;
+import com.darwino.domino.napi.DominoException;
+import com.darwino.domino.napi.LotusScriptCompilationException;
+import com.darwino.domino.napi.enums.DBClass;
+import com.darwino.domino.napi.wrap.NSFDatabase;
+import com.darwino.domino.napi.wrap.NSFNote;
+import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
@@ -123,6 +120,7 @@ import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.domino.napi.NException;
 import com.ibm.domino.napi.c.Os;
+import com.ibm.domino.napi.c.xsp.XSPNative;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -164,7 +162,7 @@ public class ODPCompiler {
 			"-g", //$NON-NLS-1$
 			"-parameters", //$NON-NLS-1$
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
-			);
+		);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
 	
 	private static final ThreadLocal<DateFormat> TIMESTAMP = new ThreadLocal<DateFormat>() {
@@ -407,8 +405,9 @@ public class ODPCompiler {
 			}
 			
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
+			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), lotusSession, false, true);
 			try {
-				Path file = createDatabase(lotusSession);
+				Path file = createDatabase(nsfSession);
 				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				DxlImporter importer = lotusSession.createDxlImporter();
 				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_CREATE);
@@ -419,9 +418,10 @@ public class ODPCompiler {
 				importDbProperties(importer, database);
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
-				importLotusScriptLibraries(importer, database);
+				importLotusScriptLibraries(importer, database, nsfSession);
 				
 				if(hasXPages) {
+					@SuppressWarnings("null")
 					Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
 					importCustomControls(importer, database, classLoader, compiledClassNames);
 					importXPages(importer, database, classLoader, compiledClassNames);
@@ -676,14 +676,15 @@ public class ODPCompiler {
 	 * @return a {@link Path} representing the new NSF file
 	 * @throws IOException if there is a problem creating the file
 	 * @throws NotesException if there is an API-level problem creating the copy
+	 * @throws DominoException if there is an API-level problem creating the copy
 	 */
-	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException {
+	private Path createDatabase(NSFSession session) throws IOException, NotesException, DominoException {
 		subTask("Creating destination NSF");
 		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 		temp.toFile().deleteOnExit();
 		String filePath = temp.toAbsolutePath().toString();
 		
-		NotesDatabase.createDatabase("", filePath, DBClass.NOTEFILE, true, EnumSet.of(CreateDatabase.LARGE_UNKTABLE), Encryption.None, 0); //$NON-NLS-1$
+		session.createDatabase(null, filePath, DBClass.NOTEFILE, true);
 		
 		return temp;
 	}
@@ -894,7 +895,7 @@ public class ODPCompiler {
 		}
 	}
 	
-	private void importLotusScriptLibraries(DxlImporter importer, Database database) throws Exception {
+	private void importLotusScriptLibraries(DxlImporter importer, Database database, NSFSession nsfSession) throws Exception {
 		subTask("Importing LotusScript libraries");
 		
 		List<String> noteIds = new ArrayList<>();
@@ -916,32 +917,32 @@ public class ODPCompiler {
 		// In lieu of a dependency graph, just keep bashing at the list until it's done
 		Queue<String> remaining = new ArrayDeque<>(noteIds);
 		Map<String, String> titles = new HashMap<>();
+		NSFDatabase nsfDatabase = nsfSession.getDatabaseByHandle(XSPNative.getDBHandle(database), database.getServer());
 		for(int i = 0; i < noteIds.size(); i++) {
 			Queue<String> nextPass = new ArrayDeque<>();
 			
 			String noteId;
 			while((noteId = remaining.poll()) != null) {
-				lotus.domino.Document doc = database.getDocumentByID(noteId);
-				String title = doc.getItemValueString("$TITLE"); //$NON-NLS-1$
-				titles.put(noteId, title);
+				NSFNote note = nsfDatabase.getNoteByID(noteId);
+				String title = null;
 				try {
-					NotesGC.runWithAutoGC(() -> {
-						NotesNote notesNote = LegacyAPIUtils.toNotesNote(doc);
-						notesNote.compileLotusScript();
-						notesNote.sign();
-						notesNote.update();
-						return null;
-					});
-				} catch(LotusScriptCompilationError err) {
+					title = note.get("$TITLE", String.class); //$NON-NLS-1$
+					titles.put(noteId, title);
+					note.compileLotusScript();
+					note.sign();
+					note.save();
+				} catch(LotusScriptCompilationException err) {
 					nextPass.add(noteId);
 					titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-				} catch(NotesError err) {
-					if(err.getId() == 12051) { // Same as above, but not encapsulated
+				} catch(DominoException err) {
+					if(err.getStatus() == 12051) { // Same as above, but not encapsulated
 						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
 						nextPass.add(noteId);
 					} else {
 						throw err;
 					}
+				} finally {
+					note.free();
 				}
 			}
 			

@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.cli;
+package org.openntf.nsfodp.compiler.equinox;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-public class CLIActivator extends Plugin {
-	private static CLIActivator instance;
+public class CompilerEquinoxActivator extends Plugin {
+	private static CompilerEquinoxActivator instance;
 	
-	public static CLIActivator getDefault() {
+	public static CompilerEquinoxActivator getDefault() {
 		return instance;
 	}
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
-		System.out.println(getClass().getName() + " starting up");
-		
 		instance = this;
 	}
 
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
-		System.out.println(getClass().getName() + " shutting down");
 	}
 
 }
