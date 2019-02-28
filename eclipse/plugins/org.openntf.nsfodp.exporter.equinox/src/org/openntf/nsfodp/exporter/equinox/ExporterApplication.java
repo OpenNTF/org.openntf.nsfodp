@@ -51,7 +51,6 @@ public class ExporterApplication implements IApplication {
 					Path result = exporter.export();
 					Path eclipseProject = odpDir.resolve(".project");
 					if(Files.exists(eclipseProject)) {
-						System.out.println("Stashing the eclipse project");
 						Path tempPath = Files.createTempFile("nsfodp", ".project");
 						Files.delete(tempPath);
 						Files.move(eclipseProject, tempPath);
