@@ -219,6 +219,9 @@ public class ODPExporter {
 			} finally {
 				iconNote.recycle();
 			}
+			
+			generateManifestMf(result);
+			
 		} finally {
 			exporter.recycle();
 		}
@@ -534,6 +537,22 @@ public class ODPExporter {
 		
 		try(OutputStream os = new SwiperOutputStream(fullPath)) {
 			exporter.exportNote(os, note);
+		}
+	}
+	
+	/**
+	 * Generates a stub MANIFEST.MF file if the exporter did not find one in the NSF.
+	 * 
+	 * @param baseDir the base directory for export operations
+	 * @throws IOException
+	 */
+	private void generateManifestMf(Path baseDir) throws IOException {
+		Path manifest = baseDir.resolve("META-INF").resolve("MANIFEST.MF");
+		if(!Files.isRegularFile(manifest)) {
+			Files.createDirectories(manifest.getParent());
+			
+			// Just create a blank file for now, as Designer does
+			Files.createFile(manifest);
 		}
 	}
 	
