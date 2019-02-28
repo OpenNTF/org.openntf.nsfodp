@@ -49,7 +49,7 @@ public enum NoteType {
 	AboutDocument(Paths.get("Resources", "AboutDocument"), true), //$NON-NLS-1$ //$NON-NLS-2$
 	FileResource(null, Paths.get("Resources", "Files"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$
 	ImageResource(null, Paths.get("Resources", "Images"), false, ITEM_NAME_IMAGE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$
-	StyleSheet("css", Paths.get("Resources", "Stylesheets"), false, ITEM_NAME_STYLE_SHEET_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	StyleSheet("css", Paths.get("Resources", "StyleSheets"), false, ITEM_NAME_STYLE_SHEET_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	Theme(null, Paths.get("Resources", "Themes"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$
 	UsingDocument(Paths.get("Resources", "UsingDocument"), true), //$NON-NLS-1$ //$NON-NLS-2$
 	SharedField("field", Paths.get("SharedElements", "Fields"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
