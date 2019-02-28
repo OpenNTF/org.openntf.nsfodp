@@ -20,6 +20,7 @@ import static com.ibm.designer.domino.napi.NotesConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -272,9 +274,14 @@ public class ODPExporter {
 	 * @throws NotesAPIException 
 	 */
 	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
-		String name = getCleanName(note);
-		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
-			name += '.' + type.extension;
+		Path name = getCleanName(note);
+		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+			Path parent = name.getParent();
+			if(parent == null) {
+				name = Paths.get(name.getFileName().toString() + '.' + type.extension);
+			} else {
+				name = parent.resolve(name.getFileName().toString() + '.' + type.extension);
+			}
 		}
 		
 		exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
@@ -287,20 +294,29 @@ public class ODPExporter {
 	 * @return an FS-friendly version of the title
 	 * @throws NotesAPIException 
 	 */
-	private String getCleanName(NotesNote note) throws NotesAPIException {
+	private Path getCleanName(NotesNote note) throws NotesAPIException {
 		if(!note.isItemPresent(FIELD_TITLE)) {
-			return "(Untitled)";
+			return Paths.get("(Untitled)");
 		}
-		String title = note.getItemAsTextList(FIELD_TITLE).get(0);
 		
-		int pipe = title.indexOf('|');
-		String clean = pipe > -1 ? title.substring(0, pipe) : title;
-		clean = clean.isEmpty() ? "(Untitled)" : clean; //$NON-NLS-1$
-		
-		// TODO replace with a proper algorithm 
-		return clean
-			.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
-			.replace("*", "_2a"); //$NON-NLS-1$ //$NON-NLS-2$
+		String title;
+		if(note.isItemPresent(ITEM_NAME_FILE_NAMES)) {
+			// Then it's a "true" VFS path
+			return Paths.get(note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0).replace('/', File.separatorChar));
+		} else {
+			title = note.getItemAsTextList(FIELD_TITLE).get(0);
+			
+			int pipe = title.indexOf('|');
+			String clean = pipe > -1 ? title.substring(0, pipe) : title;
+			clean = clean.isEmpty() ? "(Untitled)" : clean; //$NON-NLS-1$
+			
+			// TODO replace with a proper algorithm 
+			return Paths.get(clean
+				.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace("/", "_2f") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace("*", "_2a") //$NON-NLS-1$ //$NON-NLS-2$
+			);
+		}
 	}
 	
 	/**
@@ -316,15 +332,20 @@ public class ODPExporter {
 	 * @throws XMLException 
 	 */
 	private void exportNamedData(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
-		String name = getCleanName(note);
-		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
-			name += '.' + type.extension;
+		Path name = getCleanName(note);
+		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+			Path parent = name.getParent();
+			if(parent == null) {
+				name = Paths.get(name.getFileName().toString() + '.' + type.extension);
+			} else {
+				name = parent.resolve(name.getFileName().toString() + '.' + type.extension);
+			}
 		}
 		
 		// These are normal files in the NSF, but should not be exported
-		if(name.startsWith("WebContent/WEB-INF/classes") || name.startsWith("WEB-INF/classes")) { //$NON-NLS-1$ //$NON-NLS-2$
+		if(name.startsWith(Paths.get("WebContent", "WEB-INF", "classes")) || name.startsWith(Paths.get("WEB-INF", "classes"))) { //$NON-NLS-1$ //$NON-NLS-2$
 			return;
-		} else if(name.equals("build.properties")) { //$NON-NLS-1$
+		} else if(name.getFileName().toString().equals("build.properties")) { //$NON-NLS-1$
 			return;
 		}
 		
@@ -346,12 +367,24 @@ public class ODPExporter {
 	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		exportNamedData(note, exporter, baseDir, type);
 		
-		String name = getCleanName(note);
-		if(StringUtil.isNotEmpty(type.extension) && !name.endsWith(type.extension)) {
-			name += '.' + type.extension;
+		Path name = getCleanName(note);
+		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+			Path parent = name.getParent();
+			if(parent == null) {
+				name = Paths.get(name.getFileName().toString() + '.' + type.extension + EXT_METADATA);
+			} else {
+				name = parent.resolve(name.getFileName().toString() + '.' + type.extension + EXT_METADATA);
+			}
+		} else {
+			Path parent = name.getParent();
+			if(parent == null) {
+				name = Paths.get(name.getFileName().toString() + EXT_METADATA);
+			} else {
+				name = parent.resolve(name.getFileName().toString() + EXT_METADATA);
+			}
 		}
 		
-		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT));
+		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT, ITEM_NAME_FILE_DATA));
 		// Some of these will have pattern-based item ignores
 		if(StringUtil.isNotEmpty(type.itemNameIgnorePattern)) {
 			for(String itemName : note.getItemNames()) {
@@ -364,7 +397,7 @@ public class ODPExporter {
 		exporter.setExporterListProperty(DXLExporter.eOmitItemNames, ignoreItems.toArray(new String[ignoreItems.size()]));
 		exporter.setExporterProperty(38, 1);
 		try {
-			exportExplicitNote(note, exporter, baseDir, type.path.resolve(name + EXT_METADATA));
+			exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
 		} finally {
 			exporter.setExporterListProperty(DXLExporter.eOmitItemNames, StringUtil.EMPTY_STRING_ARRAY);
 			exporter.setExporterProperty(38, 0);
