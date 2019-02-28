@@ -182,7 +182,7 @@ public class ODPExporter {
 
 			Path databaseProperties = result.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 			Files.createDirectories(databaseProperties.getParent());
-			try(OutputStream os = Files.newOutputStream(databaseProperties)) {
+			try(OutputStream os = new SwiperOutputStream(databaseProperties)) {
 				exporter.exportDbProperties(os, database);
 			}
 			
