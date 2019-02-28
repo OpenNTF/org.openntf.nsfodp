@@ -1,13 +1,9 @@
 package org.openntf.nsfodp.exporter.equinox;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -15,10 +11,8 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
 
-import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
 import com.ibm.designer.domino.napi.NotesSession;
-import com.ibm.domino.napi.NException;
 import com.ibm.domino.napi.c.C;
 
 import lotus.domino.NotesThread;
@@ -38,6 +32,7 @@ public class ExporterApplication implements IApplication {
 		
 		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER));
 		boolean swiperFilter = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER));
+		boolean richTextAsItemData = "true".equals(System.getProperty(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA));
 		
 		NotesThread runner = new NotesThread(() -> {
 			C.initLibrary(null);
@@ -51,6 +46,7 @@ public class ExporterApplication implements IApplication {
 					ODPExporter exporter = new ODPExporter(database);
 					exporter.setBinaryDxl(binaryDxl);
 					exporter.setSwiperFilter(swiperFilter);
+					exporter.setRichTextAsItemData(richTextAsItemData);
 					Path result = exporter.export();
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
@@ -59,7 +55,7 @@ public class ExporterApplication implements IApplication {
 				} finally {
 					session.recycle();
 				}
-			} catch(NotesAPIException | NException | IOException | TransformerConfigurationException | TransformerFactoryConfigurationError e) {
+			} catch(Exception e) {
 				throw new RuntimeException(e);
 			}
 		});

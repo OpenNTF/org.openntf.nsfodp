@@ -24,12 +24,13 @@ public class EquinoxExporter extends AbstractEquinoxTask {
 		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
 	}
 
-	public void exportOdp(Path odpDir, String databasePath, boolean binaryDxl, boolean swiperFilter) {
+	public void exportOdp(Path odpDir, String databasePath, boolean binaryDxl, boolean swiperFilter, boolean richTextAsItemData) {
 		Map<String, String> props = new HashMap<>();
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, odpDir.toAbsolutePath().toString());
 		props.put(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH, databasePath);
 		props.put(NSFODPConstants.PROP_EXPORTER_BINARY_DXL, Boolean.toString(binaryDxl));
 		props.put(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER, Boolean.toString(swiperFilter));
+		props.put(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA, Boolean.toString(richTextAsItemData));
 		setSystemProperties(props);
 		
 		run("org.openntf.nsfodp.exporter.equinox.ExporterApplication");

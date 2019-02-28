@@ -57,17 +57,15 @@ import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.Format;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
+import com.ibm.designer.domino.napi.NotesCollection;
+import com.ibm.designer.domino.napi.NotesCollectionEntry;
 import com.ibm.designer.domino.napi.NotesDatabase;
-import com.ibm.designer.domino.napi.NotesDatetime;
-import com.ibm.designer.domino.napi.NotesFormula;
-import com.ibm.designer.domino.napi.NotesIDTable;
 import com.ibm.designer.domino.napi.NotesNote;
 import com.ibm.designer.domino.napi.design.FileAccess;
 import com.ibm.designer.domino.napi.dxl.DXLExporter;
+import com.ibm.designer.domino.napi.util.NotesIterator;
 import com.ibm.domino.napi.NException;
-import com.ibm.domino.napi.c.IdTable;
 import com.ibm.domino.napi.c.NsfNote;
-import com.ibm.domino.napi.c.callback.IDENUMERATEPROC;
 
 /**
  * Represents an on-disk project export environment.
@@ -96,6 +94,7 @@ public class ODPExporter {
 	
 	private final NotesDatabase database;
 	private boolean binaryDxl = false;
+	private boolean richTextAsItemData = false;
 	private boolean swiperFilter = false;
 	private Templates swiper;
 
@@ -119,6 +118,28 @@ public class ODPExporter {
 	 */
 	public boolean isBinaryDxl() {
 		return binaryDxl;
+	}
+	
+	/**
+	 * Sets whether the exporter is configured to export rich text items as Base64'd
+	 * binary data.
+	 * 
+	 * @param richTextAsItemData the value to set
+	 * @since 2.0.0
+	 */
+	public void setRichTextAsItemData(boolean richTextAsItemData) {
+		this.richTextAsItemData = richTextAsItemData;
+	}
+	
+	/**
+	 * Whether the exporter is configured to export rich text items as Base64'd
+	 * binary data.
+	 * 
+	 * @return the current rich text setting
+	 * @since 2.0.0
+	 */
+	public boolean isRichTextAsItemData() {
+		return richTextAsItemData;
 	}
 	
 	/**
@@ -149,6 +170,7 @@ public class ODPExporter {
 		return swiperFilter;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Path export() throws IOException, NotesAPIException, NException {
 		Path result = Files.createTempDirectory(getClass().getName());
 		
@@ -163,28 +185,25 @@ public class ODPExporter {
 			}
 			
 			exporter.setExporterProperty(DXLExporter.eForceNoteFormat, isBinaryDxl() ? 1 : 0);
+			exporter.setExporterProperty(DXLExporter.eDxlRichtextOption, isRichTextAsItemData() ? 1 : 0);
 			
-			NotesIDTable designCollection = new NotesIDTable(database);
+			NotesCollection designView = database.designOpenCollection(false, NOTE_CLASS_DESIGN | NOTE_ID_SPECIAL);
 			try {
-				designCollection.create();
-				
-				database.search(designCollection, NsfNote.NOTE_CLASS_ALLNONDATA, (NotesFormula)null, (String)null, 0, (NotesDatetime)null);
-				
-				IdTable.IDEnumerate(designCollection.getHandle(), new IDENUMERATEPROC() {
-					@Override
-					public short callback(int noteId) {
-						try {
-							NotesNote note = database.openNote(noteId, NsfNote.OPEN_RAW_MIME);
-							exportNote(note, exporter, result);
-						} catch(Throwable e) {
-							System.out.println(StringUtil.format("Encountered native exception while processing note ID {0}: {1}", Integer.toString(noteId, 16), e.getMessage()));
-						}
-						
-						return 0;
+				int readMask = READ_MASK_NOTEID | READ_MASK_NOTECLASS;
+				NotesIterator iter = designView.readEntries(readMask, 0, Integer.MAX_VALUE);
+				iter.forEachRemaining(entryObj -> {
+					NotesCollectionEntry entry = (NotesCollectionEntry)entryObj;
+					int noteId = 0;
+					try {
+						noteId = entry.getNoteID();
+						NotesNote note = database.openNote(noteId, NsfNote.OPEN_RAW_MIME);
+						exportNote(note, exporter, result);
+					} catch(Throwable e) {
+						System.out.println(StringUtil.format("Encountered native exception while processing note ID {0}: {1}", Integer.toString(noteId, 16), e.getMessage()));
 					}
 				});
 			} finally {
-				designCollection.recycle();
+				designView.recycle();
 			}
 		} finally {
 			exporter.recycle();
@@ -256,9 +275,8 @@ public class ODPExporter {
 		case Unknown:
 		default:
 			String flags = note.isItemPresent(DESIGN_FLAGS) ? note.getItemValueAsString(DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
-			String title = note.isItemPresent(FIELD_TITLE) ? note.getItemValueAsString(FIELD_TITLE) : String.valueOf(note.getNoteId());
+			String title = note.isItemPresent(FIELD_TITLE) ? note.getItemValueAsString(FIELD_TITLE) : Integer.toString(note.getNoteId(), 16);
 			System.out.println("Unknown note, flags=" + flags + ", title=" + title + ", class=" + (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT));
-			//throw new UnsupportedOperationException("Unhandled note: " + doc.getUniversalID() + ", flags " + doc.getItemValueString("$Flags")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 	}
@@ -384,7 +402,7 @@ public class ODPExporter {
 			}
 		}
 		
-		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT, ITEM_NAME_FILE_DATA));
+		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT, ITEM_NAME_FILE_DATA, ITEM_NAME_CONFIG_FILE_DATA, ITEM_NAME_CONFIG_FILE_SIZE));
 		// Some of these will have pattern-based item ignores
 		if(StringUtil.isNotEmpty(type.itemNameIgnorePattern)) {
 			for(String itemName : note.getItemNames()) {
@@ -467,7 +485,6 @@ public class ODPExporter {
 				break;
 			case CustomControl:
 				// Special behavior: also export the config data field
-				FileAccess.readFileContent(note, os);
 				
 				Path configPath = fullPath.getParent().resolve(fullPath.getFileName()+"-config"); //$NON-NLS-1$
 				try(OutputStream configOut = Files.newOutputStream(configPath)) {
@@ -475,6 +492,10 @@ public class ODPExporter {
 						StreamUtil.copyStream(configIn, configOut);
 					}
 				}
+				// Fallthrough intentional
+			case XPage:
+				FileAccess.readFileContent(note, os);
+				
 				break;
 			default:
 				FileAccess.readFileContent(note, os);

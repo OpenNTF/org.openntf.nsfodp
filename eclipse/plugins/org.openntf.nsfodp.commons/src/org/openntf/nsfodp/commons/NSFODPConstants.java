@@ -76,4 +76,7 @@ public enum NSFODPConstants {
 	public static final String HEADER_SWIPER_FILTER = "X-SwiperFilter"; //$NON-NLS-1$
 	public static final String PROP_EXPORTER_SWIPER_FILTER = "org.openntf.nsfodp.exporter.swiperFilter"; //$NON-NLS-1$
 	
+	public static final String HEADER_RICH_TEXT_AS_ITEM_DATA = "X-RichTextAsItemData"; //$NON-NLS-1$
+	public static final String PROP_RICH_TEXT_AS_ITEM_DATA = "org.openntf.nsfodp.exporter.richTextAsItemData"; //$NON-NLS-1$
+	
 }

@@ -142,6 +142,10 @@ public class ODPExporterServlet extends HttpServlet {
 					if("true".equals(swiperFilter)) { //$NON-NLS-1$
 						exporter.setSwiperFilter(true);
 					}
+					String richTextAsItemData = req.getHeader(NSFODPConstants.HEADER_RICH_TEXT_AS_ITEM_DATA);
+					if("true".equals(richTextAsItemData)) { //$NON-NLS-1$
+						exporter.setRichTextAsItemData(true);
+					}
 					
 					Path result = exporter.export();
 					cleanup.add(result);

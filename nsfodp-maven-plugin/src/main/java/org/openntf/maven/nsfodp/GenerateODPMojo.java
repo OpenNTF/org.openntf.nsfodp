@@ -108,10 +108,16 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 	@Parameter(property="nsfodp.exporter.swiperFilter", required=false)
 	private boolean swiperFilter = true;
 	/**
-	 * Whether or not to use "binary" DXL format. Defaults to <code>true</code>.
+	 * Whether or not to use "binary" DXL format. Defaults to <code>false</code>.
 	 */
 	@Parameter(property="nsfodp.exporter.binaryDxl", required=false)
-	private boolean binaryDxl = true;
+	private boolean binaryDxl = false;
+
+	/**
+	 * Whether or not to export rich text items as Base64'd binary data. Defaults to <code>true</code>.
+	 */
+	@Parameter(property="nsfodp.exporter.richTextAsItemData", required=false)
+	private boolean richTextAsItemData = true;
 
 	private Log log;
 	
@@ -199,9 +205,9 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 	private void exportODPLocal(Path odpDir) throws IOException {
 		EquinoxExporter exporter = new EquinoxExporter(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
 		if(file == null) {
-			exporter.exportOdp(odpDir, databasePath, binaryDxl, swiperFilter);
+			exporter.exportOdp(odpDir, databasePath, binaryDxl, swiperFilter, richTextAsItemData);
 		} else {
-			exporter.exportOdp(odpDir, file.getAbsolutePath(), binaryDxl, swiperFilter);
+			exporter.exportOdp(odpDir, file.getAbsolutePath(), binaryDxl, swiperFilter, richTextAsItemData);
 		}
 	}
 	
@@ -240,6 +246,7 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 			
 			req.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
 			req.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
+			req.addHeader(NSFODPConstants.HEADER_RICH_TEXT_AS_ITEM_DATA, String.valueOf(this.richTextAsItemData));
 			
 			HttpResponse res = client.execute(req);
 			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
