@@ -43,6 +43,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -52,6 +53,7 @@ import org.w3c.dom.Document;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
+import com.ibm.commons.xml.Format;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.designer.domino.napi.NotesAPIException;
 import com.ibm.designer.domino.napi.NotesDatabase;
@@ -161,7 +163,6 @@ public class ODPExporter {
 			
 			exporter.setExporterProperty(DXLExporter.eForceNoteFormat, isBinaryDxl() ? 1 : 0);
 			
-			final Throwable[] err = new Throwable[1];
 			NotesIDTable designCollection = new NotesIDTable(database);
 			try {
 				designCollection.create();
@@ -174,10 +175,8 @@ public class ODPExporter {
 						try {
 							NotesNote note = database.openNote(noteId, NsfNote.OPEN_RAW_MIME);
 							exportNote(note, exporter, result);
-						} catch (Throwable e) {
-							e.printStackTrace();
-							err[0] = e;
-							return 1;
+						} catch(Throwable e) {
+							System.out.println(StringUtil.format("Encountered native exception while processing note ID {0}: {1}", Integer.toString(noteId, 16), e.getMessage()));
 						}
 						
 						return 0;
@@ -185,19 +184,6 @@ public class ODPExporter {
 				});
 			} finally {
 				designCollection.recycle();
-			}
-			if(err[0] != null) {
-				if(err[0] instanceof RuntimeException) {
-					throw (RuntimeException)err[0];
-				} else if(err[0] instanceof IOException) {
-					throw (IOException)err[0];
-				} else if(err[0] instanceof NotesAPIException) {
-					throw (NotesAPIException)err[0];
-				} else if(err[0] instanceof NException) {
-					throw (NException)err[0];
-				} else {
-					throw new RuntimeException(err[0]);
-				}
 			}
 		} finally {
 			exporter.recycle();
@@ -520,16 +506,20 @@ public class ODPExporter {
 				os.close();
 				byte[] xml = ((ByteArrayOutputStream)os).toByteArray();
 				try(InputStream is = new ByteArrayInputStream(xml)) {
-					try(OutputStream os = Files.newOutputStream(path)) {
+					try {
 						Transformer transformer = swiper.newTransformer();
 
 						transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
-						transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+						transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
 
 						transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes"); //$NON-NLS-1$
 						
-						transformer.transform(new StreamSource(is), new StreamResult(os));
-					} catch (TransformerException e) {
+						DOMResult result = new DOMResult();
+						transformer.transform(new StreamSource(is), result);
+						try(OutputStream os = Files.newOutputStream(path)) {
+							DOMUtil.serialize(os, result.getNode(), Format.defaultFormat);
+						}
+					} catch (TransformerException | XMLException e) {
 						throw new IOException(e);
 					}
 				}
