@@ -197,13 +197,27 @@ public class ODPExporter {
 					try {
 						noteId = entry.getNoteID();
 						NotesNote note = database.openNote(noteId, NsfNote.OPEN_RAW_MIME);
-						exportNote(note, exporter, result);
+						try {
+							exportNote(note, exporter, result);
+						} finally {
+							note.recycle();
+						}
 					} catch(Throwable e) {
 						System.out.println(StringUtil.format("Encountered native exception while processing note ID {0}: {1}", Integer.toString(noteId, 16), e.getMessage()));
 					}
 				});
 			} finally {
 				designView.recycle();
+			}
+			
+			// Export the icon note specially
+			NotesNote iconNote = database.openNote(NOTE_ID_SPECIAL | NOTE_CLASS_ICON, NsfNote.OPEN_RAW_MIME);
+			try {
+				exportNote(iconNote, exporter, result);
+			} catch(Throwable e) {
+				System.out.println(StringUtil.format("Encountered native exception while processing icon note: {1}", e.getMessage()));
+			} finally {
+				iconNote.recycle();
 			}
 		} finally {
 			exporter.recycle();
@@ -215,11 +229,11 @@ public class ODPExporter {
 	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException, NException, XMLException {
 		NoteType type = NoteType.forNote(note);
 		switch(type) {
+		case IconNote:
 		case AboutDocument:
 		case UsingDocument:
 		case SharedActions:
 		case DBIcon:
-		case IconNote:
 		case DBScript:
 			exportExplicitNote(note, exporter, baseDir, type.path);
 			break;
