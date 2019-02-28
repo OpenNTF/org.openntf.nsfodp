@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -50,6 +51,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
@@ -171,7 +173,7 @@ public class ODPExporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Path export() throws IOException, NotesAPIException, NException {
+	public Path export() throws IOException, NotesAPIException, NException, XMLException {
 		Path result = Files.createTempDirectory(getClass().getName());
 		
 		DXLExporter exporter = new DXLExporter(database);
@@ -187,7 +189,7 @@ public class ODPExporter {
 			exporter.setExporterProperty(DXLExporter.eForceNoteFormat, isBinaryDxl() ? 1 : 0);
 			exporter.setExporterProperty(DXLExporter.eDxlRichtextOption, isRichTextAsItemData() ? 1 : 0);
 			
-			NotesCollection designView = database.designOpenCollection(false, NOTE_CLASS_DESIGN | NOTE_ID_SPECIAL);
+			NotesCollection designView = database.designOpenCollection(false, 0);
 			try {
 				int readMask = READ_MASK_NOTEID | READ_MASK_NOTECLASS;
 				NotesIterator iter = designView.readEntries(readMask, 0, Integer.MAX_VALUE);
@@ -221,6 +223,7 @@ public class ODPExporter {
 			}
 			
 			generateManifestMf(result);
+			generateEclipseProjectFile(result);
 			
 		} finally {
 			exporter.recycle();
@@ -553,6 +556,33 @@ public class ODPExporter {
 			
 			// Just create a blank file for now, as Designer does
 			Files.createFile(manifest);
+		}
+	}
+	
+	/**
+	 * Generates a stub .project file if the exporter did not find one in the NSF.
+	 * 
+	 * @param baseDir the base directory for export operations
+	 * @throws IOException
+	 * @throws XMLException 
+	 */
+	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException {
+		Path manifest = baseDir.resolve(".project");
+		if(!Files.isRegularFile(manifest)) {
+			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE)) {
+				Document xmlDoc = DOMUtil.createDocument();
+				Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription");
+				{
+					Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name");
+					String path = database.getDatabasePath().replace('\\', '/');
+					name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_"));
+				}
+				DOMUtil.createElement(xmlDoc, projectDescription, "comment");
+				DOMUtil.createElement(xmlDoc, projectDescription, "projects");
+				DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec");
+				DOMUtil.createElement(xmlDoc, projectDescription, "natures");
+				DOMUtil.serialize(os, xmlDoc, Format.defaultFormat);
+			}
 		}
 	}
 	

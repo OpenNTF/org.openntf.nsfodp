@@ -161,6 +161,16 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 			} else {
 				Path zip = exportODPRemote();
 				try {
+					Path eclipseProject = odpDir.resolve(".project");
+					if(Files.exists(eclipseProject)) {
+						Path tempPath = Files.createTempFile("nsfodp", ".project");
+						Files.delete(tempPath);
+						Files.move(eclipseProject, tempPath);
+						eclipseProject = tempPath;
+					} else {
+						eclipseProject = null;
+					}
+					
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
 					}
@@ -187,6 +197,9 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 								}
 							}
 						}
+					}
+					if(eclipseProject != null) {
+						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING);
 					}
 				} finally {
 					Files.deleteIfExists(zip);

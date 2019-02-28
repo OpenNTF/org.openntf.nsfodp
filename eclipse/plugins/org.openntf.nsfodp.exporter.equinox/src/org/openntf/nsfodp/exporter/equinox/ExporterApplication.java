@@ -3,6 +3,7 @@ package org.openntf.nsfodp.exporter.equinox;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 
 import org.eclipse.equinox.app.IApplication;
@@ -48,10 +49,23 @@ public class ExporterApplication implements IApplication {
 					exporter.setSwiperFilter(swiperFilter);
 					exporter.setRichTextAsItemData(richTextAsItemData);
 					Path result = exporter.export();
+					Path eclipseProject = odpDir.resolve(".project");
+					if(Files.exists(eclipseProject)) {
+						System.out.println("Stashing the eclipse project");
+						Path tempPath = Files.createTempFile("nsfodp", ".project");
+						Files.delete(tempPath);
+						Files.move(eclipseProject, tempPath);
+						eclipseProject = tempPath;
+					} else {
+						eclipseProject = null;
+					}
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
 					}
 					Files.move(result, odpDir);
+					if(eclipseProject != null) {
+						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING);
+					}
 				} finally {
 					session.recycle();
 				}
