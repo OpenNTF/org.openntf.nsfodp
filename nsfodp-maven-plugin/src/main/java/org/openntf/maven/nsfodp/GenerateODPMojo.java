@@ -47,15 +47,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.maven.artifact.manager.WagonManager;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.openntf.maven.nsfodp.equinox.EquinoxExporter;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
@@ -69,15 +66,9 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
  * @since 1.4.0
  */
 @Mojo(name="generateODP", requiresProject=false)
-public class GenerateODPMojo extends AbstractMojo {
+public class GenerateODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/exporter"; //$NON-NLS-1$
-
-	@Parameter(defaultValue="${project}", readonly=true, required=false)
-	private MavenProject project;
-
-	@Component
-	private WagonManager wagonManager;
 	
 	/**
 	 * Location of the ODP directory.
@@ -146,7 +137,11 @@ public class GenerateODPMojo extends AbstractMojo {
 			throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
 		}
 		if(log.isInfoEnabled()) {
-			log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databasePath)); //$NON-NLS-1$
+			if(databaseFile == null) {
+				log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databasePath)); //$NON-NLS-1$
+			} else {
+				log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databaseFile)); //$NON-NLS-1$
+			}
 		}
 		
 		URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl);
@@ -155,37 +150,41 @@ public class GenerateODPMojo extends AbstractMojo {
 		}
 		
 		try {
-			Path zip = exportODP();
-			try {
-				if(Files.exists(odpDir)) {
-					NSFODPUtil.deltree(Collections.singleton(odpDir));
-				}
-				Files.createDirectories(odpDir);
-				
-				// Extract the ZIP to the destination
-				try(ZipFile zipFile = new ZipFile(zip.toFile())) {
-					for(ZipEntry entry : Collections.list(zipFile.entries())) {
-						if(log.isDebugEnabled()) {
-							log.debug(Messages.getString("GenerateODPMojo.exportingZipEntry", entry.getName())); //$NON-NLS-1$
-						}
-						
-						String name = entry.getName();
-						if(name != null && !name.isEmpty()) {
-							Path entryPath = Paths.get(name);
-							Path fullPath = odpDir.resolve(entryPath);
-							if(entry.isDirectory()) {
-								Files.createDirectories(fullPath);
-							} else {
-								Files.createDirectories(fullPath.getParent());
-								try(InputStream is = zipFile.getInputStream(entry)) {
-									Files.copy(is, fullPath);
+			if(isRunLocally()) {
+				exportODPLocal(odpDir);
+			} else {
+				Path zip = exportODPRemote();
+				try {
+					if(Files.exists(odpDir)) {
+						NSFODPUtil.deltree(Collections.singleton(odpDir));
+					}
+					Files.createDirectories(odpDir);
+					
+					// Extract the ZIP to the destination
+					try(ZipFile zipFile = new ZipFile(zip.toFile())) {
+						for(ZipEntry entry : Collections.list(zipFile.entries())) {
+							if(log.isDebugEnabled()) {
+								log.debug(Messages.getString("GenerateODPMojo.exportingZipEntry", entry.getName())); //$NON-NLS-1$
+							}
+							
+							String name = entry.getName();
+							if(name != null && !name.isEmpty()) {
+								Path entryPath = Paths.get(name);
+								Path fullPath = odpDir.resolve(entryPath);
+								if(entry.isDirectory()) {
+									Files.createDirectories(fullPath);
+								} else {
+									Files.createDirectories(fullPath.getParent());
+									try(InputStream is = zipFile.getInputStream(entry)) {
+										Files.copy(is, fullPath);
+									}
 								}
 							}
 						}
 					}
+				} finally {
+					Files.deleteIfExists(zip);
 				}
-			} finally {
-				Files.deleteIfExists(zip);
 			}
 		} catch(Throwable t) {
 			throw new MojoExecutionException(Messages.getString("GenerateODPMojo.exceptionGenerating"), t); //$NON-NLS-1$
@@ -193,7 +192,24 @@ public class GenerateODPMojo extends AbstractMojo {
 
 	}
 	
-	private Path exportODP() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, URISyntaxException, MojoExecutionException, ClientProtocolException, IOException {
+	// *******************************************************************************
+	// * Local execution
+	// *******************************************************************************
+	
+	private void exportODPLocal(Path odpDir) throws IOException {
+		EquinoxExporter exporter = new EquinoxExporter(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
+		if(file == null) {
+			exporter.exportOdp(odpDir, databasePath, binaryDxl, swiperFilter);
+		} else {
+			exporter.exportOdp(odpDir, file.getAbsolutePath(), binaryDxl, swiperFilter);
+		}
+	}
+	
+	// *******************************************************************************
+	// * Remote execution
+	// *******************************************************************************
+	
+	private Path exportODPRemote() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, URISyntaxException, MojoExecutionException, ClientProtocolException, IOException {
 		HttpClientBuilder httpBuilder = HttpClients.custom();
 		if(this.exporterServerTrustSelfSignedSsl) {
 			SSLContextBuilder sslBuilder = new SSLContextBuilder();

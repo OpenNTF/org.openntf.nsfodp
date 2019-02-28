@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: On-Disk-Project Exporter Equinox Application
+Bundle-SymbolicName: org.openntf.nsfodp.exporter.equinox;singleton:=true
+Automatic-Module-Name: org.openntf.nsfodp.exporter.equinox
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: OpenNTF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.osgi,
+ org.eclipse.core.runtime,
+ com.ibm.commons;bundle-version="9.0.1",
+ com.ibm.commons.xml;bundle-version="9.0.1",
+ org.openntf.nsfodp.commons,
+ com.darwino.domino.napi;bundle-version="2.5.0",
+ org.openntf.nsfodp.exporter,
+ com.ibm.domino.napi;bundle-version="9.0.1",
+ org.openntf.nsfodp.commons.odp
+Bundle-Activator: org.openntf.nsfodp.exporter.equinox.ExporterEquinoxActivator
+Bundle-ClassPath: .
+Import-Package: lotus.domino

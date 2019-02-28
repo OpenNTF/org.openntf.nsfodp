@@ -27,17 +27,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.manager.WagonManager;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
@@ -75,22 +69,10 @@ import java.util.zip.ZipOutputStream;
  * Goal which compiles an on-disk project.
  */
 @Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE)
-public class CompileODPMojo extends AbstractMojo {
+public class CompileODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
-	
-	@Parameter(defaultValue="${project}", readonly=true)
-	private MavenProject project;
-	
-	@Parameter(defaultValue="${plugin}", readonly=true)
-	private PluginDescriptor pluginDescriptor;
-	
-	@Parameter(defaultValue="${session}", readonly=true)
-	private MavenSession mavenSession;
-	
-	@Component
-	private WagonManager wagonManager;
 	
 	/**
 	 * Location of the generated NSF.
@@ -125,34 +107,6 @@ public class CompileODPMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.compiler.serverTrustSelfSignedSsl", required=false)
 	private boolean compilerServerTrustSelfSignedSsl;
-	/**
-	 * The path to a Notes or Domino executable directory to allow for local
-	 * compilation.
-	 * 
-	 * <p>This must be paired with {@code notesPlatform}.</p>
-	 */
-	@Parameter(property="notes-program", required=false)
-	private File notesProgram;
-	/**
-	 * The path to a Domino OSGi runtime directory to allow for local
-	 * compilation.
-	 * 
-	 * <p>This must be paired with {@code notesPlatform}.</p>
-	 * @see <a href="https://stash.openntf.org/projects/P2T/repos/generate-domino-update-site/browse">
-	 * 		https://stash.openntf.org/projects/P2T/repos/generate-domino-update-site/browse
-	 * 		</a>
-	 */
-	@Parameter(property="notes-platform")
-	private URL notesPlatform;
-	
-	/**
-	 * Sets the project to require server compilation even if a local environment is
-	 * available.
-	 * 
-	 * <p>This may be useful for project that use LS2J, which can crash the Equinox JVM.</p>
-	 */
-	@Parameter(property="nsfodp.compiler.requireServerCompilation", required=false)
-	private boolean requireServerCompilation = false;
 	
 	/**
 	 * An update site whose contents to use when building the ODP.
@@ -212,7 +166,7 @@ public class CompileODPMojo extends AbstractMojo {
 		if(notesProgram == null && compilerServerUrl == null) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.programAndUrlEmpty")); //$NON-NLS-1$
 		}
-		if(compilerServerUrl == null && requireServerCompilation) {
+		if(compilerServerUrl == null && requireServerExecution) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.requireServerNoServer")); //$NON-NLS-1$
 		}
 		
@@ -257,7 +211,7 @@ public class CompileODPMojo extends AbstractMojo {
 					Files.createDirectories(outputDirectory);
 				}
 				
-				if(notesProgram != null && !requireServerCompilation) {
+				if(isRunLocally()) {
 					compileOdpLocal(odpDirectory, updateSite, outputFile);
 				} else {
 					Path odpZip = zipDirectory(odpDirectory);

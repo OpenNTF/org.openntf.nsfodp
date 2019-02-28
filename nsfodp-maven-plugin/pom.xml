@@ -166,11 +166,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.compiler.servlet</artifactId>
-			<version>${nsfodp-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openntf.nsfodp</groupId>
 			<artifactId>org.openntf.nsfodp.compiler.equinox</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
@@ -181,17 +176,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.deployment.servlet</artifactId>
-			<version>${nsfodp-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openntf.nsfodp</groupId>
 			<artifactId>org.openntf.nsfodp.exporter</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.exporter.servlet</artifactId>
+			<artifactId>org.openntf.nsfodp.exporter.equinox</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
 		
