@@ -36,6 +36,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -79,6 +81,7 @@ import com.ibm.domino.napi.c.NsfNote;
  */
 public class ODPExporter {
 	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
+	private static final Collection<NoteType> IGNORE_FILENAMES_TYPES = EnumSet.of(NoteType.FileResource, NoteType.StyleSheet, NoteType.ImageResource, NoteType.Theme);
 	
 	// Get handles on some FileAccess methods, since the public ones use the wrong item name
 	private static Method NReadScriptContent;
@@ -341,7 +344,7 @@ public class ODPExporter {
 		}
 		
 		String title;
-		if(note.isItemPresent(ITEM_NAME_FILE_NAMES) && type != NoteType.FileResource) {
+		if(note.isItemPresent(ITEM_NAME_FILE_NAMES) && !IGNORE_FILENAMES_TYPES.contains(type)) {
 			// Then it's a "true" VFS path
 			return Paths.get(note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0).replace('/', File.separatorChar));
 		} else {
