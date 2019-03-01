@@ -315,7 +315,7 @@ public class ODPExporter {
 	 * @throws NotesAPIException 
 	 */
 	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
-		Path name = getCleanName(note);
+		Path name = getCleanName(note, type);
 		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
 			Path parent = name.getParent();
 			if(parent == null) {
@@ -335,13 +335,13 @@ public class ODPExporter {
 	 * @return an FS-friendly version of the title
 	 * @throws NotesAPIException 
 	 */
-	private Path getCleanName(NotesNote note) throws NotesAPIException {
+	private Path getCleanName(NotesNote note, NoteType type) throws NotesAPIException {
 		if(!note.isItemPresent(FIELD_TITLE)) {
 			return Paths.get("(Untitled)");
 		}
 		
 		String title;
-		if(note.isItemPresent(ITEM_NAME_FILE_NAMES)) {
+		if(note.isItemPresent(ITEM_NAME_FILE_NAMES) && type != NoteType.FileResource) {
 			// Then it's a "true" VFS path
 			return Paths.get(note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0).replace('/', File.separatorChar));
 		} else {
@@ -373,7 +373,7 @@ public class ODPExporter {
 	 * @throws XMLException 
 	 */
 	private void exportNamedData(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
-		Path name = getCleanName(note);
+		Path name = getCleanName(note, type);
 		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
 			Path parent = name.getParent();
 			if(parent == null) {
@@ -408,7 +408,7 @@ public class ODPExporter {
 	private void exportNamedDataAndMetadata(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		exportNamedData(note, exporter, baseDir, type);
 		
-		Path name = getCleanName(note);
+		Path name = getCleanName(note, type);
 		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
 			Path parent = name.getParent();
 			if(parent == null) {
