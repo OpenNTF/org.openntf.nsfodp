@@ -96,7 +96,7 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 	/**
 	 * The database path for the remote server to export.
 	 */
-	@Parameter(property="nsfodp.exporter.databasePath", required=false)
+	@Parameter(property="databasePath", required=false)
 	private String databasePath;
 	
 	@Parameter(property="file", required=false)
