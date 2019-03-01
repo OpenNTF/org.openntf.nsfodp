@@ -269,6 +269,7 @@ public class ODPExporter {
 			exportNamedNote(note, exporter, baseDir, type);
 			break;
 		case CustomControl:
+		case CustomControlProperties:
 		case FileResource:
 		case ImageResource:
 		case JavaScriptLibrary:
@@ -277,6 +278,7 @@ public class ODPExporter {
 		case StyleSheet:
 		case Theme:
 		case XPage:
+		case XPageProperties:
 		case ServerJavaScriptLibrary:
 		case Jar:
 		case WiringProperties:

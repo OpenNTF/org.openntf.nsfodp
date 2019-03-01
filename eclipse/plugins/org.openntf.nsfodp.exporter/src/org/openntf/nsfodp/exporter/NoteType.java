@@ -40,7 +40,9 @@ public enum NoteType {
 	LotusScriptLibrary("lss", Paths.get("Code", "ScriptLibraries"), false, SCRIPTLIB_ITEM_NAME, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	JavaLibrary("javalib", Paths.get("Code", "ScriptLibraries"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	CustomControl(null, Paths.get("CustomControls"), false, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN), //$NON-NLS-1$
+	CustomControlProperties(null, Paths.get("CustomControls"), false, ITEM_NAME_FILE_DATA, null),
 	XPage(null, Paths.get("XPages"), false, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN), //$NON-NLS-1$
+	XPageProperties(null, Paths.get("XPages"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$
 	Form("form", Paths.get("Forms"), false), //$NON-NLS-1$ //$NON-NLS-2$
 	Frameset("frameset", Paths.get("Framesets"), false), //$NON-NLS-1$ //$NON-NLS-2$
 	ServerJavaScriptLibrary("jss", Paths.get("Code", "ScriptLibraries"), false, SERVER_JAVASCRIPTLIBRARY_CODE, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -226,11 +228,18 @@ public enum NoteType {
 				return CompositeApplication;
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WIDGET)) {
 				return CompositeComponent;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPPAGE_NOPROPS)) {
-				// TODO figure out XPages properties files
-				return XPage;
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPCC)) {
-				return CustomControl;
+				if(CmemflagTest(flags, DESIGN_FLAG_PROPFILE)) {
+					return CustomControlProperties;
+				} else {
+					return CustomControl;
+				}
+			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPPAGE)) {
+				if(CmemflagTest(flags, DESIGN_FLAG_PROPFILE)) {
+					return XPageProperties;
+				} else {
+					return XPage;
+				}
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_STYLEKIT)) {
 				return Theme;
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WEBPAGE)) {
