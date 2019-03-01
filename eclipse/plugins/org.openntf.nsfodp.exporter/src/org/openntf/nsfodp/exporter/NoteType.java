@@ -35,6 +35,7 @@ public enum NoteType {
 	IconNote(Paths.get("Resources", "IconNote"), true), //$NON-NLS-1$ //$NON-NLS-2$
 	DBIcon(Paths.get("AppProperties", "$DBIcon"), true), //$NON-NLS-1$ //$NON-NLS-2$
 	DBScript(Paths.get("Code", "dbscript.lsdb"), true), //$NON-NLS-1$ //$NON-NLS-2$
+	XSPDesignProperties(Paths.get("AppProperties"), true), //$NON-NLS-1$
 	Java(null, Paths.get("Code", "Java"), false, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN), //$NON-NLS-1$ //$NON-NLS-2$
 	JavaScriptLibrary("js", Paths.get("Code", "ScriptLibraries"), false, JAVASCRIPTLIBRARY_CODE, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	LotusScriptLibrary("lss", Paths.get("Code", "ScriptLibraries"), false, SCRIPTLIB_ITEM_NAME, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -255,8 +256,13 @@ public enum NoteType {
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_DB2ACCESSVIEW)) {
 				return DB2AccessView;
 			} else if(CmemflagTestMultiple(flags, DFLAGPAT_FILE)) {
+				// xspdesign.properties needs special handling, but is distinguished only by file name
+				String filePath = note.isItemPresent(ITEM_NAME_FILE_NAMES) ? note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0) : null;
+				
 				if(!CmemflagTest(flags, DESIGN_FLAG_HIDEFROMDESIGNLIST)) {
 					return FileResource;
+				} else if("xspdesign.properties".equals(filePath)) {
+					return XSPDesignProperties;
 				} else if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBCONTENTFILE)) {
 					return WebContentFile;
 				} else if(CmemflagTestMultiple(flags, DFLAGPAT_JAVAFILE)) {

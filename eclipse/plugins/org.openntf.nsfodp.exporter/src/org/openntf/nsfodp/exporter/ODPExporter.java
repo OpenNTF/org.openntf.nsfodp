@@ -288,6 +288,7 @@ public class ODPExporter {
 			break;
 		case WebContentFile:
 		case GenericFile:
+		case XSPDesignProperties:
 			exportNamedData(note, exporter, baseDir, type);
 			break;
 		case DesignCollection:
