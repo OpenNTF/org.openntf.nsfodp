@@ -65,7 +65,7 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
  * @author Jesse Gallagher
  * @since 1.4.0
  */
-@Mojo(name="generateODP", requiresProject=false)
+@Mojo(name="generateODP")
 public class GenerateODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/exporter"; //$NON-NLS-1$
@@ -140,7 +140,14 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 		String databasePath = this.databasePath;
 		File databaseFile = this.file;
 		if((databasePath == null || databasePath.isEmpty()) && databaseFile == null) {
-			throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
+			if("standalone-pom".equals(project.getArtifactId()) || project.getPackaging().equals("domino-nsf")) {
+				throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
+			} else {
+				if(log.isInfoEnabled()) {
+					log.info(Messages.getString("GenerateODPMojo.skip")); //$NON-NLS-1$
+				}
+				return;
+			}
 		}
 		if(log.isInfoEnabled()) {
 			if(databaseFile == null) {
@@ -208,7 +215,6 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 		} catch(Throwable t) {
 			throw new MojoExecutionException(Messages.getString("GenerateODPMojo.exceptionGenerating"), t); //$NON-NLS-1$
 		}
-
 	}
 	
 	// *******************************************************************************
