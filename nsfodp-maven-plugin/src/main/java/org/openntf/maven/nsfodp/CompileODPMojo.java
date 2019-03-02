@@ -206,6 +206,9 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		}
 		
 		if(needsCompile) {
+			if(log.isInfoEnabled()) {
+				log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
+			}
 			try {
 				if(!Files.exists(outputDirectory)) {
 					Files.createDirectories(outputDirectory);
@@ -288,10 +291,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	}
 	
 	private Path compileOdpOnServer(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-		if(log.isInfoEnabled()) {
-			log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
-		}
-		
 		URL compilerServerUrl = Objects.requireNonNull(this.compilerServerUrl);
 		if(log.isDebugEnabled()) {
 			log.debug(Messages.getString("CompileODPMojo.usingServerUrl", compilerServerUrl)); //$NON-NLS-1$
