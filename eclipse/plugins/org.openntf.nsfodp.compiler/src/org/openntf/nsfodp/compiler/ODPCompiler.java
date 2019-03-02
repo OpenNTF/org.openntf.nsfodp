@@ -912,50 +912,60 @@ public class ODPCompiler {
 			}
 			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, "LotusScript library " + odp.getBaseDirectory().relativize(lib.getDataFile())));
 		}
-
-		subTask("- Compiling LotusScript");
-		// In lieu of a dependency graph, just keep bashing at the list until it's done
-		Queue<String> remaining = new ArrayDeque<>(noteIds);
-		Map<String, String> titles = new HashMap<>();
-		NSFDatabase nsfDatabase = nsfSession.getDatabaseByHandle(XSPNative.getDBHandle(database), database.getServer());
-		for(int i = 0; i < noteIds.size(); i++) {
-			Queue<String> nextPass = new ArrayDeque<>();
+		
+		if(!noteIds.isEmpty()) {
+			try {
+				Class.forName("lotus.domino.websvc.client.Stub");
+			} catch(ClassNotFoundException e) {
+				subTask("- Web Service support classes not found; skipping LotusScript compilation");
+				subTask("- Ensure that websvc.jar is in the Notes JVM lib/ext directory. See NSF ODP Tooling README.md for more details");
+				return;
+			}
 			
-			String noteId;
-			while((noteId = remaining.poll()) != null) {
-				NSFNote note = nsfDatabase.getNoteByID(noteId);
-				String title = null;
-				try {
-					title = note.get("$TITLE", String.class); //$NON-NLS-1$
-					titles.put(noteId, title);
-					note.compileLotusScript();
-					note.sign();
-					note.save();
-				} catch(LotusScriptCompilationException err) {
-					nextPass.add(noteId);
-					titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-				} catch(DominoException err) {
-					if(err.getStatus() == 12051) { // Same as above, but not encapsulated
-						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+			subTask("- Compiling LotusScript");
+			// In lieu of a dependency graph, just keep bashing at the list until it's done
+			Queue<String> remaining = new ArrayDeque<>(noteIds);
+			Map<String, String> titles = new HashMap<>();
+			NSFDatabase nsfDatabase = nsfSession.getDatabaseByHandle(XSPNative.getDBHandle(database), database.getServer());
+			for(int i = 0; i < noteIds.size(); i++) {
+				Queue<String> nextPass = new ArrayDeque<>();
+				
+				String noteId;
+				while((noteId = remaining.poll()) != null) {
+					NSFNote note = nsfDatabase.getNoteByID(noteId);
+					String title = null;
+					try {
+						title = note.get("$TITLE", String.class); //$NON-NLS-1$
+						titles.put(noteId, title);
+						note.compileLotusScript();
+						note.sign();
+						note.save();
+					} catch(LotusScriptCompilationException err) {
 						nextPass.add(noteId);
-					} else {
-						throw err;
+						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+					} catch(DominoException err) {
+						if(err.getStatus() == 12051) { // Same as above, but not encapsulated
+							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+							nextPass.add(noteId);
+						} else {
+							throw err;
+						}
+					} finally {
+						note.free();
 					}
-				} finally {
-					note.free();
+				}
+				
+				remaining = nextPass;
+				if(nextPass.isEmpty()) {
+					break;
 				}
 			}
-			
-			remaining = nextPass;
-			if(nextPass.isEmpty()) {
-				break;
+			if(!remaining.isEmpty()) {
+				String notes = remaining.stream()
+					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
+					.collect(Collectors.joining("\n")); //$NON-NLS-1$
+				throw new RuntimeException("Unable to compile LotusScript in notes:\n\n" + notes); //$NON-NLS-1$
 			}
-		}
-		if(!remaining.isEmpty()) {
-			String notes = remaining.stream()
-				.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
-				.collect(Collectors.joining("\n")); //$NON-NLS-1$
-			throw new RuntimeException("Unable to compile LotusScript in notes:\n\n" + notes); //$NON-NLS-1$
 		}
 	}
 	

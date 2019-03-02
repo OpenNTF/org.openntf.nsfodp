@@ -6,14 +6,5 @@ Automatic-Module-Name: org.openntf.nsfodp.compiler.equinox
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: OpenNTF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.osgi,
- org.eclipse.core.runtime,
- com.ibm.commons;bundle-version="9.0.1",
- com.ibm.commons.xml;bundle-version="9.0.1",
- org.openntf.nsfodp.commons,
- org.openntf.nsfodp.compiler,
- com.ibm.domino.napi;bundle-version="9.0.1",
- org.openntf.nsfodp.commons.odp
-Bundle-Activator: org.openntf.nsfodp.compiler.equinox.CompilerEquinoxActivator
 Bundle-ClassPath: .
-Import-Package: lotus.domino
+Fragment-Host: org.openntf.nsfodp.compiler

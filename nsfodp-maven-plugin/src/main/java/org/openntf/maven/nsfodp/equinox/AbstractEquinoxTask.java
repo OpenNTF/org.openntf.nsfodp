@@ -75,13 +75,14 @@ public abstract class AbstractEquinoxTask {
 				log.debug(Messages.getString("EquinoxMojo.usingEquinoxLauncher", equinox)); //$NON-NLS-1$
 			}
 			
-			Path javaBin = getJavaBinary();
+			Path javaBin = getJavaBinary(notesProgram);
 			
 			List<Path> classpath = new ArrayList<>();
 			classpath.add(equinox);
 			if(classpathJars != null) {
 				classpath.addAll(classpathJars);
 			}
+			addIBMJars(notesProgram, classpath);
 			
 			if(!Files.exists(notesProgram)) {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesProgramDirDoesNotExist", notesProgram)); //$NON-NLS-1$
@@ -106,7 +107,7 @@ public abstract class AbstractEquinoxTask {
 				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.odp", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.compiler", 2), //$NON-NLS-1$
-				getDependencyRef("org.openntf.nsfodp.compiler.equinox", 2), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.compiler.equinox", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.deployment", 2), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.exporter", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.exporter.equinox", -1), //$NON-NLS-1$
@@ -114,7 +115,7 @@ public abstract class AbstractEquinoxTask {
 				getDependencyRef("com.ibm.xsp.extlibx.bazaar.interpreter", -1), //$NON-NLS-1$
 				getDependencyRef("com.darwino.domino.napi", -1), //$NON-NLS-1$
 				createJempowerShim(notesProgram),
-				createClasspathExtensionBundle(classpathJars, plugins)
+				createClasspathExtensionBundle(classpath, plugins)
 			));
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
@@ -149,7 +150,9 @@ public abstract class AbstractEquinoxTask {
 			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
 			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
 			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("osgi.parentClassloader", "framework");
+			config.put("osgi.parentClassloader", "ext");
+			config.put("osgi.classloader.define.packages", "noattributes");
+			config.put("org.osgi.framework.bootdelegation", "lotus.*");
 			try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
 			}
@@ -160,7 +163,6 @@ public abstract class AbstractEquinoxTask {
 			List<String> command = new ArrayList<>();
 			command.add(javaBin.toAbsolutePath().toString());
 			command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
-			
 			if(systemProperties != null) {
 				for(Map.Entry<String, String> prop : systemProperties.entrySet()) {
 					command.add("-D" + prop.getKey() + "=" + prop.getValue());
@@ -172,10 +174,10 @@ public abstract class AbstractEquinoxTask {
 			command.add("-configuration"); //$NON-NLS-1$
 			command.add(configuration.toAbsolutePath().toString());
 			command.add("-Dosgi.instance.area=" + workspace.toAbsolutePath().toString());
-			
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("EquinoxMojo.launchingEquinox", command.stream().collect(Collectors.joining(" "))));  //$NON-NLS-1$//$NON-NLS-2$
 			}
+			
 			
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
@@ -185,10 +187,11 @@ public abstract class AbstractEquinoxTask {
 			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 			builder.environment().put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 			builder.environment().put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			builder.environment().put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
 			builder.environment().put("CLASSPATH", //$NON-NLS-1$
 					classpath.stream()
 					.map(path -> path.toString())
-					.collect(Collectors.joining(":")) //$NON-NLS-1$
+					.collect(Collectors.joining(File.pathSeparator)) //$NON-NLS-1$
 			);
 			
 			Process proc = builder.start();
@@ -242,14 +245,29 @@ public abstract class AbstractEquinoxTask {
 		}
 	}
 	
-	private static Path getJavaBinary() throws MojoExecutionException {
+	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
+		// Look to see if we can find a Notes JVM
+		Path jvmBin = notesProgram.resolve("jvm").resolve("bin");
+		if(!Files.isDirectory(jvmBin)) {
+			// macOS 10.0.1+ embedded JVM
+			jvmBin = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("bin");
+		}
+		if(!Files.isDirectory(jvmBin)) {
+			if(log.isWarnEnabled()) {
+				log.warn("Unable to locate Notes/Domino JVM; using active JVM instead");
+			}
+			throw new RuntimeException("Could not find JVM at " + jvmBin);
+			//jvmBin = SystemUtils.getJavaHome().toPath().resolve("bin");
+		}
+			
+		
 		String javaBinName;
 		if(SystemUtils.IS_OS_WINDOWS) {
 			javaBinName = "java.exe"; //$NON-NLS-1$
 		} else {
 			javaBinName = "java"; //$NON-NLS-1$
 		}
-		Path javaBin = SystemUtils.getJavaHome().toPath().resolve("bin").resolve(javaBinName); //$NON-NLS-1$
+		Path javaBin = jvmBin.resolve(javaBinName); //$NON-NLS-1$
 		if(!Files.exists(javaBin)) {
 			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
 		}
@@ -342,5 +360,32 @@ public abstract class AbstractEquinoxTask {
     	} catch(IOException e) {
     		throw new RuntimeException(e);
     	}
+    }
+    
+    private void addIBMJars(Path notesProgram, Collection<Path> classpath) {
+    	Path lib = notesProgram.resolve("jvm").resolve("lib");
+    	
+    	Path ibmPkcs = lib.resolve("ibmpkcs.jar");
+    	if(!Files.isReadable(ibmPkcs)) {
+    		if(log.isDebugEnabled()) {
+    			log.debug("Unable to locate ibmpkcs.jar - com.ibm.misc classes will be unavailable during compilation");
+    		}
+    	} else {
+    		classpath.add(ibmPkcs);
+    	}
+    	
+    	Path notesJar = lib.resolve("ext").resolve("Notes.jar");
+    	if(!Files.isReadable(notesJar)) {
+    		throw new IllegalStateException("Unable to locate Notes.jar at expected path " + notesJar);
+    	}
+    	classpath.add(notesJar);
+    	
+    	Path websvc = lib.resolve("ext").resolve("websvc.jar");
+    	if(!Files.isReadable(websvc)) {
+    		throw new IllegalStateException("Unable to locate websvc.jar at expected path " + websvc);
+    	}
+    	classpath.add(websvc);
+    	
+    	// Add the javax.
     }
 }

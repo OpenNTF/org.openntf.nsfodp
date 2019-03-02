@@ -17,10 +17,10 @@
 
 -->
 <?eclipse version="3.4"?>
-<plugin>
+<fragment>
 	<extension id="org.openntf.nsfodp.compiler.equinox.CompilerApplication" point="org.eclipse.core.runtime.applications">
 		<application>
 			<run class="org.openntf.nsfodp.compiler.equinox.CompilerApplication"/>
 		</application>
 	</extension>
-</plugin>
+</fragment>

@@ -137,6 +137,12 @@ The Eclipse plugin targets Neon and above, but may work with older releases, as 
 
 The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires the [XPages Bazaar](https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar) version 2.0.2 or above.
 
+### LotusScript Compilation on macOS
+
+LotusScript compilation requires the presence of `websvc.jar` in the Notes/Domino JRE's `lib/ext` directory. However, this file is not kept there on macOS - instead, there is a separate `Contents/MacOS/jvm/lib/ext` directory in the app bundle in addition to `jre/Contents/Home/lib/ext`, and this directory is not referenced with external compilation.
+
+To enable LotusScript compilation on macOS, open the app bundle (right-click and choose "Show Package Contents" in the Finder) and copy (not move) `websvc.jar` from the former directory to the latter.
+
 ## License
 
 This project is licensed under the Apache License 2.0.
