@@ -39,6 +39,7 @@ public class FileResource extends AbstractSplitDesignElement {
 	private final String flags;
 	private final String flagsExt;
 	private final Function<Path, String> nameProvider;
+	private final Function<Path, String> pathProvider;
 	private final boolean copyToClasses;
 	
 	public FileResource(Path dataFile) {
@@ -50,15 +51,21 @@ public class FileResource extends AbstractSplitDesignElement {
 		this.flags = null;
 		this.flagsExt = null;
 		this.nameProvider = null;
+		this.pathProvider = null;
 		this.copyToClasses = copyToClasses;
 	}
 	
 	public FileResource(Path dataFile, String flags, String flagsExt, Function<Path, String> nameProvider) {
+		this(dataFile, flags, flagsExt, nameProvider, nameProvider);
+	}
+	
+	public FileResource(Path dataFile, String flags, String flagsExt, Function<Path, String> nameProvider, Function<Path, String> pathProvider) {
 		super(dataFile);
 		this.flags = flags;
 		this.flagsExt = flagsExt;
 		this.nameProvider = nameProvider;
 		this.copyToClasses = false;
+		this.pathProvider = nameProvider;
 	}
 	
 	@Override
@@ -83,7 +90,10 @@ public class FileResource extends AbstractSplitDesignElement {
 			String title = nameProvider.apply(getDataFile());
 			if(StringUtil.isNotEmpty(title)) {
 				DXLUtil.writeItemString(dxlDoc, "$TITLE", false, title); //$NON-NLS-1$
-				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, title); //$NON-NLS-1$
+			}
+			String path = pathProvider.apply(getDataFile());
+			if(StringUtil.isNotEmpty(path)) {
+				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, path); //$NON-NLS-1$
 			}
 			
 			return attachFileData(dxlDoc);
