@@ -344,7 +344,8 @@ public class ODPExporter {
 		}
 		
 		String title;
-		if(note.isItemPresent(ITEM_NAME_FILE_NAMES) && !IGNORE_FILENAMES_TYPES.contains(type)) {
+		String path = note.isItemPresent(ITEM_NAME_FILE_NAMES) ? note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0) : null;
+		if(StringUtil.isNotEmpty(path) && !IGNORE_FILENAMES_TYPES.contains(type)) {
 			// Then it's a "true" VFS path
 			return Paths.get(note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0).replace('/', File.separatorChar));
 		} else {

@@ -76,7 +76,7 @@ public enum NoteType {
 	DataConnection("dcr", Paths.get("Data", "DataConnections"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	DB2AccessView("db2v", Paths.get("Data", "DB2AccessViews"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	Applet("applet", Paths.get("Resources", "Applets"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	CompositeApplication("ca", Paths.get("CompositeApplications", "Applications"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	CompositeApplication("xml", Paths.get("CompositeApplications", "Applications"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	CompositeComponent("component", Paths.get("CompositeApplications", "Components"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	WiringProperties(null, Paths.get("CompositeApplications", "WiringProperties"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$ //$NON-NLS-2$
 	/** e.g. plugin.xml, etc. */

@@ -86,6 +86,7 @@ public class OnDiskProject {
 			),
 			new GlobMatcher("Code/ScriptLibraries/*.js", path -> new JavaScriptLibrary(path)), //$NON-NLS-1$
 			new GlobMatcher("Code/ScriptLibraries/*.jss", path -> new ServerJavaScriptLibrary(path)), //$NON-NLS-1$
+			new GlobMatcher("CompositeApplications/**", path -> new FileResource(path, "34567C|Q", "1", p -> p.getFileName().toString(), p -> "")),
 			new GlobMatcher("META-INF/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("plugin.xml", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("Resources/Files/*", path -> new FileResource(path)), //$NON-NLS-1$
