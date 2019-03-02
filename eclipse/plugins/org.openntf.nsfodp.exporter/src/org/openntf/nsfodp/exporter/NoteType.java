@@ -201,7 +201,7 @@ public enum NoteType {
 				return LotusScriptAgent;
 			} else if(CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT) || CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) || assistType == ASSIST_TYPE_JAVA) {
 				// There's not a proper pattern for distinguishing between these two, so look for another marker
-				if(note.isItemPresent(ITEM_NAME_JAVA_COMPILER_SOURCE)) {
+				if(CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) || note.isItemPresent(ITEM_NAME_JAVA_COMPILER_SOURCE)) {
 					return JavaAgent;
 				} else {
 					return ImportedJavaAgent;
