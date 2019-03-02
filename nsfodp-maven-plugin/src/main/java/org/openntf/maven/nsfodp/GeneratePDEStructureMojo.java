@@ -18,9 +18,11 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -44,6 +46,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue="odp", required=true)
 	private File odpDirectory;
+	
+	@Component
+	private BuildContext buildContext;
 	
 	Log log;
 	
@@ -103,6 +108,7 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 					.getBytes()
 			);
 		}
+		buildContext.refresh(buildProperties.toFile());
 	}
 	
 	private void generateManifestMf() throws IOException, XMLException {
@@ -167,5 +173,6 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 				os.write('\n');
 			}
 		}
+		buildContext.refresh(manifestMf.toFile());
 	}
 }
