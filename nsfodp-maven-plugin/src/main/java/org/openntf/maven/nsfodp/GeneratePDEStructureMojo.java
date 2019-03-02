@@ -34,7 +34,7 @@ import com.ibm.commons.xml.XMLException;
  * @author Jesse Gallagher
  * @since 2.0.0
  */
-@Mojo(name="generatePDEStructure")
+@Mojo(name="generate-pde-structure")
 public class GeneratePDEStructureMojo extends AbstractMojo {
 	@Parameter(defaultValue="${project}", readonly=true, required=false)
 	protected MavenProject project;

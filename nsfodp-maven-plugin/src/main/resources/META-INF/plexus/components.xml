@@ -16,8 +16,8 @@
 						<id>default</id>
 						<phases>
 							<generate-sources>
-								org.openntf.maven:nsfodp-maven-plugin:generatePDEStructure,
-								org.openntf.maven:nsfodp-maven-plugin:createSourceFolders
+								org.openntf.maven:nsfodp-maven-plugin:generate-pde-structure,
+								org.openntf.maven:nsfodp-maven-plugin:create-source-folders
 							</generate-sources>
 							<package>org.openntf.maven:nsfodp-maven-plugin:compile</package>
 							<install>org.apache.maven.plugins:maven-install-plugin:install</install>

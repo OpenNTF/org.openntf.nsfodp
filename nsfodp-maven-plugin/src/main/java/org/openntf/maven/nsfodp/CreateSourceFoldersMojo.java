@@ -30,7 +30,7 @@ import com.ibm.commons.xml.XMLException;
  * @author Jesse Gallagher
  * @since 2.0.0
  */
-@Mojo(name="createSourceFolders")
+@Mojo(name="create-source-folders")
 public class CreateSourceFoldersMojo extends AbstractMojo {
 	@Parameter(defaultValue="${project}", readonly=true, required=false)
 	protected MavenProject project;
