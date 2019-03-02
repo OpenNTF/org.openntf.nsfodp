@@ -47,7 +47,7 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
+	public static final List<PathMatcher> DIRECT_DXL_FILES = Stream.of(
 		"AppProperties/$DBIcon", //$NON-NLS-1$
 		"Code/dbscript.lsdb", //$NON-NLS-1$
 		"Code/actions/Shared Actions", //$NON-NLS-1$
@@ -66,8 +66,12 @@ public class OnDiskProject {
 		"SharedElements/Outlines/*", //$NON-NLS-1$
 		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
-	}).map(GlobMatcher::glob).collect(Collectors.toList());
+	).map(GlobMatcher::glob).collect(Collectors.toList());
 	
+	public static final List<PathMatcher> IGNORED_FILES = Stream.of(
+		"**/.DS_Store",
+		"**/Thumbs.db"
+	).map(GlobMatcher::glob).collect(Collectors.toList());
 
 	private final Path baseDir;
 	
@@ -249,7 +253,14 @@ public class OnDiskProject {
 			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,
-						(path, attr) -> attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata")
+						(path, attr) -> {
+							for(PathMatcher ignoreMatcher : IGNORED_FILES) {
+								if(ignoreMatcher.matches(path)) {
+									return false;
+								}
+							}
+							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata");
+						}
 					).map(matcher::getElement);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
