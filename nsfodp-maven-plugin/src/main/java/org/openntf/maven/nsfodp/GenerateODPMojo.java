@@ -60,7 +60,7 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 
 /**
  * Goal which generates an "odp" folder (replacing any existing in the directory or project)
- * from an NSF path using a remote server.
+ * from an NSF path.
  * 
  * @author Jesse Gallagher
  * @since 1.4.0
