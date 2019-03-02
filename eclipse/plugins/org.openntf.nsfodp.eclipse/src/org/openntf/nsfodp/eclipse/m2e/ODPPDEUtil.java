@@ -15,10 +15,7 @@
  */
 package org.openntf.nsfodp.eclipse.m2e;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,9 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IContainer;
@@ -60,9 +54,6 @@ import org.eclipse.pde.internal.core.PluginModelDelta;
 import org.eclipse.pde.internal.core.natures.PDE;
 import org.eclipse.pde.internal.core.project.PDEProject;
 import org.eclipse.pde.internal.core.util.CoreUtility;
-import org.openntf.domino.utils.xml.XMLDocument;
-import org.openntf.domino.utils.xml.XMLNodeList;
-import org.xml.sax.SAXException;
 
 @SuppressWarnings("restriction")
 public enum ODPPDEUtil {
@@ -118,115 +109,6 @@ public enum ODPPDEUtil {
 	}
 	
 	public void addPDENature(IProject project, MavenProject mavenProject, IProgressMonitor monitor) throws CoreException {
-		// Create stub PDE entities if they don't exist
-		IFile buildProperties = project.getFile("build.properties");
-		if(buildProperties.exists()) {
-			buildProperties.delete(false, null);
-		}
-		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			baos.write(("bin.includes = META-INF/,\\\n" + 
-					"               .\n" +
-					"output.. = target/classes\n").getBytes());
-			baos.write("source.. = ".getBytes());
-			List<String> sourceFolders = findSourceFolders(project);
-			baos.write(
-				sourceFolders.stream()
-					.collect(Collectors.joining(",\\\n "))
-					.getBytes()
-			);
-			try(InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
-    			buildProperties.create(is, true, null);		
-			}
-		} catch (IOException | SAXException | ParserConfigurationException e) {
-			throw new CoreException(new Status(IStatus.ERROR, "Exception while creating build.properties", "", e));
-		}
-		IFolder metaInf = project.getFolder("META-INF");
-		if(!metaInf.exists()) {
-			metaInf.create(false, true, null);
-		}
-		IFile manifestMf = metaInf.getFile("MANIFEST.MF");
-		if(manifestMf.exists()) {
-			manifestMf.delete(false, null);
-		}
-		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			baos.write(("Manifest-Version: 1.0\n" + 
-					"Bundle-ManifestVersion: 2\n" + 
-					"Bundle-Name: " + project.getName() + "\n" + 
-					"Bundle-SymbolicName: " + project.getName() + "\n" + 
-					"Automatic-Module-Name: " + project.getName() + "\n" +
-					"Bundle-RequiredExecutionEnvironment: JavaSE-1.8\n" +
-					"Bundle-Version: 1.0.0.qualifier\n").getBytes()); // TODO translate version
-			
-			// Look for dependencies in the plugin.xml
-			IFolder odp = project.getFolder("odp"); // look up actual source in config
-			IFile pluginXmlFile = odp.getFile("plugin.xml");
-			if(pluginXmlFile.exists()) {
-				try(InputStream is = pluginXmlFile.getContents()) {
-					try {
-						XMLDocument pluginXml = new XMLDocument();
-						pluginXml.loadInputStream(is);
-						XMLNodeList nodes = pluginXml.selectNodes("/plugin/requires/import");
-						if(nodes.size() > 0) {
-							baos.write("Require-Bundle: ".getBytes());
-							baos.write(
-								nodes.stream()
-									.map(e -> e.getAttribute("plugin"))
-									.collect(Collectors.joining(",\n "))
-									.getBytes()
-							);
-							baos.write('\n');
-						}
-					} catch(RuntimeException | SAXException | ParserConfigurationException e) {
-						throw new CoreException(new Status(IStatus.ERROR, "Exception while creating MANIFEST.MF", "", e));
-					}
-				}
-			}
-			
-			// Look for jars in Code/Jars and WebContent/WEB-INF/lib
-			List<String> jarPaths = new ArrayList<String>();
-			IFolder code = odp.getFolder("Code");
-			if(code.exists()) {
-				IFolder jars = code.getFolder("Jars");
-				if(jars.exists()) {
-					for(IResource res : jars.members()) {
-						if(res instanceof IFile && res.getFileExtension().equals("jar")) {
-							jarPaths.add("odp/Code/Jars/" + res.getName());
-						}
-					}
-				}
-			}
-			IFolder webContent = odp.getFolder("WebContent");
-			if(webContent.exists()) {
-				IFolder webInf = webContent.getFolder("WEB-INF");
-				if(webInf.exists()) {
-					IFolder lib = webInf.getFolder("lib");
-					if(lib.exists()) {
-						for(IResource res : lib.members()) {
-							if(res instanceof IFile && res.getFileExtension().equals("jar")) {
-								jarPaths.add("odp/WebContent/WEB-INF/lib/" + res.getName());
-							}
-						}
-					}
-				}
-			}
-			if(!jarPaths.isEmpty()) {
-				baos.write("Bundle-Classpath: ".getBytes());
-				baos.write(
-						jarPaths.stream()
-						.collect(Collectors.joining(",\n "))
-						.getBytes()
-				);
-				baos.write('\n');
-			}
-			
-			
-			try(InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
-				manifestMf.create(is, true, null);		
-			}
-		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, "Exception while creating MANIFEST.MF", "", e));
-		}
-		
 		// Add the project natures
 		if(!project.hasNature(PDE.PLUGIN_NATURE)) {
 			CoreUtility.addNatureToProject(project, PDE.PLUGIN_NATURE, null);
@@ -349,30 +231,5 @@ public enum ODPPDEUtil {
 		}
 
 		return metainf.getFile(new Path("MANIFEST.MF"));
-	}
-    
-    private static List<String> findSourceFolders(IProject project) throws FileNotFoundException, IOException, CoreException, SAXException, ParserConfigurationException {
-		IFolder odp = project.getFolder("odp"); // TODO read from config
-		if(!odp.exists()) {
-			return Arrays.asList("odp/Code/Java");
-		}
-		IFile classpath = odp.getFile(".classpath");
-		if(!classpath.exists()) {
-			return Arrays.asList("odp/Code/Java");
-		}
-		
-		XMLDocument domDoc = new XMLDocument();
-		try(InputStream is = classpath.getContents()) {
-			domDoc.loadInputStream(is);
-		}
-		XMLNodeList xresult = domDoc.selectNodes("/classpath/classpathentry[kind=src]");
-		List<String> paths = xresult.stream()
-			.map(el -> el.getAttribute("path"))
-			.filter(path -> !"Local".equals(path))
-			.collect(Collectors.toList());
-		paths.add("Code/Java");
-		return paths.stream()
-			.map(path -> "odp/" + path)
-			.collect(Collectors.toList());
 	}
 }
