@@ -410,7 +410,7 @@ public class ODPCompiler {
 				Path file = createDatabase(nsfSession);
 				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				DxlImporter importer = lotusSession.createDxlImporter();
-				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_CREATE);
+				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_CREATE);
 				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
 				importer.setReplaceDbProperties(true);
 				importer.setReplicaRequiredForReplaceOrUpdate(false);
