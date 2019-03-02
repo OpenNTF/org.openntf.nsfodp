@@ -64,6 +64,12 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		} catch(IOException | XMLException e) {
 			throw new MojoExecutionException("Exception while generating build.properties", e);
 		}
+
+		try {
+			generateResourcesFiles();
+		} catch(IOException e) {
+			throw new MojoExecutionException("Exception while generating Resources/Files", e);
+		}
 	}
 
 	private void generateSourceFolders() throws IOException, XMLException {
@@ -97,5 +103,13 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 					throw new RuntimeException(e);
 				}
 			});
+	}
+	
+	private void generateResourcesFiles() throws IOException {
+		Path files = odpDirectory.toPath().resolve("Resources").resolve("Files");
+		if(!Files.exists(files)) {
+			Files.createDirectories(files);
+			buildContext.refresh(files.toFile());
+		}
 	}
 }

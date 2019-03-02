@@ -94,6 +94,7 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			.filter(path -> !"Local".equals(path))
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		sourceFolders.add("Code/Java");
+		sourceFolders.add("Resources/Files");
 		
 		Path buildProperties = project.getBasedir().toPath().resolve("build.properties");
 		try(OutputStream os = Files.newOutputStream(buildProperties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
