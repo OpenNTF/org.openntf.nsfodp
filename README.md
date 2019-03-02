@@ -133,11 +133,15 @@ The Maven plugin requires Maven 3.0+ and Java 8+.
 
 The Eclipse plugin targets Neon and above, but may work with older releases, as long as they are launched in a Java 8+ runtime.
 
-### Domino
+### Domino (For Server Operations)
 
 The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires the [XPages Bazaar](https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar) version 2.0.2 or above.
 
-### LotusScript Compilation on macOS
+### Notes or Domino (For Local Operations)
+
+Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 or above.
+
+#### LotusScript Compilation on macOS
 
 LotusScript compilation requires the presence of `websvc.jar` in the Notes/Domino JRE's `lib/ext` directory. However, this file is not kept there on macOS - instead, there is a separate `Contents/MacOS/jvm/lib/ext` directory in the app bundle in addition to `jre/Contents/Home/lib/ext`, and this directory is not referenced with external compilation.
 
