@@ -50,6 +50,7 @@ public class OnDiskProject {
 	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
 		"AppProperties/$DBIcon", //$NON-NLS-1$
 		"Code/dbscript.lsdb", //$NON-NLS-1$
+		"Code/actions/Shared Actions", //$NON-NLS-1$
 		"Code/Agents/*.ja", //$NON-NLS-1$
 		"Code/Agents/*.fa", //$NON-NLS-1$
 		"Code/Agents/*.ija", //$NON-NLS-1$
@@ -63,6 +64,7 @@ public class OnDiskProject {
 		"Resources/UsingDocument", //$NON-NLS-1$
 		"SharedElements/Fields/*", //$NON-NLS-1$
 		"SharedElements/Outlines/*", //$NON-NLS-1$
+		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
 	}).map(GlobMatcher::glob).collect(Collectors.toList());
 	
