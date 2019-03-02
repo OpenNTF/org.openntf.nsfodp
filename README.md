@@ -141,7 +141,9 @@ The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires
 
 Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 or above.
 
-#### LotusScript Compilation on macOS
+#### Compilation on macOS
+
+Java compilation requires the presence of `tools.jar` in the Notes/Domino JRE's `lib` directory. However, the embedded runtime on macOS does not contain this file. Copy a `tools.jar` from a separate JDK installation into the `jre/Contents/Home/lib` directory within the app bundle.
 
 LotusScript compilation requires the presence of `websvc.jar` in the Notes/Domino JRE's `lib/ext` directory. However, this file is not kept there on macOS - instead, there is a separate `Contents/MacOS/jvm/lib/ext` directory in the app bundle in addition to `jre/Contents/Home/lib/ext`, and this directory is not referenced with external compilation.
 
