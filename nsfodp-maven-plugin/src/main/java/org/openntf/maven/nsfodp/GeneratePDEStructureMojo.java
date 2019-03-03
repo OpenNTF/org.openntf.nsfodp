@@ -195,6 +195,8 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			attrs.putValue("Bundle-Classpath", String.join(",", jarPaths));
 		}
 		
+		attrs.putValue("Created-By", getClass().getName());
+		
 		try(OutputStream os = buildContext.newFileOutputStream(manifestMf.toFile())) {
 			manifest.write(os);
 		}
