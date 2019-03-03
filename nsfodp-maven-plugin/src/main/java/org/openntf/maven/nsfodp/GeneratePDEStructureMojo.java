@@ -130,7 +130,7 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			// Though the Eclipse docs say that you should use relative paths, the IDE only actually
 			//   picks up on absolute paths
 			props.put("extra..", Stream.of(this.classpathJars)
-				.map(File::getAbsolutePath) 
+				.map(File::getAbsolutePath)
 				.collect(Collectors.joining(","))
 			);
 		}
