@@ -159,9 +159,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			}
 		}
 		
-		// Look for jars in Code/Jars and WebContent/WEB-INF/lib
-		List<String> jarPaths = new ArrayList<String>();
+		Collection<String> jarPaths = new LinkedHashSet<>();
 		
+		// Look for jars in Code/Jars and WebContent/WEB-INF/lib
 		Path jars = odpDirectory.toPath().resolve("Code").resolve("Jars");
 		if(Files.isDirectory(jars)) {
 			Files.walk(jars)
@@ -173,8 +173,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		if(Files.isDirectory(lib)) {
 			Files.walk(lib)
 				.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().toLowerCase().endsWith(".jar"))
-				.forEach(path -> jarPaths.add("odp/WebContent/WEB-INF/lib/" + jars.relativize(path).toString().replace('/', File.separatorChar)));
+				.forEach(path -> jarPaths.add("odp/WebContent/WEB-INF/lib/" + lib.relativize(path).toString().replace('/', File.separatorChar)));
 		}
+		
 		if(!jarPaths.isEmpty()) {
 			attrs.putValue("Bundle-Classpath", String.join(",", jarPaths));
 		}
