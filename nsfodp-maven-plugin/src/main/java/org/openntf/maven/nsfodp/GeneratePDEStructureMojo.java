@@ -21,10 +21,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -63,6 +61,14 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue="odp", required=true)
 	private File odpDirectory;
+	
+	/**
+	 * Any additional jars to include on the compilation classpath.
+	 * 
+	 * @since 2.0.0
+	 */
+	@Parameter(required=false)
+	private File[] classpathJars;
 	
 	@Component
 	private BuildContext buildContext;
@@ -119,6 +125,15 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		props.put("source..", sourceFolders.stream()
 				.map(path -> "odp/" + path)
 				.collect(Collectors.joining(",")));
+		// Look for jars specified in the Maven project
+		if(this.classpathJars != null) {
+			// Though the Eclipse docs say that you should use relative paths, the IDE only actually
+			//   picks up on absolute paths
+			props.put("extra..", Stream.of(this.classpathJars)
+				.map(File::getAbsolutePath) 
+				.collect(Collectors.joining(","))
+			);
+		}
 		
 		Path buildProperties = project.getBasedir().toPath().resolve("build.properties");
 		try(OutputStream os = buildContext.newFileOutputStream(buildProperties.toFile())) {
