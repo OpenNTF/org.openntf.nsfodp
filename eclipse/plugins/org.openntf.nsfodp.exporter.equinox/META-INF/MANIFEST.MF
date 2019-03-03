@@ -15,6 +15,4 @@ Require-Bundle: org.eclipse.osgi,
  org.openntf.nsfodp.exporter,
  com.ibm.domino.napi;bundle-version="9.0.1",
  org.openntf.nsfodp.commons.odp
-Bundle-Activator: org.openntf.nsfodp.exporter.equinox.ExporterEquinoxActivator
-Bundle-ClassPath: .
 Import-Package: lotus.domino
