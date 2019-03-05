@@ -405,9 +405,8 @@ public class ODPCompiler {
 			}
 			
 			lotus.domino.Session lotusSession = NotesFactory.createSession();
-			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), lotusSession, false, true);
 			try {
-				Path file = createDatabase(nsfSession);
+				Path file = createDatabase(lotusSession);
 				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				DxlImporter importer = lotusSession.createDxlImporter();
 				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_CREATE);
@@ -418,7 +417,7 @@ public class ODPCompiler {
 				importDbProperties(importer, database);
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
-				importLotusScriptLibraries(importer, database, nsfSession);
+				importLotusScriptLibraries(importer, database);
 				
 				if(hasXPages) {
 					@SuppressWarnings("null")
@@ -674,17 +673,21 @@ public class ODPCompiler {
 	 * in the local temp directory.
 	 * 
 	 * @return a {@link Path} representing the new NSF file
-	 * @throws IOException if there is a problem creating the file
-	 * @throws NotesException if there is an API-level problem creating the copy
+	 * @throws Exception 
 	 * @throws DominoException if there is an API-level problem creating the copy
 	 */
-	private Path createDatabase(NSFSession session) throws IOException, NotesException, DominoException {
+	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException, DominoException {
 		subTask("Creating destination NSF");
 		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 		temp.toFile().deleteOnExit();
 		String filePath = temp.toAbsolutePath().toString();
 		
-		session.createDatabase(null, filePath, DBClass.NOTEFILE, true);
+		NSFSession session = NSFSession.fromLotus(DominoAPI.get(), lotusSession, false, true);
+		try {
+			session.createDatabase("", filePath, DBClass.NOTEFILE, true);
+		} finally {
+			session.free();
+		}
 		
 		return temp;
 	}
@@ -895,7 +898,7 @@ public class ODPCompiler {
 		}
 	}
 	
-	private void importLotusScriptLibraries(DxlImporter importer, Database database, NSFSession nsfSession) throws Exception {
+	private void importLotusScriptLibraries(DxlImporter importer, Database database) throws Exception {
 		subTask("Importing LotusScript libraries");
 		
 		List<String> noteIds = new ArrayList<>();
@@ -926,39 +929,44 @@ public class ODPCompiler {
 			// In lieu of a dependency graph, just keep bashing at the list until it's done
 			Queue<String> remaining = new ArrayDeque<>(noteIds);
 			Map<String, String> titles = new HashMap<>();
-			NSFDatabase nsfDatabase = nsfSession.getDatabaseByHandle(XSPNative.getDBHandle(database), database.getServer());
-			for(int i = 0; i < noteIds.size(); i++) {
-				Queue<String> nextPass = new ArrayDeque<>();
-				
-				String noteId;
-				while((noteId = remaining.poll()) != null) {
-					NSFNote note = nsfDatabase.getNoteByID(noteId);
-					String title = null;
-					try {
-						title = note.get("$TITLE", String.class); //$NON-NLS-1$
-						titles.put(noteId, title);
-						note.compileLotusScript();
-						note.sign();
-						note.save();
-					} catch(LotusScriptCompilationException err) {
-						nextPass.add(noteId);
-						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-					} catch(DominoException err) {
-						if(err.getStatus() == 12051) { // Same as above, but not encapsulated
-							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
+			try {
+				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
+				for(int i = 0; i < noteIds.size(); i++) {
+					Queue<String> nextPass = new ArrayDeque<>();
+					
+					String noteId;
+					while((noteId = remaining.poll()) != null) {
+						NSFNote note = nsfDatabase.getNoteByID(noteId);
+						String title = null;
+						try {
+							title = note.get("$TITLE", String.class); //$NON-NLS-1$
+							titles.put(noteId, title);
+							note.compileLotusScript();
+							note.sign();
+							note.save();
+						} catch(LotusScriptCompilationException err) {
 							nextPass.add(noteId);
-						} else {
-							throw err;
+							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+						} catch(DominoException err) {
+							if(err.getStatus() == 12051) { // Same as above, but not encapsulated
+								titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+								nextPass.add(noteId);
+							} else {
+								throw err;
+							}
+						} finally {
+							note.free();
 						}
-					} finally {
-						note.free();
+					}
+					
+					remaining = nextPass;
+					if(nextPass.isEmpty()) {
+						break;
 					}
 				}
-				
-				remaining = nextPass;
-				if(nextPass.isEmpty()) {
-					break;
-				}
+			} finally {
+				nsfSession.free();
 			}
 			if(!remaining.isEmpty()) {
 				String notes = remaining.stream()
