@@ -143,11 +143,11 @@ Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Wind
 
 #### Compilation on macOS
 
-Java compilation requires the presence of `tools.jar` in the Notes/Domino JRE's `lib` directory. However, the embedded runtime on macOS does not contain this file. Copy a `tools.jar` from a separate JDK installation into the `jre/Contents/Home/lib` directory within the app bundle.
+Due to the way the macOS Notes JVM is set up, it requires several modifications to compile an NSF properly. To start with, open the app bundle by right-clicking the Notes application and choosing "Show Package Contents".
 
-LotusScript compilation requires the presence of `websvc.jar` in the Notes/Domino JRE's `lib/ext` directory. However, this file is not kept there on macOS - instead, there is a separate `Contents/MacOS/jvm/lib/ext` directory in the app bundle in addition to `jre/Contents/Home/lib/ext`, and this directory is not referenced with external compilation.
+Copy the three jars (`Notes.jar`, `njempcl.jar`, and `websvc.jar`) from the `Contents/MacOS/jvm/lib/ext` directory copied to `jre/Contents/Home/lib/ext` also within the package.
 
-To enable LotusScript compilation on macOS, open the app bundle (right-click and choose "Show Package Contents" in the Finder) and copy (not move) `websvc.jar` from the former directory to the latter.
+Additionally, Java compilation requires the presence of `tools.jar` in the Notes/Domino JRE's `lib` directory. However, the embedded runtime on macOS does not contain this file. Copy a `tools.jar` from a separate JDK installation into the `jre/Contents/Home/lib` directory within the app bundle.
 
 ## License
 
