@@ -38,8 +38,6 @@ import lotus.domino.NotesThread;
 import lotus.domino.Session;
 
 public class CompilerApplication implements IApplication {
-	Class<?> configurator;
-
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		NotesThread.sinitThread();
