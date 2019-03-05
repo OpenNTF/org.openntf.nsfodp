@@ -28,7 +28,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -153,6 +155,9 @@ public abstract class AbstractEquinoxTask {
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 			}
+
+			Path workspace = framework.resolve("workspace");
+			Files.createDirectories(workspace);
 			
 			Path configuration = framework.resolve("configuration"); //$NON-NLS-1$
 			Files.createDirectories(configuration);
@@ -163,6 +168,7 @@ public abstract class AbstractEquinoxTask {
 			config.put("eclipse.application", applicationId); //$NON-NLS-1$
 			config.put("osgi.configuration.cascaded", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
+			config.put("osgi.instance.area", workspace.toAbsolutePath().toString());
 			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
 			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.parentClassloader", "ext");
@@ -171,9 +177,6 @@ public abstract class AbstractEquinoxTask {
 			try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
 			}
-			
-			Path workspace = framework.resolve("workspace");
-			Files.createDirectories(workspace);
 			
 			List<String> command = new ArrayList<>();
 			command.add(javaBin.toAbsolutePath().toString());
@@ -188,7 +191,6 @@ public abstract class AbstractEquinoxTask {
 			command.add(framework.toAbsolutePath().toString());
 			command.add("-configuration"); //$NON-NLS-1$
 			command.add(configuration.toAbsolutePath().toString());
-			command.add("-Dosgi.instance.area=" + workspace.toAbsolutePath().toString());
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("EquinoxMojo.launchingEquinox", command.stream().collect(Collectors.joining(" "))));  //$NON-NLS-1$//$NON-NLS-2$
 			}
@@ -197,6 +199,7 @@ public abstract class AbstractEquinoxTask {
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
 					.redirectOutput(Redirect.INHERIT)
+//					.redirectError(Redirect.INHERIT)
 					.redirectInput(Redirect.INHERIT);
 			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
@@ -209,11 +212,16 @@ public abstract class AbstractEquinoxTask {
 					.collect(Collectors.joining(File.pathSeparator)) //$NON-NLS-1$
 			);
 			
-			Process proc = builder.start();
-			proc.waitFor();
-			int exitValue = proc.exitValue();
-			if(exitValue != 0) {
-				throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue));
+			Collection<Path> jars = initJreJars(notesProgram);
+			try {
+				Process proc = builder.start();
+				proc.waitFor();
+				int exitValue = proc.exitValue();
+				if(exitValue != 0) {
+					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue));
+				}
+			} finally {
+				teardownJreJars(jars);
 			}
 		} catch (InterruptedException e) {
 			// No problem here
@@ -272,7 +280,6 @@ public abstract class AbstractEquinoxTask {
 				log.warn("Unable to locate Notes/Domino JVM; using active JVM instead");
 			}
 			throw new RuntimeException("Could not find JVM at " + jvmBin);
-			//jvmBin = SystemUtils.getJavaHome().toPath().resolve("bin");
 		}
 			
 		
@@ -382,12 +389,13 @@ public abstract class AbstractEquinoxTask {
     	
     	Path ibmPkcs = lib.resolve("ibmpkcs.jar");
     	if(!Files.isReadable(ibmPkcs)) {
-    		if(log.isDebugEnabled()) {
-    			log.debug("Unable to locate ibmpkcs.jar - com.ibm.misc classes will be unavailable during compilation");
-    		}
-    	} else {
-    		classpath.add(ibmPkcs);
+    		// Different path on macOS
+    		ibmPkcs = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar");
     	}
+    	if(!Files.isReadable(ibmPkcs)) {
+    		throw new IllegalStateException("Unable to locate ibmpkcs.jar at expected path " +  lib.resolve("ibmpkcs.jar"));
+    	}
+    	classpath.add(ibmPkcs);
     	
     	Path notesJar = lib.resolve("ext").resolve("Notes.jar");
     	if(!Files.isReadable(notesJar)) {
@@ -400,7 +408,64 @@ public abstract class AbstractEquinoxTask {
     		throw new IllegalStateException("Unable to locate websvc.jar at expected path " + websvc);
     	}
     	classpath.add(websvc);
-    	
-    	// Add the javax.
+    }
+    
+	private Collection<Path> initJreJars(Path notesProgram) throws MojoExecutionException, IOException {
+    	// On macOS, we'll need to create some symlinks in our active JRE due to the way the ext folder works
+    	if(SystemUtils.IS_OS_MAC) {
+    		if(log.isDebugEnabled()) {
+    			log.debug("Linking environment Jars in macOS Notes JRE");
+    		}
+    		
+    		Path tools = SystemUtils.getJavaHome().toPath().resolve("lib").resolve("tools.jar");
+    		if(!Files.exists(tools)) {
+    			// Java Home might be a JRE dir - try a level up
+    			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar");
+    		}
+    		if(!Files.exists(tools)) {
+    			throw new IllegalStateException("Unable to locate tools.jar in running JVM - ensure that this is a JDK (expected " + tools + ")");
+    		}
+
+    		Collection<Path> toLink = new LinkedHashSet<>();
+    		addIBMJars(notesProgram, toLink);
+    		
+    		Path destBase = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext");
+    		if(!Files.isDirectory(destBase)) {
+    			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
+    		}
+    		if(!Files.isWritable(destBase)) {
+    			throw new IllegalStateException("Unable to write to embedded Notes JRE ext directory at " + destBase);
+    		}
+    		
+    		Collection<Path> result = new LinkedHashSet<>();
+    		for(Path jar : toLink) {
+    			Path destJar = destBase.resolve(jar.getFileName());
+    			if(!Files.exists(destJar)) {
+    				Files.copy(jar, destJar);
+    				result.add(destJar);
+    			}
+    		}
+    		
+    		Path toolsDest = destBase.getParent().resolve("tools.jar");
+    		if(!Files.exists(toolsDest)) {
+    			Files.copy(tools, toolsDest);
+    			result.add(toolsDest);
+    		}
+    		
+    		return result;
+    	} else {
+    		return Collections.emptyList();
+    	}
+    }
+    private void teardownJreJars(Collection<Path> result) throws MojoExecutionException, IOException {
+    	if(SystemUtils.IS_OS_MAC) {
+    		if(log.isDebugEnabled()) {
+    			log.debug("Unlinking environment Jars in macOS Notes JRE");
+    		}
+    		
+    		for(Path jar : result) {
+    			Files.deleteIfExists(jar);
+    		}
+    	}
     }
 }
