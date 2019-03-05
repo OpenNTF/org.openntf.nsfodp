@@ -1,32 +1,13 @@
 NSF ODP Tooling
 
-Portions (c) Copyright 2018 Jesse Gallagher
+Portions (c) Copyright 2018-2019 Jesse Gallagher
 
 This product includes software contributed to
 OpenNTF Alliance (http://www.OpenNTF.org/)
 
 This product is licensed under the terms of the Apache 2.0 license.
 
-The project contains the following 3rd party code:
-
-Eclipse JDT
-Available from http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.2.2-201302041200/org.eclipse.jdt.source-4.2.2.zip
-Licensed under the Eclipse Public License 1.0
-
-org.openntf.domino
-Available from https://openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API
-Licensed under Apache 2.0
-
-Domino JNA
-Available from https://github.com/klehmann/domino-jna
-Licensed under Apache 2.0
-
-Snippets from https://wiki.eclipse.org/FAQ_How_do_I_write_to_the_console_from_a_plug-in%3F
-Licensed under the Eclipse Public License 1.0
-
-m2eclipse-tycho
-Available from https://github.com/tesla/m2eclipse-tycho
-Licensed under the Eclipse Public License 1.0
+The project contains the following 3rd-party code and resources:
 
 Classes from the Thymeleaf Eclipse Plugin
 Available from https://github.com/thymeleaf/thymeleaf-extras-eclipse-plugin
@@ -43,3 +24,24 @@ Licensed under the MIT license
 Components of Swiper
 Available from https://github.com/camac/Swiper
 Licensed under Apache 2.0
+
+Darwino Domino NAPI
+Available from https://artifactory.openntf.org/openntf/com/darwino/domino/com.darwino.domino.napi/
+Licensed under Apache 2.0
+
+The project contains snippets derived from the following 3rd-party projects:
+
+Eclipse JDT
+Available from http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.2.2-201302041200/org.eclipse.jdt.source-4.2.2.zip
+Licensed under the Eclipse Public License 1.0
+
+org.openntf.domino
+Available from https://openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API
+Licensed under Apache 2.0
+
+Snippets from https://wiki.eclipse.org/FAQ_How_do_I_write_to_the_console_from_a_plug-in%3F
+Licensed under the Eclipse Public License 1.0
+
+m2eclipse-tycho
+Available from https://github.com/tesla/m2eclipse-tycho
+Licensed under the Eclipse Public License 1.0
