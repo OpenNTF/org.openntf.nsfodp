@@ -11,7 +11,6 @@ Require-Bundle: org.eclipse.osgi,
  com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  org.openntf.nsfodp.commons,
- com.darwino.domino.napi;bundle-version="2.5.0",
  org.openntf.nsfodp.exporter,
  com.ibm.domino.napi;bundle-version="9.0.1",
  org.openntf.nsfodp.commons.odp
