@@ -9,4 +9,44 @@
 	</parent>
 	<artifactId>org.openntf.nsfodp.compiler</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<!-- Copy in third-party jar dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>lib</outputDirectory>
+							<stripVersion>true</stripVersion>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.darwino.domino</groupId>
+									<artifactId>com.darwino.domino.napi</artifactId>
+									<version>2.5.0-SNAPSHOT</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>lib</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
