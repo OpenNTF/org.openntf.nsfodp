@@ -369,7 +369,7 @@ public abstract class AbstractEquinoxTask {
 					JarEntry jarEntry = jis.getNextJarEntry();
 					while(jarEntry != null) {
 						String name = jarEntry.getName();
-						if(name.endsWith(".class")) {
+						if(name.endsWith(".class") && !name.startsWith("java/")) {
 							String packagePath = name.substring(0, name.lastIndexOf('/'));
 							packages.add(packagePath.replace('/', '.'));
 						}
