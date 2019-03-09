@@ -146,13 +146,15 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		Files.createDirectories(metaInf);
 		Path manifestMf = metaInf.resolve("MANIFEST.MF");
 		
+		String symbolicName = project.getGroupId() + '.' + project.getArtifactId();
+		
 		Manifest manifest = new Manifest();
 		Attributes attrs = manifest.getMainAttributes();
 		attrs.putValue("Manifest-Version", "1.0");
 		attrs.putValue("Bundle-ManifestVersion", "2");
 		attrs.putValue("Bundle-Name", project.getName());
-		attrs.putValue("Bundle-SymbolicName", project.getName());
-		attrs.putValue("Automatic-Module-Name", project.getName());
+		attrs.putValue("Bundle-SymbolicName", symbolicName);
+		attrs.putValue("Automatic-Module-Name", symbolicName);
 		attrs.putValue("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8");
 		attrs.putValue("Bundle-Version", project.getVersion().replace("-SNAPSHOT", ".qualifier"));
 		
