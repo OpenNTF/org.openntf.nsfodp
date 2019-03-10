@@ -177,7 +177,7 @@
 			id="nsfodpFrameset"
 			name="NSF ODP Frameset"
 			base-type="nsfodpDxl"
-			file-extensions="page">
+			file-extensions="frameset">
 			<describer class="org.openntf.nsfodp.eclipse.content.FramesetContentDescriber"/>
 		</content-type>
 		<content-type
