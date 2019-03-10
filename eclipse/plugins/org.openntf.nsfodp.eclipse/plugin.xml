@@ -335,4 +335,53 @@
 			<contentType id="org.eclipse.core.runtime.xml"/>			
 		</proposalComputer>         
 	</extension>
+	
+	<!--
+		Project Explorer extensions
+	--> 
+   <extension point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent id="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
+            contentProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
+            labelProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsLabelProvider"
+            name="XPages"
+            icon="icons/system-file-manager.png"
+            activeByDefault="true"
+            priority="normal">
+       
+        <override suppressedExtensionId="org.eclipse.ui.navigator.resourceContent"        
+                  policy="InvokeOnlyIfSuppressedExtAlsoVisibleAndActive"/>
+          
+        <triggerPoints>
+        	<or>
+          		<instanceof value="org.eclipse.core.resources.IProject"/>
+          	</or>
+        </triggerPoints>
+        
+        <possibleChildren>
+        	<or>
+          		<instanceof value="org.openntf.nsfodp.eclipse.resources.XPagesNode"/>
+          	</or>
+        </possibleChildren>
+      
+        <commonSorter id="org.openntf.nsfodp.eclipse.resources.DesignElementsSorter"
+                      class="org.openntf.nsfodp.eclipse.resources.DesignElementsSorter">
+          <parentExpression>
+	           <or>         
+	             <instanceof value="org.eclipse.core.resources.IProject"/>
+	             <instanceof value="org.openntf.nsfodp.eclipse.resources.XPagesNode"/>
+	             <instanceof value="org.openntf.nsfodp.eclipse.resources.CustomControlsNode"/>
+	             <instanceof value="org.eclipse.core.resources.IFolder"/>
+	             <instanceof value="org.eclipse.core.resources.IFile"/>
+	           </or>
+          </parentExpression>
+        </commonSorter>
+      </navigatorContent>
+   </extension>
+   <extension point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension pattern="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"/>
+         </includes>
+      </viewerContentBinding>
+   </extension> 
 </plugin>

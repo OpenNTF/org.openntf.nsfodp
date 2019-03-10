@@ -24,6 +24,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public class Activator extends AbstractUIPlugin {
 	public static final String ICON_CUSTOM_CONTROL = "icon-custom-control"; //$NON-NLS-1$
 	public static final String ICON_STOCK_COMPONENT = "icon-stock-component"; //$NON-NLS-1$
+	public static final String ICON_HTML = "icon-html"; //$NON-NLS-1$
+	public static final String ICON_SCRIPT = "icon-script"; //$NON-NLS-1$
+	public static final String ICON_ACCESSORIES = "icon-accessories"; //$NON-NLS-1$
+	public static final String ICON_FONT = "icon-font"; //$NON-NLS-1$
+	public static final String ICON_IMAGE = "icon-image"; //$NON-NLS-1$
 	
 	private static Activator instance;
 	
@@ -45,6 +50,11 @@ public class Activator extends AbstractUIPlugin {
 		
 		reg.put(ICON_CUSTOM_CONTROL, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/emblem-system.png")); //$NON-NLS-1$
 		reg.put(ICON_STOCK_COMPONENT, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/system-file-manager.png")); //$NON-NLS-1$
+		reg.put(ICON_HTML, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/text-html.png")); //$NON-NLS-1$
+		reg.put(ICON_SCRIPT, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/text-x-script.png")); //$NON-NLS-1$
+		reg.put(ICON_ACCESSORIES, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/applications-accessories.png")); //$NON-NLS-1$
+		reg.put(ICON_IMAGE, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/image-x-generic.png")); //$NON-NLS-1$
+		reg.put(ICON_FONT, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/font-x-generic.png")); //$NON-NLS-1$
 	}
 	
 	public static void logError(String message, Throwable throwable) {
