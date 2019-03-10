@@ -343,8 +343,8 @@
       <navigatorContent id="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
             contentProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
             labelProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsLabelProvider"
-            name="XPages"
-            icon="icons/system-file-manager.png"
+            name="ODP Design Elements"
+            icon="icons/applications-accessories.png"
             activeByDefault="true"
             priority="normal">
        
@@ -359,7 +359,7 @@
         
         <possibleChildren>
         	<or>
-          		<instanceof value="org.openntf.nsfodp.eclipse.resources.XPagesNode"/>
+          		<instanceof value="org.openntf.nsfodp.eclipse.resources.DesignElementNode"/>
           	</or>
         </possibleChildren>
       
@@ -368,8 +368,7 @@
           <parentExpression>
 	           <or>         
 	             <instanceof value="org.eclipse.core.resources.IProject"/>
-	             <instanceof value="org.openntf.nsfodp.eclipse.resources.XPagesNode"/>
-	             <instanceof value="org.openntf.nsfodp.eclipse.resources.CustomControlsNode"/>
+	             <instanceof value="org.openntf.nsfodp.eclipse.resources.DesignElementNode"/>
 	             <instanceof value="org.eclipse.core.resources.IFolder"/>
 	             <instanceof value="org.eclipse.core.resources.IFile"/>
 	           </or>

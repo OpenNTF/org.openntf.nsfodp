@@ -17,6 +17,7 @@ package org.openntf.nsfodp.eclipse.contentassist.proposals;
 
 import org.eclipse.swt.graphics.Image;
 import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.ODPIcon;
 import org.openntf.nsfodp.eclipse.contentassist.model.StockComponent;
 
 /**
@@ -38,6 +39,6 @@ public class StockComponentCompletionProposal extends AbstractComponentCompletio
 
 	@Override
 	public Image getImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ICON_STOCK_COMPONENT);
+		return Activator.getIcon(ODPIcon.STOCK_COMPONENT);
 	}
 }

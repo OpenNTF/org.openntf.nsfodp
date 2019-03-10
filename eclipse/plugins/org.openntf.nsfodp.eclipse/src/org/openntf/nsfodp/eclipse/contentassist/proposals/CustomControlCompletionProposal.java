@@ -17,6 +17,7 @@ package org.openntf.nsfodp.eclipse.contentassist.proposals;
 
 import org.eclipse.swt.graphics.Image;
 import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.ODPIcon;
 import org.openntf.nsfodp.eclipse.contentassist.model.CustomControl;
 
 /**
@@ -38,6 +39,6 @@ public class CustomControlCompletionProposal extends AbstractComponentCompletion
 
 	@Override
 	public Image getImage() {
-		return Activator.getDefault().getImageRegistry().get(Activator.ICON_CUSTOM_CONTROL);
+		return Activator.getIcon(ODPIcon.CUSTOM_CONTROL);
 	}
 }

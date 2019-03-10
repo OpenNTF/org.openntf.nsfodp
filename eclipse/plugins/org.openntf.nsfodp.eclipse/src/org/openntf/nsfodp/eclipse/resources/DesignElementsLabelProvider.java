@@ -18,8 +18,8 @@ public class DesignElementsLabelProvider extends WorkbenchLabelProvider implemen
 
 	@Override
 	public String getDescription(Object element) {
-		if (element instanceof AbstractDesignElementResource) {
-			return ((AbstractDesignElementResource) element).getLabel();
+		if (element instanceof DesignElementNode) {
+			return ((DesignElementNode) element).getType().getLabel();
 		}
 		return null;
 	}

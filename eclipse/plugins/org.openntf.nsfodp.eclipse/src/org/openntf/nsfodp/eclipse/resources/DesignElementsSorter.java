@@ -19,17 +19,17 @@ public class DesignElementsSorter extends ViewerSorter {
 	
 	@Override
 	public int category(Object element) {
-		if (element instanceof AbstractDesignElementResource) {
-			return 0;
+		if (element instanceof DesignElementNode) {
+			return ((DesignElementNode)element).getType().isContainer() ? 1 : 0;
 		}
 		return 1;
 	}
 	
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {
-		if (e1 instanceof AbstractDesignElementResource && e2 instanceof IResource) {
+		if (e1 instanceof DesignElementNode && e2 instanceof IResource) {
 			return -1;
-		} else if (e2 instanceof AbstractDesignElementResource && e1 instanceof IResource) {
+		} else if (e2 instanceof DesignElementNode && e1 instanceof IResource) {
 			return 1;
 		}
 		if (e1 instanceof IFolder && e2 instanceof IFile) {
@@ -37,8 +37,10 @@ public class DesignElementsSorter extends ViewerSorter {
 		} else if (e2 instanceof IFolder && e1 instanceof IFile) {
 			return 1;
 		}
-		if(e1 instanceof AbstractDesignElementResource && e2 instanceof AbstractDesignElementResource) {
-			return Integer.compare(((AbstractDesignElementResource)e1).getIndex(), ((AbstractDesignElementResource)e2).getIndex());
+		if(e1 instanceof DesignElementNode && e2 instanceof DesignElementNode) {
+			DesignElementType t1 = ((DesignElementNode)e1).getType();
+			DesignElementType t2 = ((DesignElementNode)e2).getType();
+			return t1.compareTo(t2);
 		}
 
 		return super.compare(viewer, e1, e2);
