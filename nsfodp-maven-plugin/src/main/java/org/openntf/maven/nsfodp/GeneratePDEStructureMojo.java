@@ -169,9 +169,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			Object[] nodes = DOMUtil.nodes(pluginXml, "/plugin/requires/import");
 			if(nodes.length > 0) {
 				attrs.putValue("Require-Bundle", Stream.of(nodes)
-						.map(Element.class::cast)
-						.map(e -> e.getAttribute("plugin"))
-						.collect(Collectors.joining(","))
+					.map(Element.class::cast)
+					.map(e -> e.getAttribute("plugin") + ("true".equals(e.getAttribute("optional")) ? ";resolution:=optional" : ""))
+					.collect(Collectors.joining(","))
 				);
 			}
 		}
