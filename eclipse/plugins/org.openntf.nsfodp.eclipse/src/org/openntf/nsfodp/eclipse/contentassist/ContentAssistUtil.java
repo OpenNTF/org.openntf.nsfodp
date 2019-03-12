@@ -18,9 +18,6 @@ package org.openntf.nsfodp.eclipse.contentassist;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.project.IMavenProjectFacade;
-import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -87,12 +84,6 @@ public enum ContentAssistUtil {
 			}
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
-		}
-	
-		IMavenProjectRegistry projectManager = MavenPlugin.getMavenProjectRegistry();
-		IMavenProjectFacade mavenProject = projectManager.getProject(project);
-		if (mavenProject == null) {
-			return false;
 		}
 	
 		return true;

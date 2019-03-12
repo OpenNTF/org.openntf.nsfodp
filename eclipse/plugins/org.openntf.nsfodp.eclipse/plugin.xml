@@ -55,43 +55,6 @@
 		<content-type id="nsfodpXspTheme"/>
 		<content-type id="nsfodpSsjs"/>
 	</extension>
-	
-	<!--
-		UI commands
-	-->
-	<extension
-		point="org.eclipse.ui.menus">
-		<menuContribution
-			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
-			<command
-				commandId="org.openntf.nsfodp.eclipse.compileODP"
-				label="Compile On-Disk Project">
-				<visibleWhen checkEnabled="true"/>
-			</command>
-		</menuContribution>
-		<menuContribution
-			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
-			<command
-				commandId="org.openntf.nsfodp.eclipse.deployNSF"
-				label="Deploy NSF">
-				<visibleWhen checkEnabled="true"/>
-			</command>
-		</menuContribution>
-	</extension>
-   
-	<extension
-		point="org.eclipse.ui.commands">
-		<command
-			id="org.openntf.nsfodp.eclipse.deployNSF"
-			name="Deploy NSF"
-			defaultHandler="org.openntf.nsfodp.eclipse.handler.DeployNSFHandler">
-		</command>
-		<command
-			id="org.openntf.nsfodp.eclipse.compileODP"
-			name="Compile On-Disk Project"
-			defaultHandler="org.openntf.nsfodp.eclipse.handler.CompileODPHandler">
-		</command>
-	</extension>
 
 	<extension
 		point="org.eclipse.core.expressions.definitions">
@@ -103,29 +66,6 @@
 				</test>
 			</adapt>
 		</definition>
-	</extension>
-
-	<!--
-		m2e integration
-	-->
-	<extension
-		point="org.eclipse.m2e.core.projectConfigurators">
-		<configurator
-			class="org.openntf.nsfodp.eclipse.m2e.ODPProjectConfigurator"
-			id="nsfodp-maven-plugin"
-			name="PDE integration for NSF ODP projects">
-		</configurator>
-	</extension>
-	<extension
-		point="org.eclipse.m2e.core.lifecycleMappings">
-		<lifecycleMapping
-			class="org.openntf.nsfodp.eclipse.m2e.ODPLifecycleMapping"
-			id="org.openntf.nsfodp.eclipse.m2e.odpLifecycleMapping"
-			name="NSF ODP Lifecycle Mapping">
-		</lifecycleMapping>
-	</extension>
-	<extension
-		point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
 	</extension>
 	
 	<!--

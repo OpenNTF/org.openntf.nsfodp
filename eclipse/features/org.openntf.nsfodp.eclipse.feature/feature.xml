@@ -247,6 +247,12 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.openntf.nsfodp.eclipse.m2e"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
          id="org.openntf.nsfodp.eclipse.schemas"
          download-size="0"
          install-size="0"

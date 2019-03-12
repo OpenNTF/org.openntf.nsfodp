@@ -55,7 +55,7 @@ public class CompileODPJob extends Job {
 			ILaunchConfigurationType launchConfigurationType = launchManager.getLaunchConfigurationType(MavenLaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID);
 			ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, "Executing POM");
 			workingCopy.setAttribute(MavenLaunchConstants.ATTR_POM_DIR, pomFile.getParent());
-			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, "nsfodp:compile -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
+			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, "nsfodp:compile-odp -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
 			workingCopy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
 			ILaunch launch = workingCopy.launch("run", monitor, false, true); //$NON-NLS-1$
 			synchronized(workingCopy) {
