@@ -1,4 +1,4 @@
-package org.openntf.nsfodp.eclipse.resources;
+package org.openntf.nsfodp.eclipse.ui.resources;
 
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.model.WorkbenchLabelProvider;

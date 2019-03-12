@@ -23,9 +23,9 @@
 		Project Explorer extensions
 	--> 
    <extension point="org.eclipse.ui.navigator.navigatorContent">
-      <navigatorContent id="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
-            contentProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"
-            labelProvider="org.openntf.nsfodp.eclipse.resources.DesignElementsLabelProvider"
+      <navigatorContent id="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"
+            contentProvider="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"
+            labelProvider="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsLabelProvider"
             name="ODP Design Elements"
             icon="icons/applications-accessories.png"
             activeByDefault="true"
@@ -42,16 +42,16 @@
         
         <possibleChildren>
         	<or>
-          		<instanceof value="org.openntf.nsfodp.eclipse.resources.DesignElementNode"/>
+          		<instanceof value="org.openntf.nsfodp.eclipse.ui.resources.DesignElementNode"/>
           	</or>
         </possibleChildren>
       
-        <commonSorter id="org.openntf.nsfodp.eclipse.resources.DesignElementsSorter"
-                      class="org.openntf.nsfodp.eclipse.resources.DesignElementsSorter">
+        <commonSorter id="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsSorter"
+                      class="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsSorter">
           <parentExpression>
 	           <or>         
 	             <instanceof value="org.eclipse.core.resources.IProject"/>
-	             <instanceof value="org.openntf.nsfodp.eclipse.resources.DesignElementNode"/>
+	             <instanceof value="org.openntf.nsfodp.eclipse.ui.resources.DesignElementNode"/>
 	             <instanceof value="org.eclipse.core.resources.IFolder"/>
 	             <instanceof value="org.eclipse.core.resources.IFile"/>
 	           </or>
@@ -62,7 +62,7 @@
    <extension point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
-            <contentExtension pattern="org.openntf.nsfodp.eclipse.resources.DesignElementsContentProvider"/>
+            <contentExtension pattern="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"/>
          </includes>
       </viewerContentBinding>
    </extension> 

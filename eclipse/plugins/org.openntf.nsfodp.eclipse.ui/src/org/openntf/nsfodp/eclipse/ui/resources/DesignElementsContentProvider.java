@@ -1,4 +1,6 @@
-package org.openntf.nsfodp.eclipse.resources;
+package org.openntf.nsfodp.eclipse.ui.resources;
+
+import static org.openntf.nsfodp.eclipse.ui.resources.DesignElementType.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +20,6 @@ import org.eclipse.ui.navigator.PipelinedShapeModification;
 import org.eclipse.ui.navigator.PipelinedViewerUpdate;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
-
-import static org.openntf.nsfodp.eclipse.resources.DesignElementType.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DesignElementsContentProvider extends BaseWorkbenchContentProvider implements IPipelinedTreeContentProvider {

@@ -1,4 +1,4 @@
-package org.openntf.nsfodp.eclipse.resources;
+package org.openntf.nsfodp.eclipse.ui.resources;
 
 import java.util.stream.Stream;
 
