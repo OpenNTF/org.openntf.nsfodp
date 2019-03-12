@@ -60,13 +60,13 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 
 /**
  * Goal which generates an "odp" folder (replacing any existing in the directory or project)
- * from an NSF path within the context of a Maven project.
+ * from an NSF path.
  * 
  * @author Jesse Gallagher
  * @since 1.4.0
  */
-@Mojo(name="generate-odp")
-public class GenerateODPMojo extends AbstractEquinoxMojo {
+@Mojo(name="export-odp", requiresProject=false)
+public class ExportODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/exporter"; //$NON-NLS-1$
 	
