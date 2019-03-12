@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.eclipse.handler;
+package org.openntf.nsfodp.eclipse.m2e.handler;
 
 import java.io.PrintWriter;
 
@@ -22,7 +22,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.openntf.nsfodp.eclipse.job.CompileODPJob;
+import org.openntf.nsfodp.eclipse.m2e.job.CompileODPJob;
 
 public class CompileODPHandler extends AbstractNSFODPHandler {
 	@Override

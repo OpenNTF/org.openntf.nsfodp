@@ -14,11 +14,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.m2e.maven.runtime;bundle-version="1.4.0",
  org.eclipse.m2e.jdt;bundle-version="1.4.0",
  org.eclipse.m2e.launching;bundle-version="1.4.0",
- org.eclipse.jface.text;bundle-version="3.11.2",
  org.eclipse.ui,
  org.eclipse.ui.console,
+ org.eclipse.ui.navigator,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
  org.openntf.nsfodp.eclipse;bundle-version="2.0.0"
-Export-Package: org.openntf.nsfodp.eclipse.handler,
- org.openntf.nsfodp.eclipse.m2e
+Export-Package: org.openntf.nsfodp.eclipse.m2e,
+ org.openntf.nsfodp.eclipse.m2e.handler
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.openntf.nsfodp.eclipse.m2e.M2EActivator

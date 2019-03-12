@@ -60,11 +60,16 @@
 		point="org.eclipse.core.expressions.definitions">
 		<definition
 			id="org.openntf.nsfodp.hasOdpNature">
-			<adapt type="org.eclipse.core.resources.IProject">
-				<test property="org.eclipse.core.resources.projectNature"
-					value="org.openntf.nsfodp.nature">
-				</test>
-			</adapt>
+			<with variable="activeMenuSelection">
+				<iterate ifEmpty="false">
+					<adapt
+					   type="org.eclipse.core.resources.IProject">
+						<test property="org.eclipse.core.resources.projectNature"
+							value="org.openntf.nsfodp.nature">
+						</test>
+					</adapt>
+				</iterate>
+			</with>
 		</definition>
 	</extension>
 	

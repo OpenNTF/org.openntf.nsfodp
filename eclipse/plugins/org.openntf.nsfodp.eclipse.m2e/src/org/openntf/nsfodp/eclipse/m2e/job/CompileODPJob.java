@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.eclipse.job;
+package org.openntf.nsfodp.eclipse.m2e.job;
 
 import java.io.File;
 

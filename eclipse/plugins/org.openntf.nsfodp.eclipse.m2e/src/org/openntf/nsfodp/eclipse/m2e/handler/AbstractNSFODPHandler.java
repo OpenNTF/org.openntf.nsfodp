@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.eclipse.handler;
+package org.openntf.nsfodp.eclipse.m2e.handler;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.resources.IProject;

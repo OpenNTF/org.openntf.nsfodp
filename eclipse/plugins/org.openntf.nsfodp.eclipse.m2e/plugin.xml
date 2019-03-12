@@ -51,7 +51,9 @@
 			<command
 				commandId="org.openntf.nsfodp.eclipse.compileODP"
 				label="Compile On-Disk Project">
-				<visibleWhen checkEnabled="true"/>
+				<visibleWhen>
+					<reference definitionId="org.openntf.nsfodp.hasOdpNature"/>
+				</visibleWhen>
 			</command>
 		</menuContribution>
 		<menuContribution
@@ -59,7 +61,9 @@
 			<command
 				commandId="org.openntf.nsfodp.eclipse.deployNSF"
 				label="Deploy NSF">
-				<visibleWhen checkEnabled="true"/>
+				<visibleWhen>
+					<reference definitionId="org.openntf.nsfodp.hasOdpNature"/>
+				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
@@ -69,12 +73,12 @@
 		<command
 			id="org.openntf.nsfodp.eclipse.deployNSF"
 			name="Deploy NSF"
-			defaultHandler="org.openntf.nsfodp.eclipse.handler.DeployNSFHandler">
+			defaultHandler="org.openntf.nsfodp.eclipse.m2e.handler.DeployNSFHandler">
 		</command>
 		<command
 			id="org.openntf.nsfodp.eclipse.compileODP"
 			name="Compile On-Disk Project"
-			defaultHandler="org.openntf.nsfodp.eclipse.handler.CompileODPHandler">
+			defaultHandler="org.openntf.nsfodp.eclipse.m2e.handler.CompileODPHandler">
 		</command>
 	</extension>
 </plugin>
