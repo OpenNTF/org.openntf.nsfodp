@@ -68,6 +68,7 @@
 			Eclipse Support
 		-->
 		<module>plugins/org.openntf.nsfodp.eclipse</module>
+		<module>plugins/org.openntf.nsfodp.eclipse.contentassist</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.m2e</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.schemas</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>

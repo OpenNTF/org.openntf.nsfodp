@@ -259,26 +259,6 @@
 	</extension>
 	
 	<!--
-		Content assist
-	-->
-	<extension
-		id="org.openntf.nsfodp.eclipse.contentassist.xsp"
-		point="org.eclipse.wst.sse.ui.completionProposal">         
-
-		<proposalCategory 
-			id="org.openntf.nsfodp.eclipse.contentassist.xspcategory"
-			name="XSP Completion Proposals"/>
-
-		<proposalComputer
-			activate="true"
-			categoryId="org.openntf.nsfodp.eclipse.contentassist.xspcategory"
-			class="org.openntf.nsfodp.eclipse.contentassist.XspCompletionProposalComputer"
-			id="org.openntf.nsfodp.eclipse.contentassist.XspCompletionProposalComputer">			
-			<contentType id="org.eclipse.core.runtime.xml"/>			
-		</proposalComputer>         
-	</extension>
-	
-	<!--
 		Project Explorer extensions
 	--> 
    <extension point="org.eclipse.ui.navigator.navigatorContent">
