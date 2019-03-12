@@ -66,6 +66,7 @@
 			<command
 				commandId="org.openntf.nsfodp.eclipse.compileODP"
 				label="Compile On-Disk Project">
+				<visibleWhen checkEnabled="true"/>
 			</command>
 		</menuContribution>
 		<menuContribution
@@ -73,6 +74,7 @@
 			<command
 				commandId="org.openntf.nsfodp.eclipse.deployNSF"
 				label="Deploy NSF">
+				<visibleWhen checkEnabled="true"/>
 			</command>
 		</menuContribution>
 	</extension>
