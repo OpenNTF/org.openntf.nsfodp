@@ -95,7 +95,6 @@ public abstract class AbstractEquinoxTask {
 			Path javaBin = getJavaBinary(notesProgram);
 			
 			List<Path> classpath = new ArrayList<>();
-			classpath.add(equinox);
 			if(classpathJars != null) {
 				classpath.addAll(classpathJars);
 			}
@@ -134,6 +133,9 @@ public abstract class AbstractEquinoxTask {
 				createJempowerShim(notesProgram),
 				createClasspathExtensionBundle(classpath, plugins)
 			));
+			
+			classpath.add(equinox);
+			
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesPlatformDoesNotExist", notesPlatform)); //$NON-NLS-1$
@@ -145,10 +147,12 @@ public abstract class AbstractEquinoxTask {
 			String[] osgiBundle = new String[1];
 			Files.list(notesPlugins)
 				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
-				.peek(p -> {
+				.filter(p -> {
 					if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) {
 						osgiBundle[0] = p.toUri().toString();
+						return false;
 					}
+					return true;
 				})
 				.map(p -> "reference:" + p.toUri())
 				.forEach(platform::add);
@@ -171,9 +175,9 @@ public abstract class AbstractEquinoxTask {
 			config.put("osgi.instance.area", workspace.toAbsolutePath().toString());
 			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
 			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("osgi.parentClassloader", "ext");
-			config.put("osgi.classloader.define.packages", "noattributes");
-			config.put("org.osgi.framework.bootdelegation", "lotus.*");
+			config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
+			config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
+			config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
 			try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
 			}
