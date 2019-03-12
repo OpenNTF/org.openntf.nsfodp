@@ -35,11 +35,15 @@ public class DesignElementNode implements IWorkbenchAdapter {
 			IFolder odpDir = project.getFolder("odp");
 			IFolder resourceDir = odpDir.getFolder(type.getDesignElementPath());
 			try {
-				return Stream.of(resourceDir.members())
-					.filter(IFile.class::isInstance)
-					.map(IFile.class::cast)
-					.filter(type.getFilter())
-					.toArray(Object[]::new);
+				if(resourceDir.exists()) {
+					return Stream.of(resourceDir.members())
+						.filter(IFile.class::isInstance)
+						.map(IFile.class::cast)
+						.filter(type.getFilter())
+						.toArray(Object[]::new);
+				} else {
+					return new Object[0];
+				}
 			} catch (CoreException e) {
 				log.log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), "Exception while enumerating " + getType().getLabel(), e));
 				return new Object[0];
