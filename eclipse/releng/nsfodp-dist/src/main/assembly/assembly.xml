@@ -36,6 +36,13 @@
 			</includes>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/../../../legal</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<outputDirectory>legal</outputDirectory>
+		</fileSet>
 	</fileSets>
 	
 	<moduleSets>

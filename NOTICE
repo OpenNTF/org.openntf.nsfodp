@@ -45,3 +45,7 @@ Licensed under the Eclipse Public License 1.0
 m2eclipse-tycho
 Available from https://github.com/tesla/m2eclipse-tycho
 Licensed under the Eclipse Public License 1.0
+
+IBM Domino DTD and XSD files
+Copyright 2018 HCL and IBM, available with a Notes or Domino installation
+Redistributed in accordance with the included Redist-xmlschemas.txt and License-xmlschemas.txt files in the "legal" directory
