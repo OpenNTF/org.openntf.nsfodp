@@ -65,5 +65,24 @@
             <contentExtension pattern="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"/>
          </includes>
       </viewerContentBinding>
-   </extension> 
+   </extension>
+   
+   <!--
+		New File Wizards 
+   -->
+   <!--<extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.openntf.nsfodp.eclipse.ui.resources"
+            name="NSF Design Elements">
+      </category>
+      <wizard
+            category="org.openntf.nsfodp.eclipse.ui.resources"
+            class="org.openntf.nsfodp.eclipse.ui.resources.wizards.NewViewWizard"
+            icon="platform:/plugin/org.openntf.nsfodp.eclipse/icons/x-office-spreadsheet.png"
+            id="org.openntf.nsfodp.eclipse.ui.resources.wizards.NewViewWizard"
+            name="View">
+			<selection class="org.openntf.nsfodp.eclipse.ui.resources.DesignElementNode"/>
+      </wizard>
+   </extension>-->
 </plugin>
