@@ -51,7 +51,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.odp.util.DXLUtil;
+import org.openntf.nsfodp.commons.odp.util.NoteTypeUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -236,7 +238,7 @@ public class ODPExporter {
 	}
 
 	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException, NException, XMLException {
-		NoteType type = NoteType.forNote(note);
+		NoteType type = NoteTypeUtil.forNote(note);
 		switch(type) {
 		case IconNote:
 		case AboutDocument:

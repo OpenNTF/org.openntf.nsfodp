@@ -28,7 +28,15 @@ public enum NSFODPConstants {
 	/**
 	 * The system property used to specify the path to store the processed results.
 	 */
-	public static final String PROP_OUTPUTFILE = "org.openntf.nsfodp.outputLocation";
+	public static final String PROP_OUTPUTFILE = "org.openntf.nsfodp.outputLocation"; //$NON-NLS-1$
+	
+	// *******************************************************************************
+	// * Notes constants
+	// *******************************************************************************
+	
+	public static final String ITEM_NAME_FILE_DATA = "$FileData"; //$NON-NLS-1$
+	public static final String ITEM_NAME_IMAGE_DATA = "$ImageData"; //$NON-NLS-1$
+	public static final String ITEM_NAME_STYLE_SHEET_DATA = "$StyleSheetData"; //$NON-NLS-1$
 	
 	// *******************************************************************************
 	// * Compiler constants
@@ -44,17 +52,17 @@ public enum NSFODPConstants {
 	 * The system property used to specify the path to the ODP directory to compile using the local
 	 * Equinox compiler.
 	 */
-	public static final String PROP_ODPDIRECTORY = "org.openntf.nsfodp.odpDirectory";
+	public static final String PROP_ODPDIRECTORY = "org.openntf.nsfodp.odpDirectory"; //$NON-NLS-1$
 	/**
 	 * The system property used to specify the path to an update site to use during compilation
 	 * using the local Equinox compiler.
 	 */
-	public static final String PROP_UPDATESITE = "org.openntf.nsfodp.compiler.updateSite";
-	public static final String PROP_COMPILERLEVEL = "org.openntf.nsfodp.compiler.compilerLevel";
-	public static final String PROP_APPENDTIMESTAMPTOTITLE = "org.openntf.nsfodp.compiler.appendTimestampToTitle";
-	public static final String PROP_TEMPLATENAME = "org.openntf.nsfodp.compiler.templateName";
-	public static final String PROP_TEMPLATEVERSION = "org.openntf.nsfodp.compiler.templateVersion";
-	public static final String PROP_SETPRODUCTIONXSPOPTIONS = "org.openntf.nsfodp.compiler.setProductionXSPOptions";
+	public static final String PROP_UPDATESITE = "org.openntf.nsfodp.compiler.updateSite"; //$NON-NLS-1$
+	public static final String PROP_COMPILERLEVEL = "org.openntf.nsfodp.compiler.compilerLevel"; //$NON-NLS-1$
+	public static final String PROP_APPENDTIMESTAMPTOTITLE = "org.openntf.nsfodp.compiler.appendTimestampToTitle"; //$NON-NLS-1$
+	public static final String PROP_TEMPLATENAME = "org.openntf.nsfodp.compiler.templateName"; //$NON-NLS-1$
+	public static final String PROP_TEMPLATEVERSION = "org.openntf.nsfodp.compiler.templateVersion"; //$NON-NLS-1$
+	public static final String PROP_SETPRODUCTIONXSPOPTIONS = "org.openntf.nsfodp.compiler.setProductionXSPOptions"; //$NON-NLS-1$
 	
 	// *******************************************************************************
 	// * Exporter constants

@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.exporter;
+package org.openntf.nsfodp.commons;
 
 import static org.openntf.nsfodp.commons.h.StdNames.*;
-import static com.ibm.designer.domino.napi.NotesConstants.*;
-import static org.openntf.nsfodp.commons.NSFODPConstants.JAVA_ITEM_IGNORE_PATTERN;
-import static com.ibm.designer.domino.napi.util.NotesUtils.CmemflagTest;
-import static com.ibm.designer.domino.napi.util.NotesUtils.CmemflagTestMultiple;
+import static org.openntf.nsfodp.commons.NSFODPConstants.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import com.ibm.commons.util.StringUtil;
-import com.ibm.designer.domino.napi.NotesAPIException;
-import com.ibm.designer.domino.napi.NotesNote;
-import com.ibm.designer.domino.napi.NotesNoteItem;
-import com.ibm.domino.napi.c.NsfNote;
-
+/**
+ * Represents the various types of notes found in an NSF, with information
+ * about their ODP representations.
+ * 
+ * @author Jesse Gallagher
+ * @since 2.0.0
+ */
 public enum NoteType {
 	/** The icon note is also represented in "database.properties" */
 	IconNote(Paths.get("Resources", "IconNote"), true), //$NON-NLS-1$ //$NON-NLS-2$
@@ -125,160 +123,5 @@ public enum NoteType {
 		this.singleton = singleton;
 		this.fileItem = fileItem;
 		this.itemNameIgnorePattern = itemNameIgnorePattern;
-	}
-	
-	public static NoteType forNote(NotesNote note) throws NotesAPIException {
-		String flags = note.isItemPresent(DESIGN_FLAGS) ? note.getItemValueAsString(DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
-		String title = note.isItemPresent(FIELD_TITLE) ? note.getItemAsTextList(FIELD_TITLE).get(0) : StringUtil.EMPTY_STRING;
-		String flagsExt = note.isItemPresent(DESIGN_FLAGS_EXTENDED) ? note.getItemValueAsString(DESIGN_FLAGS_EXTENDED) : StringUtil.EMPTY_STRING;
-		
-		switch(note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT) {
-		case NsfNote.NOTE_CLASS_ACL:
-			return ACL;
-		case NsfNote.NOTE_CLASS_DESIGN:
-			return DesignCollection;
-		case NsfNote.NOTE_CLASS_ICON:
-			return IconNote;
-		case NsfNote.NOTE_CLASS_VIEW:
-			if(CmemflagTestMultiple(flags, DFLAGPAT_FOLDER_DESIGN)) {
-				return Folder;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_VIEWMAP_DESIGN)) {
-				return Navigator;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SHARED_COLS)) {
-				return SharedColumn;
-			} else {
-				return View;
-			}
-		case NsfNote.NOTE_CLASS_FIELD:
-			return SharedField;
-		case NsfNote.NOTE_CLASS_HELP:
-			return UsingDocument;
-		case NsfNote.NOTE_CLASS_INFO:
-			return AboutDocument;
-		case NsfNote.NOTE_CLASS_FILTER:
-			// "filter" is a dumping ground for pre-XPages code elements
-			
-			if(CmemflagTest(flags, DESIGN_FLAG_DATABASESCRIPT)) {
-				return DBScript;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SITEMAP)) {
-				return Outline;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_LS)) {
-				if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBSERVICELIB)) {
-					return LotusScriptWebServiceConsumer;
-				} else {
-					return LotusScriptLibrary; 
-				}
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_JAVA)) {
-				if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBSERVICELIB)) {
-					return JavaWebServiceConsumer;
-				} else {
-					return JavaLibrary;
-				}
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_JS)) {
-				return JavaScriptLibrary;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SCRIPTLIB_SERVER_JS)) {
-				return ServerJavaScriptLibrary;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_JAVA_WEBSERVICE)) {
-				return JavaWebService;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_LS_WEBSERVICE)) {
-				return LotusScriptWebService;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_DATA_CONNECTION_RESOURCE)) {
-				return DataConnection;
-			}
-			
-			// Determine from here what kind of agent it is
-			int assistType = 0;
-			if(note.isItemPresent(ASSIST_TYPE_ITEM)) {
-				NotesNoteItem item = note.getItem(ASSIST_TYPE_ITEM);
-				try {
-					assistType = item.getValueAsInteger();
-				} finally {
-					item.recycle();
-				}
-			}
-			
-			if(CmemflagTest(flags, DESIGN_FLAG_LOTUSSCRIPT_AGENT)) {
-				return LotusScriptAgent;
-			} else if(CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT) || CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) || assistType == ASSIST_TYPE_JAVA) {
-				// There's not a proper pattern for distinguishing between these two, so look for another marker
-				if(CmemflagTest(flags, DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE) || note.isItemPresent(ITEM_NAME_JAVA_COMPILER_SOURCE)) {
-					return JavaAgent;
-				} else {
-					return ImportedJavaAgent;
-				}
-			} else if(assistType == -1) {
-				return SimpleActionAgent;
-			} else {
-				return FormulaAgent;
-			}
-		case NsfNote.NOTE_CLASS_FORM:
-			// Pretty much everything is a form nowadays
-			if(flags.isEmpty()) {
-				// Definitely an actual form
-				return Form;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_IMAGE_RESOURCE)) {
-				if(IMAGE_NEW_DBICON_NAME.equals(title)) {
-					return DBIcon;
-				}
-				return ImageResource;
-			} else if(CmemflagTest(flags, DESIGN_FLAG_JARFILE)) {
-				return Jar;			
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_COMPDEF)) {
-				return WiringProperties;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_COMPAPP)) {
-				return CompositeApplication;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WIDGET)) {
-				return CompositeComponent;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPCC)) {
-				if(CmemflagTest(flags, DESIGN_FLAG_PROPFILE)) {
-					return CustomControlProperties;
-				} else {
-					return CustomControl;
-				}
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_XSPPAGE)) {
-				if(CmemflagTest(flags, DESIGN_FLAG_PROPFILE)) {
-					return XPageProperties;
-				} else {
-					return XPage;
-				}
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_STYLEKIT)) {
-				return Theme;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_WEBPAGE)) {
-				return Page;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_IMAGE_RESOURCE)) {
-				return ImageResource;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_STYLE_SHEET_RESOURCE)) {
-				return StyleSheet;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SUBFORM_DESIGN)) {
-				return Subform;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_FRAMESET)) {
-				return Frameset;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_DB2ACCESSVIEW)) {
-				return DB2AccessView;
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_FILE)) {
-				// xspdesign.properties needs special handling, but is distinguished only by file name
-				String filePath = note.isItemPresent(ITEM_NAME_FILE_NAMES) ? note.getItemAsTextList(ITEM_NAME_FILE_NAMES).get(0) : null;
-				
-				if(!CmemflagTest(flags, DESIGN_FLAG_HIDEFROMDESIGNLIST)) {
-					return FileResource;
-				} else if("xspdesign.properties".equals(filePath)) { //$NON-NLS-1$
-					return XSPDesignProperties;
-				} else if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBCONTENTFILE)) {
-					return WebContentFile;
-				} else if(CmemflagTestMultiple(flags, DFLAGPAT_JAVAFILE)) {
-					return Java;
-				} else {
-					return GenericFile;
-				}
-			} else if(CmemflagTestMultiple(flags, DFLAGPAT_SACTIONS_DESIGN)) {
-				return SharedActions;
-			} else if(CmemflagTest(flags, DESIGN_FLAG_JAVA_RESOURCE)) {
-				return Applet;
-			} else {
-				return Form;
-			} 
-		}
-		
-		return Unknown;
 	}
 }
