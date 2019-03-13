@@ -58,7 +58,6 @@ public enum DesignElementType {
 		Applications("Applications", ODPIcon.COMPOSITE_APPLICATION, "CompositeApplications/Applications"),
 		Components("Components", ODPIcon.COMPOSITE_COMPONENT, "CompositeApplications/Components"),
 	ApplicationConfiguration("Application Configuration", ODPIcon.APP_CONFIGURATION),
-		IBMBluemixManifest("IBM Bluemix Manifest", ODPIcon.BLUEMIX_CONFIG, "", f -> false), // TODO figure out how this is stored
 		ApplicationProperties("Application Properties", ODPIcon.APP_PROPERTIES, "AppProperties", f -> f.getName().equals("database.properties")),
 		XspProperties("XSP Properties", ODPIcon.APP_PROPERTIES, "WebContent/WEB-INF", f -> f.getName().equals("xsp.properties")),
 		FacesConfig("Faces Config", ODPIcon.FACES_CONFIG, "WebContent/WEB-INF", f -> f.getName().equals("faces-config.xml"))

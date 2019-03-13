@@ -17,10 +17,13 @@ package org.openntf.nsfodp.eclipse.ui.resources;
 
 import java.util.stream.Stream;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -28,7 +31,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.openntf.nsfodp.eclipse.Activator;
 
-public class DesignElementNode implements IWorkbenchAdapter {
+public class DesignElementNode implements IWorkbenchAdapter, IAdaptable {
 	private static final ILog log = Activator.log;
 
 	private final IProject project;
@@ -43,12 +46,9 @@ public class DesignElementNode implements IWorkbenchAdapter {
 	@Override
 	public Object[] getChildren(Object o) {
 		if(this.children == null) {
-			// TODO look up odp dir from config
-			//MavenProject mp = MavenPlugin.getMavenProjectRegistry().getProject(project).getMavenProject();
 			
 			DesignElementType type = getType();
-			IFolder odpDir = project.getFolder("odp");
-			IFolder resourceDir = odpDir.getFolder(type.getDesignElementPath());
+			IFolder resourceDir = getFolder();
 			try {
 				if(resourceDir.exists()) {
 					return Stream.of(resourceDir.members())
@@ -90,5 +90,31 @@ public class DesignElementNode implements IWorkbenchAdapter {
 	public DesignElementNode children(DesignElementNode... children) {
 		this.children = children;
 		return this;
+	}
+	
+	protected IFolder getFolder() {
+		// TODO look up odp dir from config
+		//MavenProject mp = MavenPlugin.getMavenProjectRegistry().getProject(project).getMavenProject();
+		IFolder odpDir = project.getFolder("odp"); //$NON-NLS-1$
+		return odpDir.getFolder(getType().getDesignElementPath());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getAdapter(Class<T> clazz) {
+		if(!getType().isContainer()) {
+			if(IFolder.class.equals(clazz) || IContainer.class.equals(clazz) || IResource.class.equals(clazz)) {
+				IFolder folder = getFolder();
+				if(!folder.exists()) {
+					try {
+						folder.create(false, false, null);
+					} catch (CoreException e) {
+						Activator.logError("Error auto-creating folder " + folder, e); //$NON-NLS-1$
+					}
+				}
+				return (T)folder;
+			}
+		}
+		return null;
 	}
 }

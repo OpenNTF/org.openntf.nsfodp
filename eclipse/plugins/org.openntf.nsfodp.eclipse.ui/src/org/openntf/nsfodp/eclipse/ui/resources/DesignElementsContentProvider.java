@@ -107,7 +107,6 @@ public class DesignElementsContentProvider extends BaseWorkbenchContentProvider 
 							new DesignElementNode(project, Components)
 						),
 						new DesignElementNode(project, ApplicationConfiguration).children(
-							new DesignElementNode(project, IBMBluemixManifest),
 							new DesignElementNode(project, ApplicationProperties),
 							new DesignElementNode(project, XspProperties),
 							new DesignElementNode(project, FacesConfig)
