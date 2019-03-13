@@ -35,6 +35,7 @@ import org.eclipse.ui.navigator.PipelinedShapeModification;
 import org.eclipse.ui.navigator.PipelinedViewerUpdate;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
+import org.openntf.nsfodp.eclipse.ui.Messages;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DesignElementsContentProvider extends BaseWorkbenchContentProvider implements IPipelinedTreeContentProvider {
@@ -116,7 +117,7 @@ public class DesignElementsContentProvider extends BaseWorkbenchContentProvider 
 		            currentChildren.clear();
 		            currentChildren.addAll(newChildren);
 				} catch (CoreException ex) {
-					log.log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), "Error displaying ODP content", ex));
+					log.log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), Messages.DesignElementsContentProvider_ErrorDisplaying, ex));
 				}
 			}
 		}

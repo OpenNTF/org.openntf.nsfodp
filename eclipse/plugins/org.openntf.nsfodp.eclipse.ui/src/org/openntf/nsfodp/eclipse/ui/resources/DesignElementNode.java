@@ -15,6 +15,7 @@
  */
 package org.openntf.nsfodp.eclipse.ui.resources;
 
+import java.text.MessageFormat;
 import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IContainer;
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.ui.Messages;
 
 public class DesignElementNode implements IWorkbenchAdapter, IAdaptable {
 	private static final ILog log = Activator.log;
@@ -60,7 +62,7 @@ public class DesignElementNode implements IWorkbenchAdapter, IAdaptable {
 					return new Object[0];
 				}
 			} catch (CoreException e) {
-				log.log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), "Exception while enumerating " + getType().getLabel(), e));
+				log.log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), MessageFormat.format(Messages.DesignElementNode_ExceptionWhileEnumerating, getType().getLabel()), e));
 				return new Object[0];
 			}
 		} else {
