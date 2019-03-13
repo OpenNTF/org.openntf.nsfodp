@@ -340,7 +340,7 @@ public class ODPExporter {
 	 */
 	private Path getCleanName(NotesNote note, NoteType type) throws NotesAPIException {
 		if(!note.isItemPresent(FIELD_TITLE)) {
-			return Paths.get("(Untitled)");
+			return Paths.get("(Untitled)"); //$NON-NLS-1$
 		}
 		
 		String title;
@@ -388,7 +388,7 @@ public class ODPExporter {
 		}
 		
 		// These are normal files in the NSF, but should not be exported
-		if(name.startsWith(Paths.get("WebContent", "WEB-INF", "classes")) || name.startsWith(Paths.get("WEB-INF", "classes"))) { //$NON-NLS-1$ //$NON-NLS-2$
+		if(name.startsWith(Paths.get("WebContent", "WEB-INF", "classes")) || name.startsWith(Paths.get("WEB-INF", "classes"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			return;
 		} else if(name.getFileName().toString().equals("build.properties")) { //$NON-NLS-1$
 			return;
@@ -557,7 +557,7 @@ public class ODPExporter {
 	 * @throws IOException
 	 */
 	private void generateManifestMf(Path baseDir) throws IOException {
-		Path manifest = baseDir.resolve("META-INF").resolve("MANIFEST.MF");
+		Path manifest = baseDir.resolve("META-INF").resolve("MANIFEST.MF"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.isRegularFile(manifest)) {
 			Files.createDirectories(manifest.getParent());
 			
@@ -574,20 +574,20 @@ public class ODPExporter {
 	 * @throws XMLException 
 	 */
 	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException {
-		Path manifest = baseDir.resolve(".project");
+		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
 			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE)) {
 				Document xmlDoc = DOMUtil.createDocument();
-				Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription");
+				Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
 				{
-					Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name");
+					Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name"); //$NON-NLS-1$
 					String path = database.getDatabasePath().replace('\\', '/');
-					name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_"));
+					name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				DOMUtil.createElement(xmlDoc, projectDescription, "comment");
-				DOMUtil.createElement(xmlDoc, projectDescription, "projects");
-				DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec");
-				DOMUtil.createElement(xmlDoc, projectDescription, "natures");
+				DOMUtil.createElement(xmlDoc, projectDescription, "comment"); //$NON-NLS-1$
+				DOMUtil.createElement(xmlDoc, projectDescription, "projects"); //$NON-NLS-1$
+				DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec"); //$NON-NLS-1$
+				DOMUtil.createElement(xmlDoc, projectDescription, "natures"); //$NON-NLS-1$
 				DOMUtil.serialize(os, xmlDoc, Format.defaultFormat);
 			}
 		}

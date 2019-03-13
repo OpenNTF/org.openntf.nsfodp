@@ -41,7 +41,7 @@ public enum NoteType {
 	LotusScriptLibrary("lss", Paths.get("Code", "ScriptLibraries"), false, SCRIPTLIB_ITEM_NAME, null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	JavaLibrary("javalib", Paths.get("Code", "ScriptLibraries"), false), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	CustomControl(null, Paths.get("CustomControls"), false, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN), //$NON-NLS-1$
-	CustomControlProperties(null, Paths.get("CustomControls"), false, ITEM_NAME_FILE_DATA, null),
+	CustomControlProperties(null, Paths.get("CustomControls"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$
 	XPage(null, Paths.get("XPages"), false, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN), //$NON-NLS-1$
 	XPageProperties(null, Paths.get("XPages"), false, ITEM_NAME_FILE_DATA, null), //$NON-NLS-1$
 	Form("form", Paths.get("Forms"), false), //$NON-NLS-1$ //$NON-NLS-2$
@@ -261,7 +261,7 @@ public enum NoteType {
 				
 				if(!CmemflagTest(flags, DESIGN_FLAG_HIDEFROMDESIGNLIST)) {
 					return FileResource;
-				} else if("xspdesign.properties".equals(filePath)) {
+				} else if("xspdesign.properties".equals(filePath)) { //$NON-NLS-1$
 					return XSPDesignProperties;
 				} else if(CmemflagTest(flagsExt, DESIGN_FLAGEXT_WEBCONTENTFILE)) {
 					return WebContentFile;
