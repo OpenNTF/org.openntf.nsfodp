@@ -33,6 +33,7 @@ import org.eclipse.m2e.actions.MavenLaunchConstants;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
+import org.openntf.nsfodp.eclipse.m2e.Messages;
 
 @SuppressWarnings("restriction")
 public class CompileODPJob extends Job {
@@ -40,7 +41,7 @@ public class CompileODPJob extends Job {
 	private final IProject project;
 
 	public CompileODPJob(IProject project) {
-		super("Compile ODP");
+		super(Messages.CompileODPJob_compileOdp);
 		this.project = project;
 	}
 
@@ -53,7 +54,7 @@ public class CompileODPJob extends Job {
 		try {
 			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 			ILaunchConfigurationType launchConfigurationType = launchManager.getLaunchConfigurationType(MavenLaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID);
-			ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, "Executing POM");
+			ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, Messages.CompileODPJob_executingPOM);
 			workingCopy.setAttribute(MavenLaunchConstants.ATTR_POM_DIR, pomFile.getParent());
 			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, "nsfodp:compile-odp -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
 			workingCopy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
@@ -66,7 +67,7 @@ public class CompileODPJob extends Job {
 			
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch(Exception e) {
-			return new Status(IStatus.ERROR, "Error while executing Maven", "", e);
+			return new Status(IStatus.ERROR, Messages.CompileODPJob_errorExecutingMaven, "", e); //$NON-NLS-1$
 		}
 		return Status.OK_STATUS;
 	}

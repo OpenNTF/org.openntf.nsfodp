@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NSF ODP Content Assist Additions
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.eclipse.contentassist;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.contentassist
 Bundle-Version: 2.0.0.qualifier
-Bundle-Vendor: OpenNTF
+Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang,
@@ -19,3 +19,4 @@ Require-Bundle: org.eclipse.ui,
  org.openntf.nsfodp.commons;bundle-version="1.0.0",
  org.openntf.nsfodp.eclipse;bundle-version="2.0.0"
 Export-Package: org.openntf.nsfodp.eclipse.contentassist
+Bundle-Localization: plugin

@@ -81,10 +81,10 @@ public class XMLNode implements Map<String, Object>, Serializable {
 			}
 			// We don't want the XML declaration in front
 			//transformer.setOutputProperty("omit-xml-declaration", "yes");
-			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.METHOD, "xml"); //$NON-NLS-1$
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8"); //$NON-NLS-1$
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -108,15 +108,15 @@ public class XMLNode implements Map<String, Object>, Serializable {
 
 	public String getAttribute(final String attribute) {
 		if (this.node_ == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		NamedNodeMap attributes = this.node_.getAttributes();
 		if (attributes == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		Node attr = attributes.getNamedItem(attribute);
 		if (attr == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return attr.getTextContent();
 	}
@@ -132,7 +132,7 @@ public class XMLNode implements Map<String, Object>, Serializable {
 		if (attr == null) {
 			attr = getDocument().createAttribute(attribute);
 		}
-		attr.setNodeValue(value == null ? "" : value);
+		attr.setNodeValue(value == null ? "" : value); //$NON-NLS-1$
 		this.node_.getAttributes().setNamedItem(attr);
 	}
 
@@ -146,7 +146,7 @@ public class XMLNode implements Map<String, Object>, Serializable {
 
 	public String getText() {
 		if (node_ == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return node_.getTextContent();
 	}
@@ -168,7 +168,7 @@ public class XMLNode implements Map<String, Object>, Serializable {
 
 	public String getNodeValue() {
 		if (node_ == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return node_.getNodeValue();
 	}
@@ -262,9 +262,9 @@ public class XMLNode implements Map<String, Object>, Serializable {
 	public Object get(final Object arg0) {
 		String path = String.valueOf(arg0);
 
-		if (path.equals("nodeValue")) {
+		if (path.equals("nodeValue")) { //$NON-NLS-1$
 			return this.getNode().getNodeValue();
-		} else if (path.equals("textContent")) {
+		} else if (path.equals("textContent")) { //$NON-NLS-1$
 			return this.getNode().getTextContent();
 		}
 
@@ -364,10 +364,10 @@ public class XMLNode implements Map<String, Object>, Serializable {
 
 	@Override
 	public Object put(final String arg0, final Object arg1) {
-		if (arg0.equals("nodeValue")) {
+		if (arg0.equals("nodeValue")) { //$NON-NLS-1$
 			this.getNode().setNodeValue(String.valueOf(arg1));
 			return arg1;
-		} else if (arg0.equals("textContent")) {
+		} else if (arg0.equals("textContent")) { //$NON-NLS-1$
 			this.getNode().setNodeValue(String.valueOf(arg1));
 			return arg1;
 		}

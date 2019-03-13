@@ -96,7 +96,7 @@ public enum ODPPDEUtil {
 		private final IPluginModelBase model;
 
 		public UpdateClasspathWorkspaceJob(IProject project, IPluginModelBase model) {
-			super("Updating classpath");
+			super(Messages.ODPPDEUtil_updatingClasspath);
 			this.project = project;
 			this.model = model;
 		}
@@ -160,23 +160,23 @@ public enum ODPPDEUtil {
 		
 		// This may not have included the source folders from build.properties for some reason,
 		//  so compute them manually
-		IFile buildProperties = project.getFile("build.properties");
+		IFile buildProperties = project.getFile("build.properties"); //$NON-NLS-1$
 		if(buildProperties.isAccessible()) {
 			Properties props = new Properties();
 			try(InputStream is = buildProperties.getContents()) {
 				props.load(is);
 			} catch (IOException e) {
-				throw new CoreException(new Status(IStatus.ERROR, "Exception while loading build.properties", e.toString(), e));
+				throw new CoreException(new Status(IStatus.ERROR, Messages.ODPPDEUtil_errorBuildProperties, e.toString(), e));
 			}
 			for(Map.Entry<Object, Object> entry : props.entrySet()) {
 				String key = String.valueOf(entry.getKey());
-				if(key.startsWith("source.")) {
+				if(key.startsWith("source.")) { //$NON-NLS-1$
 					if(entry.getValue() == null) {
 						continue;
 					}
 					
 					String val = String.valueOf(entry.getValue());
-					String[] paths = val.split(",");
+					String[] paths = val.split(","); //$NON-NLS-1$
 					for(String path : paths) {
 						if(
 							resolvedEntries.stream()
@@ -193,7 +193,7 @@ public enum ODPPDEUtil {
 								IClasspathEntry.CPE_SOURCE,
 								eclipsePath,
 								new IPath[0],
-								new IPath[] { new Path("**/*.metadata") },
+								new IPath[] { new Path("**/*.metadata") }, //$NON-NLS-1$
 								null,
 								null,
 								null, // TODO look up output entry
@@ -225,11 +225,11 @@ public enum ODPPDEUtil {
 		// PDE API is very inconvenient, lets use internal classes instead
 		IContainer metainf = PDEProject.getBundleRoot(project);
 		if (metainf == null || metainf instanceof IProject) {
-			metainf = project.getFolder("META-INF");
+			metainf = project.getFolder("META-INF"); //$NON-NLS-1$
 		} else {
-			metainf = metainf.getFolder(new Path("META-INF"));
+			metainf = metainf.getFolder(new Path("META-INF")); //$NON-NLS-1$
 		}
 
-		return metainf.getFile(new Path("MANIFEST.MF"));
+		return metainf.getFile(new Path("MANIFEST.MF")); //$NON-NLS-1$
 	}
 }

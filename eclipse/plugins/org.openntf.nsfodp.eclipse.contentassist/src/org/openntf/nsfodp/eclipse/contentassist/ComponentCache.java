@@ -74,11 +74,11 @@ public enum ComponentCache {
 							String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
 									.getText();
 							
-							List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property")
+							List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property") //$NON-NLS-1$
 									.stream()
 									.map(prop -> {
-										String name = prop.selectSingleNode("property-name").getText();
-										String javaClass = prop.selectSingleNode("property-class").getText();
+										String name = prop.selectSingleNode("property-name").getText(); //$NON-NLS-1$
+										String javaClass = prop.selectSingleNode("property-class").getText(); //$NON-NLS-1$
 										return new ComponentProperty(name, javaClass, false, null);
 									})
 									.collect(Collectors.toList());
@@ -101,18 +101,18 @@ public enum ComponentCache {
 		if(STOCK_COMPONENTS == null) {
 			JsonValue value;
 			try(InputStream is = ComponentCache.class.getResourceAsStream("/components/9.0.1fp10.json")) { //$NON-NLS-1$
-				Objects.requireNonNull(is, "Could not load stock components JSON");
+				Objects.requireNonNull(is, Messages.ComponentCache_errorLoadStockComponents);
 				try(Reader reader = new InputStreamReader(is)) {
 					value = Json.parse(reader);
 				}
 			}
 			if(!value.isObject()) {
-				throw new IllegalStateException("Stock components JSON is not an object");
+				throw new IllegalStateException(Messages.ComponentCache_errorStockComponentsNotObject);
 			}
 			JsonObject obj = value.asObject();
 			JsonValue componentsValue = obj.get("components"); //$NON-NLS-1$
 			if(componentsValue == null || !componentsValue.isArray()) {
-				throw new IllegalStateException("Stock components JSON does not contain a components array");
+				throw new IllegalStateException(Messages.ComponentCache_errorStockComponentsInvalid);
 			}
 			JsonArray components = componentsValue.asArray();
 			STOCK_COMPONENTS = components.values().stream()

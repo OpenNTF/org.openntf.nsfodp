@@ -70,7 +70,7 @@ public class XspCompletionProposalComputer extends AbstractComputer implements I
 						cursorposition));
 			}
 		} catch (BadLocationException ex) {
-			Activator.logError("Unable to retrieve data at the current document position", ex);
+			Activator.logError(Messages.XspCompletionProposalComputer_errorDocumentPosition, ex);
 		}
 
 		return proposals;

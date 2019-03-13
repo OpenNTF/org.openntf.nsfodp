@@ -23,6 +23,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.contentassist.generators.Messages;
 
 /**
  * Common code for all processor and expression object completion proposals.
@@ -69,7 +70,7 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal,
 			applyImpl(document, trigger, offset);
 		}
 		catch (BadLocationException ex) {
-			Activator.logError("Unable to apply proposal", ex);
+			Activator.logError(Messages.AbstractCompletionProposal_unableToApply, ex);
 		}
 	}
 
@@ -100,7 +101,7 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal,
 	public IContextInformation getContextInformation() {
 
 //		return contextinformation;
-		return new ContextInformation("Context string", "Information string");
+		return new ContextInformation(Messages.AbstractCompletionProposal_contextString, Messages.AbstractCompletionProposal_informationString);
 	}
 
 	/**

@@ -32,6 +32,7 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.contentassist.ComponentCache;
+import org.openntf.nsfodp.eclipse.contentassist.Messages;
 import org.openntf.nsfodp.eclipse.contentassist.proposals.CustomControlCompletionProposal;
 import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.AbstractItemProposalGenerator;
 import org.xml.sax.SAXException;
@@ -60,7 +61,7 @@ public class CustomControlProposalGenerator extends AbstractItemProposalGenerato
 				.map(cc -> new CustomControlCompletionProposal(cc, pattern.length(), cursorposition))
 				.collect(Collectors.toList());
 		} catch (CoreException | SAXException | IOException | ParserConfigurationException e) {
-			Activator.logError("Error while composing CC suggestions", e);
+			Activator.logError(Messages.CustomControlProposalGenerator_errorComposingSuggestions, e);
 		}
 
 		return Collections.EMPTY_LIST;

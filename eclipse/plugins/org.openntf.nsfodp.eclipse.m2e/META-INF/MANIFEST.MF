@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NSF ODP m2e Integration
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.eclipse.m2e;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.m2e
 Bundle-Version: 2.0.0.qualifier
-Bundle-Vendor: OpenNTF
+Bundle-Vendor: %OpenNTF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -24,3 +24,4 @@ Export-Package: org.openntf.nsfodp.eclipse.m2e,
  org.openntf.nsfodp.eclipse.m2e.handler
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.eclipse.m2e.M2EActivator
+Bundle-Localization: plugin

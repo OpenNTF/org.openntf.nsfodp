@@ -27,7 +27,7 @@
 
 		<proposalCategory 
 			id="org.openntf.nsfodp.eclipse.contentassist.xspcategory"
-			name="XSP Completion Proposals"/>
+			name="%xspCompletionProposals"/>
 
 		<proposalComputer
 			activate="true"

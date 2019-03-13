@@ -56,7 +56,7 @@ public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping im
     	IProject project = request.getProject();
     	
     	String packaging = mavenProject.getPackaging();
-    	if("domino-nsf".equals(packaging)) {
+    	if("domino-nsf".equals(packaging)) { //$NON-NLS-1$
     		ODPPDEUtil.INSTANCE.addPDENature(project, mavenProject, mon);
     		if(!project.hasNature(OnDiskProjectNature.ID)) {
     			CoreUtility.addNatureToProject(project, OnDiskProjectNature.ID, null);

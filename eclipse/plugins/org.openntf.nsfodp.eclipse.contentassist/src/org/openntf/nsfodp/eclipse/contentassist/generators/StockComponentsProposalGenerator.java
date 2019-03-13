@@ -29,6 +29,7 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.contentassist.ComponentCache;
+import org.openntf.nsfodp.eclipse.contentassist.Messages;
 import org.openntf.nsfodp.eclipse.contentassist.proposals.StockComponentCompletionProposal;
 import org.thymeleaf.extras.eclipse.contentassist.autocomplete.generators.AbstractItemProposalGenerator;
 
@@ -56,7 +57,7 @@ public class StockComponentsProposalGenerator extends AbstractItemProposalGenera
 				.map(cc -> new StockComponentCompletionProposal(cc, pattern.length(), cursorposition))
 				.collect(Collectors.toList());
 		} catch (IOException e) {
-			Activator.logError("Error while composing stock component suggestions", e);
+			Activator.logError(Messages.StockComponentsProposalGenerator_errorComposingSuggestions, e);
 		}
 
 		return Collections.EMPTY_LIST;
