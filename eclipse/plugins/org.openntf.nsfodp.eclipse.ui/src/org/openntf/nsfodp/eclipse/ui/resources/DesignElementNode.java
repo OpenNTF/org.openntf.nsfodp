@@ -30,10 +30,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
+import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.ui.Messages;
 
-public class DesignElementNode implements IWorkbenchAdapter, IAdaptable {
+public class DesignElementNode extends WorkbenchContentProvider implements IWorkbenchAdapter, IAdaptable {
 	private static final ILog log = Activator.log;
 
 	private final IProject project;
@@ -48,7 +49,6 @@ public class DesignElementNode implements IWorkbenchAdapter, IAdaptable {
 	@Override
 	public Object[] getChildren(Object o) {
 		if(this.children == null) {
-			
 			DesignElementType type = getType();
 			IFolder resourceDir = getFolder();
 			try {

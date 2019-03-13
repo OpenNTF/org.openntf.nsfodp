@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.IPipelinedTreeContentProvider;
 import org.eclipse.ui.navigator.PipelinedShapeModification;
@@ -38,7 +38,7 @@ import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
 import org.openntf.nsfodp.eclipse.ui.Messages;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class DesignElementsContentProvider extends BaseWorkbenchContentProvider implements IPipelinedTreeContentProvider {
+public class DesignElementsContentProvider extends WorkbenchContentProvider implements IPipelinedTreeContentProvider {
 
 	private static final ILog log = Activator.log;
 
