@@ -239,74 +239,32 @@ public class ODPExporter {
 
 	private void exportNote(NotesNote note, DXLExporter exporter, Path baseDir) throws IOException, NotesAPIException, NException, XMLException {
 		NoteType type = NoteTypeUtil.forNote(note);
-		switch(type) {
-		case IconNote:
-		case AboutDocument:
-		case UsingDocument:
-		case SharedActions:
-		case DBIcon:
-		case DBScript:
-			exportExplicitNote(note, exporter, baseDir, type.path);
-			break;
-		case Form:
-		case Frameset:
-		case JavaLibrary:
-		case Outline:
-		case Page:
-		case SharedField:
-		case View:
-		case ImportedJavaAgent:
-		case JavaAgent:
-		case JavaWebService:
-		case Folder:
-		case LotusScriptAgent:
-		case LotusScriptWebService:
-		case JavaWebServiceConsumer:
-		case LotusScriptWebServiceConsumer:
-		case SharedColumn:
-		case Subform:
-		case SimpleActionAgent:
-		case FormulaAgent:
-		case Navigator:
-		case DB2AccessView:
-		case DataConnection:
-		case Applet:
-			exportNamedNote(note, exporter, baseDir, type);
-			break;
-		case CustomControl:
-		case CustomControlProperties:
-		case FileResource:
-		case ImageResource:
-		case JavaScriptLibrary:
-		case Java:
-		case LotusScriptLibrary:
-		case StyleSheet:
-		case Theme:
-		case XPage:
-		case XPageProperties:
-		case ServerJavaScriptLibrary:
-		case Jar:
-		case WiringProperties:
-		case CompositeApplication:
-		case CompositeComponent:
-			exportNamedDataAndMetadata(note, exporter, baseDir, type);
-			break;
-		case WebContentFile:
-		case GenericFile:
-		case XSPDesignProperties:
-			exportNamedData(note, exporter, baseDir, type);
-			break;
-		case DesignCollection:
-		case ACL:
-			// Nothing to do here
-			break;
-		case Unknown:
-		default:
+		if(type == NoteType.Unknown) {
 			String flags = note.isItemPresent(DESIGN_FLAGS) ? note.getItemValueAsString(DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
 			String title = note.isItemPresent(FIELD_TITLE) ? note.getItemValueAsString(FIELD_TITLE) : Integer.toString(note.getNoteId(), 16);
 			System.out.println("Unknown note, flags=" + flags + ", title=" + title + ", class=" + (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT));
+			return;
+		}
+		if(!type.isInOdp()) {
+			return;
 		}
 		
+		if(type.isSingleton()) {
+			exportExplicitNote(note, exporter, baseDir, type.getPath());
+		} else {
+			switch(type.getOutputFormat()) {
+			case METADATA:
+				exportNamedDataAndMetadata(note, exporter, baseDir, type);
+				break;
+			case RAWFILE:
+				exportNamedData(note, exporter, baseDir, type);
+				break;
+			case DXL:
+			default:
+				exportNamedNote(note, exporter, baseDir, type);
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -321,16 +279,16 @@ public class ODPExporter {
 	 */
 	private void exportNamedNote(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws IOException, NotesAPIException {
 		Path name = getCleanName(note, type);
-		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.extension);
+				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension());
 			} else {
-				name = parent.resolve(name.getFileName().toString() + '.' + type.extension);
+				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension());
 			}
 		}
 		
-		exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
+		exportExplicitNote(note, exporter, baseDir, type.getPath().resolve(name));
 	}
 	
 	/**
@@ -380,12 +338,12 @@ public class ODPExporter {
 	 */
 	private void exportNamedData(NotesNote note, DXLExporter exporter, Path baseDir, NoteType type) throws NotesAPIException, IOException, NException, XMLException {
 		Path name = getCleanName(note, type);
-		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.extension);
+				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension());
 			} else {
-				name = parent.resolve(name.getFileName().toString() + '.' + type.extension);
+				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension());
 			}
 		}
 		
@@ -396,7 +354,7 @@ public class ODPExporter {
 			return;
 		}
 		
-		exportFileData(note, exporter, baseDir, type.path.resolve(name), type);
+		exportFileData(note, exporter, baseDir, type.getPath().resolve(name), type);
 	}
 	
 	/**
@@ -415,12 +373,12 @@ public class ODPExporter {
 		exportNamedData(note, exporter, baseDir, type);
 		
 		Path name = getCleanName(note, type);
-		if(StringUtil.isNotEmpty(type.extension) && !name.getFileName().toString().endsWith(type.extension)) {
+		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.extension + EXT_METADATA);
+				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension() + EXT_METADATA);
 			} else {
-				name = parent.resolve(name.getFileName().toString() + '.' + type.extension + EXT_METADATA);
+				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension() + EXT_METADATA);
 			}
 		} else {
 			Path parent = name.getParent();
@@ -431,11 +389,12 @@ public class ODPExporter {
 			}
 		}
 		
-		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.fileItem, ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT, ITEM_NAME_FILE_DATA, ITEM_NAME_CONFIG_FILE_DATA, ITEM_NAME_CONFIG_FILE_SIZE));
+		List<String> ignoreItems = new ArrayList<>(Arrays.asList(type.getFileItem(), ITEM_NAME_FILE_SIZE, XSP_CLASS_INDEX, SCRIPTLIB_OBJECT, ITEM_NAME_FILE_DATA, ITEM_NAME_CONFIG_FILE_DATA, ITEM_NAME_CONFIG_FILE_SIZE));
 		// Some of these will have pattern-based item ignores
-		if(StringUtil.isNotEmpty(type.itemNameIgnorePattern)) {
+		Pattern pattern = type.getItemNameIgnorePattern();
+		if(pattern != null) {
 			for(String itemName : note.getItemNames()) {
-				if(Pattern.matches(type.itemNameIgnorePattern, itemName)) {
+				if(pattern.matcher(itemName).matches()) {
 					ignoreItems.add(itemName);
 				}
 			}
@@ -444,7 +403,7 @@ public class ODPExporter {
 		exporter.setExporterListProperty(DXLExporter.eOmitItemNames, ignoreItems.toArray(new String[ignoreItems.size()]));
 		exporter.setExporterProperty(38, 1);
 		try {
-			exportExplicitNote(note, exporter, baseDir, type.path.resolve(name));
+			exportExplicitNote(note, exporter, baseDir, type.getPath().resolve(name));
 		} finally {
 			exporter.setExporterListProperty(DXLExporter.eOmitItemNames, StringUtil.EMPTY_STRING_ARRAY);
 			exporter.setExporterProperty(38, 0);
@@ -497,7 +456,7 @@ public class ODPExporter {
 					
 					try(InputStream in = new ByteArrayInputStream(dxl)) {
 						Document doc = DOMUtil.createDocument(in);
-						for(String bit : DXLUtil.getItemValueStrings(doc, type.fileItem)) {
+						for(String bit : DXLUtil.getItemValueStrings(doc, type.getFileItem())) {
 							writer.write(bit);
 						}
 					}
@@ -507,7 +466,7 @@ public class ODPExporter {
 			case JavaScriptLibrary:
 			case ServerJavaScriptLibrary:
 				try {
-					NReadScriptContent.invoke(null, note.getHandle(), type.fileItem, os);
+					NReadScriptContent.invoke(null, note.getHandle(), type.getFileItem(), os);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					throw new NotesAPIException(e, "Exception when reading script content"); //$NON-NLS-1$
 				}
