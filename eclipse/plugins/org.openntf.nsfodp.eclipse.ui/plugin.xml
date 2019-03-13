@@ -26,8 +26,8 @@
       <navigatorContent id="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"
             contentProvider="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsContentProvider"
             labelProvider="org.openntf.nsfodp.eclipse.ui.resources.DesignElementsLabelProvider"
-            name="ODP Design Elements"
-            icon="icons/applications-accessories.png"
+            name="%NavigatorContent.label"
+            icon="platform:/plugin/org.openntf.nsfodp.eclipse/icons/applications-accessories.png"
             activeByDefault="true"
             priority="normal">
        
