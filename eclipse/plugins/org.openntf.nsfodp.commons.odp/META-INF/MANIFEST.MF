@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  com.ibm.domino.napi;bundle-version="9.0.1",
- org.openntf.nsfodp.commons
+ org.openntf.nsfodp.commons,
+ org.openntf.nsfodp.commons.dxl
 Export-Package: org.openntf.nsfodp.commons.odp,
  org.openntf.nsfodp.commons.odp.util
 Import-Package: lotus.domino

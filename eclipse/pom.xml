@@ -36,6 +36,7 @@
 
 	<modules>
 		<module>plugins/org.openntf.nsfodp.commons</module>
+		<module>plugins/org.openntf.nsfodp.commons.dxl</module>
 		<module>plugins/org.openntf.nsfodp.commons.odp</module>
 		
 		<!--

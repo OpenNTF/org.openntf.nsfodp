@@ -171,6 +171,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.commons.dxl</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
 			<artifactId>org.openntf.nsfodp.commons.odp</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>

@@ -40,10 +40,10 @@ public enum NoteType {
 	JavaScriptLibrary("js", Paths.get("Code", "ScriptLibraries"), JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	LotusScriptLibrary("lss", Paths.get("Code", "ScriptLibraries"), SCRIPTLIB_ITEM_NAME, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	JavaLibrary("javalib", Paths.get("Code", "ScriptLibraries"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	CustomControl(null, Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$
-	CustomControlProperties(null, Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$
-	XPage(null, Paths.get("XPages"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$
-	XPageProperties(null, Paths.get("XPages"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$
+	CustomControl("xsp", Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	CustomControlProperties("properties", Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	XPage("xsp", Paths.get("XPages"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	XPageProperties("properties", Paths.get("XPages"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
 	Form("form", Paths.get("Forms"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
 	Frameset("frameset", Paths.get("Framesets"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
 	ServerJavaScriptLibrary("jss", Paths.get("Code", "ScriptLibraries"), SERVER_JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -78,7 +78,7 @@ public enum NoteType {
 	Applet("applet", Paths.get("Resources", "Applets"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	CompositeApplication("xml", Paths.get("CompositeApplications", "Applications"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	CompositeComponent("component", Paths.get("CompositeApplications", "Components"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	WiringProperties(null, Paths.get("CompositeApplications", "WiringProperties"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	WiringProperties("wsdl", Paths.get("CompositeApplications", "WiringProperties"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	/** e.g. plugin.xml, etc. */
 	GenericFile(Paths.get("."), false, RAWFILE), //$NON-NLS-1$
 	/** This is wrapped up into the DB properties */

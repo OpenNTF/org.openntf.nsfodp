@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<note xmlns="http://www.lotus.com/dxl" class="filter">
+  <item name="$Flags">
+    <text>34CkQ</text>
+  </item>
+  <item name="$DCRClass">
+    <text>RDBMS</text>
+  </item>
+  <item name="$DCRGenProps" seal="true">
+    <textlist>
+      <text>db2</text>
+      <text/>
+      <text/>
+      <text/>
+      <text/>
+      <text/>
+      <text/>
+      <text>1</text>
+      <text>Tpb</text>
+      <text/>
+      <text/>
+      <text/>
+      <text/>
+    </textlist>
+  </item>
+  <item name="$TITLE" sign="true">
+    <textlist>
+      <text>Test Connection</text>
+    </textlist>
+  </item>
+</note>

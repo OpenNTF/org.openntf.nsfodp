@@ -62,6 +62,7 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.odp.AbstractSplitDesignElement;
 import org.openntf.nsfodp.commons.odp.CustomControl;
 import org.openntf.nsfodp.commons.odp.FileResource;
@@ -70,7 +71,7 @@ import org.openntf.nsfodp.commons.odp.LotusScriptLibrary;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.commons.odp.XPage;
 import org.openntf.nsfodp.commons.odp.XSPCompilationResult;
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
+import org.openntf.nsfodp.commons.odp.util.DXLNativeUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 import org.openntf.nsfodp.compiler.util.LibraryWeightComparator;
@@ -793,7 +794,7 @@ public class ODPCompiler {
 					if(StringUtil.isEmpty(title)) {
 						throw new IllegalStateException("Could not identify original title for file resource " + filePath);
 					}
-					DXLUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					DXLNativeUtil.importFileResource(importer, baos.toByteArray(), database, "WEB-INF/classes/" + title, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}
@@ -894,7 +895,7 @@ public class ODPCompiler {
 		for(String leftoverClassName : compiledClassNames) {
 			String fileName = "WEB-INF/classes/" + ODPUtil.toJavaPath(leftoverClassName); //$NON-NLS-1$
 			byte[] leftoverByteCode = classLoader.getClassByteCode(leftoverClassName);
-			DXLUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$
+			DXLNativeUtil.importFileResource(importer, leftoverByteCode, database, fileName, "~C4g", "w"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

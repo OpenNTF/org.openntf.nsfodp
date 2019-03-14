@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.commons.odp.util;
+package org.openntf.nsfodp.commons.dxl;
 
 import org.openntf.nsfodp.commons.h.Ods;
 

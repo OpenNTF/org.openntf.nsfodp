@@ -34,4 +34,18 @@ public interface StdNames {
 	
 	public static final int ASSIST_TYPE_JAVA = 0xFF93; // Not actually documented, and possibly not true
 	public static final String ITEM_NAME_JAVA_COMPILER_SOURCE = "$JavaCompilerSource"; // Not actually documented //$NON-NLS-1$
+	
+	public static final String FIELD_TITLE = "$TITLE"; //$NON-NLS-1$
+	public static final String DESIGN_FLAGS = "$Flags"; //$NON-NLS-1$
+	public static final String FILTER_COMMENT_ITEM = "$Comment"; //$NON-NLS-1$
+	public static final String DESIGN_FLAGS_EXTENDED = "$FlagsExt"; //$NON-NLS-1$
+	public static final String ITEM_NAME_FILE_NAMES = "$FileNames"; //$NON-NLS-1$
+	public static final String ITEM_NAME_FILE_MIMETYPE = "$MimeType"; //$NON-NLS-1$
+	public static final String ITEM_NAME_FILE_MIMECHARSET = "$MimeCharSet"; //$NON-NLS-1$
+	public static final String ITEM_NAME_FILE_MODINFO = "$FileModDT"; //$NON-NLS-1$
+	
+	public static final String ITEM_NAME_IMAGE_NAMES = "$ImageNames"; //$NON-NLS-1$
+	public static final String ITEM_NAME_IMAGES_WIDE = "$ImagesWide"; //$NON-NLS-1$
+	public static final String ITEM_NAME_IMAGES_HIGH = "$ImagesHigh"; //$NON-NLS-1$
+	public static final String ITEM_NAME_IMAGES_COLORIZE = "$ImagesColorize"; //$NON-NLS-1$
 }

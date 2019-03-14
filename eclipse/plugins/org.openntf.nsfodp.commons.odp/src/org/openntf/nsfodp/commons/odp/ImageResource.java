@@ -20,11 +20,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
-import org.openntf.nsfodp.commons.odp.util.CompositeDataUtil;
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.odp.util.ODSConstants;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.xml.XMLException;
@@ -69,7 +68,7 @@ public class ImageResource extends FileResource {
 		}
 		Document dxlDoc = ODPUtil.readXml(getDxlFile());
 		try(InputStream is = Files.newInputStream(file)) {
-			return CompositeDataUtil.getImageResourceData(file, dxlDoc);
+			return DXLUtil.getImageResourceData(file, dxlDoc);
 		}
 	}
 }

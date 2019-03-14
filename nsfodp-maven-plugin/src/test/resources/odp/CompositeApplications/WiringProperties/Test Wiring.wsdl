@@ -1,0 +1,9 @@
+<definitions name="Property Broker WSDL"
+targetNamespace="http://com.yourcompany.propertybroker"
+xmlns="http://schemas.xmlsoap.org/wsdl/"
+xmlns:portlet="http://www.ibm.com/wps/c2a"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:tns="http://com.yourcompany.propertybroker"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+</definitions>
