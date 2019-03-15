@@ -107,16 +107,24 @@ public class DesignElementNode extends WorkbenchContentProvider implements IWork
 		if(!getType().isContainer()) {
 			if(IFolder.class.equals(clazz) || IContainer.class.equals(clazz) || IResource.class.equals(clazz)) {
 				IFolder folder = getFolder();
-				if(!folder.exists()) {
-					try {
-						folder.create(false, false, null);
-					} catch (CoreException e) {
-						Activator.logError("Error auto-creating folder " + folder, e); //$NON-NLS-1$
-					}
-				}
+				createPath(folder);
 				return (T)folder;
 			}
 		}
 		return null;
+	}
+	
+	private void createPath(IFolder folder) {
+		IContainer parent = folder.getParent();
+		if(parent instanceof IFolder && !parent.exists()) {
+			createPath((IFolder)parent);
+		}
+		if(!folder.exists()) {
+			try {
+				folder.create(false, false, null);
+			} catch (CoreException e) {
+				Activator.logError("Error auto-creating folder " + folder, e); //$NON-NLS-1$
+			}
+		}
 	}
 }
