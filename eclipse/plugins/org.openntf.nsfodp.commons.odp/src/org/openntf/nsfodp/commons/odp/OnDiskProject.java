@@ -98,7 +98,9 @@ public class OnDiskProject {
 			new GlobMatcher("Resources/Images/*", path -> new ImageResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Resources/StyleSheets/*", path -> new FileResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Resources/Themes/*", path -> new FileResource(path)), //$NON-NLS-1$
-			new GlobMatcher("WebContent/**", path -> new FileResource(path, "~C4g", "w", p -> ODPUtil.toBasicFilePath(baseDir.resolve("WebContent"), p))) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			new GlobMatcher("WebContent/**", path -> new FileResource(path, "~C4g", "w", p -> ODPUtil.toBasicFilePath(baseDir.resolve("WebContent"), p))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			new GlobMatcher("XPages/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())), //$NON-NLS-1$ //$NON-NLS-2$
+			new GlobMatcher("CustomControls/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())) //$NON-NLS-1$ //$NON-NLS-2$
 		);
 	}
 	
@@ -223,7 +225,7 @@ public class OnDiskProject {
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
 			return Files.find(dir, 1,
 					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
-					.map(path -> new CustomControl(path))
+					.map(path -> new XPage(path))
 					.collect(Collectors.toList());
 		} else {
 			return Collections.emptyList();
