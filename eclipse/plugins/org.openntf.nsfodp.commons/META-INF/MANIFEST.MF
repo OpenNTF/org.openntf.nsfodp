@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.commons
 Automatic-Module-Name: org.openntf.nsfodp.commons
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-Vendor: %providerName
 Export-Package: org.openntf.com.eclipsesource.json;version="0.9.5",
  org.openntf.nsfodp.commons,
