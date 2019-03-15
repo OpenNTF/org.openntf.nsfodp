@@ -10,9 +10,9 @@ The ODP compiler allows the use of a Domino server to compile an on-disk project
 
 To use this, install the Domino plugins on an otherwise-clean Domino server - this is important to allow the plugins to be loaded and unloaded dynamically without interfering with existing plugins.
 
-### NSF Deployment
+### ODP Exporter
 
-The NSF deployment service allows for deployment of an NSF to a Domino server without involving the Notes client. Currently, this will only deploy new databases, but the plan is to have this also be able to perform a design replace on an existing database.
+The ODP exporter allows the use of a Domino server to export an NSF into a Designer-compatible ODP format.
 
 ### Eclipse Tooling
 
@@ -22,9 +22,9 @@ Currently, autocompletion knows about the stock components and Extension Library
 
 Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the context menu, which are shortcuts for the equivalent Maven goals.
 
-### ODP Exporter
+### NSF Deployment
 
-The ODP exporter allows the use of a Domino server to export an NSF into a Designer-compatible ODP format.
+The NSF deployment service allows for deployment of an NSF to a Domino server without involving the Notes client. Currently, this will only deploy new databases, but the plan is to have this also be able to perform a design replace on an existing database.
 
 ## Usage
 
@@ -54,7 +54,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>2.0.0</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -62,7 +62,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
 </project>
 ```
 
-Then, add `nsfodp.compiler.server` and `nsfodp.compiler.serverUrl` properties to your Maven settings to reference a server ID and the base URL for your server running the OSGi plugins, along with a `server` entry for the server ID:
+Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration. There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://stash.openntf.org/projects/P2T/repos/generate-domino-update-site/browse). For server-based operations, there are properties for each task to set the remote server:
 
 ```xml
 <?xml version="1.0"?>
@@ -71,16 +71,28 @@ Then, add `nsfodp.compiler.server` and `nsfodp.compiler.serverUrl` properties to
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <profiles>
         <profile>
-            <id>main</id>
+            <id>nsfodp</id>
             <properties>
+                <!-- for local operations, macOS example -->
+                <notes-program>/Applications/IBM Notes.app/Contents/MacOS</notes-program>
+                <notes-platform>file:///Users/username/path/to/Domino10.0.1</notes-platform>
+              
+                <!-- for remote operations -->
                 <nsfodp.compiler.server>someserver</nsfodp.compiler.server>
-                <nsfodp.compiler.serverUrl>http://some.server/</nsfodp.compiler.serverUrl>
+                <nsfodp.compiler.serverUrl>https://some.server/</nsfodp.compiler.serverUrl>
+                <nsfodp.exporter.server>someserver</nsfodp.exporter.server>
+                <nsfodp.exporter.serverUrl>https://some.server/</nsfodp.exporter.serverUrl>
+                <!-- Note: deployment operations currently require a server -->
+                <nsfodp.deploy.server>someserver</nsfodp.deploy.server>
+                <nsfodp.deploy.serverUrl>http://some.server/</nsfodp.deploy.serverUrl>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>main</activeProfile>
+        <activeProfile>nsfodp</activeProfile>
     </activeProfiles>
+  
+    <!-- needed when using remote execution -->
     <servers>
         <server>
             <id>someserver</id>
@@ -91,14 +103,67 @@ Then, add `nsfodp.compiler.server` and `nsfodp.compiler.serverUrl` properties to
 </settings>
 ```
 
-For deployment, add `nsfodp.deploy.server` and and `nsfodp.deploy.serverUrl` properties in the same manner. Additionally, expand your project's pom to include configuration information for deployment:
+### ODP Compilation
+
+The ODP compilation process has several properties that can be configured in the plugin's `configuration` block, with these as the defaults:
+
+```xml
+<configuration>
+	<outputDirectory>${project.build.directory}</outputDirectory>
+    <outputFileName>${project.build.finalName}.nsf</outputFileName>
+    <odpDirectory>odp</odpDirectory>
+    <!-- e.g. ../../releng/some.updatesite.project/target/site -->
+    <updateSite></updateSite>
+    <compilerLevel>1.8</compilerLevel>
+    <!-- Adds the build timestamp to the generated NSF's title -->
+    <appendTimestampToTitle>false</appendTimestampToTitle>
+    <!-- Creates/updates a $TemplateBuild shared field -->
+    <templateName></templateName>
+    <!-- Enabled resource aggregation and compressed JS libs in xsp.properties -->
+    <setProductionXspOptions>false</setProductionXspOptions>
+    <!-- Add jars to the compilation classpath, to mimic jvm/lib/ext deployment -->
+    <classpathJars>
+        <classpathJar></classpathJar>
+    </classpathJars>
+</configuration>
+```
+
+### ODP Exporter
+
+The ODP exporter is triggered manually, and does not require a Maven project in the current directory (though it will use the settings of an active project if present).
+
+To export an ODP from the command line, execute the mojo directly:
+
+```shell
+mvn org.openntf.maven:nsfodp-maven-plugin:2.0.0:export-odp -DdatabasePath=names.nsf
+```
+
+This mojo will create or replace the `odp` directory in the current or project directory with the contents of the specified database. The directory path can be overridden by specifying the `nsfodp.exporter.odpDirectory` property in the execution.
+
+This process also has several configuration options
+
+```xml
+<configuration>
+    <odpDirectory>odp</odpDirectory>
+    <!-- Enable https://openntf.org/main.nsf/project.xsp?r=project/Swiper -->
+    <swiperFilter>true</swiperFilter>
+    <!-- Export notes in "binary" note format, like the Designer option -->
+    <binaryDxl>false</binaryDxl>
+    <!-- Export rich text items as Base64 data instead of DXL-ified -->
+    <richTextAsItemData>true</richTextAsItemData>
+</configuration>
+```
+
+### NSF Deployment
+
+To specify a deployment destination and path, expand your project's pom to include configuration information for deployment:
 
 ```xml
     ...
     <plugin>
         <groupId>org.openntf.maven</groupId>
         <artifactId>nsfodp-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
         <extensions>true</extensions>
         <configuration>
             <!-- This can be on the target Domino server a remote one -->
@@ -110,18 +175,6 @@ For deployment, add `nsfodp.deploy.server` and and `nsfodp.deploy.serverUrl` pro
 ```
 
 By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.
-
-### ODP Exporter
-
-The ODP exporter is triggered manually, and does not require a Maven project in the current directory (though it will use the settings of an active project if present).
-
-To export an ODP from the command line, execute the mojo directly:
-
-```shell
-mvn org.openntf.maven:nsfodp-maven-plugin:1.4.0:generateODP -Dnsfodp.exporter.server=someserver -Dnsfodp.exporter.serverUrl=http://some.server.url -Dnsfodp.exporter.databasePath=names.nsf
-```
-
-This mojo will create or replace the `odp` directory in the current or project directory with the contents of the specified database. The directory path can be overridden by specifying the `nsfodp.exporter.odpDirectory` property in the execution.
 
 ## Requirements
 
@@ -135,7 +188,7 @@ The Eclipse plugin targets Neon and above, but may work with older releases, as 
 
 ### Domino (For Server Operations)
 
-The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires the [XPages Bazaar](https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar) version 2.0.2 or above.
+The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires the [XPages Bazaar](https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar) version 2.0.3 or above.
 
 ### Notes or Domino (For Local Operations)
 
@@ -143,11 +196,7 @@ Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Wind
 
 #### Compilation on macOS
 
-Due to the way the macOS Notes JVM is set up, it requires several modifications to compile an NSF properly. To start with, open the app bundle by right-clicking the Notes application and choosing "Show Package Contents".
-
-Copy the three jars (`Notes.jar`, `njempcl.jar`, and `websvc.jar`) from the `Contents/MacOS/jvm/lib/ext` directory copied to `jre/Contents/Home/lib/ext` also within the package.
-
-Additionally, Java compilation requires the presence of `tools.jar` in the Notes/Domino JRE's `lib` directory. However, the embedded runtime on macOS does not contain this file. Copy a `tools.jar` from a separate JDK installation into the `jre/Contents/Home/lib` directory within the app bundle.
+Due to the way the macOS Notes JVM is set up, the process currently requires that the running user have access to modify the application bundle, which is the default for admin users.
 
 ## License
 
