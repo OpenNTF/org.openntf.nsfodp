@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Date;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -222,7 +223,7 @@ public enum DXLUtil {
 			mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
 		}
 		if(mimeType == null) {
-			throw new RuntimeException("Cannot determine MIME type for " + file);
+			throw new RuntimeException(MessageFormat.format(Messages.getString("DXLUtil.noMimeType"), file)); //$NON-NLS-1$
 		}
 		short imageType = 0;
 		switch(mimeType) {
@@ -312,7 +313,7 @@ public enum DXLUtil {
 
 	public static void writeItemFileData(Document dxlDoc, String itemName, Path file) throws XMLException, IOException {
 		if(!Files.isRegularFile(file)) {
-			throw new IllegalArgumentException("Cannot read file " + file);
+			throw new IllegalArgumentException(MessageFormat.format(Messages.getString("DXLUtil.cannotReadFile"), file)); //$NON-NLS-1$
 		}
 		try(InputStream is = Files.newInputStream(file)) {
 			writeItemFileData(dxlDoc, itemName, is, (int)Files.size(file));

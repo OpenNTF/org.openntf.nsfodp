@@ -70,7 +70,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				resp.setContentType("text/plain"); //$NON-NLS-1$
-				os.println("Anonymous access disallowed");
+				os.println(Messages.ODPCompilerServlet_anonymousDisallowed);
 				return;
 			}
 			
@@ -79,7 +79,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			//   to use a combined ZIP and pass options in headers
 			String contentType = req.getContentType();
 			if(!"application/zip".equals(contentType)) { //$NON-NLS-1$
-				throw new IllegalArgumentException("Content must be application/zip");
+				throw new IllegalArgumentException(Messages.ODPCompilerServlet_contentMustBeZip);
 			}
 			
 			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$

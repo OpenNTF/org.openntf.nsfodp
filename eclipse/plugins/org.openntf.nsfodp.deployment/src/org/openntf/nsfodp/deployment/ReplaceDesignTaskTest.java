@@ -41,7 +41,7 @@ public class ReplaceDesignTaskTest extends Job {
 	private final String targetPath;
 	
 	public ReplaceDesignTaskTest(String sourcePath, String targetPath) {
-		super("Replace Design");
+		super(Messages.ReplaceDesignTaskTest_label);
 		
 		if(StringUtil.isEmpty(sourcePath)) {
 			throw new IllegalArgumentException("sourcePath cannot be empty"); //$NON-NLS-1$
@@ -131,7 +131,7 @@ public class ReplaceDesignTaskTest extends Job {
 		
 			return Status.OK_STATUS;
 		} catch(Exception e) {
-			return new Status(IStatus.ERROR, "Exception while replacing design", e.toString(), e);
+			return new Status(IStatus.ERROR, Messages.ReplaceDesignTaskTest_errorReplacingDesign, e.toString(), e);
 		}
 	}
 
@@ -140,13 +140,13 @@ public class ReplaceDesignTaskTest extends Job {
 	// ******************************************************************************
 	
 	private static Database getDatabase(Session session, String path) throws NotesException {
-		int bangIndex = path.indexOf("!!");
+		int bangIndex = path.indexOf("!!"); //$NON-NLS-1$
 		String server, filePath;
 		if(bangIndex > -1) {
 			server = path.substring(0, bangIndex);
 			filePath = path.substring(bangIndex+2);
 		} else {
-			server = "";
+			server = ""; //$NON-NLS-1$
 			filePath = path;
 		}
 		return session.getDatabase(server, filePath);

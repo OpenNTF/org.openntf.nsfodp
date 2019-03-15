@@ -25,6 +25,7 @@ package org.openntf.com.eclipsesource.json;
 /**
  * An immutable object that represents a location in the parsed text.
  */
+@SuppressWarnings("nls")
 public class Location {
 
   /**

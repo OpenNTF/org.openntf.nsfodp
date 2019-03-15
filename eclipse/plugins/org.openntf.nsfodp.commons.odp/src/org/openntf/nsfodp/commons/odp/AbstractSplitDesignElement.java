@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
@@ -69,7 +70,7 @@ public class AbstractSplitDesignElement {
 		if(Files.isRegularFile(dxlFile)) {
 			return attachFileData(ODPUtil.readXml(dxlFile));
 		} else {
-			throw new IllegalStateException("Could not locate DXL file for " + dataFile);
+			throw new IllegalStateException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotLocateDxl, dataFile));
 		}
 	}
 	
@@ -98,7 +99,7 @@ public class AbstractSplitDesignElement {
 		} else {
 			Path file = getDataFile();
 			if(!Files.isRegularFile(file)) {
-				throw new IllegalArgumentException("Cannot read file " + file);
+				throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 			}
 			try(InputStream is = Files.newInputStream(file)) {
 				return DXLUtil.getFileResourceData(is, (int)Files.size(file));

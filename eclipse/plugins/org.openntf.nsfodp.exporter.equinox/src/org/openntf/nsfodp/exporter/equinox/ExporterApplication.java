@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.Collections;
 
 import org.eclipse.equinox.app.IApplication;
@@ -42,13 +43,13 @@ public class ExporterApplication implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		String databasePath = System.getProperty(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH);
 		if(databasePath == null) {
-			throw new IllegalArgumentException(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH + " cannot be empty");
+			throw new IllegalArgumentException(MessageFormat.format(Messages.ExporterApplication_dbPathCannotBeEmpty, NSFODPConstants.PROP_EXPORTER_DATABASE_PATH));
 		}
 		Path odpDir = Paths.get(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
 		
-		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER));
-		boolean swiperFilter = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER));
-		boolean richTextAsItemData = "true".equals(System.getProperty(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA));
+		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
+		boolean swiperFilter = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
+		boolean richTextAsItemData = "true".equals(System.getProperty(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA)); //$NON-NLS-1$
 		
 		NotesThread runner = new NotesThread(() -> {
 			C.initLibrary(null);
@@ -64,9 +65,9 @@ public class ExporterApplication implements IApplication {
 					exporter.setSwiperFilter(swiperFilter);
 					exporter.setRichTextAsItemData(richTextAsItemData);
 					Path result = exporter.export();
-					Path eclipseProject = odpDir.resolve(".project");
+					Path eclipseProject = odpDir.resolve(".project"); //$NON-NLS-1$
 					if(Files.exists(eclipseProject)) {
-						Path tempPath = Files.createTempFile("nsfodp", ".project");
+						Path tempPath = Files.createTempFile("nsfodp", ".project"); //$NON-NLS-1$ //$NON-NLS-2$
 						Files.delete(tempPath);
 						Files.move(eclipseProject, tempPath);
 						eclipseProject = tempPath;
@@ -78,7 +79,7 @@ public class ExporterApplication implements IApplication {
 					}
 					Files.move(result, odpDir);
 					if(eclipseProject != null) {
-						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING);
+						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 					}
 				} finally {
 					session.recycle();

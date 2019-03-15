@@ -29,6 +29,7 @@ import java.io.StringReader;
 /**
  * A streaming parser for JSON text. The parser reports all events to a given handler.
  */
+@SuppressWarnings("nls")
 public class JsonParser {
 
   private static final int MAX_NESTING_LEVEL = 1000;

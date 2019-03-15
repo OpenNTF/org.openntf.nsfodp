@@ -24,7 +24,7 @@ package org.openntf.com.eclipsesource.json;
 import java.io.IOException;
 
 
-@SuppressWarnings("serial") // use default serial UID
+@SuppressWarnings({ "serial", "nls" }) // use default serial UID
 class JsonNumber extends JsonValue {
 
   private final String string;

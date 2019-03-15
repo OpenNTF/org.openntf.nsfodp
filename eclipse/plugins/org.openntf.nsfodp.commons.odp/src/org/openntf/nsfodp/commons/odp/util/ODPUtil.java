@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import javax.tools.JavaFileObject;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.openntf.nsfodp.commons.odp.JavaSource;
+import org.openntf.nsfodp.commons.odp.Messages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
@@ -73,7 +75,7 @@ public enum ODPUtil {
 		} else if(name.endsWith(JavaFileObject.Kind.CLASS.extension)) {
 			return name.substring(0, name.length()-JavaFileObject.Kind.CLASS.extension.length()).replace(File.separatorChar, '.');
 		} else {
-			throw new IllegalArgumentException("Cannot infer class name from path " + path);
+			throw new IllegalArgumentException(MessageFormat.format(Messages.ODPUtil_cannotInferClassName, path));
 		}
 	}
 	
@@ -128,7 +130,7 @@ public enum ODPUtil {
 			.map(Optional::get)
 			.map(bundle -> {
 				if(bundle.getState() == Bundle.INSTALLED) {
-					throw new IllegalStateException("Required bundle " + bundle.getSymbolicName() + " is in INSTALLED state");
+					throw new IllegalStateException(MessageFormat.format(Messages.ODPUtil_bundleInInstalledState, bundle.getSymbolicName()));
 				}
 				
 				List<Bundle> deps = new ArrayList<>(resolveRequiredBundles(bundleContext, bundle));
@@ -153,7 +155,7 @@ public enum ODPUtil {
 				.map(Optional::get)
 				.map(dependency -> {
 					if(dependency.getState() == Bundle.INSTALLED) {
-						throw new IllegalStateException("Required bundle " + dependency.getSymbolicName() + " is in INSTALLED state");
+						throw new IllegalStateException(MessageFormat.format(Messages.ODPUtil_bundleInInstalledState, dependency.getSymbolicName()));
 					}
 					
 					List<Bundle> deps = new ArrayList<>(resolveRequiredBundles(bundleContext, dependency));

@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -81,7 +82,7 @@ public class ODPExporterServlet extends HttpServlet {
 			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				resp.setContentType("text/plain"); //$NON-NLS-1$
-				os.println("Anonymous access disallowed");
+				os.println(Messages.ODPExporterServlet_anonymousAccessDisallowed);
 				return;
 			}
 			
@@ -95,7 +96,9 @@ public class ODPExporterServlet extends HttpServlet {
 					
 					String contentType = req.getContentType();
 					if(!"application/octet-stream".equals(contentType)) { //$NON-NLS-1$
-						throw new IllegalArgumentException("Content must be application/octet-stream when POSTing an NSF (did you mean GET with " + NSFODPConstants.HEADER_DATABASE_PATH + "?); received " + contentType);
+						throw new IllegalArgumentException(MessageFormat.format(
+								Messages.ODPExporterServlet_mismatchedContentType,
+								NSFODPConstants.HEADER_DATABASE_PATH, contentType));
 					}
 					
 					Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
@@ -111,17 +114,17 @@ public class ODPExporterServlet extends HttpServlet {
 					// Then look for an NSF path in the headers
 					String databasePath = req.getHeader(NSFODPConstants.HEADER_DATABASE_PATH);
 					if(StringUtil.isEmpty(databasePath)) {
-						throw new IllegalArgumentException("GET requests must specify " + NSFODPConstants.HEADER_DATABASE_PATH);
+						throw new IllegalArgumentException(MessageFormat.format(Messages.ODPExporterServlet_dbPathMissing, NSFODPConstants.HEADER_DATABASE_PATH));
 					}
 					
 					// Verify that the user can indeed export this DB
 					Session lotusSession = ContextInfo.getUserSession();
 					Database lotusDatabase = ODPUtil.getDatabase(lotusSession, databasePath);
 					if(!lotusDatabase.isOpen()) {
-						throw new UnsupportedOperationException("Unable to open database " + databasePath);
+						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_unableToOpenDb, databasePath));
 					} else if(lotusDatabase.queryAccess(lotusSession.getEffectiveUserName()) < ACL.LEVEL_DESIGNER) {
 						// Note: this uses queryAccess to skip past Maximum Internet Access levels
-						throw new UnsupportedOperationException("User " + NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()) + " must have at least Designer access to " + databasePath);
+						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_insufficientAccess, NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()), databasePath));
 					}
 
 					database = session.getDatabaseByPath(databasePath);

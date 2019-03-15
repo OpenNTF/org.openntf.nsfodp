@@ -25,8 +25,8 @@ import java.nio.file.Path;
  *
  */
 public class XPage extends AbstractSourceDesignElement {
-	public static final String EXT_XSP = ".xsp";
-	public static final String PACKAGE_XSP = "xsp";
+	public static final String EXT_XSP = ".xsp"; //$NON-NLS-1$
+	public static final String PACKAGE_XSP = "xsp"; //$NON-NLS-1$
 	
 	public XPage(Path xspSourceFile) {
 		super(xspSourceFile);
@@ -45,7 +45,7 @@ public class XPage extends AbstractSourceDesignElement {
 			char c = capitalized.charAt(i);
 			if(!(Character.isAlphabetic(c) || Character.isDigit(c))) {
 				result.append('_');
-				result.append(String.format("%04x", (int)c));
+				result.append(String.format("%04x", (int)c)); //$NON-NLS-1$
 			} else {
 				result.append(c);
 			}

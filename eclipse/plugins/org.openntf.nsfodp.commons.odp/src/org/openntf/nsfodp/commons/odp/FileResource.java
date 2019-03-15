@@ -18,6 +18,7 @@ package org.openntf.nsfodp.commons.odp;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.function.Function;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
@@ -74,7 +75,7 @@ public class FileResource extends AbstractSplitDesignElement {
 			return super.getDxl();
 		} else {
 			if(nameProvider == null) {
-				throw new IllegalStateException("No name provider provided for " + getDataFile());
+				throw new IllegalStateException(MessageFormat.format(Messages.FileResource_noNameProvider, getDataFile()));
 			}
 			
 			Document dxlDoc = DOMUtil.createDocument();

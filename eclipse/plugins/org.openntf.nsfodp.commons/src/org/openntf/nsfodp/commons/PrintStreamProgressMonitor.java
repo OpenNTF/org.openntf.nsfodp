@@ -57,7 +57,7 @@ public class PrintStreamProgressMonitor implements IProgressMonitor {
 	public void setCanceled(boolean canceled) {
 		this.canceled = canceled;
 		if(canceled) {
-			out.println("Canceled!");
+			out.println(Messages.PrintStreamProgressMonitor_canceled);
 		}
 	}
 

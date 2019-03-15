@@ -195,7 +195,7 @@ public class ODPExporter {
 							note.recycle();
 						}
 					} catch(Throwable e) {
-						System.out.println(StringUtil.format("Encountered native exception while processing note ID {0}: {1}", Integer.toString(noteId, 16), e.getMessage()));
+						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage()));
 					}
 				});
 			} finally {
@@ -207,7 +207,7 @@ public class ODPExporter {
 			try {
 				exportNote(iconNote, exporter, result);
 			} catch(Throwable e) {
-				System.out.println(StringUtil.format("Encountered native exception while processing icon note: {1}", e.getMessage()));
+				System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionIconNote, e.getMessage()));
 			} finally {
 				iconNote.recycle();
 			}
@@ -227,7 +227,7 @@ public class ODPExporter {
 		if(type == NoteType.Unknown) {
 			String flags = note.isItemPresent(DESIGN_FLAGS) ? note.getItemValueAsString(DESIGN_FLAGS) : StringUtil.EMPTY_STRING;
 			String title = note.isItemPresent(FIELD_TITLE) ? note.getItemValueAsString(FIELD_TITLE) : Integer.toString(note.getNoteId(), 16);
-			System.out.println("Unknown note, flags=" + flags + ", title=" + title + ", class=" + (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT));
+			System.out.println(StringUtil.format(Messages.ODPExporter_unknownNote, flags, title, (note.getNoteClass() & ~NsfNote.NOTE_CLASS_DEFAULT)));
 			return;
 		}
 		if(!type.isInOdp()) {

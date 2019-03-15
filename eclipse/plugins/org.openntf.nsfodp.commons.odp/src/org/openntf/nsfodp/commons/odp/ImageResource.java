@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.dxl.ODSConstants;
@@ -64,7 +65,7 @@ public class ImageResource extends FileResource {
 	public byte[] getCompositeData() throws IOException, XMLException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {
-			throw new IllegalArgumentException("Cannot read file " + file);
+			throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 		}
 		Document dxlDoc = ODPUtil.readXml(getDxlFile());
 		try(InputStream is = Files.newInputStream(file)) {

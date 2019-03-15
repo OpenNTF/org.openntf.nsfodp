@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: On-Disk-Project Exporter Equinox Application
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.exporter.equinox;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.exporter.equinox
 Bundle-Version: 2.0.0.qualifier
-Bundle-Vendor: OpenNTF
+Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,

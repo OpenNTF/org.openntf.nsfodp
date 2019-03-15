@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NSF Deployment Tools
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.deployment.servlet;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment.servlet
 Bundle-Version: 2.0.0.qualifier
-Bundle-Vendor: OpenNTF
+Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.equinox.http.registry,
  com.ibm.commons,
  org.openntf.nsfodp.commons

@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -108,7 +109,7 @@ public class OnDiskProject {
 	public Path getClasspathFile() {
 		Path classpath = baseDir.resolve(".classpath"); //$NON-NLS-1$
 		if(Files.exists(classpath) && !Files.isRegularFile(classpath)) {
-			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_classpathNotAFile, classpath.toAbsolutePath()));
 		}
 		return classpath;
 	}
@@ -143,10 +144,10 @@ public class OnDiskProject {
 	public Path getDbPropertiesFile() {
 		Path properties = baseDir.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.exists(properties)) {
-			throw new IllegalStateException("DB properties file does not exist: " + properties.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_dbPropertiesDoesNotExist, properties.toAbsolutePath()));
 		}
 		if(!Files.isRegularFile(properties)) {
-			throw new IllegalStateException("DB properties file is not a file: " + properties.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_dbPropertiesNotAFile, properties.toAbsolutePath()));
 		}
 		return properties;
 	}
@@ -154,10 +155,10 @@ public class OnDiskProject {
 	public Path getPluginFile() {
 		Path pluginXml = baseDir.resolve("plugin.xml"); //$NON-NLS-1$
 		if(!Files.exists(pluginXml)) {
-			throw new IllegalStateException("Plugin file does not exist: " + pluginXml.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_pluginDoesNotExist, pluginXml.toAbsolutePath()));
 		}
 		if(!Files.isRegularFile(pluginXml)) {
-			throw new IllegalStateException("Plugin file is not a file: " + pluginXml.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_pluginNotAFile, pluginXml.toAbsolutePath()));
 		}
 		return pluginXml;
 	}
@@ -259,7 +260,7 @@ public class OnDiskProject {
 									return false;
 								}
 							}
-							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata");
+							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
 						}
 					).map(matcher::getElement);
 				} catch (IOException e) {

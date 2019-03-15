@@ -26,7 +26,7 @@
 		<configurator
 			class="org.openntf.nsfodp.eclipse.m2e.ODPProjectConfigurator"
 			id="nsfodp-maven-plugin"
-			name="PDE integration for NSF ODP projects">
+			name="%configurator.name">
 		</configurator>
 	</extension>
 	<extension
@@ -34,7 +34,7 @@
 		<lifecycleMapping
 			class="org.openntf.nsfodp.eclipse.m2e.ODPLifecycleMapping"
 			id="org.openntf.nsfodp.eclipse.m2e.odpLifecycleMapping"
-			name="NSF ODP Lifecycle Mapping">
+			name="%lifecycleMapping.name">
 		</lifecycleMapping>
 	</extension>
 	<extension

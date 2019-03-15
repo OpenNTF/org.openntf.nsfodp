@@ -25,6 +25,6 @@ public class ServerJavaScriptLibrary extends JavaScriptLibrary {
 
 	@Override
 	public String getFileDataItem() {
-		return "$ServerJavaScriptLibrary";
+		return "$ServerJavaScriptLibrary"; //$NON-NLS-1$
 	}
 }
