@@ -51,6 +51,7 @@ import java.io.Reader;
  * JsonArray array = Json.array(names);
  * </pre>
  */
+@SuppressWarnings("nls")
 public final class Json {
 
   private Json() {

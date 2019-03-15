@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class DeployNSFTask implements Runnable {
 	 * @param replaceDesign whether the deployment should replace the design of an existing database if present
 	 */
 	public DeployNSFTask(Path nsfFile, String destPath, boolean replaceDesign) {
-		this.nsfFile = Objects.requireNonNull(nsfFile, "nsfFile cannot be null");
-		this.destPath = Objects.requireNonNull(destPath, "destPath cannot be null");
+		this.nsfFile = Objects.requireNonNull(nsfFile, Messages.DeployNSFTask_nsfFileNull);
+		this.destPath = Objects.requireNonNull(destPath, Messages.DeployNSFTask_destPathNull);
 		this.replaceDesign = replaceDesign;
 	}
 
@@ -56,17 +56,17 @@ public class DeployNSFTask implements Runnable {
 			Session session = ContextInfo.getUserSession();
 			
 			String server, filePath;
-			int bangIndex = destPath.indexOf("!!");
+			int bangIndex = destPath.indexOf("!!"); //$NON-NLS-1$
 			if(bangIndex > -1) {
 				server = destPath.substring(0, bangIndex);
 				filePath = destPath.substring(bangIndex+2);
 			} else {
-				server = "";
+				server = ""; //$NON-NLS-1$
 				filePath = destPath;
 			}
 			Database dest = session.getDatabase(server, filePath, true);
 			if(dest.isOpen() && !replaceDesign) {
-				throw new IllegalStateException("Destination database exists but replaceDesign is false: " + destPath);
+				throw new IllegalStateException(Messages.DeployNSFTask_dbExists + destPath);
 			}
 			
 			if(dest.isOpen()) {
@@ -74,16 +74,16 @@ public class DeployNSFTask implements Runnable {
 				ReplaceDesignTaskLocal task = new ReplaceDesignTaskLocal(filePath, nsfFile, new NullProgressMonitor());
 				task.run();
 			} else {
-				Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString());
+				Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString()); //$NON-NLS-1$
 				dest = source.createFromTemplate(server, filePath, false);
 			}
 			AdministrationProcess adminp = session.createAdministrationProcess(server);
 			adminp.signDatabaseWithServerID(server, filePath);
-			session.sendConsoleCommand(server, "tell adminp p im");
+			session.sendConsoleCommand(server, "tell adminp p im"); //$NON-NLS-1$
 			
 			
 		} catch(NotesException ne) {
-			throw new RuntimeException("Encountered NotesException while deploying NSF", ne);
+			throw new RuntimeException(Messages.DeployNSFTask_exceptionDeploying, ne);
 		}
 	}
 

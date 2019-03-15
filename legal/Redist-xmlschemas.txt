@@ -1,0 +1,7 @@
+IBM Domino Redistributables:
+
+The following list includes files that are provided to You pursuant to the Redistributables section of the IBM International Program License Agreements License Information that applies to this Program:
+
+All source files in the following directory may be redistributed in the form in which the files were provided:
+	- <Domino program dir>\xmlschemas (*.dtd, *.xsd)
+	- <Domino program directory>\domino\java  (NCSO.jar)

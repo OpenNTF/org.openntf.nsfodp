@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import java.util.function.Function;
  */
 class GlobMatcher {
 	/** Platform-specific PathMatcher separator, escaped in the case of Windows */
-	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator;
+	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator; //$NON-NLS-1$
 	
 	private final PathMatcher matcher;
 	private final Function<Path, ? extends AbstractSplitDesignElement> elementProvider;
@@ -54,6 +54,6 @@ class GlobMatcher {
 	}
 	
 	public static final PathMatcher glob(String unixGlob) {
-		return FileSystems.getDefault().getPathMatcher("glob:" + unixGlob.replace("/", MATCH_SEP));
+		return FileSystems.getDefault().getPathMatcher("glob:" + unixGlob.replace("/", MATCH_SEP)); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

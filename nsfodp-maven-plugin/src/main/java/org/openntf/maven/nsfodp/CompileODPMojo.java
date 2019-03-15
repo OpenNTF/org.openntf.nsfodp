@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.manager.WagonManager;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
@@ -57,9 +54,9 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -72,18 +69,10 @@ import java.util.zip.ZipOutputStream;
  * Goal which compiles an on-disk project.
  */
 @Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE)
-public class CompileODPMojo extends AbstractMojo {
+public class CompileODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
-	
-	private static final ThreadLocal<DateFormat> SNAPSHOT_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddhhmm")); //$NON-NLS-1$
-	
-	@Parameter(defaultValue="${project}", readonly=true)
-	private MavenProject project;
-	
-	@Component
-	private WagonManager wagonManager;
 	
 	/**
 	 * Location of the generated NSF.
@@ -108,14 +97,17 @@ public class CompileODPMojo extends AbstractMojo {
 	private String compilerServer;
 	/**
 	 * The base URL of the ODP compiler server, e.g. "http://my.server".
+	 * 
+	 * <p>This property is ignored if {@code notesProgram} is set.</p>
 	 */
-	@Parameter(property="nsfodp.compiler.serverUrl", required=true)
+	@Parameter(property="nsfodp.compiler.serverUrl", required=false)
 	private URL compilerServerUrl;
 	/**
 	 * Whether or not to trust self-signed SSL certificates.
 	 */
 	@Parameter(property="nsfodp.compiler.serverTrustSelfSignedSsl", required=false)
 	private boolean compilerServerTrustSelfSignedSsl;
+	
 	/**
 	 * An update site whose contents to use when building the ODP.
 	 */
@@ -158,10 +150,25 @@ public class CompileODPMojo extends AbstractMojo {
 	@Parameter(required=false)
 	private boolean setProductionXspOptions = false;
 	
+	/**
+	 * Any additional jars to include on the compilation classpath.
+	 * 
+	 * @since 2.0.0
+	 */
+	@Parameter(required=false)
+	private File[] classpathJars;
+	
 	private Log log;
 
 	public void execute() throws MojoExecutionException {
 		log = getLog();
+		
+		if(notesProgram == null && compilerServerUrl == null) {
+			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.programAndUrlEmpty")); //$NON-NLS-1$
+		}
+		if(compilerServerUrl == null && requireServerExecution) {
+			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.requireServerNoServer")); //$NON-NLS-1$
+		}
 		
 		Path outputDirectory = Objects.requireNonNull(this.outputDirectory, "outputDirectory cannot be null").toPath(); //$NON-NLS-1$
 		
@@ -199,21 +206,28 @@ public class CompileODPMojo extends AbstractMojo {
 		}
 		
 		if(needsCompile) {
+			if(log.isInfoEnabled()) {
+				log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
+			}
 			try {
 				if(!Files.exists(outputDirectory)) {
 					Files.createDirectories(outputDirectory);
 				}
 				
-				Path odpZip = zipDirectory(odpDirectory);
-				Path updateSiteZip = null;
-				if(updateSite != null) {
-					updateSiteZip = zipDirectory(updateSite);
+				if(isRunLocally()) {
+					compileOdpLocal(odpDirectory, updateSite, outputFile);
+				} else {
+					Path odpZip = zipDirectory(odpDirectory);
+					Path updateSiteZip = null;
+					if(updateSite != null) {
+						updateSiteZip = zipDirectory(updateSite);
+					}
+					
+					Path packageZip = createPackage(odpZip, updateSiteZip);
+					Path result = compileOdpOnServer(packageZip);
+					Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				}
 				
-				Path packageZip = createPackage(odpZip, updateSiteZip);
-				Path result = compileOdp(packageZip);
-				
-				Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				if(log.isInfoEnabled()) {
 					log.info(Messages.getString("CompileODPMojo.generatedNsf", outputFile)); //$NON-NLS-1$
 				}
@@ -232,6 +246,25 @@ public class CompileODPMojo extends AbstractMojo {
 		Artifact artifact = project.getArtifact();
 		artifact.setFile(outputFile.toFile());
 	}
+	
+	// *******************************************************************************
+	// * Local compilation
+	// *******************************************************************************
+	
+	private void compileOdpLocal(Path odpDirectory, Path updateSite, Path outputFile) throws IOException {
+		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
+		List<Path> classpathJars;
+		if(this.classpathJars == null) {
+			classpathJars = Collections.emptyList();
+		} else {
+			classpathJars = Arrays.stream(this.classpathJars).map(File::toPath).collect(Collectors.toList());
+		}
+		compiler.compileOdp(odpDirectory, updateSite, classpathJars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
+	}
+	
+	// *******************************************************************************
+	// * Server-based compilation
+	// *******************************************************************************
 	
 	private Path createPackage(Path odpZip, Path updateSiteZip) throws IOException {
 		if(log.isDebugEnabled()) {
@@ -257,11 +290,7 @@ public class CompileODPMojo extends AbstractMojo {
 		return packageZip;
 	}
 	
-	private Path compileOdp(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-		if(log.isInfoEnabled()) {
-			log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
-		}
-		
+	private Path compileOdpOnServer(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 		URL compilerServerUrl = Objects.requireNonNull(this.compilerServerUrl);
 		if(log.isDebugEnabled()) {
 			log.debug(Messages.getString("CompileODPMojo.usingServerUrl", compilerServerUrl)); //$NON-NLS-1$
@@ -291,17 +320,7 @@ public class CompileODPMojo extends AbstractMojo {
 			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
 			if(this.templateName != null && !this.templateName.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
-				
-				// Use a Tycho-provided version if present; otherwise, generate one
-				String version = this.project.getProperties().getProperty("qualifiedVersion"); //$NON-NLS-1$
-				if(version == null || version.isEmpty()) {
-					version = this.project.getVersion();
-					if(version.endsWith("-SNAPSHOT")) { //$NON-NLS-1$
-						version = version.substring(0, version.length()-"-SNAPSHOT".length()); //$NON-NLS-1$
-						version += '.' + SNAPSHOT_FORMAT.get().format(new Date());
-					}
-				}
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, version);
+				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
 			}
 			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			

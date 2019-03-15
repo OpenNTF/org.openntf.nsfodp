@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
-import org.openntf.nsfodp.commons.odp.util.CompositeDataUtil;
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.odp.util.ODSConstants;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.xml.XMLException;
@@ -65,11 +65,11 @@ public class ImageResource extends FileResource {
 	public byte[] getCompositeData() throws IOException, XMLException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {
-			throw new IllegalArgumentException("Cannot read file " + file);
+			throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 		}
 		Document dxlDoc = ODPUtil.readXml(getDxlFile());
 		try(InputStream is = Files.newInputStream(file)) {
-			return CompositeDataUtil.getImageResourceData(file, dxlDoc);
+			return DXLUtil.getImageResourceData(file, dxlDoc);
 		}
 	}
 }

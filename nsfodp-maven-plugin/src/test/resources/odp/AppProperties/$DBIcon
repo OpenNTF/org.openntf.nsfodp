@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<note class='form' xmlns='http://www.lotus.com/dxl' version='10.0' maintenanceversion='1.0'
+ replicaid='852583BD0045BFAC'>
+<noteinfo noteid='25a' unid='962D973DF7A1C55C852583BD00465B8D' sequence='1'>
+<created><datetime dst='true'>20190314T084829,57-04</datetime></created>
+<modified><datetime dst='true'>20190314T084829,62-04</datetime></modified>
+<revised><datetime dst='true'>20190314T084829,60-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20190314T084829,61-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20190314T084829,61-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
+<wassignedby><name>CN=Jesse Gallagher/O=IKSG</name></wassignedby>
+<item name='$TITLE'><text>$DBIcon</text></item>
+<item name='$Flags'><text>34Ci~Q</text></item>
+<item name='$ImagesWide' sign='true'><number>1</number></item>
+<item name='$ImagesHigh' sign='true'><number>1</number></item>
+<item name='$ImagesColorize' sign='true'><number>0</number></item>
+<item name='$FileSize' sign='true'><number>1897</number></item>
+<item name='$ImageData' sign='true'>
+<rawitemdata type='1'>
+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
+9NYt/Rcs+xKOC+oJxgAAAABJRU5ErkJggps=
+</rawitemdata></item>
+<item name='$MimeType' sign='true'><text>image/png</text></item>
+<item name='$FileModDT' sign='true'><datetime dst='true'>20180815T134921,00-04</datetime></item>
+<item name='$ImageNames' sign='true'><text>Z:\Transporter\Assets\Icons\tango-icon-theme-0.8.90\32x32\actions\address-book-new.png</text></item>
+<item name='$DesignerVersion'><text>8.5.3</text></item></note>
+

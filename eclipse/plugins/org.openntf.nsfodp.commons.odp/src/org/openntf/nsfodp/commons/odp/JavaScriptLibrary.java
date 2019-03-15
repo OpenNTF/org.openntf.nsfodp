@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.openntf.nsfodp.commons.odp;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
-import org.openntf.nsfodp.commons.odp.util.CompositeDataUtil;
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
-import org.openntf.nsfodp.commons.odp.util.ODSConstants;
+import org.openntf.nsfodp.commons.odp.util.DXLNativeUtil;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.xml.XMLException;
@@ -44,7 +44,7 @@ public class JavaScriptLibrary extends AbstractSourceDesignElement {
 	
 	@Override
 	public byte[] getCompositeData() throws IOException {
-		return CompositeDataUtil.getJavaScriptLibraryData(getDataFile());
+		return DXLNativeUtil.getJavaScriptLibraryData(getDataFile());
 	}
 	
 	@Override

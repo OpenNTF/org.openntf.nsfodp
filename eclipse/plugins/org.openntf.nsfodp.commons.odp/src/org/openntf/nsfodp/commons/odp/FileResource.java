@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package org.openntf.nsfodp.commons.odp;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.function.Function;
 
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -39,6 +40,7 @@ public class FileResource extends AbstractSplitDesignElement {
 	private final String flags;
 	private final String flagsExt;
 	private final Function<Path, String> nameProvider;
+	private final Function<Path, String> pathProvider;
 	private final boolean copyToClasses;
 	
 	public FileResource(Path dataFile) {
@@ -50,15 +52,21 @@ public class FileResource extends AbstractSplitDesignElement {
 		this.flags = null;
 		this.flagsExt = null;
 		this.nameProvider = null;
+		this.pathProvider = null;
 		this.copyToClasses = copyToClasses;
 	}
 	
 	public FileResource(Path dataFile, String flags, String flagsExt, Function<Path, String> nameProvider) {
+		this(dataFile, flags, flagsExt, nameProvider, nameProvider);
+	}
+	
+	public FileResource(Path dataFile, String flags, String flagsExt, Function<Path, String> nameProvider, Function<Path, String> pathProvider) {
 		super(dataFile);
 		this.flags = flags;
 		this.flagsExt = flagsExt;
 		this.nameProvider = nameProvider;
 		this.copyToClasses = false;
+		this.pathProvider = nameProvider;
 	}
 	
 	@Override
@@ -67,7 +75,7 @@ public class FileResource extends AbstractSplitDesignElement {
 			return super.getDxl();
 		} else {
 			if(nameProvider == null) {
-				throw new IllegalStateException("No name provider provided for " + getDataFile());
+				throw new IllegalStateException(MessageFormat.format(Messages.FileResource_noNameProvider, getDataFile()));
 			}
 			
 			Document dxlDoc = DOMUtil.createDocument();
@@ -83,7 +91,10 @@ public class FileResource extends AbstractSplitDesignElement {
 			String title = nameProvider.apply(getDataFile());
 			if(StringUtil.isNotEmpty(title)) {
 				DXLUtil.writeItemString(dxlDoc, "$TITLE", false, title); //$NON-NLS-1$
-				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, title); //$NON-NLS-1$
+			}
+			String path = pathProvider.apply(getDataFile());
+			if(StringUtil.isNotEmpty(path)) {
+				DXLUtil.writeItemString(dxlDoc, "$FileNames", false, path); //$NON-NLS-1$
 			}
 			
 			return attachFileData(dxlDoc);

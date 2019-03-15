@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Objects;
 
+import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
-import org.openntf.nsfodp.commons.odp.util.CompositeDataUtil;
-import org.openntf.nsfodp.commons.odp.util.DXLUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.odp.util.ODSConstants;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
@@ -70,7 +70,7 @@ public class AbstractSplitDesignElement {
 		if(Files.isRegularFile(dxlFile)) {
 			return attachFileData(ODPUtil.readXml(dxlFile));
 		} else {
-			throw new IllegalStateException("Could not locate DXL file for " + dataFile);
+			throw new IllegalStateException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotLocateDxl, dataFile));
 		}
 	}
 	
@@ -94,15 +94,15 @@ public class AbstractSplitDesignElement {
 	public byte[] getCompositeData() throws IOException, XMLException {
 		if(this.overrideData != null) {
 			try(InputStream is = new ByteArrayInputStream(this.overrideData)) {
-				return CompositeDataUtil.getFileResourceData(is, this.overrideData.length);
+				return DXLUtil.getFileResourceData(is, this.overrideData.length);
 			}
 		} else {
 			Path file = getDataFile();
 			if(!Files.isRegularFile(file)) {
-				throw new IllegalArgumentException("Cannot read file " + file);
+				throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 			}
 			try(InputStream is = Files.newInputStream(file)) {
-				return CompositeDataUtil.getFileResourceData(is, (int)Files.size(file));
+				return DXLUtil.getFileResourceData(is, (int)Files.size(file));
 			}
 		}
 	}

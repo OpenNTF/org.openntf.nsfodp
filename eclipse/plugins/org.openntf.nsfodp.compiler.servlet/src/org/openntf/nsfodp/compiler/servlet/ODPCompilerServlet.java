@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,8 @@ import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.mindoo.domino.jna.utils.Ref;
-import com.mindoo.domino.jna.utils.StringUtil;
 
 import lotus.domino.NotesThread;
 
@@ -71,7 +70,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			if(!ALLOW_ANONYMOUS && "Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				resp.setContentType("text/plain"); //$NON-NLS-1$
-				os.println("Anonymous access disallowed");
+				os.println(Messages.ODPCompilerServlet_anonymousDisallowed);
 				return;
 			}
 			
@@ -80,7 +79,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			//   to use a combined ZIP and pass options in headers
 			String contentType = req.getContentType();
 			if(!"application/zip".equals(contentType)) { //$NON-NLS-1$
-				throw new IllegalArgumentException("Content must be application/zip");
+				throw new IllegalArgumentException(Messages.ODPCompilerServlet_contentMustBeZip);
 			}
 			
 			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -157,10 +156,10 @@ public class ODPCompilerServlet extends HttpServlet {
 				compiler.addUpdateSite(updateSite);
 			}
 			
-			Ref<Path> nsf = new Ref<>();
+			Path[] nsf = new Path[1];
 			NotesThread notes = new NotesThread(() -> {
 				try {
-					nsf.set(compiler.compile());
+					nsf[0] = compiler.compile();
 					mon.done();
 				} catch(RuntimeException e) {
 					throw e;
@@ -173,8 +172,8 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			
 			// Now stream the NSF
-			cleanup.add(nsf.get());
-			try(InputStream is = Files.newInputStream(nsf.get())) {
+			cleanup.add(nsf[0]);
+			try(InputStream is = Files.newInputStream(nsf[0])) {
 				try(OutputStream gzos = new GZIPOutputStream(os)) {
 					StreamUtil.copyStream(is, gzos);
 				}

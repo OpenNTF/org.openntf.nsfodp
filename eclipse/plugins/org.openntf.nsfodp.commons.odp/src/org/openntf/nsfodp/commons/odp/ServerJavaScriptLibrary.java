@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,6 @@ public class ServerJavaScriptLibrary extends JavaScriptLibrary {
 
 	@Override
 	public String getFileDataItem() {
-		return "$ServerJavaScriptLibrary";
+		return "$ServerJavaScriptLibrary"; //$NON-NLS-1$
 	}
 }

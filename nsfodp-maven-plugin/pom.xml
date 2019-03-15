@@ -5,7 +5,7 @@
 
 	<groupId>org.openntf.maven</groupId>
 	<artifactId>nsfodp-maven-plugin</artifactId>
-	<version>1.4.0</version>
+	<version>2.0.0</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>NSF ODP Maven Plugin</name>
@@ -42,9 +42,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compiler>1.8</compiler>
-		<bazaar-version>2.0.1-SNAPSHOT</bazaar-version>
+		<bazaar-version>2.0.3</bazaar-version>
 		<nsfodp-version>${project.version}</nsfodp-version>
-		<jetty-version>9.3.23.v20180228</jetty-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -60,6 +59,11 @@
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+		<repository>
+			<id>openmind</id>
+			<name>openmind</name>
+			<url>http://repository.openmindonline.it/</url>
 		</repository>
 	</repositories>
 
@@ -90,6 +94,11 @@
 			<artifactId>plexus-utils</artifactId>
 			<version>3.0.8</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sonatype.plexus</groupId>
+			<artifactId>plexus-build-api</artifactId>
+			<version>0.0.7</version>
+		</dependency>
 		
 		<!--
 			General utilities
@@ -98,6 +107,16 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.sbt</groupId>
+			<artifactId>com.ibm.commons</artifactId>
+			<version>9.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.sbt</groupId>
+			<artifactId>com.ibm.commons.xml</artifactId>
+			<version>9.0.0</version>
 		</dependency>
 		
 		<!--
@@ -127,86 +146,6 @@
 			<artifactId>org.eclipse.equinox.launcher</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.12.100</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>3.13.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.equinox.http.jetty</artifactId>
-			<version>3.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.equinox.http.registry</artifactId>
-			<version>1.1.400</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.equinox.http.servlet</artifactId>
-			<version>1.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.eclipse.jetty.orbit</groupId> -->
-<!-- 			<artifactId>javax.servlet</artifactId> -->
-<!-- 			<version>3.0.0.v201112011016</version> -->
-<!-- 		</dependency> -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-http</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-io</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jmx</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-security</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.25</version>
-		</dependency>
 		
 		<!--
 			XPages Bazaar 
@@ -232,12 +171,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.commons.dxl</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.commons.odp</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
 			<artifactId>org.openntf.nsfodp.compiler</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.compiler.servlet</artifactId>
+			<artifactId>org.openntf.nsfodp.compiler.equinox</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
 		<dependency>
@@ -247,14 +196,50 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.deployment.servlet</artifactId>
+			<artifactId>org.openntf.nsfodp.exporter</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openntf.nsfodp</groupId>
-			<artifactId>org.openntf.nsfodp.cli</artifactId>
+			<artifactId>org.openntf.nsfodp.exporter.equinox</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
+		
+		<!--
+			Darwino Domino NAPI 
+		-->
+		<dependency>
+			<groupId>com.darwino.domino</groupId>
+			<artifactId>com.darwino.domino.napi</artifactId>
+			<version>2.5.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.darwino</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.microsoft.sqlserver</groupId>
+					<artifactId>mssql-jdbc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.derby</groupId>
+					<artifactId>derby</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -317,7 +302,7 @@
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
-						<copyrightYear>2018</copyrightYear>
+						<copyrightYear>2019</copyrightYear>
 					</properties>
 				</configuration>
 			</plugin>

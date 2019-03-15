@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,22 +37,22 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.maven.artifact.manager.WagonManager;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.openntf.maven.nsfodp.equinox.EquinoxExporter;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
@@ -60,21 +60,15 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 
 /**
  * Goal which generates an "odp" folder (replacing any existing in the directory or project)
- * from an NSF path using a remote server.
+ * from an NSF path within the context of a Maven project.
  * 
  * @author Jesse Gallagher
  * @since 1.4.0
  */
-@Mojo(name="generateODP", requiresProject=false)
-public class GenerateODPMojo extends AbstractMojo {
+@Mojo(name="generate-odp")
+public class GenerateODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/exporter"; //$NON-NLS-1$
-
-	@Parameter(defaultValue="${project}", readonly=true, required=false)
-	private MavenProject project;
-
-	@Component
-	private WagonManager wagonManager;
 	
 	/**
 	 * Location of the ODP directory.
@@ -102,8 +96,11 @@ public class GenerateODPMojo extends AbstractMojo {
 	/**
 	 * The database path for the remote server to export.
 	 */
-	@Parameter(property="nsfodp.exporter.databasePath", required=true)
+	@Parameter(property="databasePath", required=false)
 	private String databasePath;
+	
+	@Parameter(property="file", required=false)
+	private File file;
 	
 	/**
 	 * Whether or not to run the DXL through a Swiper filter. Defaults to <code>true</code>.
@@ -111,10 +108,16 @@ public class GenerateODPMojo extends AbstractMojo {
 	@Parameter(property="nsfodp.exporter.swiperFilter", required=false)
 	private boolean swiperFilter = true;
 	/**
-	 * Whether or not to use "binary" DXL format. Defaults to <code>true</code>.
+	 * Whether or not to use "binary" DXL format. Defaults to <code>false</code>.
 	 */
 	@Parameter(property="nsfodp.exporter.binaryDxl", required=false)
-	private boolean binaryDxl = true;
+	private boolean binaryDxl = false;
+
+	/**
+	 * Whether or not to export rich text items as Base64'd binary data. Defaults to <code>true</code>.
+	 */
+	@Parameter(property="nsfodp.exporter.richTextAsItemData", required=false)
+	private boolean richTextAsItemData = true;
 
 	private Log log;
 	
@@ -134,9 +137,24 @@ public class GenerateODPMojo extends AbstractMojo {
 			odpDir = base.resolve(odpDirectory.toPath());
 		}
 		
-		String databasePath = Objects.requireNonNull(this.databasePath);
+		String databasePath = this.databasePath;
+		File databaseFile = this.file;
+		if((databasePath == null || databasePath.isEmpty()) && databaseFile == null) {
+			if("standalone-pom".equals(project.getArtifactId()) || project.getPackaging().equals("domino-nsf")) {
+				throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
+			} else {
+				if(log.isInfoEnabled()) {
+					log.info(Messages.getString("GenerateODPMojo.skip")); //$NON-NLS-1$
+				}
+				return;
+			}
+		}
 		if(log.isInfoEnabled()) {
-			log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databasePath)); //$NON-NLS-1$
+			if(databaseFile == null) {
+				log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databasePath)); //$NON-NLS-1$
+			} else {
+				log.info(Messages.getString("GenerateODPMojo.generatingForDatabase", databaseFile)); //$NON-NLS-1$
+			}
 		}
 		
 		URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl);
@@ -145,45 +163,78 @@ public class GenerateODPMojo extends AbstractMojo {
 		}
 		
 		try {
-			Path zip = exportODP();
-			try {
-				if(Files.exists(odpDir)) {
-					NSFODPUtil.deltree(Collections.singleton(odpDir));
-				}
-				Files.createDirectories(odpDir);
-				
-				// Extract the ZIP to the destination
-				try(ZipFile zipFile = new ZipFile(zip.toFile())) {
-					for(ZipEntry entry : Collections.list(zipFile.entries())) {
-						if(log.isDebugEnabled()) {
-							log.debug(Messages.getString("GenerateODPMojo.exportingZipEntry", entry.getName())); //$NON-NLS-1$
-						}
-						
-						String name = entry.getName();
-						if(name != null && !name.isEmpty()) {
-							Path entryPath = Paths.get(name);
-							Path fullPath = odpDir.resolve(entryPath);
-							if(entry.isDirectory()) {
-								Files.createDirectories(fullPath);
-							} else {
-								Files.createDirectories(fullPath.getParent());
-								try(InputStream is = zipFile.getInputStream(entry)) {
-									Files.copy(is, fullPath);
+			if(isRunLocally()) {
+				exportODPLocal(odpDir);
+			} else {
+				Path zip = exportODPRemote();
+				try {
+					Path eclipseProject = odpDir.resolve(".project");
+					if(Files.exists(eclipseProject)) {
+						Path tempPath = Files.createTempFile("nsfodp", ".project");
+						Files.delete(tempPath);
+						Files.move(eclipseProject, tempPath);
+						eclipseProject = tempPath;
+					} else {
+						eclipseProject = null;
+					}
+					
+					if(Files.exists(odpDir)) {
+						NSFODPUtil.deltree(Collections.singleton(odpDir));
+					}
+					Files.createDirectories(odpDir);
+					
+					// Extract the ZIP to the destination
+					try(ZipFile zipFile = new ZipFile(zip.toFile())) {
+						for(ZipEntry entry : Collections.list(zipFile.entries())) {
+							if(log.isDebugEnabled()) {
+								log.debug(Messages.getString("GenerateODPMojo.exportingZipEntry", entry.getName())); //$NON-NLS-1$
+							}
+							
+							String name = entry.getName();
+							if(name != null && !name.isEmpty()) {
+								Path entryPath = Paths.get(name);
+								Path fullPath = odpDir.resolve(entryPath);
+								if(entry.isDirectory()) {
+									Files.createDirectories(fullPath);
+								} else {
+									Files.createDirectories(fullPath.getParent());
+									try(InputStream is = zipFile.getInputStream(entry)) {
+										Files.copy(is, fullPath);
+									}
 								}
 							}
 						}
 					}
+					if(eclipseProject != null) {
+						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING);
+					}
+				} finally {
+					Files.deleteIfExists(zip);
 				}
-			} finally {
-				Files.deleteIfExists(zip);
 			}
 		} catch(Throwable t) {
 			throw new MojoExecutionException(Messages.getString("GenerateODPMojo.exceptionGenerating"), t); //$NON-NLS-1$
 		}
-
 	}
 	
-	private Path exportODP() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, URISyntaxException, MojoExecutionException, ClientProtocolException, IOException {
+	// *******************************************************************************
+	// * Local execution
+	// *******************************************************************************
+	
+	private void exportODPLocal(Path odpDir) throws IOException {
+		EquinoxExporter exporter = new EquinoxExporter(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
+		if(file == null) {
+			exporter.exportOdp(odpDir, databasePath, binaryDxl, swiperFilter, richTextAsItemData);
+		} else {
+			exporter.exportOdp(odpDir, file.getAbsolutePath(), binaryDxl, swiperFilter, richTextAsItemData);
+		}
+	}
+	
+	// *******************************************************************************
+	// * Remote execution
+	// *******************************************************************************
+	
+	private Path exportODPRemote() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, URISyntaxException, MojoExecutionException, ClientProtocolException, IOException {
 		HttpClientBuilder httpBuilder = HttpClients.custom();
 		if(this.exporterServerTrustSelfSignedSsl) {
 			SSLContextBuilder sslBuilder = new SSLContextBuilder();
@@ -197,15 +248,26 @@ public class GenerateODPMojo extends AbstractMojo {
 			if(log.isInfoEnabled()) {
 				log.info(Messages.getString("GenerateODPMojo.generatingWithServer", servlet)); //$NON-NLS-1$
 			}
-			HttpGet get = new HttpGet(servlet);
 			
-			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.exporterServer, get, this.log);
+			File databaseFile = this.file;
+			HttpUriRequest req;
+			if(databaseFile != null) {
+				req = new HttpPost(servlet);
+				FileEntity fileEntity = new FileEntity(databaseFile);
+				fileEntity.setContentType("application/octet-stream"); //$NON-NLS-1$
+				((HttpPost)req).setEntity(fileEntity);
+			} else {
+				req = new HttpGet(servlet);
+				req.addHeader(NSFODPConstants.HEADER_DATABASE_PATH, this.databasePath);
+			}
 			
-			get.addHeader(NSFODPConstants.HEADER_DATABASE_PATH, this.databasePath);
-			get.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
-			get.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
+			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.exporterServer, req, this.log);
 			
-			HttpResponse res = client.execute(get);
+			req.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
+			req.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
+			req.addHeader(NSFODPConstants.HEADER_RICH_TEXT_AS_ITEM_DATA, String.valueOf(this.richTextAsItemData));
+			
+			HttpResponse res = client.execute(req);
 			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
  			
 			try(InputStream is = responseEntity.getContent()) {

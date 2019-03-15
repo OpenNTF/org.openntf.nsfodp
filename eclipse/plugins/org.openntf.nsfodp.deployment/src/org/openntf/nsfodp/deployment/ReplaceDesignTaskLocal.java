@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,20 +32,20 @@ public class ReplaceDesignTaskLocal implements Runnable {
 	private final IProgressMonitor monitor;
 	
 	public ReplaceDesignTaskLocal(String targetDbName, Path templatePath, IProgressMonitor monitor) {
-		this.targetDbName = Objects.requireNonNull(targetDbName, "targetDbName cannot be null");
-		this.templatePath = Objects.requireNonNull(templatePath, "templatePath cannot be null");
+		this.targetDbName = Objects.requireNonNull(targetDbName, Messages.ReplaceDesignTaskLocal_targetDbNameNull);
+		this.templatePath = Objects.requireNonNull(templatePath, Messages.ReplaceDesignTaskLocal_templatePathNull);
 		this.monitor = monitor;
 	}
 
 	@Override
 	public void run() {
-		monitor.setTaskName("Replace Design");
+		monitor.setTaskName(Messages.ReplaceDesignTaskLocal_label);
 		
 		try {
 			Session session = ContextInfo.getUserSession();
 			
-			String command = MessageFormat.format("load convert -d {0} * {1}", targetDbName, templatePath.toAbsolutePath().toString());
-			session.sendConsoleCommand("", command);
+			String command = MessageFormat.format("load convert -d {0} * {1}", targetDbName, templatePath.toAbsolutePath().toString()); //$NON-NLS-1$
+			session.sendConsoleCommand("", command); //$NON-NLS-1$
 			
 			monitor.done();
 		} catch(Throwable t) {

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2018 Jesse Gallagher
+    Copyright © 2018-2019 Jesse Gallagher
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -36,6 +36,13 @@
 			</includes>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/../../../legal</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<outputDirectory>legal</outputDirectory>
+		</fileSet>
 	</fileSets>
 	
 	<moduleSets>
@@ -46,8 +53,19 @@
 			</includes>
 			
 			<binaries>
-				<attachmentClassifier>assembly</attachmentClassifier>
-				<outputDirectory>domino</outputDirectory>
+				<outputDirectory>Domino</outputDirectory>
+				<unpack>true</unpack>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>org.openntf.nsfodp:org.openntf.nsfodp.domino.source.updatesite</include>
+			</includes>
+			
+			<binaries>
+				<outputDirectory>DominoSource</outputDirectory>
 				<unpack>true</unpack>
 				<includeDependencies>false</includeDependencies>
 			</binaries>
@@ -59,8 +77,7 @@
 			</includes>
 			
 			<binaries>
-				<attachmentClassifier>assembly</attachmentClassifier>
-				<outputDirectory>eclipse</outputDirectory>
+				<outputDirectory>Eclipse</outputDirectory>
 				<unpack>true</unpack>
 				<includeDependencies>false</includeDependencies>
 			</binaries>

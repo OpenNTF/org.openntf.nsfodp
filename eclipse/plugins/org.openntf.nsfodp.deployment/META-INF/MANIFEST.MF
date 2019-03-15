@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NSF Deployment Tools
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.deployment;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment
-Bundle-Version: 1.4.0.qualifier
-Bundle-Vendor: OpenNTF
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: %Bundle-Vendor
 Import-Package: org.osgi.framework
 Require-Bundle: org.eclipse.core.runtime,
  com.ibm.notes.java.api,

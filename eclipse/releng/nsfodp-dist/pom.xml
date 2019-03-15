@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openntf.nsfodp</groupId>
 		<artifactId>nsfodp</artifactId>
-		<version>1.4.0</version>
+		<version>2.0.0</version>
 		<relativePath>../..</relativePath>
 	</parent>
 	<artifactId>nsfodp-dist</artifactId>
@@ -17,13 +17,19 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>org.openntf.nsfodp.domino.updatesite</artifactId>
 			<version>${project.version}</version>
-			<type>eclipse-update-site</type>
+			<type>eclipse-repository</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>org.openntf.nsfodp.domino.source.updatesite</artifactId>
+			<version>${project.version}</version>
+			<type>eclipse-repository</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>org.openntf.nsfodp.eclipse.updatesite</artifactId>
 			<version>${project.version}</version>
-			<type>eclipse-update-site</type>
+			<type>eclipse-repository</type>
 		</dependency>
 	</dependencies>
 
@@ -32,7 +38,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.0</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@ package org.openntf.nsfodp.eclipse;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class Activator extends AbstractUIPlugin {
-	public static final String ICON_CUSTOM_CONTROL = "icon-custom-control"; //$NON-NLS-1$
-	public static final String ICON_STOCK_COMPONENT = "icon-stock-component"; //$NON-NLS-1$
-	
 	private static Activator instance;
 	
 	public static ILog log;
@@ -43,8 +42,16 @@ public class Activator extends AbstractUIPlugin {
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
 		
-		reg.put(ICON_CUSTOM_CONTROL, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/emblem-system.png")); //$NON-NLS-1$
-		reg.put(ICON_STOCK_COMPONENT, imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), "icons/system-file-manager.png")); //$NON-NLS-1$
+		for(ODPIcon icon : ODPIcon.values()) {
+			reg.put(icon.name(), imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), icon.getPath()));
+		}
+	}
+	
+	public static Image getIcon(ODPIcon icon) {
+		return getDefault().getImageRegistry().get(icon.name());
+	}
+	public static ImageDescriptor getIconDescriptor(ODPIcon icon) {
+		return getDefault().getImageRegistry().getDescriptor(icon.name());
 	}
 	
 	public static void logError(String message, Throwable throwable) {

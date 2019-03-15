@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Jesse Gallagher
+ * Copyright © 2018-2019 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,9 +48,10 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	public static final List<PathMatcher> DIRECT_DXL_FILES = Arrays.stream(new String[] {
+	public static final List<PathMatcher> DIRECT_DXL_FILES = Stream.of(
 		"AppProperties/$DBIcon", //$NON-NLS-1$
 		"Code/dbscript.lsdb", //$NON-NLS-1$
+		"Code/actions/Shared Actions", //$NON-NLS-1$
 		"Code/Agents/*.ja", //$NON-NLS-1$
 		"Code/Agents/*.fa", //$NON-NLS-1$
 		"Code/Agents/*.ija", //$NON-NLS-1$
@@ -63,9 +65,14 @@ public class OnDiskProject {
 		"Resources/UsingDocument", //$NON-NLS-1$
 		"SharedElements/Fields/*", //$NON-NLS-1$
 		"SharedElements/Outlines/*", //$NON-NLS-1$
+		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
-	}).map(GlobMatcher::glob).collect(Collectors.toList());
+	).map(GlobMatcher::glob).collect(Collectors.toList());
 	
+	public static final List<PathMatcher> IGNORED_FILES = Stream.of(
+		"**/.DS_Store", //$NON-NLS-1$
+		"**/Thumbs.db" //$NON-NLS-1$
+	).map(GlobMatcher::glob).collect(Collectors.toList());
 
 	private final Path baseDir;
 	
@@ -77,19 +84,23 @@ public class OnDiskProject {
 		this.FILE_RESOURCES = Arrays.asList(
 			new GlobMatcher(".classpath", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher(".settings/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
+			new GlobMatcher("AppProperties/xspdesign.properties", path -> new FileResource(path, "~C4g", null, p -> ODPUtil.toBasicFilePath(baseDir, p), p -> "xspdesign.properties")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new GlobMatcher("Code/Jars/**", path -> new FileResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Code/Java/**", path ->  //$NON-NLS-1$
 				path.toString().endsWith(".java") || path.toString().endsWith(AbstractSplitDesignElement.EXT_METADATA) ? null : new FileResource(path, true) //$NON-NLS-1$
 			),
 			new GlobMatcher("Code/ScriptLibraries/*.js", path -> new JavaScriptLibrary(path)), //$NON-NLS-1$
 			new GlobMatcher("Code/ScriptLibraries/*.jss", path -> new ServerJavaScriptLibrary(path)), //$NON-NLS-1$
+			new GlobMatcher("CompositeApplications/**", path -> new FileResource(path, "34567C|Q", "1", p -> p.getFileName().toString(), p -> "")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			new GlobMatcher("META-INF/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("plugin.xml", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("Resources/Files/*", path -> new FileResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Resources/Images/*", path -> new ImageResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Resources/StyleSheets/*", path -> new FileResource(path)), //$NON-NLS-1$
 			new GlobMatcher("Resources/Themes/*", path -> new FileResource(path)), //$NON-NLS-1$
-			new GlobMatcher("WebContent/**", path -> new FileResource(path, "~C4g", "w", p -> ODPUtil.toBasicFilePath(baseDir.resolve("WebContent"), p))) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			new GlobMatcher("WebContent/**", path -> new FileResource(path, "~C4g", "w", p -> ODPUtil.toBasicFilePath(baseDir.resolve("WebContent"), p))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			new GlobMatcher("XPages/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())), //$NON-NLS-1$ //$NON-NLS-2$
+			new GlobMatcher("CustomControls/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())) //$NON-NLS-1$ //$NON-NLS-2$
 		);
 	}
 	
@@ -100,7 +111,7 @@ public class OnDiskProject {
 	public Path getClasspathFile() {
 		Path classpath = baseDir.resolve(".classpath"); //$NON-NLS-1$
 		if(Files.exists(classpath) && !Files.isRegularFile(classpath)) {
-			throw new IllegalStateException("Classpath file is not a file: " + classpath.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_classpathNotAFile, classpath.toAbsolutePath()));
 		}
 		return classpath;
 	}
@@ -135,10 +146,10 @@ public class OnDiskProject {
 	public Path getDbPropertiesFile() {
 		Path properties = baseDir.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.exists(properties)) {
-			throw new IllegalStateException("DB properties file does not exist: " + properties.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_dbPropertiesDoesNotExist, properties.toAbsolutePath()));
 		}
 		if(!Files.isRegularFile(properties)) {
-			throw new IllegalStateException("DB properties file is not a file: " + properties.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_dbPropertiesNotAFile, properties.toAbsolutePath()));
 		}
 		return properties;
 	}
@@ -146,10 +157,10 @@ public class OnDiskProject {
 	public Path getPluginFile() {
 		Path pluginXml = baseDir.resolve("plugin.xml"); //$NON-NLS-1$
 		if(!Files.exists(pluginXml)) {
-			throw new IllegalStateException("Plugin file does not exist: " + pluginXml.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_pluginDoesNotExist, pluginXml.toAbsolutePath()));
 		}
 		if(!Files.isRegularFile(pluginXml)) {
-			throw new IllegalStateException("Plugin file is not a file: " + pluginXml.toAbsolutePath());
+			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_pluginNotAFile, pluginXml.toAbsolutePath()));
 		}
 		return pluginXml;
 	}
@@ -214,7 +225,7 @@ public class OnDiskProject {
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
 			return Files.find(dir, 1,
 					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
-					.map(path -> new CustomControl(path))
+					.map(path -> new XPage(path))
 					.collect(Collectors.toList());
 		} else {
 			return Collections.emptyList();
@@ -245,7 +256,14 @@ public class OnDiskProject {
 			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,
-						(path, attr) -> attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata")
+						(path, attr) -> {
+							for(PathMatcher ignoreMatcher : IGNORED_FILES) {
+								if(ignoreMatcher.matches(path)) {
+									return false;
+								}
+							}
+							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
+						}
 					).map(matcher::getElement);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
