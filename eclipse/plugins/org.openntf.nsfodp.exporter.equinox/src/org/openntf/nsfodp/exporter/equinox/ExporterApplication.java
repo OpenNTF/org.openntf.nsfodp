@@ -47,7 +47,7 @@ public class ExporterApplication implements IApplication {
 		}
 		Path odpDir = Paths.get(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
 		
-		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
+		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_BINARY_DXL)); //$NON-NLS-1$
 		boolean swiperFilter = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
 		boolean richTextAsItemData = "true".equals(System.getProperty(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA)); //$NON-NLS-1$
 		
