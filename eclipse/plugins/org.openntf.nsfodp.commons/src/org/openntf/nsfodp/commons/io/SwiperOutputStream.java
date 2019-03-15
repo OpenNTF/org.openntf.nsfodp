@@ -84,7 +84,7 @@ public class SwiperOutputStream extends OutputStream {
 		Transformer transformer = swiper.newTransformer();
 
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes"); //$NON-NLS-1$
 		
