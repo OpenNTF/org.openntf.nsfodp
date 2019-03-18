@@ -17,10 +17,8 @@ The project contains the following 3rd-party code and resources:
 
 - Components of Swiper, which is available from https://github.com/camac/Swiper and is licensed under Apache 2.0
 
-- Darwino Domino NAPI, which i available from https://artifactory.openntf.org/openntf/com/darwino/domino/com.darwino.domino.napi/ and is licensed under Apache 2.0
-- IBM Domino DTD and XSD files
-  Copyright 2018 HCL and IBM, available with a Notes or Domino installation
-  Redistributed in accordance with the included Redist-xmlschemas.txt and License-xmlschemas.txt files in the "legal" directory
+- Darwino Domino NAPI, which is available from https://artifactory.openntf.org/openntf/com/darwino/domino/com.darwino.domino.napi/ and is licensed under Apache 2.0
+- IBM Domino DTD and XSD files, which are copyright 2018 HCL and IBM and are available with a Notes or Domino installation. They are redistributed in accordance with the included Redist-xmlschemas.txt file and the "Redistributables" section of the License-xmlschemas.txt file in the "legal" directory
 
 The project contains snippets derived from the following 3rd-party projects:
 
