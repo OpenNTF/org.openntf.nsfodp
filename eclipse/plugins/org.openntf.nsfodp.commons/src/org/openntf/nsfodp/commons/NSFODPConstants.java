@@ -54,7 +54,7 @@ public enum NSFODPConstants {
 	 */
 	public static final String PROP_ODPDIRECTORY = "org.openntf.nsfodp.odpDirectory"; //$NON-NLS-1$
 	/**
-	 * The system property used to specify the path to an update site to use during compilation
+	 * The system property used to specify the paths to any update sites to use during compilation
 	 * using the local Equinox compiler.
 	 */
 	public static final String PROP_UPDATESITE = "org.openntf.nsfodp.compiler.updateSite"; //$NON-NLS-1$

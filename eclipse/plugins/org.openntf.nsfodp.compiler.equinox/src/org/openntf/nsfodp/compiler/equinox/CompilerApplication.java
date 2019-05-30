@@ -19,6 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.equinox.app.IApplication;
@@ -29,9 +33,11 @@ import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
-import org.openntf.nsfodp.compiler.update.UpdateSite;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.json.JsonException;
+import com.ibm.commons.util.io.json.JsonJavaFactory;
+import com.ibm.commons.util.io.json.JsonParser;
 
 import lotus.domino.NotesFactory;
 import lotus.domino.NotesThread;
@@ -44,7 +50,7 @@ public class CompilerApplication implements IApplication {
 		
 		
 		Path odpDirectory = toPath(System.getProperty(NSFODPConstants.PROP_ODPDIRECTORY));
-		Path updateSite = toPath(System.getProperty(NSFODPConstants.PROP_UPDATESITE));
+		List<Path> updateSites = toPaths(System.getProperty(NSFODPConstants.PROP_UPDATESITE));
 		Path outputFile = toPath(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
 		
 		Session session = NotesFactory.createSession();
@@ -75,9 +81,11 @@ public class CompilerApplication implements IApplication {
 				compiler.setSetProductionXspOptions(true);
 			}
 			
-			if(updateSite != null) {
-				UpdateSite updateSiteObj = new FilesystemUpdateSite(updateSite.toFile());
-				compiler.addUpdateSite(updateSiteObj);
+			if(updateSites != null && !updateSites.isEmpty()) {
+				updateSites.stream()
+					.map(Path::toFile)
+					.map(FilesystemUpdateSite::new)
+					.forEach(compiler::addUpdateSite);
 			}
 			
 			Path[] nsf = new Path[1];
@@ -116,6 +124,27 @@ public class CompilerApplication implements IApplication {
 			return null;
 		} else {
 			return Paths.get(pathString);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Path> toPaths(String pathString) {
+		if(pathString == null || pathString.isEmpty()) {
+			return Collections.emptyList();
+		} else {
+			if(pathString.startsWith("[")) { // Treat it as JSON //$NON-NLS-1$
+				try {
+					List<String> paths = (List<String>)JsonParser.fromJson(JsonJavaFactory.instance, pathString);
+					return paths.stream()
+						.map(this::toPath)
+						.filter(Objects::nonNull)
+						.collect(Collectors.toList());
+				} catch (JsonException e) {
+					throw new RuntimeException("Error parsing paths JSON array: " + pathString, e);
+				}
+			} else {
+				return Collections.singletonList(toPath(pathString));
+			}
 		}
 	}
 }

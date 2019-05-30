@@ -20,7 +20,10 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
@@ -29,6 +32,9 @@ import org.apache.maven.project.MavenProject;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Represents an Equinox environment to compile the provided project.
  * 
@@ -36,17 +42,25 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
  * @since 2.0.0
  */
 public class EquinoxCompiler extends AbstractEquinoxTask {
+	private final Gson gson = new GsonBuilder().create();
+	
 	public EquinoxCompiler(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
 		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
 	}
 
-	public void compileOdp(Path odpDirectory, Path updateSite, Collection<Path> classpathJars, Path outputFile, String compilerLevel, boolean appendTimestampToTitle, String templateName, boolean setProductionXspOptions) {
+	public void compileOdp(Path odpDirectory, List<Path> updateSites, Collection<Path> classpathJars, Path outputFile, String compilerLevel, boolean appendTimestampToTitle, String templateName, boolean setProductionXspOptions) {
 		setClasspathJars(classpathJars);
 		
 		Map<String, String> props = new HashMap<>();
 		props.put(NSFODPConstants.PROP_ODPDIRECTORY, odpDirectory.toAbsolutePath().toString());
-		if(updateSite != null) {
-			props.put(NSFODPConstants.PROP_UPDATESITE, updateSite.toAbsolutePath().toString());
+		if(updateSites != null && !updateSites.isEmpty()) {
+			List<String> pathStrings = updateSites.stream()
+				.filter(Objects::nonNull)
+				.map(Path::toAbsolutePath)
+				.map(Object::toString)
+				.collect(Collectors.toList());
+			String paths = gson.toJson(pathStrings);
+			props.put(NSFODPConstants.PROP_UPDATESITE, paths);
 		}
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, outputFile.toAbsolutePath().toString());
 		if(compilerLevel != null) {
