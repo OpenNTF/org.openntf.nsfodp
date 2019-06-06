@@ -54,11 +54,13 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -110,9 +112,20 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	
 	/**
 	 * An update site whose contents to use when building the ODP.
+	 * 
+	 * @deprecated use {@link #updateSites} instead
 	 */
 	@Parameter(required=false)
+	@Deprecated
 	private File updateSite;
+	
+	/**
+	 * Any update sites whose contents to use when building the ODP.
+	 * 
+	 * <p>Overrides {@link #updateSite} if both are specified.</p>
+	 */
+	@Parameter(required=false)
+	private File[] updateSites;
 	
 	/**
 	 * The compiler level to target, e.g. "1.6", "1.8", "10", etc.
@@ -179,15 +192,9 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		if(!Files.isDirectory(odpDirectory)) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.odpDirNotADir", odpDirectory.toAbsolutePath())); //$NON-NLS-1$
 		}
-		Path updateSite = this.updateSite == null ? null : this.updateSite.toPath();
-		if(updateSite != null) {
-			if(!Files.exists(updateSite)) {
-				throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirDoesNotExist", updateSite.toAbsolutePath())); //$NON-NLS-1$
-			}
-			if(!Files.isDirectory(updateSite)) {
-				throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirNotADir", updateSite.toAbsolutePath())); //$NON-NLS-1$
-			}
-		}
+		
+		List<Path> updateSites = collectUpdateSites();
+		
 		String outputFileName = Objects.requireNonNull(this.outputFileName, "outputFileName cannot be null"); //$NON-NLS-1$
 		if(outputFileName.isEmpty()) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.outputFileNameEmpty")); //$NON-NLS-1$
@@ -215,15 +222,17 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 				}
 				
 				if(isRunLocally()) {
-					compileOdpLocal(odpDirectory, updateSite, outputFile);
+					compileOdpLocal(odpDirectory, updateSites, outputFile);
 				} else {
 					Path odpZip = zipDirectory(odpDirectory);
-					Path updateSiteZip = null;
-					if(updateSite != null) {
-						updateSiteZip = zipDirectory(updateSite);
+					List<Path> updateSiteZips = null;
+					if(updateSites != null && !updateSites.isEmpty()) {
+						updateSiteZips = updateSites.stream()
+							.map(this::zipDirectory)
+							.collect(Collectors.toList());
 					}
 					
-					Path packageZip = createPackage(odpZip, updateSiteZip);
+					Path packageZip = createPackage(odpZip, updateSiteZips);
 					Path result = compileOdpOnServer(packageZip);
 					Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				}
@@ -251,7 +260,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	// * Local compilation
 	// *******************************************************************************
 	
-	private void compileOdpLocal(Path odpDirectory, Path updateSite, Path outputFile) throws IOException {
+	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path outputFile) throws IOException {
 		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
 		List<Path> classpathJars;
 		if(this.classpathJars == null) {
@@ -259,16 +268,16 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		} else {
 			classpathJars = Arrays.stream(this.classpathJars).map(File::toPath).collect(Collectors.toList());
 		}
-		compiler.compileOdp(odpDirectory, updateSite, classpathJars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
+		compiler.compileOdp(odpDirectory, updateSites, classpathJars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
 	}
 	
 	// *******************************************************************************
 	// * Server-based compilation
 	// *******************************************************************************
 	
-	private Path createPackage(Path odpZip, Path updateSiteZip) throws IOException {
+	private Path createPackage(Path odpZip, List<Path> updateSiteZips) throws IOException {
 		if(log.isDebugEnabled()) {
-			log.debug(Messages.getString("CompileODPMojo.creatingPackage") + odpZip + ", updateSiteZip=" + updateSiteZip); //$NON-NLS-1$ //$NON-NLS-2$
+			log.debug(Messages.getString("CompileODPMojo.creatingPackage") + odpZip + ", updateSiteZips=" + updateSiteZips); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -280,10 +289,13 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 				zos.putNextEntry(entry);
 				Files.copy(odpZip, zos);
 				
-				if(updateSiteZip != null) {
-					entry = new ZipEntry("site.zip"); //$NON-NLS-1$
-					zos.putNextEntry(entry);
-					Files.copy(updateSiteZip, zos);
+				if(updateSiteZips != null && !updateSiteZips.isEmpty()) {
+					for(int i = 0; i < updateSiteZips.size(); i++) {
+						Path updateSiteZip = updateSiteZips.get(i);
+						entry = new ZipEntry("site" + i + ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+						zos.putNextEntry(entry);
+						Files.copy(updateSiteZip, zos);
+					}
 				}
 			}
 		}
@@ -343,32 +355,67 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		}
 	}
 	
-	private Path zipDirectory(Path path) throws IOException {
+	private Path zipDirectory(Path path) {
 		if(log.isDebugEnabled()) {
 			log.debug(Messages.getString("CompileODPMojo.zippingPath", path.toString())); //$NON-NLS-1$
 		}
 		
-		Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-		result.toFile().deleteOnExit();
-		
-		try(OutputStream fos = Files.newOutputStream(result)) {
-			try(ZipOutputStream zos = new ZipOutputStream(fos)) {
-				zos.setLevel(Deflater.BEST_COMPRESSION);
-				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-					@Override
-					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-						if(attrs.isRegularFile()) {
-							Path relativePath = path.relativize(file);
-							String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/")); //$NON-NLS-1$
-							ZipEntry entry = new ZipEntry(unixPath);
-							zos.putNextEntry(entry);
-							Files.copy(file, zos);
+		try {
+			Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+			result.toFile().deleteOnExit();
+			
+			try(OutputStream fos = Files.newOutputStream(result)) {
+				try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+					zos.setLevel(Deflater.BEST_COMPRESSION);
+					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+						@Override
+						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+							if(attrs.isRegularFile()) {
+								Path relativePath = path.relativize(file);
+								String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/")); //$NON-NLS-1$
+								ZipEntry entry = new ZipEntry(unixPath);
+								zos.putNextEntry(entry);
+								Files.copy(file, zos);
+							}
+							return FileVisitResult.CONTINUE;
 						}
-						return FileVisitResult.CONTINUE;
-					}
-				});
+					});
+				}
+			}
+			
+			return result;
+		} catch(IOException e) {
+			throw new RuntimeException(Messages.getString("CompileODPMojo.exceptionCompressingDir", path), e); //$NON-NLS-1$
+		}
+	}
+	
+	// *******************************************************************************
+	// * Misc. internal utilities
+	// *******************************************************************************
+	private List<Path> collectUpdateSites() {
+		List<Path> result = new ArrayList<>();
+		
+		// The new setting should override the old setting, so check that first
+		if(this.updateSites != null && this.updateSites.length != 0) {
+			result = Stream.of(this.updateSites)
+					.filter(Objects::nonNull)
+					.map(File::toPath)
+					.collect(Collectors.toList());
+		} else if(this.updateSite != null) {
+			result = Collections.singletonList(this.updateSite.toPath());
+		}
+		
+		for(Path updateSite : result) {
+			if(updateSite != null) {
+				if(!Files.exists(updateSite)) {
+					throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirDoesNotExist", updateSite.toAbsolutePath())); //$NON-NLS-1$
+				}
+				if(!Files.isDirectory(updateSite)) {
+					throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirNotADir", updateSite.toAbsolutePath())); //$NON-NLS-1$
+				}
 			}
 		}
+		
 		
 		return result;
 	}

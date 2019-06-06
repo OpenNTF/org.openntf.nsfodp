@@ -77,7 +77,7 @@ public class ExporterApplication implements IApplication {
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
 					}
-					Files.move(result, odpDir);
+					NSFODPUtil.moveDirectory(result, odpDir);
 					if(eclipseProject != null) {
 						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 					}

@@ -17,10 +17,14 @@ package org.openntf.nsfodp.commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 
 public enum NSFODPUtil {
@@ -52,6 +56,45 @@ public enum NSFODPUtil {
 				    .forEach(File::delete);
 			}
 			Files.deleteIfExists(path);
+		}
+	}
+	
+	/**
+	 * Moves the source directory to the destination, taking into account the possibility
+	 * that the source and destination reside on different volumes.
+	 * 
+	 * @param source the source directory to move (e.g. "/foo/bar")
+	 * @param dest the destination path of the directory (e.g. "/baz/bar")
+	 * @throws IOException if there is a filesystem problem moving the directory
+	 * @since 2.1.0
+	 */
+	public static void moveDirectory(Path source, Path dest) throws IOException {
+		Files.walkFileTree(source, new CopyFileVisitor(dest));
+		deltree(Collections.singleton(source));
+	}
+	
+	private static class CopyFileVisitor extends SimpleFileVisitor<Path> {
+		private final Path targetPath;
+		private Path sourcePath = null;
+
+		public CopyFileVisitor(Path targetPath) {
+			this.targetPath = targetPath;
+		}
+
+		@Override
+		public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+			if (sourcePath == null) {
+				sourcePath = dir;
+			} else {
+				Files.createDirectories(targetPath.resolve(sourcePath.relativize(dir)));
+			}
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+			Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+			return FileVisitResult.CONTINUE;
 		}
 	}
 }

@@ -23,10 +23,13 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -54,6 +57,8 @@ import lotus.domino.NotesThread;
 
 public class ODPCompilerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private static final Pattern SITE_ZIP_PATTERN = Pattern.compile("^site\\d*\\.zip$"); //$NON-NLS-1$
 	
 	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous")); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -91,7 +96,8 @@ public class ODPCompilerServlet extends HttpServlet {
 			}
 			
 			// Look for an ODP item
-			Path odpZip = null, siteZip = null;
+			Path odpZip = null;
+			List<Path> siteZips = new ArrayList<>();
 			try(ZipFile packageZip = new ZipFile(packageFile.toFile())) {
 				ZipEntry odpEntry = packageZip.getEntry("odp.zip"); //$NON-NLS-1$
 				if(odpEntry == null) {
@@ -107,17 +113,23 @@ public class ODPCompilerServlet extends HttpServlet {
 						}
 					}
 					
-					// Look for an embedded update site
-					ZipEntry siteEntry = packageZip.getEntry("site.zip"); //$NON-NLS-1$
-					if(siteEntry != null) {
-						siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-						cleanup.add(siteZip);
-						try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
-							try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
-								StreamUtil.copyStream(siteIs, siteOs);
+					// Look for any embedded update sites
+					packageZip.stream()
+						.filter(e -> SITE_ZIP_PATTERN.matcher(e.getName()).matches())
+						.forEach(siteEntry -> {
+							try {
+								Path siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+								cleanup.add(siteZip);
+								try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
+									try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
+										StreamUtil.copyStream(siteIs, siteOs);
+									}
+								}
+								siteZips.add(siteZip);
+							} catch(IOException e) {
+								throw new RuntimeException(e);
 							}
-						}
-					}
+						});
 				}
 			}
 			
@@ -150,10 +162,12 @@ public class ODPCompilerServlet extends HttpServlet {
 				compiler.setSetProductionXspOptions(true);
 			}
 			
-			if(siteZip != null) {
-				Path siteFile = expandZip(siteZip, cleanup);
-				UpdateSite updateSite = new FilesystemUpdateSite(siteFile.toFile());
-				compiler.addUpdateSite(updateSite);
+			if(siteZips != null && !siteZips.isEmpty()) {
+				for(Path siteZip : siteZips) {
+					Path siteFile = expandZip(siteZip, cleanup);
+					UpdateSite updateSite = new FilesystemUpdateSite(siteFile.toFile());
+					compiler.addUpdateSite(updateSite);
+				}
 			}
 			
 			Path[] nsf = new Path[1];
