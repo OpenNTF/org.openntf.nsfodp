@@ -1,13 +1,11 @@
 package org.openntf.nsfodp.designer.odpwatcher;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -19,16 +17,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
 public class ODPRefreshProvider extends RefreshProvider {
-	public static final int INTERVAL = 10; // seconds
+	public static final int INTERVAL = 10 * 1000; // milliseconds
 	
 	private final IProgressMonitor nullMon = new NullProgressMonitor();
 	
-	private final ScheduledExecutorService exec = Executors.newScheduledThreadPool(5);
-	
 	protected IRefreshMonitor createPollingMonitor(IResource resource) {
-		Activator.getDefault().log(IStatus.INFO, ">>> asked createPollingMonitor for " + resource);
 		return null;
 	}
 	
@@ -37,7 +34,7 @@ public class ODPRefreshProvider extends RefreshProvider {
 			IProject project = (IProject)resource;
 			if(isOdpProject(project)) {
 				PollingRefreshMonitor mon = new PollingRefreshMonitor(result, project);
-				mon.setFuture(exec.scheduleAtFixedRate(mon, 1, INTERVAL, TimeUnit.SECONDS));
+				mon.schedule(INTERVAL);
 				return mon;
 			}
 		}
@@ -47,7 +44,6 @@ public class ODPRefreshProvider extends RefreshProvider {
 	
 	@Override
 	public void resetMonitors(IResource resource, IProgressMonitor progressMonitor) {
-		Activator.getDefault().log(IStatus.INFO, ">>> asked resetMonitors for " + resource);
 	}
 	
 	// *******************************************************************************
@@ -70,37 +66,52 @@ public class ODPRefreshProvider extends RefreshProvider {
 	// * Internal utilities
 	// *******************************************************************************
 	
-	private class PollingRefreshMonitor implements Runnable, IRefreshMonitor {
+	private static class PollingRefreshMonitor extends Job implements IRefreshMonitor {
 
-		private ScheduledFuture<?> future;
 		private final IRefreshResult result;
 		private final IProject project;
 		
 		public PollingRefreshMonitor(IRefreshResult result, IProject project) {
+			super("ODP filesystem refresh monitor for " + project.getName());
+			
 			this.result = result;
 			this.project = project;
-		}
-		
-		@Override
-		public void run() {
-			Activator.getDefault().log(IStatus.WARNING, "Refreshing " + project);
-			result.refresh(project);
-		}
-		
-		public void setFuture(ScheduledFuture<?> future) {
-			this.future = future;
 		}
 
 		@Override
 		public void unmonitor(IResource resource) {
 			if(project.equals(resource)) {
-				future.cancel(true);
+				this.cancel();
 			}
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			monitor.beginTask("Refreshing " + project.getName(), 1);
+			
+			// Only refresh if the filesystem thinks it's still connected
+			//   ...and hope that this doesn't trigger a refresh anyway
+			File projectFile = new File(project.getLocationURI());
+			if(projectFile.exists() && projectFile.isDirectory()) {
+				result.refresh(project);
+			}
+			
+			monitor.worked(1);
+			monitor.done();
+			
+			schedule(INTERVAL);
+			return Status.OK_STATUS;
 		}
 		
 	}
 	
 	private boolean isOdpProject(IProject project) {
+		// Check to see if it's a filesystem path
+		URI uri = project.getLocationURI();
+		if(!"file".equals(uri.getScheme())) { //$NON-NLS-1$
+			return false;
+		}
+		
 		// Since there's no project nature, check in the .project file
 		IFile projectFile = project.getFile(".project"); //$NON-NLS-1$
 		if(projectFile.exists()) {
