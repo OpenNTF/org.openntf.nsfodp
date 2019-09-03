@@ -82,5 +82,17 @@
 				<includeDependencies>false</includeDependencies>
 			</binaries>
 		</moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>org.openntf.nsfodp:org.openntf.nsfodp.designer.updatesite</include>
+			</includes>
+			
+			<binaries>
+				<outputDirectory>Designer</outputDirectory>
+				<unpack>true</unpack>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
 	</moduleSets>
 </assembly>
