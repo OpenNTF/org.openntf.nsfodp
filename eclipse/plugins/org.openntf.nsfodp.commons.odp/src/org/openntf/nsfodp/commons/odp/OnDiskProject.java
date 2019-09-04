@@ -63,8 +63,10 @@ public class OnDiskProject {
 		"Pages/*", //$NON-NLS-1$
 		"Resources/AboutDocument", //$NON-NLS-1$
 		"Resources/UsingDocument", //$NON-NLS-1$
+		"SharedElements/Columns/*", //$NON-NLS-1$
 		"SharedElements/Fields/*", //$NON-NLS-1$
 		"SharedElements/Outlines/*", //$NON-NLS-1$
+		"SharedElements/Navigators/*", //$NON-NLS-1$
 		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
 	).map(GlobMatcher::glob).collect(Collectors.toList());
