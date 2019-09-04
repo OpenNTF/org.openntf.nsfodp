@@ -6,6 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -21,9 +28,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 public class ODPRefreshProvider extends RefreshProvider {
-	public static final int INTERVAL = 10 * 1000; // milliseconds
+	public static final long DELAY = TimeUnit.MINUTES.toMillis(1);
+	public static final long INTERVAL = TimeUnit.SECONDS.toMillis(10);
 	
 	private final IProgressMonitor nullMon = new NullProgressMonitor();
+	private PollingRefreshMonitor monitor;
 	
 	protected IRefreshMonitor createPollingMonitor(IResource resource) {
 		return null;
@@ -33,8 +42,8 @@ public class ODPRefreshProvider extends RefreshProvider {
 		if(resource instanceof IProject) {
 			IProject project = (IProject)resource;
 			if(isOdpProject(project)) {
-				PollingRefreshMonitor mon = new PollingRefreshMonitor(result, project);
-				mon.schedule(INTERVAL);
+				PollingRefreshMonitor mon = getMonitor(result);
+				mon.monitor(project);
 				return mon;
 			}
 		}
@@ -69,40 +78,45 @@ public class ODPRefreshProvider extends RefreshProvider {
 	private static class PollingRefreshMonitor extends Job implements IRefreshMonitor {
 
 		private final IRefreshResult result;
-		private final IProject project;
+		private final Set<IProject> projects = Collections.synchronizedSet(new HashSet<>());
 		
-		public PollingRefreshMonitor(IRefreshResult result, IProject project) {
-			super("ODP filesystem refresh monitor for " + project.getName());
+		public PollingRefreshMonitor(IRefreshResult result) {
+			super("OpenNTF ODP filesystem refresh monitor");
 			
 			this.result = result;
-			this.project = project;
+		}
+		
+		public void monitor(IProject project) {
+			this.projects.add(project);
 		}
 
 		@Override
 		public void unmonitor(IResource resource) {
-			if(project.equals(resource)) {
-				this.cancel();
-			}
+			projects.remove(resource);
 		}
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask("Refreshing " + project.getName(), 1);
-			
-			// Only refresh if the filesystem thinks it's still connected
-			//   ...and hope that this doesn't trigger a refresh anyway
-			File projectFile = new File(project.getLocationURI());
-			if(projectFile.exists() && projectFile.isDirectory()) {
-				result.refresh(project);
+			List<IProject> projects = new ArrayList<>(this.projects);
+			monitor.beginTask("Refreshing projects", projects.size());
+			for(IProject project : projects) {
+				monitor.setTaskName(MessageFormat.format("Refreshing {0}", project.getName()));
+				
+				// Only refresh if the filesystem thinks it's still connected
+				//   ...and hope that this doesn't trigger a refresh anyway
+				File projectFile = new File(project.getLocationURI());
+				if(projectFile.exists() && projectFile.isDirectory()) {
+					result.refresh(project);
+				}
+				
+				monitor.worked(1);
 			}
 			
-			monitor.worked(1);
 			monitor.done();
 			
 			schedule(INTERVAL);
 			return Status.OK_STATUS;
 		}
-		
 	}
 	
 	private boolean isOdpProject(IProject project) {
@@ -132,5 +146,13 @@ public class ODPRefreshProvider extends RefreshProvider {
 			}
 		}
 		return false;
+	}
+	
+	private synchronized PollingRefreshMonitor getMonitor(IRefreshResult result) {
+		if(this.monitor == null) {
+			this.monitor = new PollingRefreshMonitor(result);
+			this.monitor.schedule(DELAY);
+		}
+		return this.monitor;
 	}
 }
