@@ -21,10 +21,15 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		
-		getLog().log(new Status(IStatus.WARNING, context.getBundle().getSymbolicName(), "!!!! NSF ODP Watcher Start"));
+		getLog().log(new Status(IStatus.INFO, context.getBundle().getSymbolicName(), "Loading OpenNTF ODP Watcher"));
 	}
 	
 	public void log(int severity, String message, Object... params) {
 		getLog().log(new Status(severity, getBundle().getSymbolicName(), MessageFormat.format(message, params)));
+	}
+	public void log(Throwable t) {
+		if(t != null) {
+			getLog().log(new Status(IStatus.ERROR, getBundle().getSymbolicName(), t.getLocalizedMessage(), t));
+		}
 	}
 }
