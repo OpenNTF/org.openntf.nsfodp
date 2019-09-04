@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
@@ -154,7 +155,7 @@ public class ODPExporterServlet extends HttpServlet {
 					cleanup.add(result);
 					mon.done();
 					
-					try(ZipOutputStream zos = new ZipOutputStream(os)) {
+					try(ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
 						Files.walk(result)
 							.forEach(path -> {
 								String name = result.relativize(path).toString().replace('\\', '/');

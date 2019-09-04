@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -117,7 +118,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) {
 				// If it's a ZIP, expand it - otherwise, use the file content as-is
 				Path expanded = Files.createTempFile("nsfdeployment", ".nsf");
-				try(ZipFile zf = new ZipFile(nsf.toFile())) {
+				try(ZipFile zf = new ZipFile(nsf.toFile(), StandardCharsets.UTF_8)) {
 					ZipEntry firstEntry = zf.entries().nextElement();
 					if(firstEntry == null) {
 						throw new IllegalArgumentException("ZIP file must contain an entry");

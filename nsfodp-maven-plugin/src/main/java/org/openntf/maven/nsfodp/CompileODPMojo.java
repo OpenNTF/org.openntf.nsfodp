@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -283,7 +284,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 		packageZip.toFile().deleteOnExit();
 		try(OutputStream fos = Files.newOutputStream(packageZip)) {
-			try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+			try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
 				zos.setLevel(Deflater.BEST_COMPRESSION);
 				ZipEntry entry = new ZipEntry("odp.zip"); //$NON-NLS-1$
 				zos.putNextEntry(entry);
@@ -365,7 +366,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 			result.toFile().deleteOnExit();
 			
 			try(OutputStream fos = Files.newOutputStream(result)) {
-				try(ZipOutputStream zos = new ZipOutputStream(fos)) {
+				try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
 					zos.setLevel(Deflater.BEST_COMPRESSION);
 					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 						@Override

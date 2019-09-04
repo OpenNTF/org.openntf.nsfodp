@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
@@ -98,7 +99,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			// Look for an ODP item
 			Path odpZip = null;
 			List<Path> siteZips = new ArrayList<>();
-			try(ZipFile packageZip = new ZipFile(packageFile.toFile())) {
+			try(ZipFile packageZip = new ZipFile(packageFile.toFile(), StandardCharsets.UTF_8)) {
 				ZipEntry odpEntry = packageZip.getEntry("odp.zip"); //$NON-NLS-1$
 				if(odpEntry == null) {
 					// Then the package is itself the ODP
@@ -212,7 +213,7 @@ public class ODPCompilerServlet extends HttpServlet {
 		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile"); //$NON-NLS-1$
 		cleanup.add(result);
 		
-		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
+		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile(), StandardCharsets.UTF_8)) {
 			for(ZipEntry entry : Collections.list(zipFile.entries())) {
 				Path subFile = result.resolve(entry.getName());
 				if(entry.isDirectory()) {

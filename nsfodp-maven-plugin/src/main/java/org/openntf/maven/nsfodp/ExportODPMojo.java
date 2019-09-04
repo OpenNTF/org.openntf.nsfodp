@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -184,7 +185,7 @@ public class ExportODPMojo extends AbstractEquinoxMojo {
 					Files.createDirectories(odpDir);
 					
 					// Extract the ZIP to the destination
-					try(ZipFile zipFile = new ZipFile(zip.toFile())) {
+					try(ZipFile zipFile = new ZipFile(zip.toFile(), StandardCharsets.UTF_8)) {
 						for(ZipEntry entry : Collections.list(zipFile.entries())) {
 							if(log.isDebugEnabled()) {
 								log.debug(Messages.getString("GenerateODPMojo.exportingZipEntry", entry.getName())); //$NON-NLS-1$
