@@ -8,6 +8,7 @@ package org.openntf.nsfodp.example;
  */
 public class ExampleClass {
 	private String foo;
+	private com.example.embedded.ExampleClass inner = new com.example.embedded.ExampleClass();
 	
 	public String getFoo() {
 		return foo;
