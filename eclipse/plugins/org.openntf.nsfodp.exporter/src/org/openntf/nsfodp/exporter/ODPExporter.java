@@ -24,6 +24,7 @@ import static com.ibm.designer.domino.napi.NotesConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,6 +48,7 @@ import java.util.regex.Pattern;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.io.SwiperOutputStream;
+import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.commons.odp.util.NoteTypeUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -214,7 +216,7 @@ public class ODPExporter {
 			
 			generateManifestMf(result);
 			generateEclipseProjectFile(result);
-			
+			createClasspathDirectories(result);
 		} finally {
 			exporter.recycle();
 		}
@@ -537,5 +539,25 @@ public class ODPExporter {
 				DOMUtil.serialize(os, xmlDoc, Format.defaultFormat);
 			}
 		}
+	}
+	
+	/**
+	 * Creates any directories expected by default and specified by the project classpath that
+	 * don't exist in the NSF, to smooth Java compilation downstream.
+	 *  
+	 * @param baseDir the base directory for export operations
+	 * @throws IOException if there is a problem creating directories
+	 * @throws XMLException if there is a problem parsing the project configuration
+	 * @throws FileNotFoundException if there is a problem creating directories
+	 * @since 2.5.0
+	 */
+	private void createClasspathDirectories(Path baseDir) throws FileNotFoundException, XMLException, IOException {
+		OnDiskProject odp = new OnDiskProject(baseDir);
+		for(Path path : odp.getResourcePaths()) {
+			Files.createDirectories(path);
+		}
+		
+		// Resources/Files may not be in the programmatic list
+		Files.createDirectories(baseDir.resolve("Resources").resolve("Files")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
