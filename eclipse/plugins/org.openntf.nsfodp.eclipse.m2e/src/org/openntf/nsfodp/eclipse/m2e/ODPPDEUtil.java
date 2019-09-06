@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -203,6 +204,12 @@ public enum ODPPDEUtil {
 								new IClasspathAttribute[0]
 						);
 						resolvedEntries.add(classpathEntry);
+						
+						// Make sure it exists
+						if(!project.exists(eclipsePath)) {
+							IFolder folder = project.getFolder(eclipsePath);
+							folder.create(false, false, SubMonitor.convert(monitor));
+						}
 					}
 				}
 			}
