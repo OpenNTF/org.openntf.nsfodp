@@ -24,11 +24,13 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,6 +38,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
@@ -51,7 +54,7 @@ import com.ibm.commons.xml.XMLException;
  * @author Jesse Gallagher
  * @since 2.0.0
  */
-@Mojo(name="generate-pde-structure")
+@Mojo(name="generate-pde-structure", requiresDependencyResolution=ResolutionScope.COMPILE)
 public class GeneratePDEStructureMojo extends AbstractMojo {
 	@Parameter(defaultValue="${project}", readonly=true, required=false)
 	protected MavenProject project;
@@ -125,14 +128,26 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		props.put("source..", sourceFolders.stream() //$NON-NLS-1$
 				.map(path -> "odp/" + path) //$NON-NLS-1$
 				.collect(Collectors.joining(","))); //$NON-NLS-1$
-		// Look for jars specified in the Maven project
+		
+		// Look for JARs specified in the Maven project
+		Set<Path> extraPaths = new LinkedHashSet<>();
 		if(this.classpathJars != null) {
 			// Though the Eclipse docs say that you should use relative paths, the IDE only actually
 			//   picks up on absolute paths
-			props.put("extra..", Stream.of(this.classpathJars) //$NON-NLS-1$
-				.map(File::getAbsolutePath)
-				.collect(Collectors.joining(",")) //$NON-NLS-1$
-			);
+			Stream.of(this.classpathJars)
+				.map(File::toPath)
+				.forEach(extraPaths::add);
+		}
+		this.project.getArtifacts().stream()
+			.map(Artifact::getFile)
+			.map(File::toPath)
+			.peek(p -> System.out.println(p))
+			.forEach(extraPaths::add);
+		if(!extraPaths.isEmpty()) {
+			props.put("extra..", extraPaths.stream() //$NON-NLS-1$
+				.map(Path::toAbsolutePath)
+				.map(Path::toString)
+				.collect(Collectors.joining(","))); //$NON-NLS-1$
 		}
 		
 		Path buildProperties = project.getBasedir().toPath().resolve("build.properties"); //$NON-NLS-1$
