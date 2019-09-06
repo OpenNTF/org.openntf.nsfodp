@@ -217,6 +217,7 @@ public class ODPExporter {
 			generateManifestMf(result);
 			generateEclipseProjectFile(result);
 			createClasspathDirectories(result);
+			createStubFiles(result);
 		} finally {
 			exporter.recycle();
 		}
@@ -386,7 +387,6 @@ public class ODPExporter {
 				}
 			}
 		}
-		
 		exporter.setExporterListProperty(DXLExporter.eOmitItemNames, ignoreItems.toArray(new String[ignoreItems.size()]));
 		exporter.setExporterProperty(38, 1);
 		try {
@@ -557,7 +557,27 @@ public class ODPExporter {
 			Files.createDirectories(path);
 		}
 		
-		// Resources/Files may not be in the programmatic list
+		// Resources/Files and Code/Java may not be in the programmatic list
 		Files.createDirectories(baseDir.resolve("Resources").resolve("Files")); //$NON-NLS-1$ //$NON-NLS-2$
+		Files.createDirectories(baseDir.resolve("Code").resolve("Java")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	/**
+	 * Creates several known files that Designer exports as zero-length files even when they don't
+	 * exist in the database
+	 * 
+	 * @param baseDir the base directory for export operations
+	 * @throws IOException if there is a problem creating files
+	 * @since 2.5.0
+	 */
+	private void createStubFiles(Path baseDir) throws IOException {
+		Path usingDocument = baseDir.resolve("Resources").resolve("UsingDocument"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(!Files.exists(usingDocument)) {
+			Files.createFile(usingDocument);
+		}
+		Path aboutDocument = baseDir.resolve("Resources").resolve("AboutDocument"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(!Files.exists(aboutDocument)) {
+			Files.createFile(aboutDocument);
+		}
 	}
 }
