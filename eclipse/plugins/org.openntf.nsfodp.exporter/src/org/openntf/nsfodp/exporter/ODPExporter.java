@@ -99,9 +99,29 @@ public class ODPExporter {
 	private boolean binaryDxl = false;
 	private boolean richTextAsItemData = false;
 	private boolean swiperFilter = false;
+	private String projectName;
 
 	public ODPExporter(NotesDatabase database) {
 		this.database = database;
+	}
+	
+	/**
+	 * Sets the name for the project to be used inside the generated ODP.
+	 * 
+	 * @param projectName the name of the project to set
+	 * @since 2.5.0
+	 */
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+	/**
+	 * Gets the name for the project to be used inside the generated ODP.
+	 * 
+	 * @return the name of the project to set
+	 * @since 2.5.0
+	 */
+	public String getProjectName() {
+		return projectName;
 	}
 	
 	/**
@@ -498,6 +518,21 @@ public class ODPExporter {
 			case XPage:
 				FileAccess.readFileContent(note, os);
 				
+				break;
+			case GenericFile:
+				if("plugin.xml".equals(fullPath.getFileName().toString()) && StringUtil.isNotEmpty(this.projectName)) { //$NON-NLS-1$
+					// Special handling here to set the plugin ID
+					Document pluginDom;
+					try(InputStream is = FileAccess.readFileContentAsInputStream(note)) {
+						pluginDom = DOMUtil.createDocument(is);
+					}
+					Element pluginElement = pluginDom.getDocumentElement();
+					pluginElement.setAttribute("id", this.projectName); //$NON-NLS-1$
+					
+					DOMUtil.serialize(os, pluginDom, Format.defaultFormat);
+				} else {
+					FileAccess.readFileContent(note, os);
+				}
 				break;
 			default:
 				FileAccess.readFileContent(note, os);

@@ -46,6 +46,7 @@ public class EquinoxExporter extends AbstractEquinoxTask {
 		props.put(NSFODPConstants.PROP_EXPORTER_BINARY_DXL, Boolean.toString(binaryDxl));
 		props.put(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER, Boolean.toString(swiperFilter));
 		props.put(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA, Boolean.toString(richTextAsItemData));
+		props.put(NSFODPConstants.PROP_PROJECT_NAME, getProject().getGroupId() + '.' + getProject().getArtifactId());
 		setSystemProperties(props);
 		
 		run("org.openntf.nsfodp.exporter.equinox.ExporterApplication"); //$NON-NLS-1$

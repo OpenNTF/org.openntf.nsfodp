@@ -87,4 +87,7 @@ public enum NSFODPConstants {
 	public static final String HEADER_RICH_TEXT_AS_ITEM_DATA = "X-RichTextAsItemData"; //$NON-NLS-1$
 	public static final String PROP_RICH_TEXT_AS_ITEM_DATA = "org.openntf.nsfodp.exporter.richTextAsItemData"; //$NON-NLS-1$
 	
+	public static final String HEADER_PROJECT_NAME = "X-ProjectName"; //$NON-NLS-1$
+	public static final String PROP_PROJECT_NAME = "org.openntf.nsfodp.exporter.projectName"; //$NON-NLS-1$
+	
 }

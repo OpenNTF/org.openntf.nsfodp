@@ -150,6 +150,7 @@ public class ODPExporterServlet extends HttpServlet {
 					if("true".equals(richTextAsItemData)) { //$NON-NLS-1$
 						exporter.setRichTextAsItemData(true);
 					}
+					exporter.setProjectName(req.getHeader(NSFODPConstants.HEADER_PROJECT_NAME));
 					
 					Path result = exporter.export();
 					cleanup.add(result);

@@ -132,6 +132,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 			req.addHeader(NSFODPConstants.HEADER_BINARY_DXL, String.valueOf(this.binaryDxl));
 			req.addHeader(NSFODPConstants.HEADER_SWIPER_FILTER, String.valueOf(this.swiperFilter));
 			req.addHeader(NSFODPConstants.HEADER_RICH_TEXT_AS_ITEM_DATA, String.valueOf(this.richTextAsItemData));
+			req.addHeader(NSFODPConstants.HEADER_PROJECT_NAME, this.project.getGroupId() + '.' + this.project.getArtifactId());
 			
 			HttpResponse res = client.execute(req);
 			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
