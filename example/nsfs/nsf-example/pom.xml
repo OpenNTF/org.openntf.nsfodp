@@ -20,6 +20,7 @@
 				<artifactId>nsfodp-maven-plugin</artifactId>
 				<configuration>
 					<updateSite>${project.baseDir}/../../../releng/org.openntf.nsfodp.example.updatesite/target/site</updateSite>
+					<binaryDxl>true</binaryDxl>
 				</configuration>
 			</plugin>
 		</plugins>
