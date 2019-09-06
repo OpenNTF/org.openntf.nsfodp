@@ -105,8 +105,8 @@ public abstract class AbstractEquinoxTask {
 			}
 			
 			Path target;
-			if("standalone-pom".equals(project.getArtifactId())) {
-				target = Files.createTempDirectory("nsfodp");
+			if("standalone-pom".equals(project.getArtifactId())) { //$NON-NLS-1$
+				target = Files.createTempDirectory("nsfodp"); //$NON-NLS-1$
 			} else {
 				target = Paths.get(project.getBuild().getDirectory());
 			}
@@ -149,19 +149,19 @@ public abstract class AbstractEquinoxTask {
 			Files.list(notesPlugins)
 				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
 				.filter(p -> {
-					if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) {
+					if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) { //$NON-NLS-1$
 						osgiBundle[0] = p.toUri().toString();
 						return false;
 					}
 					return true;
 				})
-				.map(p -> "reference:" + p.toUri())
+				.map(p -> "reference:" + p.toUri()) //$NON-NLS-1$
 				.forEach(platform::add);
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 			}
 
-			Path workspace = framework.resolve("workspace");
+			Path workspace = framework.resolve("workspace"); //$NON-NLS-1$
 			Files.createDirectories(workspace);
 			
 			Path configuration = framework.resolve("configuration"); //$NON-NLS-1$
@@ -173,7 +173,7 @@ public abstract class AbstractEquinoxTask {
 			config.put("eclipse.application", applicationId); //$NON-NLS-1$
 			config.put("osgi.configuration.cascaded", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
-			config.put("osgi.instance.area", workspace.toAbsolutePath().toString());
+			config.put("osgi.instance.area", workspace.toAbsolutePath().toString()); //$NON-NLS-1$
 			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
 			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -188,7 +188,7 @@ public abstract class AbstractEquinoxTask {
 			command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
 			if(systemProperties != null) {
 				for(Map.Entry<String, String> prop : systemProperties.entrySet()) {
-					command.add("-D" + prop.getKey() + "=" + prop.getValue());
+					command.add("-D" + prop.getKey() + "=" + prop.getValue()); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
@@ -223,7 +223,7 @@ public abstract class AbstractEquinoxTask {
 				proc.waitFor();
 				int exitValue = proc.exitValue();
 				if(exitValue != 0) {
-					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue));
+					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 				}
 			} finally {
 				teardownJreJars(jars);
@@ -267,18 +267,18 @@ public abstract class AbstractEquinoxTask {
 	private String getDependencyRef(String artifactId, int startLevel) throws MojoExecutionException {
 		Path path = getDependencyJar(artifactId);
 		if(startLevel < 1) {
-			return "reference:" + path.toAbsolutePath().toUri();
+			return "reference:" + path.toAbsolutePath().toUri(); //$NON-NLS-1$
 		} else {
-			return "reference:" + path.toAbsolutePath().toUri() + "@" + startLevel + ":start";
+			return "reference:" + path.toAbsolutePath().toUri() + "@" + startLevel + ":start"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 	
 	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
 		// Look to see if we can find a Notes JVM
-		Path jvmBin = notesProgram.resolve("jvm").resolve("bin");
+		Path jvmBin = notesProgram.resolve("jvm").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.isDirectory(jvmBin)) {
 			// macOS 10.0.1+ embedded JVM
-			jvmBin = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("bin");
+			jvmBin = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		if(!Files.isDirectory(jvmBin)) {
 			if(log.isWarnEnabled()) {
@@ -294,7 +294,7 @@ public abstract class AbstractEquinoxTask {
 		} else {
 			javaBinName = "java"; //$NON-NLS-1$
 		}
-		Path javaBin = jvmBin.resolve(javaBinName); //$NON-NLS-1$
+		Path javaBin = jvmBin.resolve(javaBinName);
 		if(!Files.exists(javaBin)) {
 			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
 		}
@@ -318,11 +318,11 @@ public abstract class AbstractEquinoxTask {
 				}
 			}
 		}
-		return "reference:" + tempBundle.toAbsolutePath().toUri();
+		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
 	}
 	
 	public static String createClasspathExtensionBundle(Collection<Path> classpathJars, Path plugins) throws IOException {
-		Path tempBundle = Files.createTempFile(plugins, "org.openntf.nsfodp.frameworkextension", ".jar");
+		Path tempBundle = Files.createTempFile(plugins, "org.openntf.nsfodp.frameworkextension", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 		try(OutputStream os = Files.newOutputStream(tempBundle, StandardOpenOption.TRUNCATE_EXISTING)) {
 			try(JarOutputStream jos = new JarOutputStream(os)) {
 				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
@@ -330,29 +330,29 @@ public abstract class AbstractEquinoxTask {
 				
 				Manifest manifest = new Manifest();
 				Attributes attrs = manifest.getMainAttributes();
-				attrs.putValue("Manifest-Version", "1.0");
-				attrs.putValue("Bundle-ManifestVersion", "2");
-				attrs.putValue("Bundle-SymbolicName", "org.openntf.nsfodp.classpathprovider");
-				attrs.putValue("Bundle-Version", "1.0.0." + System.currentTimeMillis());
-				attrs.putValue("Bundle-Name", "NSF ODP Tooling Extended Classpath Provider");
+				attrs.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-SymbolicName", "org.openntf.nsfodp.classpathprovider"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Version", "1.0.0." + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Name", "NSF ODP Tooling Extended Classpath Provider"); //$NON-NLS-1$ //$NON-NLS-2$
 				
 				if(classpathJars != null) {
 					String exportPackage = classpathJars.stream()
 						.map(AbstractEquinoxTask::getPackages)
 						.flatMap(Collection::stream)
-						.collect(Collectors.joining(","));
-					attrs.putValue("Export-Package", exportPackage);
+						.collect(Collectors.joining(",")); //$NON-NLS-1$
+					attrs.putValue("Export-Package", exportPackage); //$NON-NLS-1$
 					
-					attrs.putValue("Bundle-ClassPath", classpathJars.stream()
-						.map(j -> "external:" + j.toAbsolutePath())
-						.collect(Collectors.joining(","))
+					attrs.putValue("Bundle-ClassPath", classpathJars.stream() //$NON-NLS-1$
+						.map(j -> "external:" + j.toAbsolutePath()) //$NON-NLS-1$
+						.collect(Collectors.joining(",")) //$NON-NLS-1$
 					);
 				}
 				
 				manifest.write(jos);
 			}
 		}
-		return "reference:" + tempBundle.toAbsolutePath().toUri();
+		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
 	}
 	
     private static long copyStream(InputStream is, OutputStream os, int bufferSize) throws IOException {
@@ -374,7 +374,7 @@ public abstract class AbstractEquinoxTask {
 					JarEntry jarEntry = jis.getNextJarEntry();
 					while(jarEntry != null) {
 						String name = jarEntry.getName();
-						if(name.endsWith(".class") && !name.startsWith("java/")) {
+						if(name.endsWith(".class") && !name.startsWith("java/")) { //$NON-NLS-1$ //$NON-NLS-2$
 							String packagePath = name.substring(0, name.lastIndexOf('/'));
 							packages.add(packagePath.replace('/', '.'));
 						}
@@ -390,25 +390,25 @@ public abstract class AbstractEquinoxTask {
     }
     
     private void addIBMJars(Path notesProgram, Collection<Path> classpath) {
-    	Path lib = notesProgram.resolve("jvm").resolve("lib");
+    	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
     	
-    	Path ibmPkcs = lib.resolve("ibmpkcs.jar");
+    	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
     	if(!Files.isReadable(ibmPkcs)) {
     		// Different path on macOS
-    		ibmPkcs = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar");
+    		ibmPkcs = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     	}
     	if(!Files.isReadable(ibmPkcs)) {
-    		throw new IllegalStateException("Unable to locate ibmpkcs.jar at expected path " +  lib.resolve("ibmpkcs.jar"));
+    		throw new IllegalStateException("Unable to locate ibmpkcs.jar at expected path " +  lib.resolve("ibmpkcs.jar")); //$NON-NLS-2$
     	}
     	classpath.add(ibmPkcs);
     	
-    	Path notesJar = lib.resolve("ext").resolve("Notes.jar");
+    	Path notesJar = lib.resolve("ext").resolve("Notes.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     	if(!Files.isReadable(notesJar)) {
     		throw new IllegalStateException("Unable to locate Notes.jar at expected path " + notesJar);
     	}
     	classpath.add(notesJar);
     	
-    	Path websvc = lib.resolve("ext").resolve("websvc.jar");
+    	Path websvc = lib.resolve("ext").resolve("websvc.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     	if(!Files.isReadable(websvc)) {
     		throw new IllegalStateException("Unable to locate websvc.jar at expected path " + websvc);
     	}
@@ -422,10 +422,10 @@ public abstract class AbstractEquinoxTask {
     			log.debug("Linking environment Jars in macOS Notes JRE");
     		}
     		
-    		Path tools = SystemUtils.getJavaHome().toPath().resolve("lib").resolve("tools.jar");
+    		Path tools = SystemUtils.getJavaHome().toPath().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     		if(!Files.exists(tools)) {
     			// Java Home might be a JRE dir - try a level up
-    			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar");
+    			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     		}
     		if(!Files.exists(tools)) {
     			throw new IllegalStateException("Unable to locate tools.jar in running JVM - ensure that this is a JDK (expected " + tools + ")");
@@ -434,7 +434,7 @@ public abstract class AbstractEquinoxTask {
     		Collection<Path> toLink = new LinkedHashSet<>();
     		addIBMJars(notesProgram, toLink);
     		
-    		Path destBase = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext");
+    		Path destBase = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     		if(!Files.isDirectory(destBase)) {
     			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
     		}
@@ -451,7 +451,7 @@ public abstract class AbstractEquinoxTask {
     			}
     		}
     		
-    		Path toolsDest = destBase.getParent().resolve("tools.jar");
+    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
     		if(!Files.exists(toolsDest)) {
     			Files.copy(tools, toolsDest);
     			result.add(toolsDest);
