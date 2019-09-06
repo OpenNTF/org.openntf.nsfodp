@@ -204,14 +204,32 @@ public class ODPExporter {
 				designView.recycle();
 			}
 			
-			// Export the icon note specially
-			NotesNote iconNote = database.openNote(NOTE_ID_SPECIAL | NOTE_CLASS_ICON, NsfNote.OPEN_RAW_MIME);
-			try {
-				exportNote(iconNote, exporter, result);
-			} catch(Throwable e) {
-				System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionIconNote, e.getMessage()));
-			} finally {
-				iconNote.recycle();
+			// Export several notes specially
+			int[] specialIds = new int[] { NOTE_CLASS_ICON, NOTE_CLASS_HELP, NOTE_CLASS_INFO };
+			for(int id : specialIds) {
+				try {
+					NotesNote iconNote = database.openNote(NOTE_ID_SPECIAL | id, NsfNote.OPEN_RAW_MIME);
+					if(iconNote != null) {
+						try {
+							if(iconNote.isValidHandle()) {
+								exportNote(iconNote, exporter, result);
+							}
+						} catch(Throwable e) {
+							System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
+						} finally {
+							iconNote.recycle();
+						}
+					}
+				} catch(NotesAPIException e) {
+					switch(e.getNativeErrorCode()) {
+					case 578:
+						// "Special database object cannot be located", which is fine
+						break;
+					default:
+						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
+						break;
+					}
+				}
 			}
 			
 			generateManifestMf(result);
