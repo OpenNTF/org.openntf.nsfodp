@@ -203,18 +203,8 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		}
 
 		Path outputFile = outputDirectory.resolve(outputFileName);
-		boolean needsCompile = true;
-		if(Files.exists(outputFile)) {
-			// Check to see if we need compilation
-			try {
-				FileTime mod = Files.getLastModifiedTime(outputFile);
-				needsCompile = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0;
-			} catch(IOException e) {
-				throw new MojoExecutionException(Messages.getString("CompileODPMojo.exceptionCheckingFiles"), e); //$NON-NLS-1$
-			}
-		}
 		
-		if(needsCompile) {
+		if(checkNeedsCompile(outputFile, odpDirectory, updateSites)) {
 			if(log.isInfoEnabled()) {
 				log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
 			}
@@ -432,5 +422,40 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		
 		
 		return result;
+	}
+	
+	private boolean checkNeedsCompile(Path outputFile, Path odpDirectory, List<Path> updateSites) throws MojoExecutionException {
+		if(Files.exists(outputFile)) {
+			// Check to see if we need compilation
+			try {
+				FileTime mod = Files.getLastModifiedTime(outputFile);
+				
+				// Check if the project pom itself changed
+				if(this.project.getFile().lastModified() > mod.toMillis()) {
+					return true;
+				}
+				
+				// Check if any ODP files changed
+				if(Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0) {
+					return true;
+				}
+				
+				// Check if any dependent update sites changed
+				if(updateSites.stream().anyMatch(path -> {
+						try {
+							return Files.getLastModifiedTime(path).compareTo(mod) > 0;
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					})) {
+					return true;
+				}
+				
+				return false;
+			} catch(IOException e) {
+				throw new MojoExecutionException(Messages.getString("CompileODPMojo.exceptionCheckingFiles"), e); //$NON-NLS-1$
+			}
+		}
+		return true;
 	}
 }
