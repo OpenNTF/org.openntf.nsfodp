@@ -141,7 +141,6 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		this.project.getArtifacts().stream()
 			.map(Artifact::getFile)
 			.map(File::toPath)
-			.peek(p -> System.out.println(p))
 			.forEach(extraPaths::add);
 		if(!extraPaths.isEmpty()) {
 			props.put("extra..", extraPaths.stream() //$NON-NLS-1$
