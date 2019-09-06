@@ -99,6 +99,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			// Look for an ODP item
 			Path odpZip = null;
 			List<Path> siteZips = new ArrayList<>();
+			List<Path> classPathJars = new ArrayList<>();
 			try(ZipFile packageZip = new ZipFile(packageFile.toFile(), StandardCharsets.UTF_8)) {
 				ZipEntry odpEntry = packageZip.getEntry("odp.zip"); //$NON-NLS-1$
 				if(odpEntry == null) {
@@ -114,19 +115,31 @@ public class ODPCompilerServlet extends HttpServlet {
 						}
 					}
 					
-					// Look for any embedded update sites
+					// Look for any embedded update sites and classpath entries
 					packageZip.stream()
-						.filter(e -> SITE_ZIP_PATTERN.matcher(e.getName()).matches())
-						.forEach(siteEntry -> {
+						.forEach(entry -> {
 							try {
-								Path siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-								cleanup.add(siteZip);
-								try(InputStream siteIs = packageZip.getInputStream(siteEntry)) {
-									try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
-										StreamUtil.copyStream(siteIs, siteOs);
+								if(SITE_ZIP_PATTERN.matcher(entry.getName()).matches()) {
+									// Then add it as an update site
+									Path siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+									cleanup.add(siteZip);
+									try(InputStream siteIs = packageZip.getInputStream(entry)) {
+										try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
+											StreamUtil.copyStream(siteIs, siteOs);
+										}
 									}
+									siteZips.add(siteZip);
+								} else if(entry.getName().startsWith("classpath/")) { //$NON-NLS-1$
+									// Then add it as an individual JAR
+									Path cpJar = Files.createTempFile(NSFODPUtil.getTempDirectory(), "classpathJar", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+									cleanup.add(cpJar);
+									try(InputStream jarIs = packageZip.getInputStream(entry)) {
+										try(OutputStream jarOs = Files.newOutputStream(cpJar)) {
+											StreamUtil.copyStream(jarIs, jarOs);
+										}
+									}
+									classPathJars.add(cpJar);
 								}
-								siteZips.add(siteZip);
 							} catch(IOException e) {
 								throw new RuntimeException(e);
 							}
@@ -170,6 +183,7 @@ public class ODPCompilerServlet extends HttpServlet {
 					compiler.addUpdateSite(updateSite);
 				}
 			}
+			classPathJars.forEach(compiler::addClassPathEntry);
 			
 			Path[] nsf = new Path[1];
 			NotesThread notes = new NotesThread(() -> {

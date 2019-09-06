@@ -302,6 +302,15 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 						Files.copy(updateSiteZip, zos);
 					}
 				}
+				
+				// Add any project dependencies
+				for(Artifact artifact : this.project.getArtifacts()) {
+					Path artifactPath = artifact.getFile().toPath();
+					String dedupeName = System.currentTimeMillis() + artifactPath.getFileName().toString();
+					entry = new ZipEntry("classpath/" + dedupeName); //$NON-NLS-1$
+					zos.putNextEntry(entry);
+					Files.copy(artifactPath, zos);
+				}
 			}
 		}
 		return packageZip;

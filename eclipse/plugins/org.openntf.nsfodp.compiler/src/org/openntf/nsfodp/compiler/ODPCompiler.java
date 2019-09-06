@@ -139,6 +139,7 @@ public class ODPCompiler {
 	private final BundleContext bundleContext;
 	private final OnDiskProject odp;
 	private final Set<UpdateSite> updateSites = new LinkedHashSet<>();
+	private final Set<Path> classPathEntries = new LinkedHashSet<>();
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
 	private final IProgressMonitor mon;
 	private String compilerLevel = DEFAULT_COMPILER_LEVEL;
@@ -200,6 +201,18 @@ public class ODPCompiler {
 	
 	public void addUpdateSite(UpdateSite updateSite) {
 		this.updateSites.add(updateSite);
+	}
+	
+	/**
+	 * Adds a JAR path to the XPages compilation classpath.
+	 * 
+	 * @param entry the path to the entry to add
+	 * @since 2.5.0
+	 */
+	public void addClassPathEntry(Path entry) {
+		if(entry != null) {
+			this.classPathEntries.add(entry);
+		}
 	}
 	
 	/**
@@ -389,6 +402,11 @@ public class ODPCompiler {
 				
 				// Add any Jars from the ODP
 				for(Path jar : odp.getJars()) {
+					dependencies.add("jar:" + jar.toUri()); //$NON-NLS-1$
+				}
+				
+				// Add any explicit JARs
+				for(Path jar : this.classPathEntries) {
 					dependencies.add("jar:" + jar.toUri()); //$NON-NLS-1$
 				}
 				
