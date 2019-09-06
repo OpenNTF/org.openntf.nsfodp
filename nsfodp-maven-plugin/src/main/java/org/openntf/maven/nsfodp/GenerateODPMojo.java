@@ -140,7 +140,7 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 		String databasePath = this.databasePath;
 		File databaseFile = this.file;
 		if((databasePath == null || databasePath.isEmpty()) && databaseFile == null) {
-			if("standalone-pom".equals(project.getArtifactId()) || project.getPackaging().equals("domino-nsf")) {
+			if("standalone-pom".equals(project.getArtifactId()) || project.getPackaging().equals("domino-nsf")) { //$NON-NLS-1$ //$NON-NLS-2$
 				throw new IllegalArgumentException(Messages.getString("GenerateODPMojo.pathOrFileRequired")); //$NON-NLS-1$
 			} else {
 				if(log.isInfoEnabled()) {
@@ -168,9 +168,9 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 			} else {
 				Path zip = exportODPRemote();
 				try {
-					Path eclipseProject = odpDir.resolve(".project");
+					Path eclipseProject = odpDir.resolve(".project"); //$NON-NLS-1$
 					if(Files.exists(eclipseProject)) {
-						Path tempPath = Files.createTempFile("nsfodp", ".project");
+						Path tempPath = Files.createTempFile("nsfodp", ".project"); //$NON-NLS-1$ //$NON-NLS-2$
 						Files.delete(tempPath);
 						Files.move(eclipseProject, tempPath);
 						eclipseProject = tempPath;
@@ -206,7 +206,7 @@ public class GenerateODPMojo extends AbstractEquinoxMojo {
 						}
 					}
 					if(eclipseProject != null) {
-						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING);
+						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 					}
 				} finally {
 					Files.deleteIfExists(zip);
