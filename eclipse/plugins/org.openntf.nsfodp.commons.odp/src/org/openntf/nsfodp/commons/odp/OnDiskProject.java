@@ -50,7 +50,6 @@ import com.ibm.commons.xml.XResult;
 public class OnDiskProject {
 	public static final List<PathMatcher> DIRECT_DXL_FILES = Stream.of(
 		"AppProperties/$DBIcon", //$NON-NLS-1$
-		"Code/dbscript.lsdb", //$NON-NLS-1$
 		"Code/actions/Shared Actions", //$NON-NLS-1$
 		"Code/Agents/*.ja", //$NON-NLS-1$
 		"Code/Agents/*.fa", //$NON-NLS-1$
@@ -165,6 +164,15 @@ public class OnDiskProject {
 			throw new IllegalStateException(MessageFormat.format(Messages.OnDiskProject_pluginNotAFile, pluginXml.toAbsolutePath()));
 		}
 		return pluginXml;
+	}
+	
+	public Map<Path, String> getDbScriptFile() {
+		Path dbScript = baseDir.resolve("Code").resolve("dbscript.lsdb"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(Files.exists(dbScript)) {
+			return Collections.singletonMap(dbScript, ODPUtil.readFile(dbScript));
+		} else {
+			return null;
+		}
 	}
 	
 	/**

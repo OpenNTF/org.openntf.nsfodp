@@ -419,6 +419,7 @@ public class ODPCompiler {
 				importBasicElements(importer, database);
 				importFileResources(importer, database);
 				importLotusScriptLibraries(importer, database);
+				importDbScript(importer, database);
 				
 				if(hasXPages) {
 					Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
@@ -916,63 +917,26 @@ public class ODPCompiler {
 			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
 		}
 		
-		if(!noteIds.isEmpty()) {
+		compileLotusScript(database, noteIds);
+	}
+	
+	/**
+	 * Specially imports the database script, including compiling LotusScript.
+	 * 
+	 * @param importer the DXL importer to use
+	 * @param database the database target
+	 * @throws Exception 
+	 * @since 2.5.0
+	 */
+	private void importDbScript(DxlImporter importer, Database database) throws Exception {
+		Map<Path, String> dbScript = odp.getDbScriptFile();
+		if(dbScript != null) {
+			Map.Entry<Path, String> entry = dbScript.entrySet().iterator().next();
 			try {
-				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
-			} catch(ClassNotFoundException e) {
-				subTask(Messages.ODPCompiler_webServiceNotFound1);
-				subTask(Messages.ODPCompiler_webServiceNotFound2);
-				return;
-			}
-			
-			subTask(Messages.ODPCompiler_compilingLotusScript);
-			// In lieu of a dependency graph, just keep bashing at the list until it's done
-			Queue<String> remaining = new ArrayDeque<>(noteIds);
-			Map<String, String> titles = new HashMap<>();
-			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
-			try {
-				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
-				for(int i = 0; i < noteIds.size(); i++) {
-					Queue<String> nextPass = new ArrayDeque<>();
-					
-					String noteId;
-					while((noteId = remaining.poll()) != null) {
-						NSFNote note = nsfDatabase.getNoteByID(noteId);
-						String title = null;
-						try {
-							title = note.get("$TITLE", String.class); //$NON-NLS-1$
-							titles.put(noteId, title);
-							note.compileLotusScript();
-							note.sign();
-							note.save();
-						} catch(LotusScriptCompilationException err) {
-							nextPass.add(noteId);
-							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-						} catch(DominoException err) {
-							if(err.getStatus() == 12051) { // Same as above, but not encapsulated
-								titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-								nextPass.add(noteId);
-							} else {
-								throw err;
-							}
-						} finally {
-							note.free();
-						}
-					}
-					
-					remaining = nextPass;
-					if(nextPass.isEmpty()) {
-						break;
-					}
-				}
-			} finally {
-				nsfSession.free();
-			}
-			if(!remaining.isEmpty()) {
-				String notes = remaining.stream()
-					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
-					.collect(Collectors.joining("\n")); //$NON-NLS-1$
-				throw new RuntimeException(MessageFormat.format(Messages.ODPCompiler_unableToCompileLotusScript, notes));
+				List<String> noteIds = importDxl(importer, entry.getValue(), database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(entry.getKey())));
+				compileLotusScript(database, noteIds);
+			} catch(NotesException ne) {
+				throw new NotesException(ne.id, "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey()), ne); //$NON-NLS-1$
 			}
 		}
 	}
@@ -1047,6 +1011,68 @@ public class ODPCompiler {
 				throw new RuntimeException(MessageFormat.format(Messages.ODPCompiler_dxlImportFailed, name, importer.getLog()), ne);
 			}
 			throw ne;
+		}
+	}
+	
+	private void compileLotusScript(Database database, List<String> noteIds) throws NotesException, DominoException {
+		if(!noteIds.isEmpty()) {
+			try {
+				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
+			} catch(ClassNotFoundException e) {
+				subTask(Messages.ODPCompiler_webServiceNotFound1);
+				subTask(Messages.ODPCompiler_webServiceNotFound2);
+				return;
+			}
+			
+			subTask(Messages.ODPCompiler_compilingLotusScript);
+			// In lieu of a dependency graph, just keep bashing at the list until it's done
+			Queue<String> remaining = new ArrayDeque<>(noteIds);
+			Map<String, String> titles = new HashMap<>();
+			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
+			try {
+				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
+				for(int i = 0; i < noteIds.size(); i++) {
+					Queue<String> nextPass = new ArrayDeque<>();
+					
+					String noteId;
+					while((noteId = remaining.poll()) != null) {
+						NSFNote note = nsfDatabase.getNoteByID(noteId);
+						String title = null;
+						try {
+							title = note.get("$TITLE", String.class); //$NON-NLS-1$
+							titles.put(noteId, title);
+							note.compileLotusScript();
+							note.sign();
+							note.save();
+						} catch(LotusScriptCompilationException err) {
+							nextPass.add(noteId);
+							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+						} catch(DominoException err) {
+							if(err.getStatus() == 12051) { // Same as above, but not encapsulated
+								titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+								nextPass.add(noteId);
+							} else {
+								throw err;
+							}
+						} finally {
+							note.free();
+						}
+					}
+					
+					remaining = nextPass;
+					if(nextPass.isEmpty()) {
+						break;
+					}
+				}
+			} finally {
+				nsfSession.free();
+			}
+			if(!remaining.isEmpty()) {
+				String notes = remaining.stream()
+					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
+					.collect(Collectors.joining("\n")); //$NON-NLS-1$
+				throw new RuntimeException(MessageFormat.format(Messages.ODPCompiler_unableToCompileLotusScript, notes));
+			}
 		}
 	}
 }
