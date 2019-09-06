@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.compiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-ClassPath: .,
  lib/com.darwino.domino.napi.jar
