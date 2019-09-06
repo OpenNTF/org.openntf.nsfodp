@@ -32,6 +32,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
@@ -71,7 +72,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * Goal which compiles an on-disk project.
  */
-@Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE)
+@Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE, requiresDependencyResolution=ResolutionScope.COMPILE)
 public class CompileODPMojo extends AbstractEquinoxMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
@@ -165,7 +166,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	private boolean setProductionXspOptions = false;
 	
 	/**
-	 * Any additional jars to include on the compilation classpath.
+	 * Any additional JARs to include on the compilation classpath.
 	 * 
 	 * @since 2.0.0
 	 */
@@ -263,13 +264,16 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	
 	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path outputFile) throws IOException {
 		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform);
-		List<Path> classpathJars;
-		if(this.classpathJars == null) {
-			classpathJars = Collections.emptyList();
-		} else {
-			classpathJars = Arrays.stream(this.classpathJars).map(File::toPath).collect(Collectors.toList());
+		List<Path> jars = new ArrayList<>();
+		if(this.classpathJars != null) {
+			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);
 		}
-		compiler.compileOdp(odpDirectory, updateSites, classpathJars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
+				
+		this.project.getArtifacts().stream()
+			.map(Artifact::getFile)
+			.map(File::toPath)
+			.forEach(jars::add);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
 	}
 	
 	// *******************************************************************************
