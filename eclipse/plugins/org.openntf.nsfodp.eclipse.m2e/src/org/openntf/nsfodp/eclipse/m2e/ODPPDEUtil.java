@@ -20,13 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeSet;
 
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IContainer;
@@ -160,8 +159,7 @@ public enum ODPPDEUtil {
 	
 	private static void setClasspath(IProject project, IPluginModelBase model, IProgressMonitor monitor) throws CoreException {
 		IClasspathEntry[] entries = ClasspathComputer.getClasspath(project, model, null, true, true);
-		Collection<IClasspathEntry> resolvedEntries = new TreeSet<>(Comparator.comparing(IClasspathEntry::getEntryKind).reversed());
-		resolvedEntries.addAll(Arrays.asList(entries));
+		List<IClasspathEntry> resolvedEntries = new ArrayList<>(Arrays.asList(entries));
 		
 		// This may not have included the source folders from build.properties for some reason,
 		//  so compute them manually
@@ -218,6 +216,8 @@ public enum ODPPDEUtil {
 				}
 			}
 		}
+		
+		Collections.sort(resolvedEntries, Comparator.comparing(IClasspathEntry::getEntryKind).reversed());
 		
 		JavaCore.create(project).setRawClasspath(resolvedEntries.toArray(new IClasspathEntry[resolvedEntries.size()]), null);
 		
