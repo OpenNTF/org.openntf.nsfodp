@@ -214,7 +214,7 @@ public abstract class AbstractEquinoxTask {
 			builder.environment().put("CLASSPATH", //$NON-NLS-1$
 					classpath.stream()
 					.map(path -> path.toString())
-					.collect(Collectors.joining(File.pathSeparator)) //$NON-NLS-1$
+					.collect(Collectors.joining(File.pathSeparator))
 			);
 			
 			Collection<Path> jars = initJreJars(notesProgram);
