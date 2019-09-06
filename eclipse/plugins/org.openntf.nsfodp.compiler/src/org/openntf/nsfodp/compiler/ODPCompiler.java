@@ -1017,12 +1017,29 @@ public class ODPCompiler {
 			
 			importer.importDxl(dxl, database);
 			
+
 			List<String> importedIds = new ArrayList<>();
-			String noteId = importer.getFirstImportedNoteID();
-			while(StringUtil.isNotEmpty(noteId)) {
-				importedIds.add(noteId);
-				noteId = importer.getNextImportedNoteID(noteId);
+			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
+			try {
+				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
+				String noteId = importer.getFirstImportedNoteID();
+				while(StringUtil.isNotEmpty(noteId)) {
+					importedIds.add(noteId);
+					
+					NSFNote note = nsfDatabase.getNoteByID(noteId);
+					try {
+						note.sign();
+						note.save();
+					} finally {
+						note.free();
+					}
+					
+					noteId = importer.getNextImportedNoteID(noteId);
+				}
+			} finally {
+				nsfSession.free();
 			}
+			
 			return importedIds;
 		} catch(NotesException ne) {
 			if(ne.text.contains("DXL importer operation failed")) { //$NON-NLS-1$
