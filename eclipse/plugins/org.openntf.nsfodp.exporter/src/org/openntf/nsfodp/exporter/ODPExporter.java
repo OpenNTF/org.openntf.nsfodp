@@ -238,7 +238,16 @@ public class ODPExporter {
 		}
 		
 		if(type.isSingleton()) {
-			exportExplicitNote(note, exporter, baseDir, type.getPath());
+			switch(type.getOutputFormat()) {
+			case RAWFILE:
+				exportFileData(note, exporter, baseDir, type.getPath(), type);
+				break;
+			case METADATA:
+			case DXL:
+			default:
+				exportExplicitNote(note, exporter, baseDir, type.getPath());
+				break;
+			}
 		} else {
 			switch(type.getOutputFormat()) {
 			case METADATA:
