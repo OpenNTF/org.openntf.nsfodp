@@ -12,6 +12,15 @@
 	</parent>
 	<artifactId>nsf-example</artifactId>
 	<packaging>domino-nsf</packaging>
+	
+	<dependencies>
+		<!-- This represents a JAR that's expected to be deployed to jvm/lib/ext on the server -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -19,7 +28,9 @@
 				<groupId>org.openntf.maven</groupId>
 				<artifactId>nsfodp-maven-plugin</artifactId>
 				<configuration>
-					<updateSite>${project.baseDir}/../../../releng/org.openntf.nsfodp.example.updatesite/target/site</updateSite>
+					<updateSites>
+						<updateSite>${project.baseDir}/../../../releng/org.openntf.nsfodp.example.updatesite/target/site</updateSite>
+					</updateSites>
 					<binaryDxl>true</binaryDxl>
 				</configuration>
 			</plugin>
