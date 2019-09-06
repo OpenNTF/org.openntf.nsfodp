@@ -196,10 +196,10 @@ public abstract class AbstractEquinoxTask {
 			command.add(framework.toAbsolutePath().toString());
 			command.add("-configuration"); //$NON-NLS-1$
 			command.add(configuration.toAbsolutePath().toString());
+			command.add("-consoleLog"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("EquinoxMojo.launchingEquinox", command.stream().collect(Collectors.joining(" "))));  //$NON-NLS-1$//$NON-NLS-2$
 			}
-			
 			
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
@@ -231,7 +231,6 @@ public abstract class AbstractEquinoxTask {
 		} catch (InterruptedException e) {
 			// No problem here
 		} catch(Throwable e) {
-			e.printStackTrace();
 			throw new RuntimeException(Messages.getString("EquinoxMojo.exceptionLaunching"), e); //$NON-NLS-1$
 		}
 	}
