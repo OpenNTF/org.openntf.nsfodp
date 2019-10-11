@@ -166,9 +166,9 @@ public class OnDiskProject {
 		return pluginXml;
 	}
 	
-	public Map<Path, String> getDbScriptFile() {
+	public Map<Path, String> getDbScriptFile() throws IOException {
 		Path dbScript = baseDir.resolve("Code").resolve("dbscript.lsdb"); //$NON-NLS-1$ //$NON-NLS-2$
-		if(Files.exists(dbScript)) {
+		if(Files.exists(dbScript) && Files.size(dbScript) > 0) {
 			return Collections.singletonMap(dbScript, ODPUtil.readFile(dbScript));
 		} else {
 			return null;
@@ -252,7 +252,7 @@ public class OnDiskProject {
 		return DIRECT_DXL_FILES.stream()
 			.map(glob -> {
 				try {
-					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)));
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)) && attr.size() > 0);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
