@@ -69,6 +69,9 @@ public enum DXLUtil {
 	}
 
 	public static void deleteItems(Document dxlDoc, String itemName) throws XMLException {
+		// Force the side effect of checking for the note root
+		getRootNoteElement(dxlDoc);
+		
 		Object[] existingNodes = DOMUtil.evaluateXPath(dxlDoc, "/note/item[@name='" + escapeXPathValue(itemName) + "']").getNodes(); //$NON-NLS-1$ //$NON-NLS-2$
 		for(Object existing : existingNodes) {
 			Node node = (Node)existing;
@@ -78,6 +81,9 @@ public enum DXLUtil {
 
 	public static List<String> getItemValueStrings(Document dxlDoc, String itemName) throws XMLException {
 		List<String> result = new ArrayList<>();
+
+		// Force the side effect of checking for the note root
+		getRootNoteElement(dxlDoc);
 		
 		Object[] nodes = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='" + escapeXPathValue(itemName) + "']/*[name()='text']").getNodes(); //$NON-NLS-1$ //$NON-NLS-2$
 		for(Object nodeObj : nodes) {
@@ -94,7 +100,7 @@ public enum DXLUtil {
 		}
 		
 		if(value != null) {
-			Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode(); //$NON-NLS-1$
+			Element note = getRootNoteElement(dxlDoc);
 			Element item = DOMUtil.createElement(dxlDoc, note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			if(value.length > 1) {
@@ -114,7 +120,7 @@ public enum DXLUtil {
 		deleteItems(dxlDoc, itemName);
 		
 		if(value != null) {
-			Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode(); //$NON-NLS-1$
+			Element note = getRootNoteElement(dxlDoc);
 			Element item = DOMUtil.createElement(dxlDoc, note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			for(Number val : value) {
@@ -126,8 +132,8 @@ public enum DXLUtil {
 
 	public static void writeItemDataRaw(Document dxlDoc, String itemName, byte[] data, int itemCap, int headerSize) throws XMLException {
 		deleteItems(dxlDoc, itemName);
-		
-		Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode(); //$NON-NLS-1$
+
+		Element note = getRootNoteElement(dxlDoc);
 		
 		int dxlChunks = data.length / itemCap;
 		if(data.length % itemCap > 0) {
@@ -347,7 +353,7 @@ public enum DXLUtil {
 		}
 		
 		if(value != null) {
-			Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode(); //$NON-NLS-1$
+			Element note = getRootNoteElement(dxlDoc);
 			Element item = DOMUtil.createElement(dxlDoc, note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			item = DOMUtil.createElement(dxlDoc, item, "datetime"); //$NON-NLS-1$
@@ -356,5 +362,20 @@ public enum DXLUtil {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * @param dxlDoc the DXL document to search
+	 * @return the root {@code note} element
+	 * @throws XMLException if there is a problem evaluating the XPath
+	 * @throws IllegalStateException if the root {@code note} element is not present
+	 * @since 2.5.0
+	 */
+	private static Element getRootNoteElement(Document dxlDoc) throws XMLException {
+		Element note = (Element)DOMUtil.evaluateXPath(dxlDoc, "/note").getSingleNode(); //$NON-NLS-1$
+		if(note == null) {
+			throw new IllegalStateException("Root element <note> not found. This is most likely because the ODP is not using binary DXL, and this is currently unsupported");
+		}
+		return note;
 	}
 }
