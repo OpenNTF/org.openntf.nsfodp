@@ -38,7 +38,6 @@ import org.eclipse.core.resources.refresh.RefreshProvider;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -46,14 +45,15 @@ public class ODPRefreshProvider extends RefreshProvider {
 	public static final long DELAY = TimeUnit.MINUTES.toMillis(1);
 	public static final long INTERVAL = TimeUnit.SECONDS.toMillis(10);
 	
-	private final IProgressMonitor nullMon = new NullProgressMonitor();
 	private PollingRefreshMonitor monitor;
 	
+	@Override
 	protected IRefreshMonitor createPollingMonitor(IResource resource) {
 		return null;
 	}
 	
-	public IRefreshMonitor installMonitor(IResource resource, IRefreshResult result, IProgressMonitor progressMonitor) {
+	@Override
+	public IRefreshMonitor installMonitor(IResource resource, IRefreshResult result) {
 		if(resource instanceof IProject) {
 			IProject project = (IProject)resource;
 			if(isOdpProject(project)) {
@@ -64,26 +64,6 @@ public class ODPRefreshProvider extends RefreshProvider {
 		}
 		
 		return null;
-	}
-	
-	@Override
-	public void resetMonitors(IResource resource, IProgressMonitor progressMonitor) {
-	}
-	
-	// *******************************************************************************
-	// * Original API
-	// *******************************************************************************
-	
-	@Override
-	@Deprecated
-	public IRefreshMonitor installMonitor(IResource resource, IRefreshResult result) {
-		return installMonitor(resource, result, nullMon);
-	}
-	
-	@Override
-	@Deprecated
-	public void resetMonitors(IResource resource) {
-		resetMonitors(resource, nullMon);
 	}
 	
 	// *******************************************************************************
