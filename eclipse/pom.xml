@@ -87,6 +87,11 @@
 			Distribution
 		-->
 		<module>releng/nsfodp-dist</module>
+		
+		<!--
+			Maven plugin 
+		-->
+		<module>maven/nsfodp-maven-plugin</module>
 	</modules>
 
 	<properties>

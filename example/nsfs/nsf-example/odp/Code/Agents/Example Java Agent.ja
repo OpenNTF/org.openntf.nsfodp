@@ -1,32 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<agent xmlns="http://www.lotus.com/dxl" name="Example Java Agent" hide="v3" publicaccess="false">
-  <trigger type="actionsmenu"/>
-  <documentset type="runonce"/>
-  <code event="action">
-    <javaproject class="JavaAgent.class">
-      <java name="JavaAgent.java">import lotus.domino.*;
+<?xml version='1.0' encoding='utf-8'?>
+<note class='filter' xmlns='http://www.lotus.com/dxl' version='11.0' replicaid='8525846D00531956'>
+<noteinfo noteid='1c6' unid='BD9C012773F4E9138525846D006D4775' sequence='17'>
+<created><datetime dst='true'>20190906T155337,17-04</datetime></created>
+<modified><datetime dst='true'>20191015T135840,93-04</datetime></modified>
+<revised><datetime dst='true'>20191015T135840,92-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20191015T135840,92-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20190927T104046,60-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
+<item name='$AssistAction_Ex' sign='true'>
+<rawitemdata type='14'>
+gQI=
+</rawitemdata></item>
+<item name='$AssistAction_Ex' sign='true'>
+<rawitemdata type='14'>
+gQI=
+</rawitemdata></item>
+<item name='$TITLE' sign='true'><text>Example Java Agent</text></item>
+<item name='$Restricted' sign='true'><number>1</number></item>
+<item name='$AssistVersion'><datetime dst='true'>20191015T135840,65-04</datetime></item>
+<item name='$AssistTrigger'><text>4</text></item>
+<item name='$FILE' summary='true' sign='true' seal='true'><object><file hosttype='msdos'
+ compression='none' flags='sign' encoding='none' name='%%source%%.jar' size='340'>
+<created><datetime dst='true'>20191015T135840,88-04</datetime></created>
+<modified><datetime dst='true'>20191015T135840,88-04</datetime></modified><filedata
+>
+UEsDBBQACAgIAFRvT08AAAAAAAAAAAAAAAAOAAAASmF2YUFnZW50LmphdmFVTzEOwjAM3JH4g9WF
+liEfQAyAGECCBT5gUgsi2riqXQRC/TttKBA8xDnr7nx2ZcW1QsHaiMm5dJ7NdDYejUdVcyqcBVug
+CGzxhoszeQW6K/lcIKAlCsGzZ0NXg+LGLoc9K8kOnU+zHwFA60cP4VsHEnHsQYY+hzPpMEyzWUwN
+G1fstYsAGIP5R246cUwLDn/rHqJUGm7UVLXzWvg02UxKwHDh2zWJRS1YVHtJ13dLlfYJKfu/gN5O
+B0V7PdZoKY7dhl/3ti9QSwcIItx4/MYAAABpAQAAUEsBAhQAFAAICAgAVG9PTyLcePzGAAAAaQEA
+AA4AAAAAAAAAAAAAAAAAAAAAAEphdmFBZ2VudC5qYXZhUEsFBgAAAAABAAEAPAAAAAIBAAAAAA==
+</filedata></file></object></item>
+<item name='$FILE' summary='true' sign='true' seal='true'><object><file hosttype='msdos'
+ compression='none' flags='sign' encoding='none' name='%%object%%.jar' size='572'>
+<created><datetime dst='true'>20191015T135840,88-04</datetime></created>
+<modified><datetime dst='true'>20191015T135840,88-04</datetime></modified><filedata
+>
+UEsDBBQACAgIAFRvT08AAAAAAAAAAAAAAAAPAAAASmF2YUFnZW50LmNsYXNzbVLbThsxED0mJJss
+CwmQkHAJBFogF4n9gFSVCioSaEGVArybYEVus3a06yD4Ip7hIQge+AA+CjFeCoUKP4zHZ+acGXv8
++HT/AGALLRcuZlzkMDuBIko5zKGcRcXFPBYcLLpwsOSg6mCZIfNNKmm+M6TqjROG8R19JhjygVTi
+cBieiuiIn/YJyR1qI+IDLhWD29HDqCt2pQ1M7fNz/qMnlNn6TZ6HCXgeVlBzsOphDV8cfPWwjg2G
+wt5mWOM1S6hxy3Cw6aGOBsOs5fp9rnr+z4uuGBiplYcmPKr8VoBhrq/NMPbPdCiV9hNwm8fUhdsT
+piPimGgMlXoj+JD4N9JmKH6G032JnqjtaGXEBVWq/q/xPkxChX8Ndy5jI0J6QT0kYilIIlL7vyKp
+TMdEgoft1xt+hBmcgT31qYVSPXgnaQjute1E8oOXfN79cxTxrsAqDdaFXWNg9rXJTtKpSjujPd28
+Bbsmh2ZDNpOAKbL5t9RjoqYspTnCWNC6Q4rh4AbjM+kRMlfIBq0RstcJsYgyfZcXqWXygCzS1IGd
+c5EkyyRYoegSCpRVSLqafgZQSwcI22dxeawBAACLAgAAUEsBAhQAFAAICAgAVG9PT9tncXmsAQAA
+iwIAAA8AAAAAAAAAAAAAAAAAAAAAAEphdmFBZ2VudC5jbGFzc1BLBQYAAAAAAQABAD0AAADpAQAA
+AAA=
+</filedata></file></object></item>
+<item name='$AssistAction' sign='true'>
+<rawitemdata type='10'>
+gQKT/00ADwANAB8AAAAAAAAAAABKYXZhQWdlbnQuY2xhc3NjOlxOb3Rlc1xEYXRhJSVzb3VyY2Ul
+JS5qYXIAJSVvYmplY3QlJS5qYXIAAAA=
+</rawitemdata></item>
+<item name='$AssistAction_Ex' sign='true'>
+<rawitemdata type='14'>
+gQI=
+</rawitemdata></item>
+<item name='$AssistType' sign='true'><number>65427</number></item>
+<item name='$AssistFlags' sign='true'><text>sE</text></item>
+<item name='$JavaCompilerSource'><text>1.3</text></item>
+<item name='$JavaCompilerTarget'><text>1.2</text></item>
+<item name='$AssistInfo' sign='true'>
+<rawitemdata type='11'>
+AQAEAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</rawitemdata></item>
+<item name='$AssistQuery' sign='true'>
+<rawitemdata type='f'>
+gQYAAAAA
+</rawitemdata></item>
+<item name='$AssistLastRun' sign='true'>
+<rawitemdata type='400'>
+AAAAAAAAAAA=
+</rawitemdata></item>
+<item name='$AssistDocCount' sign='true'><number>0</number></item>
+<item name='$AssistRunInfo' summary='true'>
+<rawitemdata type='3'>
+BgABAAAACADOAgAAAAAAAAEAAAAAAAAAAAAAAA==
+</rawitemdata></item>
+<item name='$Flags'><text>3fJj</text></item>
+<item name='$FlagsExt' sign='true'><text/></item></note>
 
-public class JavaAgent extends AgentBase {
-
-    public void NotesMain() {
-
-      try {
-          Session session = getSession();
-          AgentContext agentContext = session.getAgentContext();
-
-          System.out.println("I'm a Java agent");
-
-      } catch(Exception e) {
-          e.printStackTrace();
-       }
-   }
-}</java>
-    </javaproject>
-  </code>
-  <item name="$JavaCompilerSource">
-    <text>1.3</text>
-  </item>
-  <item name="$JavaCompilerTarget">
-    <text>1.2</text>
-  </item>
-</agent>
