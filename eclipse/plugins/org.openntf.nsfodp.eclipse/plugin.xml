@@ -76,7 +76,7 @@
 	<!--
 		Content type definitions
 	-->
-	<extension point="org.eclipse.core.runtime.contentTypes">
+	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<!-- DXL types -->
 		<content-type
 			id="nsfodpDxl"
