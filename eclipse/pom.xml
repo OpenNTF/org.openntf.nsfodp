@@ -40,6 +40,11 @@
 		<module>plugins/org.openntf.nsfodp.commons.odp</module>
 		
 		<!--
+			Language Server Protocol 
+		-->
+		<module>lsp/org.openntf.nsfodp.lsp4xml.xsp</module>
+		
+		<!--
 			ODP Compiler 
 		-->
 		<module>plugins/org.openntf.nsfodp.compiler</module>
@@ -73,6 +78,7 @@
 		<module>plugins/org.openntf.nsfodp.eclipse.contentassist</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.m2e</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.schemas</module>
+		<module>plugins/org.openntf.nsfodp.eclipse.lsp</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
@@ -92,16 +98,24 @@
 			Maven plugin 
 		-->
 		<module>maven/nsfodp-maven-plugin</module>
+<!-- 		<module>maven/it-nsfodp-maven-plugin</module> -->
 	</modules>
 
 	<properties>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>1.1.0</tycho-version>
-		<compiler>1.8</compiler>
 		<bazaar-version>2.0.0-SNAPSHOT</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
+		
+		<!-- OSGi/Eclipse PDE support -->
+		<manifest-location>META-INF</manifest-location>
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<osgi.qualifier>${maven.build.timestamp}</osgi.qualifier>
 	</properties>
 	
 	<prerequisites>
@@ -113,6 +127,11 @@
 			<id>Neon</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/neon/</url>
+		</repository>
+		<repository>
+			<id>eclipse-2019-12</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/2019-12/</url>
 		</repository>
 		<repository>
 			<id>notes</id>
@@ -138,42 +157,9 @@
 			<url>https://artifactory.openntf.org/openntf</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.api.version}</version>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>${compiler}</source>
-					<target>${compiler}</target>
-					<compilerArgument>-err:-forbidden,discouraged,deprecation</compilerArgument>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<source>${compiler}</source>
-					<target>${compiler}</target>
-					<compilerArgument>-err:-forbidden,discouraged,deprecation</compilerArgument>
-				</configuration>
-			</plugin>
 			<plugin>
 				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
@@ -198,11 +184,6 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-compiler-plugin</artifactId>
-				<configuration>
-					<source>${compiler}</source>
-					<target>${compiler}</target>
-					<compilerArgument>-err:-forbidden,discouraged,deprecation</compilerArgument>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -447,6 +428,34 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>4.2.1</version>
+					<executions>
+						<execution>
+							<id>bundle-manifest</id>
+							<phase>process-classes</phase>
+							<goals>
+								<goal>manifest</goal>
+							</goals>
+							<configuration>
+								<manifestLocation>${manifest-location}</manifestLocation>
+								<excludeDependencies>true</excludeDependencies>
+								<supportedProjectTypes>
+									<supportedProjectType>jar</supportedProjectType>
+									<supportedProjectType>bundle</supportedProjectType>
+								</supportedProjectTypes>
+								<instructions>
+									<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+									<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+									<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+									<_snapshot>${osgi.qualifier}</_snapshot>
+								</instructions>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 				
 				
 				<plugin>
@@ -483,6 +492,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.7.0</version>
 				</plugin>
 				
 				<plugin>

@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openntf.nsfodp.lsp4xml.xsp
+Bnd-LastModified: 1577051639886
+Build-Jdk: 1.8.0_232
+Built-By: jesse
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: org.openntf.nsfodp.lsp4xml.xsp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openntf.nsfodp.lsp4xml.xsp
+Bundle-Version: 2.5.0.20191222215311
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.openntf.nsfodp.lsp4xml.xsp;version="2.5.0";uses:="or
+ g.eclipse.lsp4j,org.eclipse.lsp4xml.dom,org.eclipse.lsp4xml.extensions.
+ contentmodel.model,org.eclipse.lsp4xml.services.extensions,org.eclipse.
+ lsp4xml.services.extensions.save,org.eclipse.lsp4xml.uriresolver"
+Import-Package: org.eclipse.lsp4j,org.eclipse.lsp4xml.dom,org.eclipse.ls
+ p4xml.extensions.contentmodel.model,org.eclipse.lsp4xml.services.extens
+ ions,org.eclipse.lsp4xml.services.extensions.save,org.eclipse.lsp4xml.u
+ riresolver,org.eclipse.lsp4xml.utils
+Originally-Created-By: Maven Integration for Eclipse
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Tool: Bnd-4.2.0.201903051501

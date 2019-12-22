@@ -242,11 +242,12 @@
 			<describer class="org.openntf.nsfodp.eclipse.content.XspConfigContentDescriber"/>
 		</content-type>
 		<content-type
-			id="nsfodpXsp"
-			name="%FileType.xsp"
-			base-type="org.eclipse.core.runtime.xml"
-			file-extensions="xsp">
-			<describer class="org.openntf.nsfodp.eclipse.content.XspContentDescriber"/>
+        	base-type="org.eclipse.wildwebdeveloper.xml"
+        	file-extensions="xsp"
+        	id="nsfodpXsp"
+        	name="%FileType.xsp"
+        	priority="normal">
+			<!--<describer class="org.openntf.nsfodp.eclipse.content.XspContentDescriber"/>-->
 		</content-type>
 		<content-type
 			id="nsfodpXspTheme"
