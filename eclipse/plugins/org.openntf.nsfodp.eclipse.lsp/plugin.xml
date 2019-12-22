@@ -23,12 +23,6 @@
 	</extension>
    <extension
          point="org.eclipse.lsp4e.languageServer">
-      <!--<server
-            class="org.openntf.nsfodp.eclipse.lsp.XspLanguageServer"
-            id="org.openntf.nsfodp.lsp.xsp"
-            label="XSP Language Server"
-            singleton="true">
-      </server>-->
       <contentTypeMapping
             contentType="org.openntf.nsfodp.eclipse.nsfodpXsp"
             id="org.openntf.nsfodp.lsp.xsp">
