@@ -2,8 +2,6 @@ package org.openntf.nsfodp.lsp4xml.xsp;
 
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4xml.dom.DOMDocument;
-import org.eclipse.lsp4xml.extensions.contentmodel.model.ContentModelManager;
-import org.eclipse.lsp4xml.extensions.contentmodel.model.ContentModelProvider;
 import org.eclipse.lsp4xml.services.extensions.ICompletionParticipant;
 import org.eclipse.lsp4xml.services.extensions.IXMLExtension;
 import org.eclipse.lsp4xml.services.extensions.XMLExtensionsRegistry;
