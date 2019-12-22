@@ -50,7 +50,7 @@
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>org.openntf.nsfodp:org.openntf.nsfodp.example.updatesite</include>
+				<include>org.openntf.nsfodp.example:org.openntf.nsfodp.example.updatesite</include>
 			</includes>
 			
 			<binaries>
@@ -64,7 +64,7 @@
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>org.openntf.nsfodp:nsf-example</include>
+				<include>org.openntf.nsfodp.example:nsf-example</include>
 			</includes>
 			
 			<binaries>

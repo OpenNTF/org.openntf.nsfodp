@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.openntf.nsfodp</groupId>
+		<groupId>org.openntf.nsfodp.example</groupId>
 		<artifactId>example-project</artifactId>
 		<version>1.0.0</version>
 		<relativePath>../..</relativePath>
@@ -15,13 +15,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.openntf.nsfodp</groupId>
+			<groupId>org.openntf.nsfodp.example</groupId>
 			<artifactId>org.openntf.nsfodp.example.updatesite</artifactId>
 			<version>${project.version}</version>
 			<type>eclipse-update-site</type>
 		</dependency>
 		<dependency>
-			<groupId>org.openntf.nsfodp</groupId>
+			<groupId>org.openntf.nsfodp.example</groupId>
 			<artifactId>nsf-example</artifactId>
 			<version>${project.version}</version>
 			<type>domino-nsf</type>
