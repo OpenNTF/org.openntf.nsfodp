@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -43,7 +44,7 @@ public class Activator extends AbstractUIPlugin {
 		super.initializeImageRegistry(reg);
 		
 		for(ODPIcon icon : ODPIcon.values()) {
-			reg.put(icon.name(), imageDescriptorFromPlugin(instance.getBundle().getSymbolicName(), icon.getPath()));
+			reg.put(icon.name(), ResourceLocator.imageDescriptorFromBundle(instance.getBundle().getSymbolicName(), icon.getPath()).get());
 		}
 	}
 	
