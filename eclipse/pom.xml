@@ -304,13 +304,14 @@
 					<excludes>
 						<exclude>**/pom.xml</exclude>
 			            <exclude>**/README</exclude>
-			            <exclude>src/test/resources/**</exclude>
-			            <exclude>src/main/resources/**</exclude>
+			            <exclude>**/src/test/resources/**</exclude>
+			            <exclude>**/src/main/resources/**</exclude>
 						<exclude>**/build.properties</exclude>
 						<exclude>**/org/thymeleaf/**</exclude>
 						<exclude>**/com/eclipsesource/**</exclude>
                         <exclude>**/res/SwiperDXLClean.xsl</exclude>
                         <exclude>**/dominoschemas/*</exclude>
+                        <exclude>**/nsfodp-maven-plugin/**</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
