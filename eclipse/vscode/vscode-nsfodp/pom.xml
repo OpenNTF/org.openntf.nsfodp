@@ -19,7 +19,7 @@
 				<executions>
 					<execution>
 						<id>copy-xsp</id>
-						<phase>prepare-package</phase>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy</goal>
 						</goals>
@@ -30,6 +30,11 @@
 									<artifactId>org.openntf.nsfodp.lsp4xml.xsp</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>org.openntf.nsfodp.lsp4xml.schemas</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.basedir}/jar</outputDirectory>
 							<stripVersion>true</stripVersion>
@@ -37,6 +42,35 @@
 					</execution>
 				</executions>
 			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>com.github.eirslett</groupId> -->
+<!-- 				<artifactId>frontend-maven-plugin</artifactId> -->
+<!-- 				<version>1.8.0</version> -->
+<!-- 				<configuration> -->
+<!-- 					<nodeVersion>v13.2.0</nodeVersion> -->
+<!-- 					<installDirectory>${project.build.directory}</installDirectory> -->
+<!-- 				</configuration> -->
+				
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>install node and npm</id> -->
+<!-- 						<goals> -->
+<!-- 							<goal>install-node-and-npm</goal> -->
+<!-- 						</goals> -->
+<!-- 						<phase>generate-resources</phase> -->
+<!-- 					</execution> -->
+<!-- 					<execution> -->
+<!-- 						<id>vscode-prepublish</id> -->
+<!-- 						<phase>compile</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>npm</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<arguments>run vscode:prepublish</arguments> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</build>
 </project>

@@ -43,6 +43,7 @@
 			Language Server Protocol 
 		-->
 		<module>lsp/org.openntf.nsfodp.lsp4xml.xsp</module>
+		<module>lsp/org.openntf.nsfodp.lsp4xml.schemas</module>
 		
 		<!--
 			ODP Compiler 
@@ -99,6 +100,12 @@
 		-->
 		<module>maven/nsfodp-maven-plugin</module>
 <!-- 		<module>maven/it-nsfodp-maven-plugin</module> -->
+
+
+		<!--
+			Visual Studio Code extension 
+		-->
+		<module>vscode/vscode-nsfodp</module>
 	</modules>
 
 	<properties>

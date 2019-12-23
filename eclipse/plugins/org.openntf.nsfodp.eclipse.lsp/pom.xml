@@ -30,6 +30,11 @@
 									<artifactId>org.openntf.nsfodp.lsp4xml.xsp</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>org.openntf.nsfodp.lsp4xml.schemas</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.basedir}/ext</outputDirectory>
 							<stripVersion>true</stripVersion>
