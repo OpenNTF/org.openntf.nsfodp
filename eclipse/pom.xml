@@ -75,7 +75,6 @@
 		-->
 		<module>plugins/org.openntf.nsfodp.eclipse</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.ui</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.contentassist</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.m2e</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.schemas</module>
 		<module>plugins/org.openntf.nsfodp.eclipse.lsp</module>
