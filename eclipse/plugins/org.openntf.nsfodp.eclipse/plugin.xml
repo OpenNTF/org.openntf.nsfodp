@@ -52,6 +52,7 @@
 		<content-type id="nsfodpOutline"/>
 		<content-type id="nsfodpXspConfig"/>
 		<content-type id="nsfodpXspTheme"/>
+		<content-type id="nsfodpXsp"/>
 		<content-type id="nsfodpSsjs"/>
 	</extension>
 
