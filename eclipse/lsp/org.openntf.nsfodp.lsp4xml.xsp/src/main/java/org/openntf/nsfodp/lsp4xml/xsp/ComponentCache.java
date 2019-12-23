@@ -19,22 +19,99 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.openntf.com.eclipsesource.json.Json;
 import org.openntf.com.eclipsesource.json.JsonArray;
 import org.openntf.com.eclipsesource.json.JsonObject;
 import org.openntf.com.eclipsesource.json.JsonValue;
+import org.openntf.domino.utils.xml.XMLDocument;
 import org.openntf.nsfodp.lsp4xml.xsp.model.ComponentProperty;
+import org.openntf.nsfodp.lsp4xml.xsp.model.CustomControl;
 import org.openntf.nsfodp.lsp4xml.xsp.model.StockComponent;
+import org.xml.sax.SAXException;
 
 public enum ComponentCache {
 	;
 
+	private static final Map<String, Collection<CustomControl>> CC_TAGS = Collections.synchronizedMap(new HashMap<>());
 	private static Collection<StockComponent> STOCK_COMPONENTS;
+
+	public static synchronized Collection<CustomControl> getCustomControls(String documentUri)
+			throws SAXException, IOException, ParserConfigurationException {
+		return CC_TAGS.computeIfAbsent(documentUri, key -> {
+			Path documentPath = Paths.get(URI.create(documentUri));
+			
+			// On-Disk Project
+			// TODO look at configured path
+			Path ccFolder = documentPath.getParent().getParent().resolve("CustomControls"); //$NON-NLS-1$
+			if (Files.isDirectory(ccFolder)) {
+				try {
+					return readCustomControls(ccFolder);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+			// Maven Webapp
+			documentPath.getParent().getParent().resolve("controls"); //$NON-NLS-1$
+			if(Files.isDirectory(ccFolder)) {
+				try {
+					return readCustomControls(ccFolder);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+			return Collections.emptyList();
+		});
+	}
+	
+	private static Collection<CustomControl> readCustomControls(Path path) throws IOException {
+		return Files.list(path)
+			.filter(Files::isReadable)
+			.filter(Files::isRegularFile)
+			.filter(file -> file.toString().endsWith(".xsp-config")) //$NON-NLS-1$
+			.map(file -> {
+				XMLDocument doc = new XMLDocument();
+				try (InputStream is = Files.newInputStream(file)) {
+					doc.loadInputStream(is);
+				} catch (IOException | SAXException | ParserConfigurationException e) {
+					throw new RuntimeException(e);
+				}
+				String namespaceUri = doc
+						.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText(); //$NON-NLS-1$
+				String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix") //$NON-NLS-1$
+						.getText();
+				String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
+						.getText();
+				
+				List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property") //$NON-NLS-1$
+						.stream()
+						.map(prop -> {
+							String name = prop.selectSingleNode("property-name").getText(); //$NON-NLS-1$
+							String javaClass = prop.selectSingleNode("property-class").getText(); //$NON-NLS-1$
+							return new ComponentProperty(name, javaClass, false, null);
+						})
+						.collect(Collectors.toList());
+
+				return new CustomControl(namespaceUri, prefix, tagName, attributes);
+			})
+			.collect(Collectors.toCollection(TreeSet::new));
+	}
 	
 	public static synchronized Collection<StockComponent> getStockComponents() throws IOException {
 		if(STOCK_COMPONENTS == null) {

@@ -34,7 +34,12 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 				.map(CompletionItem::new)
 				.forEach(response::addCompletionItem);
 			
-			// TODO custom controls
+			// Custom controls
+			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
+				.map(AbstractComponent::getPrefixedName)
+				.map(CompletionItem::new)
+				.forEach(response::addCompletionItem);
+			
 			
 			// Specialized "this.*" properties - allow for any non-simple type
 			String parentTag = request.getParentElement().getTagName();
@@ -54,7 +59,18 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 	public void onAttributeName(boolean generateValue, ICompletionRequest request, ICompletionResponse response) throws Exception {
 		if(ContentAssistUtil.isXsp(request.getXMLDocument())) {
 			String tag = request.getCurrentTag();
+			
+			// Stock components
 			ComponentCache.getStockComponents().stream()
+				.filter(component -> component.getPrefixedName().equals(tag))
+				.map(AbstractComponent::getProperties)
+				.flatMap(Collection::stream)
+				.map(ComponentProperty::getName)
+				.map(CompletionItem::new)
+				.forEach(response::addCompletionItem);
+
+			// Custom controls
+			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
 				.filter(component -> component.getPrefixedName().equals(tag))
 				.map(AbstractComponent::getProperties)
 				.flatMap(Collection::stream)
@@ -66,7 +82,6 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 
 	@Override
 	public void onAttributeValue(String valuePrefix, ICompletionRequest request, final ICompletionResponse response) throws Exception {
-		// TODO figure out quoting
 		if(ContentAssistUtil.isXsp(request.getXMLDocument())) {
 			String parentTag = request.getParentElement().getTagName();
 			String attribute = request.getCurrentAttributeName();
