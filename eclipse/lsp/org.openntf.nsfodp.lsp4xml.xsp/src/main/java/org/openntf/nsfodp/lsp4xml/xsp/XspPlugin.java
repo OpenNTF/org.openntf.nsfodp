@@ -1,7 +1,6 @@
 package org.openntf.nsfodp.lsp4xml.xsp;
 
 import org.eclipse.lsp4j.InitializeParams;
-import org.eclipse.lsp4xml.dom.DOMDocument;
 import org.eclipse.lsp4xml.services.extensions.ICompletionParticipant;
 import org.eclipse.lsp4xml.services.extensions.IXMLExtension;
 import org.eclipse.lsp4xml.services.extensions.XMLExtensionsRegistry;
@@ -38,9 +37,4 @@ public class XspPlugin implements IXMLExtension {
 	public void doSave(ISaveContext context) {
 		// NOP
 	}
-	
-	public static boolean match(DOMDocument document) {
-		return document.getDocumentURI().endsWith(EXT_XSP);
-	}
-
 }

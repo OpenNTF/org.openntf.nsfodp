@@ -17,19 +17,9 @@ package org.openntf.nsfodp.lsp4xml.xsp;
 
 import org.eclipse.lsp4xml.dom.DOMDocument;
 import org.openntf.nsfodp.commons.NSFODPConstants;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 public enum ContentAssistUtil {
 	;
-
-	public static Element getRootElement(Node node) {
-		Node parent = node;
-		while (parent.getParentNode() != null && parent.getParentNode().getNodeType() == 1) {
-			parent = parent.getParentNode();
-		}
-		return (Element) parent;
-	}
 
 	public static boolean isXsp(DOMDocument doc) {
 		if (!NSFODPConstants.XP_NS.equals(doc.getDocumentElement().getNamespaceURI())) {
