@@ -21,33 +21,40 @@
 	<extension point="org.eclipse.wildwebdeveloper.xml.xmllsExtension">
 		<jar path="ext/org.openntf.nsfodp.lsp4xml.xsp.jar"/>
 	</extension>
-   <extension
-         point="org.eclipse.lsp4e.languageServer">
-      <contentTypeMapping
-            contentType="org.openntf.nsfodp.eclipse.nsfodpXsp"
-            id="org.openntf.nsfodp.lsp.xsp">
-      </contentTypeMapping>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editorContentTypeBinding
-            contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp"
-            editorId="org.eclipse.ui.genericeditor.GenericEditor">
-      </editorContentTypeBinding>
-   </extension>
+	
+	<!--<extension point="org.eclipse.lsp4e.languageServer">
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXsp" id="org.eclipse.wildwebdeveloper.xml"/>
+	</extension>
+	<extension point="org.eclipse.ui.editors">
+		<editorContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" editorId="org.eclipse.ui.genericeditor.GenericEditor"/>
+	</extension>-->
    
-   <extension
-         point="org.eclipse.tm4e.registry.grammars">
-      <scopeNameContentTypeBinding
-            contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp"
-            scopeName="source.xml">
-      </scopeNameContentTypeBinding>
-   </extension>
-   <extension
-         point="org.eclipse.tm4e.languageconfiguration.languageConfigurations">
-      <languageConfiguration
-            contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp"
-            path="language-configurations/xsp/xsp.language-configuration.json">
-      </languageConfiguration>
-   </extension>
+	<extension point="org.eclipse.tm4e.registry.grammars">
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDxl" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseScript" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseIcon" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseProperties" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpMetadataFile" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpPage" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpForm" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpFrameset" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpAboutDocument" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpUsingDocument" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpIconNote" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedField" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpView" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpJavaLibrary" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedActions" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpFormulaAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpLotusScriptAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSimpleActionAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpJavaAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSubform" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpNavigator" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpOutline" scopeName="source.xml"/>
+		
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspConfig" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspTheme" scopeName="source.xml"/>
+	</extension>
 </plugin>
