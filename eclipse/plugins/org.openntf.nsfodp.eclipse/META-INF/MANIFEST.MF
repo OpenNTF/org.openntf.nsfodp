@@ -14,8 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.navigator,
  org.eclipse.wildwebdeveloper;bundle-version="0.5.0"
 Export-Package: org.openntf.nsfodp.eclipse,
- org.openntf.nsfodp.eclipse.content,
- org.openntf.nsfodp.eclipse.nature
+ org.openntf.nsfodp.eclipse.content
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.eclipse.Activator
 Bundle-Localization: plugin

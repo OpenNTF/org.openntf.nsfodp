@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2018-2019 Jesse Gallagher
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<?eclipse version="3.4"?>
+<plugin>
+	<!--
+		ODP project nature 
+	-->
+	<extension
+		point="org.eclipse.core.resources.natures"
+		id="org.openntf.nsfodp.nature"
+		name="%NSFODPNature.name">
+		<runtime>
+			<run class="org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature"/>
+		</runtime>
+	</extension>
+
+	<extension
+		point="org.eclipse.core.expressions.definitions">
+		<definition
+			id="org.openntf.nsfodp.hasOdpNature">
+			<with variable="activeMenuSelection">
+				<iterate ifEmpty="false">
+					<adapt
+					   type="org.eclipse.core.resources.IProject">
+						<test property="org.eclipse.core.resources.projectNature"
+							value="org.openntf.nsfodp.nature">
+						</test>
+					</adapt>
+				</iterate>
+			</with>
+		</definition>
+	</extension>
+</plugin>

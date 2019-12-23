@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.navigator,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
- org.openntf.nsfodp.eclipse;bundle-version="2.0.0"
+ org.openntf.nsfodp.eclipse;bundle-version="2.0.0",
+ org.openntf.nsfodp.eclipse.nature;bundle-version="2.0.0"
 Export-Package: org.openntf.nsfodp.eclipse.m2e,
  org.openntf.nsfodp.eclipse.m2e.handler
 Bundle-ActivationPolicy: lazy

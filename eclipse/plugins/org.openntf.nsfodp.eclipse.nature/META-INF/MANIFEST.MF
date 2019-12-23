@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.openntf.nsfodp.eclipse.nature;singleton:=true
+Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.nature
+Bundle-Version: 2.5.0.qualifier
+Bundle-Vendor: %providerName
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.ui,
+ org.apache.commons.lang,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.openntf.nsfodp.eclipse,
+ org.eclipse.ui.navigator
+Export-Package: org.openntf.nsfodp.eclipse.nature
+Bundle-Localization: plugin
