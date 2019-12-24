@@ -84,13 +84,6 @@
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
 		<!--
-			Designer Support
-		-->
-		<module>plugins/org.openntf.nsfodp.designer.odpwatcher</module>
-		<module>features/org.openntf.nsfodp.designer.feature</module>
-		<module>releng/org.openntf.nsfodp.designer.updatesite</module>
-		
-		<!--
 			Distribution
 		-->
 		<module>releng/nsfodp-dist</module>
