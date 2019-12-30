@@ -116,7 +116,7 @@ public enum ComponentCache {
 	public static synchronized Collection<StockComponent> getStockComponents() throws IOException {
 		if(STOCK_COMPONENTS == null) {
 			JsonValue value;
-			try(InputStream is = ComponentCache.class.getResourceAsStream("/components/9.0.1fp10.json")) { //$NON-NLS-1$
+			try(InputStream is = ComponentCache.class.getResourceAsStream("/components/9.0.100.v10/components.json")) { //$NON-NLS-1$
 				Objects.requireNonNull(is);
 				try(Reader reader = new InputStreamReader(is)) {
 					value = Json.parse(reader);
