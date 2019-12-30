@@ -85,6 +85,8 @@ public class AbstractSchemaServlet extends HttpServlet {
 				importEl.setAttribute("schemaLocation", extMap.get(importUri) + ".xsd");
 			}
 			
+			outSimpleTypes(schema);
+			
 			SharableRegistryImpl facesRegistry = new SharableRegistryImpl(getClass().getPackage().getName());
 			List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 			libraries.stream()
@@ -121,6 +123,52 @@ public class AbstractSchemaServlet extends HttpServlet {
 			e.printStackTrace(new PrintWriter(resp.getOutputStream()));
 			resp.getOutputStream().flush();
 			e.printStackTrace();
+		}
+	}
+	
+	private void outSimpleTypes(Element schema) {
+		Document doc = schema.getOwnerDocument();
+		{
+			Element simpleType = DOMUtil.createElement(doc, schema, "xs:simpleType");
+			simpleType.setAttribute("name", "attrInteger");
+			Element restriction = DOMUtil.createElement(doc, simpleType, "xs:restriction");
+			restriction.setAttribute("base", "xs:string");
+			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
+			pattern.setAttribute("value", "^((\\d+)|(#\\{.*\\}|\\$\\{.*\\}))$");
+		}
+		{
+			Element simpleType = DOMUtil.createElement(doc, schema, "xs:simpleType");
+			simpleType.setAttribute("name", "attrBoolean");
+			Element restriction = DOMUtil.createElement(doc, simpleType, "xs:restriction");
+			restriction.setAttribute("base", "xs:string");
+			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
+			pattern.setAttribute("value", "^((true)|(false)|#\\{.*\\}|\\$\\{.*\\})$");
+		}
+		{
+			Element simpleType = DOMUtil.createElement(doc, schema, "xs:simpleType");
+			simpleType.setAttribute("name", "attrDecimal");
+			Element restriction = DOMUtil.createElement(doc, simpleType, "xs:restriction");
+			restriction.setAttribute("base", "xs:string");
+			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
+			pattern.setAttribute("value", "^((\\d+(\\.\\d+)?)|#\\{.*\\}|\\$\\{.*\\})$");
+		}
+		{
+			Element simpleType = DOMUtil.createElement(doc, schema, "xs:simpleType");
+			simpleType.setAttribute("name", "attrTime");
+			Element restriction = DOMUtil.createElement(doc, simpleType, "xs:restriction");
+			restriction.setAttribute("base", "xs:string");
+			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
+			// TODO figure out if this can enforce a time format
+			pattern.setAttribute("value", "^((.*)|#\\{.*\\}|\\$\\{.*\\})$");
+		}
+		{
+			Element simpleType = DOMUtil.createElement(doc, schema, "xs:simpleType");
+			simpleType.setAttribute("name", "attrDate");
+			Element restriction = DOMUtil.createElement(doc, simpleType, "xs:restriction");
+			restriction.setAttribute("base", "xs:string");
+			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
+			// TODO figure out if this can enforce a date format
+			pattern.setAttribute("value", "^((.*)|#\\{.*\\}|\\$\\{.*\\})$");
 		}
 	}
 	
@@ -208,15 +256,15 @@ public class AbstractSchemaServlet extends HttpServlet {
 			Class<?> clazz = prop.getJavaClass();
 			if(byte.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz) || long.class.equals(clazz)
 				|| Byte.class.equals(clazz) || Short.class.equals(clazz) || Integer.class.equals(clazz) || Long.class.equals(clazz)) {
-				outAttribute(prop, element, "xs:integer");
+				outAttribute(prop, element, extMap.get(namespace) + ":attrInteger");
 			} else if(boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
-				outAttribute(prop, element, "xs:boolean");
+				outAttribute(prop, element, extMap.get(namespace) + ":attrBoolean");
 			} else if(float.class.equals(clazz) || double.class.equals(clazz) || Number.class.isAssignableFrom(clazz)) {
-				outAttribute(prop, element, "xs:decimal");
+				outAttribute(prop, element, extMap.get(namespace) + ":attrDecimal");
 			} else if(LocalTime.class.isAssignableFrom(clazz)) {
-				outAttribute(prop, element, "xs:time");
+				outAttribute(prop, element, extMap.get(namespace) + ":attrTime");
 			} else if(Date.class.equals(clazz) || TemporalAccessor.class.isAssignableFrom(clazz)) {
-				outAttribute(prop, element, "xs:date");
+				outAttribute(prop, element, extMap.get(namespace) + ":attrDate");
 			} else if(CharSequence.class.equals(clazz)) {
 				outAttribute(prop, element, "xs:string");
 			} else {
