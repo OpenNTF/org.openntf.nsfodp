@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.lsp4xml.xsp;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.lsp4j.InitializeParams;
@@ -37,9 +36,6 @@ import org.openntf.nsfodp.lsp4xml.xsp.schema.XspCoreSchemaResolver;
 public class XspPlugin implements IXMLExtension {
 	
 	public static final Logger log = Logger.getLogger(XspPlugin.class.getPackage().getName());
-	static {
-		log.setLevel(Level.FINEST);
-	}
 	
 	public static final String EXT_XSP = ".xsp"; //$NON-NLS-1$
 	public static final String EXT_XSP_CONFIG = ".xsp-config"; //$NON-NLS-1$
