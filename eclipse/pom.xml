@@ -106,7 +106,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<tycho-version>1.1.0</tycho-version>
+		<tycho-version>1.5.0</tycho-version>
 		<bazaar-version>2.0.0-SNAPSHOT</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
@@ -123,11 +123,6 @@
 	</prerequisites>
 
 	<repositories>
-		<repository>
-			<id>Neon</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/neon/</url>
-		</repository>
 		<repository>
 			<id>eclipse-2019-12</id>
 			<layout>p2</layout>
@@ -257,21 +252,6 @@
 					</filters>
 
 					<environments>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
-						</environment>
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>
