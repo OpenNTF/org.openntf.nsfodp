@@ -99,11 +99,6 @@
 			Visual Studio Code extension 
 		-->
 		<module>vscode/vscode-nsfodp</module>
-		
-		<!--
-			Development Utilities 
-		-->
-		<module>webapps/components-webapp</module>
 	</modules>
 
 	<properties>
@@ -532,4 +527,13 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>devutils</id>
+			<modules>
+				<module>webapps/components-webapp</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
