@@ -30,7 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.io.json.JsonArray;
 import com.ibm.commons.util.io.json.JsonException;
+import com.ibm.commons.util.io.json.JsonGenerator;
 import com.ibm.commons.util.io.json.JsonJavaArray;
+import com.ibm.commons.util.io.json.JsonJavaFactory;
 import com.ibm.commons.util.io.json.JsonJavaObject;
 import com.ibm.commons.util.io.json.JsonObject;
 import com.ibm.xsp.library.LibraryServiceLoader;
@@ -134,7 +136,7 @@ public class StockComponentsServlet extends HttpServlet {
 				
 				componentInfo.putJsonProperty("components", defs); //$NON-NLS-1$
 			}
-			os.print(componentInfo.toString());
+			os.print(JsonGenerator.toJson(JsonJavaFactory.instance, componentInfo, false));
 		} catch(Throwable e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
