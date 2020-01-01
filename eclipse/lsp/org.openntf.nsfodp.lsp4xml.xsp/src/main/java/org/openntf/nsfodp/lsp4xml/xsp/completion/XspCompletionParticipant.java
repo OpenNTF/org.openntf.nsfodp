@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.lsp4xml.xsp;
+package org.openntf.nsfodp.lsp4xml.xsp.completion;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,8 +23,8 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4xml.services.extensions.CompletionParticipantAdapter;
 import org.eclipse.lsp4xml.services.extensions.ICompletionRequest;
 import org.eclipse.lsp4xml.services.extensions.ICompletionResponse;
-import org.openntf.nsfodp.lsp4xml.xsp.model.AbstractComponent;
-import org.openntf.nsfodp.lsp4xml.xsp.model.ComponentProperty;
+import org.openntf.nsfodp.lsp4xml.xsp.completion.model.AbstractComponent;
+import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
 
 /**
  * XML Completion participant to provide XSP components and attributes.

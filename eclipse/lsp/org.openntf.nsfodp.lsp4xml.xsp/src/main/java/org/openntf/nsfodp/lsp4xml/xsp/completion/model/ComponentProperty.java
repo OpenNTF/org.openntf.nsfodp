@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.lsp4xml.xsp.model;
+package org.openntf.nsfodp.lsp4xml.xsp.completion.model;
 
 public class ComponentProperty {
 	private final String name;

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.lsp4xml.xsp.model;
+package org.openntf.nsfodp.lsp4xml.xsp.completion.model;
 
 import java.util.Collection;
 
-public class CustomControl extends AbstractComponent<CustomControl> {
-	public CustomControl(String namespaceUri, String prefix, String tagName, Collection<ComponentProperty> attributes) {
+public class StockComponent extends AbstractComponent<StockComponent> {
+
+	public StockComponent(String namespaceUri, String prefix, String tagName, Collection<ComponentProperty> attributes) {
 		super(namespaceUri, prefix, tagName, attributes);
 	}
+
 }

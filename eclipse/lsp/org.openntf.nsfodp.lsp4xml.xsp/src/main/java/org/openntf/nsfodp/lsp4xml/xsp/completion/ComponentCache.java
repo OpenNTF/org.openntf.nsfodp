@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.lsp4xml.xsp;
+package org.openntf.nsfodp.lsp4xml.xsp.completion;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +39,9 @@ import org.openntf.com.eclipsesource.json.JsonArray;
 import org.openntf.com.eclipsesource.json.JsonObject;
 import org.openntf.com.eclipsesource.json.JsonValue;
 import org.openntf.domino.utils.xml.XMLDocument;
-import org.openntf.nsfodp.lsp4xml.xsp.model.ComponentProperty;
-import org.openntf.nsfodp.lsp4xml.xsp.model.CustomControl;
-import org.openntf.nsfodp.lsp4xml.xsp.model.StockComponent;
+import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
+import org.openntf.nsfodp.lsp4xml.xsp.completion.model.CustomControl;
+import org.openntf.nsfodp.lsp4xml.xsp.completion.model.StockComponent;
 import org.xml.sax.SAXException;
 
 public enum ComponentCache {
