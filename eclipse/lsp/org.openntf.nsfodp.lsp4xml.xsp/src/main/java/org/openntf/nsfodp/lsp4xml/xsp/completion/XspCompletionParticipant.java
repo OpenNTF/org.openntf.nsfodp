@@ -15,9 +15,7 @@
  */
 package org.openntf.nsfodp.lsp4xml.xsp.completion;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.TreeSet;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4xml.services.extensions.CompletionParticipantAdapter;
@@ -27,28 +25,16 @@ import org.openntf.nsfodp.lsp4xml.xsp.completion.model.AbstractComponent;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
 
 /**
- * XML Completion participant to provide XSP components and attributes.
+ * XML Completion participant to provide custom controls and attributes.
  * 
  * @author Jesse Gallagher
  * @since 2.5.0
  */
 public class XspCompletionParticipant extends CompletionParticipantAdapter {
-	private static final Collection<String> simpleTypes = new TreeSet<>(Arrays.asList(
-		"boolean", //$NON-NLS-1$
-		"javax.faces.component.UIComponent", //$NON-NLS-1$
-		"int", //$NON-NLS-1$
-		"double" //$NON-NLS-1$
-	));
 	
 	@Override
 	public void onTagOpen(ICompletionRequest request, ICompletionResponse response) throws Exception {
 		if(ContentAssistUtil.isXsp(request.getXMLDocument())) {
-			// Stock components
-			ComponentCache.getStockComponents().stream()
-				.map(AbstractComponent::getPrefixedName)
-				.map(CompletionItem::new)
-				.forEach(response::addCompletionItem);
-			
 			// Custom controls
 			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
 				.map(AbstractComponent::getPrefixedName)
@@ -56,17 +42,17 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 				.forEach(response::addCompletionItem);
 			
 			
-			// Specialized "this.*" properties - allow for any non-simple type
-			String parentTag = request.getParentElement().getTagName();
-			ComponentCache.getStockComponents().stream()
-				.filter(component -> component.getPrefixedName().equals(parentTag))
-				.map(AbstractComponent::getProperties)
-				.flatMap(Collection::stream)
-				.filter(prop -> !simpleTypes.contains(prop.getJavaClassName()))
-				.map(ComponentProperty::getName)
-				.map(name -> request.getParentElement().getPrefix() + ":this." + name) //$NON-NLS-1$
-				.map(CompletionItem::new)
-				.forEach(response::addCompletionItem);
+			if(request.getParentElement() != null) {
+				String parentTag = request.getParentElement().getTagName();
+				ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
+					.filter(component -> component.getPrefixedName().equals(parentTag))
+					.map(AbstractComponent::getProperties)
+					.flatMap(Collection::stream)
+					.map(ComponentProperty::getName)
+					.map(name -> request.getParentElement().getPrefix() + ":this." + name) //$NON-NLS-1$
+					.map(CompletionItem::new)
+					.forEach(response::addCompletionItem);
+			}
 		}
 	}
 
@@ -74,15 +60,6 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 	public void onAttributeName(boolean generateValue, ICompletionRequest request, ICompletionResponse response) throws Exception {
 		if(ContentAssistUtil.isXsp(request.getXMLDocument())) {
 			String tag = request.getCurrentTag();
-			
-			// Stock components
-			ComponentCache.getStockComponents().stream()
-				.filter(component -> component.getPrefixedName().equals(tag))
-				.map(AbstractComponent::getProperties)
-				.flatMap(Collection::stream)
-				.map(ComponentProperty::getName)
-				.map(CompletionItem::new)
-				.forEach(response::addCompletionItem);
 
 			// Custom controls
 			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
@@ -100,7 +77,7 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 		if(ContentAssistUtil.isXsp(request.getXMLDocument())) {
 			String parentTag = request.getParentElement().getTagName();
 			String attribute = request.getCurrentAttributeName();
-			ComponentCache.getStockComponents().stream()
+			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
 				.filter(component -> component.getPrefixedName().equals(parentTag))
 				.map(AbstractComponent::getProperties)
 				.flatMap(Collection::stream)
