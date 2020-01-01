@@ -32,7 +32,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>org.openntf.nsfodp.lsp4xml.schemas</artifactId>
+									<artifactId>org.openntf.nsfodp.lsp4xml.dxl</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
 							</artifactItems>

@@ -20,7 +20,7 @@
 <plugin>
 	<extension point="org.eclipse.wildwebdeveloper.xml.xmllsExtension">
 		<jar path="ext/org.openntf.nsfodp.lsp4xml.xsp.jar"/>
-		<jar path="ext/org.openntf.nsfodp.lsp4xml.schemas.jar"/>
+		<jar path="ext/org.openntf.nsfodp.lsp4xml.dxl.jar"/>
 	</extension>
 	
 	<extension point="org.eclipse.lsp4e.languageServer">
