@@ -51,7 +51,7 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 		}
 		if(namespace.equals(systemId) || namespace.equals(publicId)) {
 			if(log.isLoggable(Level.FINE)) {
-				log.info("got for " + namespace);
+				log.fine("got for " + namespace);
 			}
 			return getSchemaUri().toString();
 		}
@@ -77,8 +77,8 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 				try(InputStream is = getClass().getResourceAsStream("/components/10.0.1/" + schemaName + ".xsd")) { //$NON-NLS-1$
 					Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 				}
-				if(log.isLoggable(Level.INFO)) {
-					log.info("deployed schema to " + tempFile);
+				if(log.isLoggable(Level.FINE)) {
+					log.fine("deployed schema to " + tempFile);
 				}
 				this.tempSchemas = tempFile.toUri();
 			} catch (Exception e) {
