@@ -16,6 +16,7 @@
 package servlet.schema;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAccessor;
@@ -24,6 +25,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import javax.faces.component.UIComponent;
 import javax.faces.el.MethodBinding;
@@ -38,6 +42,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.extension.ExtensionManager;
+import com.ibm.commons.util.PathUtil;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.Format;
@@ -46,12 +51,16 @@ import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
 import com.ibm.xsp.registry.AbstractContainerProperty;
+import com.ibm.xsp.registry.FacesComplexDefinition;
+import com.ibm.xsp.registry.FacesComponentDefinition;
 import com.ibm.xsp.registry.FacesDefinition;
 import com.ibm.xsp.registry.FacesProperty;
 import com.ibm.xsp.registry.FacesSimpleProperty;
+import com.ibm.xsp.registry.FacesValidatorDefinition;
 import com.ibm.xsp.registry.SharableRegistryImpl;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
+import com.ibm.xsp.util.HtmlUtil;
 
 public class AbstractSchemaServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -65,6 +74,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 	
 	private final String namespace;
 	private final String[] imports;
+	private final Map<String, Document> xspConfigs = new HashMap<>();
 
 	public AbstractSchemaServlet(String namespace, String... imports) {
 		super();
@@ -224,13 +234,9 @@ public class AbstractSchemaServlet extends HttpServlet {
 			complexType.setAttribute("mixed", "true");
 		}
 		
-		
-		Element all = (Element)complexType.getFirstChild();
-		if(all == null || !all.getTagName().equals("xs:choice")) {
-			all = DOMUtil.createElement(doc, complexType, "xs:choice");
-			all.setAttribute("minOccurs", "0");
-			all.setAttribute("maxOccurs", "unbounded");
-		}
+		Element all = DOMUtil.createElement(doc, complexType, "xs:choice");
+		all.setAttribute("minOccurs", "0");
+		all.setAttribute("maxOccurs", "unbounded");
 		
 		outProperties(def, complexType, registry);
 
@@ -239,17 +245,163 @@ public class AbstractSchemaServlet extends HttpServlet {
 			DOMUtil.createElement(doc, all, "xs:any").setAttribute("processContents", "lax");
 		}
 		
-		if(def.isTag() && !noTag) {
+		outAnnotations(def, complexType);
+		
+		if(!noTag) {
 			// Output the concrete definition
 			Element element = DOMUtil.createElement(doc, schema, "xs:element");
 			element.setAttribute("name", def.getTagName());
 			String prefix = StringUtil.equals(def.getNamespaceUri(), namespace) ? "" : (extMap.get(def.getNamespaceUri()) + ':');
 			element.setAttribute("type", prefix + def.getTagName());
-
-//			Element annotation = DOMUtil.createElement(doc, element, "xs:annotation");
-			
+			outAnnotations(def, element);
 		}
-		
+	}
+
+	
+	private void outAnnotations(FacesDefinition def, Element element) {
+		Document doc = element.getOwnerDocument();
+		Element annotation = doc.createElement("xs:annotation");
+		if(element.getFirstChild() != null) {
+			element.insertBefore(annotation, element.getFirstChild());
+		} else {
+			element.appendChild(annotation);
+		}
+		{
+			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
+			documentation.setAttribute("source", "version");
+			String since = def.getSince();
+			if(StringUtil.isEmpty(since)) {
+				since = "8.5.0";
+			}
+			documentation.setTextContent(since + "+");
+		}
+		{
+			// This appears to be treated as HTML
+			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
+			documentation.setAttribute("source", "description");
+			
+			StringBuilder description = new StringBuilder();
+			
+			// Try to track down the file
+			String filePath = def.getFile().getFilePath();
+			Document xspConfig = getXspConfig(filePath);
+			Element component = null;
+			if(xspConfig != null) {
+				try {
+					Object[] elements = DOMUtil.nodes(xspConfig, "/faces-config/*/*/tag-name[text()='" + def.getTagName() + "']");
+					component = elements.length == 0 ? null : (Element)((Element)elements[0]).getParentNode().getParentNode();
+				} catch(XMLException e) {
+					throw new RuntimeException(e);
+				}		
+			}
+			
+			
+			if(def instanceof FacesComponentDefinition) {
+				FacesComponentDefinition fcd = (FacesComponentDefinition)def;
+				if(component != null) {
+					p(description, "<b>", component.getElementsByTagName("display-name").item(0).getTextContent(), "</b>");
+					p(description, component.getElementsByTagName("description").item(0).getTextContent());
+				}
+				
+
+				description.append("<dl>");
+				Collection<String> facets = fcd.getFacetNames();
+				if(facets != null && !facets.isEmpty()) {
+					dt(description, "Facets:", sb -> {
+						sb.append("<ul>");
+						facets.stream()
+							.map(f -> "<li>" + f + "</li>")
+							.forEach(sb::append);
+						sb.append("</ul>");
+					});
+				}
+				dt(description, "Component Type", fcd.getComponentType());
+				dt(description, "Component Family", fcd.getComponentFamily());
+				dt(description, "Renderer Type", fcd.getRendererType());
+			} else if(def instanceof FacesComplexDefinition) {
+				
+				description.append("<dl>");
+				dt(description, "Complex ID: ", ((FacesComplexDefinition)def).getComplexId());
+				if(def instanceof FacesValidatorDefinition) {
+					dt(description, "Validator ID: ", ((FacesValidatorDefinition)def).getValidatorId());
+				}
+			} else {
+				description.append("<dl>");
+			}
+			dt(description, "Class: ", def.getJavaClass().getName());
+			
+			// Expected to be opened in every if condition
+			description.append("</dl>");
+			
+			documentation.setTextContent(HtmlUtil.toHTMLContentString(description.toString(), false));
+		}
+	}
+	
+	private static StringBuilder dt(StringBuilder stringBuilder, Object name, Object value) {
+		stringBuilder.append("<dt>");
+		stringBuilder.append(name);
+		stringBuilder.append("</dt><dd>");
+		stringBuilder.append(value);
+		stringBuilder.append("</dd>");
+		return stringBuilder;
+	}
+	private static StringBuilder dt(StringBuilder stringBuilder, Object name, Consumer<StringBuilder> value) {
+		stringBuilder.append("<dt>");
+		stringBuilder.append(name);
+		stringBuilder.append("</dt><dd>");
+		value.accept(stringBuilder);
+		stringBuilder.append("</dd>");
+		return stringBuilder;
+	}
+	
+	private static StringBuilder p(StringBuilder stringBuilder, Object... value) {
+		stringBuilder.append("<p>");
+		for(Object val : value) {
+			stringBuilder.append(val);
+		}
+		stringBuilder.append("</p>");
+		return stringBuilder;
+	}
+	
+	private Document getXspConfig(String filePath) {
+		return xspConfigs.computeIfAbsent(PathUtil.concat("/", filePath, '/'), key -> {
+			try(InputStream is = getClass().getResourceAsStream(key)) {
+				if(is != null) {
+					Document result = DOMUtil.createDocument(is);
+					
+					// Find a translation file
+					if(key.endsWith(".xsp-config")) {
+						String propFilePath = key.substring(0, key.length()-".xsp-config".length())+".properties";
+						try(InputStream propIs = getClass().getResourceAsStream(propFilePath)) {
+							if(propIs != null) {
+								Properties props = new Properties();
+								props.load(propIs);
+								
+								Stream.of(DOMUtil.nodes(result, "//*[starts-with(text(),'%')]"))
+									.filter(Element.class::isInstance)
+									.map(Element.class::cast)
+									.forEach(el -> {
+										String text = el.getTextContent();
+										if(text.endsWith("%")) {
+											String prop = text.substring(1, text.length()-1);
+											String translated = props.getProperty(prop, text);
+											el.setTextContent(translated);
+										}
+									});
+							}
+						}
+					}
+					
+					return result;
+				} else {
+					return null;
+				}
+			} catch(IOException | XMLException e) {
+				e.printStackTrace();
+				// Ignore
+				return null;
+			}
+		});
 	}
 	
 	private void outProperties(FacesDefinition def, Element element, SharableRegistryImpl registry) {
@@ -356,6 +508,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 //			attribute.setAttribute("use", "required");
 //		}
 	}
+	
 	
 	private String toElementName(FacesDefinition def, boolean noTag) {
 		String name;

@@ -35,6 +35,10 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="dominoDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.dominoDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.DominoDocumentData&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.scope" type="xs:string"/>
@@ -128,8 +132,17 @@
     <xs:attribute name="webQuerySaveAgent" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dominoDocument" type="dominoDocument"/>
+  <xs:element name="dominoDocument" type="dominoDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.dominoDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.DominoDocumentData&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="dominoView">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.dominoView&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.DominoViewData&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.scope" type="xs:string"/>
@@ -195,8 +208,17 @@
     <xs:attribute name="searchFuzzy" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dominoView" type="dominoView"/>
+  <xs:element name="dominoView" type="dominoView">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.dominoView&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.domino.DominoViewData&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="sendMail">
+    <xs:annotation>
+      <xs:documentation source="version">9.0.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SendMailAction&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SendMailAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.to" type="xs:string"/>
@@ -252,8 +274,17 @@
     <xs:attribute name="htmlFilter" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="sendMail" type="sendMail"/>
+  <xs:element name="sendMail" type="sendMail">
+    <xs:annotation>
+      <xs:documentation source="version">9.0.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SendMailAction&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SendMailAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="typeAhead">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;AJAX Type ahead&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;An input control that automatically fills itself in as users type a succession of characters that match a specified suggestion.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.typeAhead&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ajax&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TypeAhead&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTypeAhead&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -326,8 +357,17 @@
     <xs:attribute name="frequency" type="xp:attrDecimal"/>
     <xs:attribute name="tokens" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="typeAhead" type="typeAhead"/>
+  <xs:element name="typeAhead" type="typeAhead">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;AJAX Type ahead&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;An input control that automatically fills itself in as users type a succession of characters that match a specified suggestion.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.typeAhead&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ajax&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TypeAhead&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTypeAhead&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="changeDocumentMode">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.changeDocumentMode&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ChangeDocumentModeAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.var" type="xs:string"/>
@@ -339,8 +379,17 @@
     <xs:attribute name="mode" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="changeDocumentMode" type="changeDocumentMode"/>
+  <xs:element name="changeDocumentMode" type="changeDocumentMode">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.changeDocumentMode&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ChangeDocumentModeAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="deleteSelectedDocuments">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.deleteSelectedDocuments&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.DeleteSelectedDocumentsAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.view" type="xs:string"/>
@@ -354,8 +403,17 @@
     <xs:attribute name="message" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="deleteSelectedDocuments" type="deleteSelectedDocuments"/>
+  <xs:element name="deleteSelectedDocuments" type="deleteSelectedDocuments">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.deleteSelectedDocuments&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.DeleteSelectedDocumentsAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="deleteDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.deleteDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.DeleteDocumentAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -369,8 +427,17 @@
     <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="deleteDocument" type="deleteDocument"/>
+  <xs:element name="deleteDocument" type="deleteDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.deleteDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.DeleteDocumentAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="openPage">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.openPage&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.OpenPageAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.parameters">
@@ -394,8 +461,17 @@
     <xs:attribute name="target" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="openPage" type="openPage"/>
+  <xs:element name="openPage" type="openPage">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.openPage&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.OpenPageAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="createResponse">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.createResponse&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.CreateResponseAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.var" type="xs:string"/>
@@ -409,8 +485,17 @@
     <xs:attribute name="parentId" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="createResponse" type="createResponse"/>
+  <xs:element name="createResponse" type="createResponse">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.createResponse&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.CreateResponseAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="saveDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.saveDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SaveDocumentAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.var" type="xs:string"/>
@@ -420,8 +505,17 @@
     <xs:attribute name="var" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="saveDocument" type="saveDocument"/>
+  <xs:element name="saveDocument" type="saveDocument">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.saveDocument&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SaveDocumentAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="confirm">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.confirm&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ConfirmAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -431,8 +525,17 @@
     <xs:attribute name="message" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="confirm" type="confirm"/>
+  <xs:element name="confirm" type="confirm">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.confirm&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ConfirmAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="modifyField">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.modifyField&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ModifyFieldAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.var" type="xs:string"/>
@@ -446,8 +549,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="modifyField" type="modifyField"/>
+  <xs:element name="modifyField" type="modifyField">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.modifyField&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ModifyFieldAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="setComponentMode">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.setComponentMode&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ComponentSetModeAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.mode" type="xs:string"/>
@@ -459,8 +571,17 @@
     <xs:attribute name="cancel" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="setComponentMode" type="setComponentMode"/>
+  <xs:element name="setComponentMode" type="setComponentMode">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.setComponentMode&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ComponentSetModeAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="publishValue">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.publishValue&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ComponentPublishPropertyAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.name" type="xs:string"/>
@@ -474,8 +595,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="publishValue" type="publishValue"/>
+  <xs:element name="publishValue" type="publishValue">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.publishValue&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ComponentPublishPropertyAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="publishViewColumn">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.publishViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ComponentPublishViewColumnAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.name" type="xs:string"/>
@@ -489,8 +619,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="publishViewColumn" type="publishViewColumn"/>
+  <xs:element name="publishViewColumn" type="publishViewColumn">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.publishViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ComponentPublishViewColumnAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="handler">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.handler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ClientEventHandler&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.type" type="xs:string"/>
@@ -504,8 +643,17 @@
     <xs:attribute name="script" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="handler" type="handler"/>
+  <xs:element name="handler" type="handler">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.handler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ClientEventHandler&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="dataContext">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.dataContext&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.DataContextImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.var" type="xs:string"/>
@@ -521,8 +669,17 @@
     <xs:attribute name="indexVar" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dataContext" type="dataContext"/>
+  <xs:element name="dataContext" type="dataContext">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.dataContext&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.model.DataContextImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateRequired">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Required&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Required&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.RequiredValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -532,8 +689,17 @@
     <xs:attribute name="message" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateRequired" type="validateRequired"/>
+  <xs:element name="validateRequired" type="validateRequired">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Required&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Required&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.RequiredValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateLength">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Length&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Length&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.LengthValidatorEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -547,8 +713,17 @@
     <xs:attribute name="minimum" type="xp:attrInteger"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateLength" type="validateLength"/>
+  <xs:element name="validateLength" type="validateLength">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Length&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Length&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.LengthValidatorEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateDateTimeRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.DateTimeRangeValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -562,8 +737,17 @@
     <xs:attribute name="minimum" type="xp:attrDate"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateDateTimeRange" type="validateDateTimeRange"/>
+  <xs:element name="validateDateTimeRange" type="validateDateTimeRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.DateTimeRangeValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateDoubleRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DoubleRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DoubleRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.DoubleRangeValidatorEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -577,8 +761,17 @@
     <xs:attribute name="minimum" type="xp:attrDecimal"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateDoubleRange" type="validateDoubleRange"/>
+  <xs:element name="validateDoubleRange" type="validateDoubleRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DoubleRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DoubleRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.DoubleRangeValidatorEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateLongRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LongRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LongRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.LongRangeValidatorEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -592,8 +785,17 @@
     <xs:attribute name="minimum" type="xp:attrInteger"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateLongRange" type="validateLongRange"/>
+  <xs:element name="validateLongRange" type="validateLongRange">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LongRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LongRange&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.LongRangeValidatorEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateConstraint">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Constraint&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Constraint&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ConstraintValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -605,8 +807,17 @@
     <xs:attribute name="regex" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateConstraint" type="validateConstraint"/>
+  <xs:element name="validateConstraint" type="validateConstraint">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Constraint&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Constraint&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ConstraintValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateModulusSelfCheck">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ModulusSelfCheck&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ModulusSelfCheck&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ModulusSelfCheckValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -618,8 +829,17 @@
     <xs:attribute name="modulus" type="xp:attrInteger"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateModulusSelfCheck" type="validateModulusSelfCheck"/>
+  <xs:element name="validateModulusSelfCheck" type="validateModulusSelfCheck">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ModulusSelfCheck&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ModulusSelfCheck&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ModulusSelfCheckValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validateExpression">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Expression&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Expression&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ExpressionValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -639,8 +859,17 @@
     <xs:attribute name="clientScript" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validateExpression" type="validateExpression"/>
+  <xs:element name="validateExpression" type="validateExpression">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Expression&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Expression&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ExpressionValidator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="convertMask">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Mask&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.MaskConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.asis" type="xp:attrBoolean"/>
@@ -652,8 +881,17 @@
     <xs:attribute name="mask" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="convertMask" type="convertMask"/>
+  <xs:element name="convertMask" type="convertMask">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Mask&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.MaskConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="convertNumber">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Number&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.NumberConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.currencyCode" type="xs:string"/>
@@ -683,8 +921,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="convertNumber" type="convertNumber"/>
+  <xs:element name="convertNumber" type="convertNumber">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Number&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.NumberConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="convertDateTime">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.DateTime&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.DateTimeConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.dateStyle" type="xs:string"/>
@@ -706,8 +953,17 @@
     <xs:attribute name="ignoreUserTimeZone" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="convertDateTime" type="convertDateTime"/>
+  <xs:element name="convertDateTime" type="convertDateTime">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.DateTime&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.DateTimeConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="convertBoolean">
+    <xs:annotation>
+      <xs:documentation source="version">9.0.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Boolean&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.BooleanConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.strict" type="xp:attrBoolean"/>
@@ -719,8 +975,17 @@
     <xs:attribute name="message" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="convertBoolean" type="convertBoolean"/>
+  <xs:element name="convertBoolean" type="convertBoolean">
+    <xs:annotation>
+      <xs:documentation source="version">9.0.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Boolean&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.convert.BooleanConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="convertList">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.List&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ListConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.delimiter" type="xs:string"/>
@@ -730,8 +995,17 @@
     <xs:attribute name="delimiter" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="convertList" type="convertList"/>
+  <xs:element name="convertList" type="convertList">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.List&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ListConverter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="inputRichText">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Rich Text&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering multiple lines of rich text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputRichText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -872,8 +1146,17 @@
     <xs:attribute name="role" type="xs:string"/>
     <xs:attribute name="style" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="inputRichText" type="inputRichText"/>
+  <xs:element name="inputRichText" type="inputRichText">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Rich Text&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering multiple lines of rich text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputRichText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputRichText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="scriptBlock">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Output script&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that outputs scripts.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputScript&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -928,8 +1211,17 @@
     <xs:attribute name="charset" type="xs:string"/>
     <xs:attribute name="src" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="scriptBlock" type="scriptBlock"/>
+  <xs:element name="scriptBlock" type="scriptBlock">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Output script&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that outputs scripts.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputScript&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="section">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Section&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows users to expand and collapse paragraphs.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Section&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Section&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSection&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1016,8 +1308,17 @@
     <xs:attribute name="header" type="xs:string"/>
     <xs:attribute name="headerStyle" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="section" type="section"/>
+  <xs:element name="section" type="section">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Section&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows users to expand and collapse paragraphs.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Section&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Section&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSection&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="tabbedPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Tabbed panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a tabbed container for controls that share common data and styling attributes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1074,8 +1375,17 @@
     <xs:attribute name="containerStyleClass" type="xs:string"/>
     <xs:attribute name="outerStyleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="tabbedPanel" type="tabbedPanel"/>
+  <xs:element name="tabbedPanel" type="tabbedPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Tabbed panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a tabbed container for controls that share common data and styling attributes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTabbedPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="tabPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Tab panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a tab and its contents in a tabbed panel.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTabPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1142,8 +1452,17 @@
     <xs:attribute name="endTabStyleClass" type="xs:string"/>
     <xs:attribute name="contentStyleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="tabPanel" type="tabPanel"/>
+  <xs:element name="tabPanel" type="tabPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Tab panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a tab and its contents in a tabbed panel.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TabPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTabPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="button">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Button&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that starts an assigned action when an event occurs, for example, a click by a user. Buttons require an event handler or JavaScript to submit data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.CommandButton&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Command&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ButtonEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspCommandButton&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1276,8 +1595,17 @@
     <xs:attribute name="iconAlt" type="xs:string"/>
     <xs:attribute name="iconStyleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="button" type="button"/>
+  <xs:element name="button" type="button">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Button&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that starts an assigned action when an event occurs, for example, a click by a user. Buttons require an event handler or JavaScript to submit data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.CommandButton&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Command&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ButtonEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspCommandButton&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="form">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Form&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that groups data that should be submitted together. This control is added to pages automatically.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspForm&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1366,8 +1694,17 @@
     <xs:attribute name="onsubmit" type="xs:string"/>
     <xs:attribute name="target" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="form" type="form"/>
+  <xs:element name="form" type="form">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Form&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that groups data that should be submitted together. This control is added to pages automatically.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Form&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspForm&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="table">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays individual cells for arranging controls on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Table&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Table&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTable&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1466,8 +1803,17 @@
     <xs:attribute name="align" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="table" type="table"/>
+  <xs:element name="table" type="table">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays individual cells for arranging controls on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Table&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Table&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTable&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="tr">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table row&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single row in a table control.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.HtmlTableRow&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableRow&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTableRow&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1546,8 +1892,17 @@
     <xs:attribute name="valign" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="tr" type="tr"/>
+  <xs:element name="tr" type="tr">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table row&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single row in a table control.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.HtmlTableRow&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableRow&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTableRow&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="td">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table cell&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single cell in a table row.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableCell&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableCell&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTableCell&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1630,8 +1985,17 @@
     <xs:attribute name="rowspan" type="xp:attrInteger"/>
     <xs:attribute name="colspan" type="xp:attrInteger"/>
   </xs:complexType>
-  <xs:element name="td" type="td"/>
+  <xs:element name="td" type="td">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Table cell&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single cell in a table row.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableCell&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableCell&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspTableCell&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="div">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Div&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that may contain other controls or text and acts as division or block of content within the HTML page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Div&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Div&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDiv&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1708,8 +2072,17 @@
     <xs:attribute name="align" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="div" type="div"/>
+  <xs:element name="div" type="div">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Div&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that may contain other controls or text and acts as division or block of content within the HTML page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Div&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Div&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDiv&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="span">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Span content&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows other controls to display beside it. A span content control can contain other controls or text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Span&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Span&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSpan&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1784,8 +2157,17 @@
     <xs:attribute name="lang" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="span" type="span"/>
+  <xs:element name="span" type="span">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Span content&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows other controls to display beside it. A span content control can contain other controls or text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Span&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Span&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSpan&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="br">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Line break&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that inserts a break in text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LineBreak&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LineBreak&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspLineBreak&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1834,8 +2216,17 @@
     <xs:attribute name="styleClass" type="xs:string"/>
     <xs:attribute name="title" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="br" type="br"/>
+  <xs:element name="br" type="br">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Line break&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that inserts a break in text.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LineBreak&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LineBreak&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspLineBreak&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="paragraph">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Paragraph&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that contains text in a paragraph format.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Paragraph&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Paragraph&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspParagraph&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1910,8 +2301,17 @@
     <xs:attribute name="lang" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="paragraph" type="paragraph"/>
+  <xs:element name="paragraph" type="paragraph">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Paragraph&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that contains text in a paragraph format.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Paragraph&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Tag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Paragraph&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspParagraph&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="image">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Image&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a graphic on a page. Images are usually stored as GIF or JPEG files.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.GraphicImage&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Graphic&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ImageEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspGraphicImage&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -1996,8 +2396,17 @@
     <xs:attribute name="usemap" type="xs:string"/>
     <xs:attribute name="width" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="image" type="image"/>
+  <xs:element name="image" type="image">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Image&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a graphic on a page. Images are usually stored as GIF or JPEG files.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.GraphicImage&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Graphic&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ImageEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspGraphicImage&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="callback">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Callback&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A callback control that provides an editable area in a custom control.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Callback&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspCallback&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2032,8 +2441,17 @@
     <xs:attribute name="attrs" type="xp:attrBinding"/>
     <xs:attribute name="facetName" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="callback" type="callback"/>
+  <xs:element name="callback" type="callback">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Callback&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A callback control that provides an editable area in a custom control.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Callback&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspCallback&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="dateTimeHelper">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;dojo DateTimeHelper&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A DateTimeHelper for the edit box. Uses dojo.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2076,8 +2494,17 @@
     <xs:attribute name="timeVisibleIncrement" type="xs:string"/>
     <xs:attribute name="timeVisibleRange" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="dateTimeHelper" type="dateTimeHelper"/>
+  <xs:element name="dateTimeHelper" type="dateTimeHelper">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;dojo DateTimeHelper&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A DateTimeHelper for the edit box. Uses dojo.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDateTimeHelper&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="eventHandler">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Event handler&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows JavaScript to run both on the server and the client. Event submissions are prevented when the client-side JavaScript returns a null value.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.EventHandler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Command&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.EventHandler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspEventHandler&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2172,8 +2599,17 @@
     <xs:attribute name="submit" type="xp:attrBoolean"/>
     <xs:attribute name="event" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="eventHandler" type="eventHandler"/>
+  <xs:element name="eventHandler" type="eventHandler">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Event handler&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows JavaScript to run both on the server and the client. Event submissions are prevented when the client-side JavaScript returns a null value.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.EventHandler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Command&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.EventHandler&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspEventHandler&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="dataTable">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data table&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a set of repeating data in a table.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;caption&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataTableEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDataTableEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2306,8 +2742,17 @@
     <xs:attribute name="partialExecute" type="xp:attrBoolean"/>
     <xs:attribute name="refreshId" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="dataTable" type="dataTable"/>
+  <xs:element name="dataTable" type="dataTable">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data table&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a set of repeating data in a table.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;caption&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataTableEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.TableEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDataTableEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="fileUpload">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;File upload&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows users to upload files to the page&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileUpload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Fileupload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Fileupload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspFileUpload&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2448,8 +2893,17 @@
     <xs:attribute name="accept" type="xs:string"/>
     <xs:attribute name="exclude" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="fileUpload" type="fileUpload"/>
+  <xs:element name="fileUpload" type="fileUpload">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;File upload&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows users to upload files to the page&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileUpload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Fileupload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Fileupload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspFileUpload&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="fileDownload">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;File download&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of available files for downloading&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileDownload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileDownloadRenderer&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspFileDownload&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2632,8 +3086,17 @@
     <xs:attribute name="headerClass" type="xs:string"/>
     <xs:attribute name="rules" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="fileDownload" type="fileDownload"/>
+  <xs:element name="fileDownload" type="fileDownload">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;File download&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of available files for downloading&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileDownload&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.FileDownloadRenderer&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspFileDownload&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="viewPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays sortable rows and columns of data extracted from XML based on a defined query&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;footerPager&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;headerPager&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;viewTitle&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2744,8 +3207,17 @@
     <xs:attribute name="viewStyle" type="xs:string"/>
     <xs:attribute name="viewStyleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="viewPanel" type="viewPanel"/>
+  <xs:element name="viewPanel" type="viewPanel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays sortable rows and columns of data extracted from XML based on a defined query&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;footerPager&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;headerPager&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;viewTitle&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Data&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPanel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewPanel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="viewTitle">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View title&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a title for a view&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewTitle&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewTitle&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2806,8 +3278,17 @@
     <xs:attribute name="escape" type="xp:attrBoolean"/>
     <xs:attribute name="panelPosition" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="viewTitle" type="viewTitle"/>
+  <xs:element name="viewTitle" type="viewTitle">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View title&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a title for a view&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewTitle&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewTitle&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="pager">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data navigation control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A common control that allows traversal of data pages&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Pager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPager&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2870,8 +3351,17 @@
     <xs:attribute name="panelPosition" type="xs:string"/>
     <xs:attribute name="alwaysCalculateLast" type="xp:attrBoolean"/>
   </xs:complexType>
-  <xs:element name="pager" type="pager"/>
+  <xs:element name="pager" type="pager">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data navigation control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A common control that allows traversal of data pages&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Pager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPager&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="viewPager">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View navigation control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that navigates pages of data. Also known as a pager, this control can be positioned either in the header or footer of views&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Pager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIViewPager&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -2958,8 +3448,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="enableAjax" type="xp:attrBoolean"/>
   </xs:complexType>
-  <xs:element name="viewPager" type="viewPager"/>
+  <xs:element name="viewPager" type="viewPager">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View navigation control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that navigates pages of data. Also known as a pager, this control can be positioned either in the header or footer of views&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Pager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPager&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIViewPager&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="pagerControl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Pager child control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A pager control that is placed inside the common pager&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPagerControl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3066,8 +3565,17 @@
     <xs:attribute name="lastStyleClass" type="xs:string"/>
     <xs:attribute name="currentStyleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="pagerControl" type="pagerControl"/>
+  <xs:element name="pagerControl" type="pagerControl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Pager child control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A pager control that is placed inside the common pager&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.XPagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PagerControl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPagerControl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="viewColumn">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View column&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a column in a view&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewColumn&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3144,8 +3652,17 @@
     <xs:attribute name="pageUrl" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="viewColumn" type="viewColumn"/>
+  <xs:element name="viewColumn" type="viewColumn">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View column&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a column in a view&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumn&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewColumn&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="viewColumnHeader">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View column header&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a header for a view column&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3198,8 +3715,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="viewColumnHeader" type="viewColumnHeader"/>
+  <xs:element name="viewColumnHeader" type="viewColumnHeader">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;View column header&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a header for a view column&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspViewColumnHeader&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="repeat">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Repeat&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that repeats a control on a page. You can specify the number of repetitions based on either data binding or a formula result&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDataIterator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3258,8 +3784,17 @@
     <xs:attribute name="style" type="xs:string"/>
     <xs:attribute name="styleClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="repeat" type="repeat"/>
+  <xs:element name="repeat" type="repeat">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Repeat&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that repeats a control on a page. You can specify the number of repetitions based on either data binding or a formula result&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.DataIterator&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspDataIterator&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="platformEvent">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Platform Event Control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A common control that handles a platform event&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3288,8 +3823,17 @@
     <xs:attribute name="onevent" type="xs:string"/>
     <xs:attribute name="eventName" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="platformEvent" type="platformEvent"/>
+  <xs:element name="platformEvent" type="platformEvent">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Platform Event Control&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A common control that handles a platform event&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.PlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspPlatformEvent&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="column">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data table column&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single column in a data table.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspColumn&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3328,8 +3872,17 @@
     <xs:attribute name="styleClass" type="xs:string"/>
     <xs:attribute name="role" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="column" type="column"/>
+  <xs:element name="column" type="column">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Data table column&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a single column in a data table.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Facets:&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;footer&amp;lt;/li&amp;gt;&amp;lt;li&amp;gt;header&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Column&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspColumn&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="view">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Page&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;The top-level container for all controls used within a Form design element. The namespaces for the control libraries used within the page are declared on this tag.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.UIViewRootEx2&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.ViewRoot&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewRootEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIViewRootEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3492,8 +4045,17 @@
     <xs:attribute name="modifiedMessage" type="xs:string"/>
     <xs:attribute name="modifiedControl" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="view" type="view"/>
+  <xs:element name="view" type="view">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Page&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;The top-level container for all controls used within a Form design element. The namespaces for the control libraries used within the page are declared on this tag.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.UIViewRootEx2&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.ViewRoot&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.ViewRootEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIViewRootEx2&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="inputHidden">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Hidden input&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that stores data that needs to be hidden from the user.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputHidden&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Hidden&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputHidden&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3594,8 +4156,17 @@
     <xs:attribute name="htmlFilter" type="xs:string"/>
     <xs:attribute name="htmlFilterIn" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="inputHidden" type="inputHidden"/>
+  <xs:element name="inputHidden" type="inputHidden">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Hidden input&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that stores data that needs to be hidden from the user.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputHidden&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Hidden&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputHidden&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="inputText">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Edit box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering a single line of data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3756,8 +4327,17 @@
     <xs:attribute name="size" type="xp:attrInteger"/>
     <xs:attribute name="maxlength" type="xp:attrInteger"/>
   </xs:complexType>
-  <xs:element name="inputText" type="inputText"/>
+  <xs:element name="inputText" type="inputText">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Edit box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering a single line of data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="inputTextarea">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Multiline edit box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering multiple lines of data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputTextarea&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Textarea&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputTextarea&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3910,8 +4490,17 @@
     <xs:attribute name="cols" type="xp:attrInteger"/>
     <xs:attribute name="rows" type="xp:attrInteger"/>
   </xs:complexType>
-  <xs:element name="inputTextarea" type="inputTextarea"/>
+  <xs:element name="inputTextarea" type="inputTextarea">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Multiline edit box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a field for entering multiple lines of data.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputTextarea&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Textarea&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputTextarea&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="message">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Display error&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays warning, information, and error messages for one control on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspMessage&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -3980,8 +4569,17 @@
     <xs:attribute name="warnClass" type="xs:string"/>
     <xs:attribute name="warnStyle" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="message" type="message"/>
+  <xs:element name="message" type="message">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Display error&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays warning, information, and error messages for one control on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Message&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspMessage&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="messages">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Display errors&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays warning, information, and error messages for all controls on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspMessages&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4052,8 +4650,17 @@
     <xs:attribute name="warnClass" type="xs:string"/>
     <xs:attribute name="warnStyle" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="messages" type="messages"/>
+  <xs:element name="messages" type="messages">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Display errors&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays warning, information, and error messages for all controls on a page.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Messages&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspMessages&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="label">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Label&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays text&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLabel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLabel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputLabel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4140,8 +4747,17 @@
     <xs:attribute name="for" type="xs:string"/>
     <xs:attribute name="readonly" type="xp:attrBoolean"/>
   </xs:complexType>
-  <xs:element name="label" type="label"/>
+  <xs:element name="label" type="label">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Label&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays text&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLabel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLabel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputLabel&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="link">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Link&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that links to a different page, to another control on the same page, or to an external resource using a URL.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLink&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LinkEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputLink&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4256,8 +4872,17 @@
     <xs:attribute name="target" type="xs:string"/>
     <xs:attribute name="type" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="link" type="link"/>
+  <xs:element name="link" type="link">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Link&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that links to a different page, to another control on the same page, or to an external resource using a URL.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputLink&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.LinkEx&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputLink&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="text">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Computed field&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a read-only field that outputs the result of an expression.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4328,8 +4953,17 @@
     <xs:attribute name="tagName" type="xs:string"/>
     <xs:attribute name="preventBlank" type="xp:attrBoolean"/>
   </xs:complexType>
-  <xs:element name="text" type="text"/>
+  <xs:element name="text" type="text">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Computed field&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a read-only field that outputs the result of an expression.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.OutputText&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Output&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Text&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspOutputText&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="checkBoxGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Check Box Group&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays multiple check boxes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectManyCheckbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectMany&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Checkbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectManyCheckbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4480,8 +5114,17 @@
     <xs:attribute name="enabledClass" type="xs:string"/>
     <xs:attribute name="layout" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="checkBoxGroup" type="checkBoxGroup"/>
+  <xs:element name="checkBoxGroup" type="checkBoxGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Check Box Group&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays multiple check boxes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectManyCheckbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectMany&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Checkbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectManyCheckbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="listBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;List box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of choices. Users can click more than one choice.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectManyListbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectMany&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Listbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectManyListbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4630,8 +5273,17 @@
     <xs:attribute name="enabledClass" type="xs:string"/>
     <xs:attribute name="size" type="xp:attrInteger"/>
   </xs:complexType>
-  <xs:element name="listBox" type="listBox"/>
+  <xs:element name="listBox" type="listBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;List box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of choices. Users can click more than one choice.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectManyListbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectMany&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Listbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectManyListbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="comboBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Combo box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of choices. Users can click only one choice.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectOneMenu&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectOne&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Menu&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectOneMenu&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4772,8 +5424,17 @@
     <xs:attribute name="disabledClass" type="xs:string"/>
     <xs:attribute name="enabledClass" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="comboBox" type="comboBox"/>
+  <xs:element name="comboBox" type="comboBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Combo box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a list of choices. Users can click only one choice.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectOneMenu&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectOne&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Menu&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectOneMenu&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="radioGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Radio button group&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a group of radio buttons. Users can select only one radio button at a time.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectOneRadio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectOne&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectOneRadio&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -4922,8 +5583,17 @@
     <xs:attribute name="enabledClass" type="xs:string"/>
     <xs:attribute name="layout" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="radioGroup" type="radioGroup"/>
+  <xs:element name="radioGroup" type="radioGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Radio button group&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that displays a group of radio buttons. Users can select only one radio button at a time.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectOneRadio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectOne&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspSelectOneRadio&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="checkBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Check box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that can be selected or cleared. Check boxes can be grouped together.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputCheckbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Checkbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputCheckbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5062,8 +5732,17 @@
     <xs:attribute name="text" type="xs:string"/>
     <xs:attribute name="onchange" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="checkBox" type="checkBox"/>
+  <xs:element name="checkBox" type="checkBox">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Check box&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that can be selected or cleared. Check boxes can be grouped together.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.InputCheckbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Checkbox&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputCheckbox&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="radio">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Radio button&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that can be selected. When radio buttons are grouped together, users can select only one radio button at a time.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputRadio&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5204,8 +5883,17 @@
     <xs:attribute name="text" type="xs:string"/>
     <xs:attribute name="onchange" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="radio" type="radio"/>
+  <xs:element name="radio" type="radio">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Radio button&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that can be selected. When radio buttons are grouped together, users can select only one radio button at a time.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Input&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Radio&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.xp.XspInputRadio&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="executeScript">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.executeScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ExecuteScriptAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.script">
@@ -5221,8 +5909,17 @@
     <xs:attribute name="script" type="xp:attrBinding"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="executeScript" type="executeScript"/>
+  <xs:element name="executeScript" type="executeScript">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.executeScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ExecuteScriptAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="actionGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.actionGroup&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ActionGroup&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.actions">
@@ -5240,8 +5937,17 @@
     <xs:attribute name="condition" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="actionGroup" type="actionGroup"/>
+  <xs:element name="actionGroup" type="actionGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.actionGroup&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.ActionGroup&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="setValue">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.setValue&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SetValueAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.binding">
@@ -5259,8 +5965,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="setValue" type="setValue"/>
+  <xs:element name="setValue" type="setValue">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.setValue&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SetValueAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="save">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.save&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SaveAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.name" type="xs:string"/>
@@ -5270,8 +5985,17 @@
     <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="save" type="save"/>
+  <xs:element name="save" type="save">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.save&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.SaveAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="executeClientScript">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.executeClientScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ExecuteScriptClientAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.script" type="xs:string"/>
@@ -5281,8 +6005,17 @@
     <xs:attribute name="script" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="executeClientScript" type="executeClientScript"/>
+  <xs:element name="executeClientScript" type="executeClientScript">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.executeClientScript&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ExecuteScriptClientAction&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="scriptGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.scriptGroup&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ScriptGroup&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.scripts">
@@ -5300,8 +6033,17 @@
     <xs:attribute name="conditionScript" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="scriptGroup" type="scriptGroup"/>
+  <xs:element name="scriptGroup" type="scriptGroup">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.scriptGroup&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.actions.client.ScriptGroup&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="validator">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.validatorId" type="xs:string"/>
@@ -5311,8 +6053,17 @@
     <xs:attribute name="validatorId" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="validator" type="validator"/>
+  <xs:element name="validator" type="validator">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="customValidator">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.message" type="xs:string"/>
@@ -5330,8 +6081,17 @@
     <xs:attribute name="validate" type="xp:attrBinding"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="customValidator" type="customValidator"/>
+  <xs:element name="customValidator" type="customValidator">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Validator ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.validator.ValidatorMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="converter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.converterId" type="xs:string"/>
@@ -5341,8 +6101,17 @@
     <xs:attribute name="converterId" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="converter" type="converter"/>
+  <xs:element name="converter" type="converter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterImpl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="customConverter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.getAsString">
@@ -5366,8 +6135,17 @@
     <xs:attribute name="getAsObject" type="xp:attrBinding"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="customConverter" type="customConverter"/>
+  <xs:element name="customConverter" type="customConverter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.converter.ConverterMethodBinding&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="actionListener">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.actionListener&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ActionListenerImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.type" type="xs:string"/>
@@ -5377,8 +6155,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="actionListener" type="actionListener"/>
+  <xs:element name="actionListener" type="actionListener">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.actionListener&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ActionListenerImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="valueChangeListener">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.valueChangeListener&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ValueChangeListenerImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.type" type="xs:string"/>
@@ -5388,8 +6175,17 @@
     <xs:attribute name="type" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="valueChangeListener" type="valueChangeListener"/>
+  <xs:element name="valueChangeListener" type="valueChangeListener">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.valueChangeListener&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.event.ValueChangeListenerImpl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="navigationRule">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.application.navigationRule&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.application.NavigationRule&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.outcome" type="xs:string"/>
@@ -5403,8 +6199,17 @@
     <xs:attribute name="redirect" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="navigationRule" type="navigationRule"/>
+  <xs:element name="navigationRule" type="navigationRule">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.application.navigationRule&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.application.NavigationRule&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="script">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.script&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.ScriptResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5432,8 +6237,17 @@
     <xs:attribute name="clientSide" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="script" type="script"/>
+  <xs:element name="script" type="script">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.script&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.ScriptResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="dojoModulePath">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.dojoModulePath&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.DojoModulePathResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5447,8 +6261,17 @@
     <xs:attribute name="prefix" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dojoModulePath" type="dojoModulePath"/>
+  <xs:element name="dojoModulePath" type="dojoModulePath">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.dojoModulePath&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.DojoModulePathResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="styleSheet">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.styleSheet&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.StyleSheetResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5472,8 +6295,17 @@
     <xs:attribute name="media" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="styleSheet" type="styleSheet"/>
+  <xs:element name="styleSheet" type="styleSheet">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.styleSheet&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.StyleSheetResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="bundle">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.bundle&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.BundleResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5487,8 +6319,17 @@
     <xs:attribute name="var" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="bundle" type="bundle"/>
+  <xs:element name="bundle" type="bundle">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.bundle&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.BundleResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="dojoModule">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.dojoModule&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.DojoModuleResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5502,8 +6343,17 @@
     <xs:attribute name="condition" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dojoModule" type="dojoModule"/>
+  <xs:element name="dojoModule" type="dojoModule">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.dojoModule&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.DojoModuleResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="metaData">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.metaData&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.MetaDataResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5529,8 +6379,17 @@
     <xs:attribute name="httpEquiv" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="metaData" type="metaData"/>
+  <xs:element name="metaData" type="metaData">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.metaData&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.MetaDataResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="headTag">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.headTag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.GenericHeadResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5550,8 +6409,17 @@
     <xs:attribute name="attributes" type="xp:attrBinding"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="headTag" type="headTag"/>
+  <xs:element name="headTag" type="headTag">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.headTag&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.GenericHeadResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="baseUrl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.baseurl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.ViewRootBaseUrl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.href" type="xs:string"/>
@@ -5563,8 +6431,17 @@
     <xs:attribute name="target" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="baseUrl" type="baseUrl"/>
+  <xs:element name="baseUrl" type="baseUrl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.2+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.baseurl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.ViewRootBaseUrl&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="linkResource">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.linkResource&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.LinkResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5606,8 +6483,17 @@
     <xs:attribute name="target" type="xs:string"/>
     <xs:attribute name="type" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="linkResource" type="linkResource"/>
+  <xs:element name="linkResource" type="linkResource">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.linkResource&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.resource.LinkResource&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="dojoAttribute">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dojo.dojoAttribute&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dojo.DojoAttribute&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.name" type="xs:string"/>
@@ -5619,8 +6505,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="dojoAttribute" type="dojoAttribute"/>
+  <xs:element name="dojoAttribute" type="dojoAttribute">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.1+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dojo.dojoAttribute&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.dojo.DojoAttribute&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="acl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.acl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.ACL&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.entries">
@@ -5636,8 +6531,17 @@
     <xs:attribute name="entries" type="xp:attrBinding"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="acl" type="acl"/>
+  <xs:element name="acl" type="acl">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.acl&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.ACL&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="aclEntry">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.aclEntry&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.ACLEntry&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.fullName" type="xs:string"/>
@@ -5653,8 +6557,17 @@
     <xs:attribute name="right" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="aclEntry" type="aclEntry"/>
+  <xs:element name="aclEntry" type="aclEntry">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.aclEntry&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.acl.ACLEntry&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="parameter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.parameter&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.Parameter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.name" type="xs:string"/>
@@ -5666,8 +6579,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="parameter" type="parameter"/>
+  <xs:element name="parameter" type="parameter">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.parameter&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.Parameter&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType name="attr">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.3+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.attr&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.Attr&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.loaded" type="xp:attrBoolean"/>
       <xs:element name="this.rendered" type="xp:attrBoolean"/>
@@ -5685,8 +6607,17 @@
     <xs:attribute name="uri" type="xp:attrBoolean"/>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
-  <xs:element name="attr" type="attr"/>
+  <xs:element name="attr" type="attr">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.3+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Complex ID: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.attr&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.complex.Attr&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="selectItems">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Select Items&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Represents a list of items that can be added to any select control, for example List Box, Combo Box.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UISelectItemsEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5721,8 +6652,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="attrs" type="xp:attrBinding"/>
   </xs:complexType>
-  <xs:element name="selectItems" type="selectItems"/>
+  <xs:element name="selectItems" type="selectItems">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Select Items&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Represents a list of items that can be added to any select control, for example List Box, Combo Box.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItems&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UISelectItemsEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="selectItem">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Select Item&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Represents a single item that can be added to any select control, for example List Box, Combo Box.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UISelectItemEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5765,8 +6705,17 @@
     <xs:attribute name="value" type="xs:string"/>
     <xs:attribute name="attrs" type="xp:attrBinding"/>
   </xs:complexType>
-  <xs:element name="selectItem" type="selectItem"/>
+  <xs:element name="selectItem" type="selectItem">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Select Item&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Represents a single item that can be added to any select control, for example List Box, Combo Box.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.SelectItem&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UISelectItemEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="panel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a container for controls that share common data and styling attributes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIPanelEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5853,8 +6802,17 @@
     <xs:attribute name="attrs" type="xp:attrBinding"/>
     <xs:attribute name="tagName" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="panel" type="panel"/>
+  <xs:element name="panel" type="panel">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Panel&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that provides a container for controls that share common data and styling attributes.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;javax.faces.Panel&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIPanelEx&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:complexType mixed="true" name="include">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Include page&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows you to insert the full or partial contents of a page into another page in the same component.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIInclude&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element name="this.binding">
         <xs:complexType mixed="true">
@@ -5943,5 +6901,10 @@
     <xs:attribute name="componentId" type="xs:string"/>
     <xs:attribute name="pageName" type="xs:string"/>
   </xs:complexType>
-  <xs:element name="include" type="include"/>
+  <xs:element name="include" type="include">
+    <xs:annotation>
+      <xs:documentation source="version">8.5.0+</xs:documentation>
+      <xs:documentation source="description">&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;Include page&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;A control that allows you to insert the full or partial contents of a page into another page in the same component.&amp;lt;/p&amp;gt;&amp;lt;dl&amp;gt;&amp;lt;dt&amp;gt;Component Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Component Family&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Renderer Type&amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.Include&amp;lt;/dd&amp;gt;&amp;lt;dt&amp;gt;Class: &amp;lt;/dt&amp;gt;&amp;lt;dd&amp;gt;com.ibm.xsp.component.UIInclude&amp;lt;/dd&amp;gt;&amp;lt;/dl&amp;gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
 </xs:schema>
