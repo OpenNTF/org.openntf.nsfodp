@@ -17,7 +17,7 @@
 	"contributes": {
 		"xml.javaExtensions": [
 			"./jar/org.openntf.nsfodp.lsp4xml.xsp.jar",
-			"./jar/org.openntf.nsfodp.lsp4xml.schemas.jar"
+			"./jar/org.openntf.nsfodp.lsp4xml.dxl.jar"
 		]
 	},
 	"scripts": {
