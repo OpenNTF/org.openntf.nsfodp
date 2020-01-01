@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.faces.component.UIComponent;
@@ -40,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.PathUtil;
@@ -282,19 +284,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 			
 			StringBuilder description = new StringBuilder();
 			
-			// Try to track down the file
-			String filePath = def.getFile().getFilePath();
-			Document xspConfig = getXspConfig(filePath);
-			Element component = null;
-			if(xspConfig != null) {
-				try {
-					Object[] elements = DOMUtil.nodes(xspConfig, "/faces-config/*/*/tag-name[text()='" + def.getTagName() + "']");
-					component = elements.length == 0 ? null : (Element)((Element)elements[0]).getParentNode().getParentNode();
-				} catch(XMLException e) {
-					throw new RuntimeException(e);
-				}		
-			}
-			
+			Element component = findDefinitionElement(def);
 			
 			if(def instanceof FacesComponentDefinition) {
 				FacesComponentDefinition fcd = (FacesComponentDefinition)def;
@@ -307,7 +297,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 				description.append("<dl>");
 				Collection<String> facets = fcd.getFacetNames();
 				if(facets != null && !facets.isEmpty()) {
-					dt(description, "Facets:", sb -> {
+					dt(description, "Facets", sb -> {
 						sb.append("<ul>");
 						facets.stream()
 							.map(f -> "<li>" + f + "</li>")
@@ -321,14 +311,24 @@ public class AbstractSchemaServlet extends HttpServlet {
 			} else if(def instanceof FacesComplexDefinition) {
 				
 				description.append("<dl>");
-				dt(description, "Complex ID: ", ((FacesComplexDefinition)def).getComplexId());
+				dt(description, "Complex ID", ((FacesComplexDefinition)def).getComplexId());
 				if(def instanceof FacesValidatorDefinition) {
-					dt(description, "Validator ID: ", ((FacesValidatorDefinition)def).getValidatorId());
+					dt(description, "Validator ID", ((FacesValidatorDefinition)def).getValidatorId());
 				}
 			} else {
 				description.append("<dl>");
 			}
-			dt(description, "Class: ", def.getJavaClass().getName());
+			if(component != null) {
+				try {
+					Object[] catNodes = DOMUtil.nodes(component, "*/designer-extension/category/text()");
+					if(catNodes.length > 0) {
+						dt(description, "Group", ((Node)catNodes[0]).getTextContent());
+					}
+				} catch(XMLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			dt(description, "Class", def.getJavaClass().getName());
 			
 			// Expected to be opened in every if condition
 			description.append("</dl>");
@@ -494,6 +494,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 		} else {
 			thisElement.setAttribute("type", type);
 		}
+		outAnnotations(def, prop, thisElement);
 		
 		Element attribute = DOMUtil.createElement(doc, element, "xs:attribute");
 		attribute.setAttribute("name", prop.getName());
@@ -507,6 +508,62 @@ public class AbstractSchemaServlet extends HttpServlet {
 //		if(prop.isRequired()) {
 //			attribute.setAttribute("use", "required");
 //		}
+		
+		outAnnotations(def, prop, attribute);
+	}
+	
+	private void outAnnotations(FacesDefinition def, FacesProperty prop, Element element) {
+		Document doc = element.getOwnerDocument();
+		Element annotation = doc.createElement("xs:annotation");
+		if(element.getFirstChild() != null) {
+			element.insertBefore(annotation, element.getFirstChild());
+		} else {
+			element.appendChild(annotation);
+		}
+		{
+			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
+			documentation.setAttribute("source", "version");
+			String since = prop.getSince();
+			if(StringUtil.isEmpty(since)) {
+				since = def.getSince();
+				if(StringUtil.isEmpty(since)) {
+					since = "8.5.0";
+				}
+			}
+			documentation.setTextContent(since + "+");
+		}
+		{
+			// This appears to be treated as HTML
+			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
+			documentation.setAttribute("source", "description");
+			
+			StringBuilder description = new StringBuilder();
+
+			Element propElement = findDefinitionElement(def, prop);
+			if(propElement != null) {
+				p(description, "<b>", propElement.getElementsByTagName("display-name").item(0).getTextContent(), "</b>");
+				p(description, propElement.getElementsByTagName("description").item(0).getTextContent());
+				
+				description.append("<dl>");
+				try {
+					Object[] catNodes = DOMUtil.nodes(propElement, "property-extension/designer-extension/category/text()");
+					if(catNodes.length > 0) {
+						dt(description, "Property Group", ((Node)catNodes[0]).getTextContent());
+					}
+				} catch(XMLException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				description.append("<dl>");
+			}
+					
+			dt(description, "Class", prop.getJavaClass().getName());
+			
+			// Expected to be opened in every if condition
+			description.append("</dl>");
+			
+			documentation.setTextContent(HtmlUtil.toHTMLContentString(description.toString(), false));
+		}
 	}
 	
 	
@@ -531,5 +588,112 @@ public class AbstractSchemaServlet extends HttpServlet {
 			return !simpleProp.isAllowNonBinding();
 		}
 		return false;
+	}
+	
+	/**
+	 * Finds the XML element for the given definition in its original .xsp-config file.
+	 * 
+	 * @param def the {@link FacesDefinition} to search for
+	 * @return an {@link Element} describing the definition, or {@code null} if it cannot be found
+	 */
+	private Element findDefinitionElement(FacesDefinition def) {
+		String filePath = def.getFile().getFilePath();
+		Document xspConfig = getXspConfig(filePath);
+		if(xspConfig != null) {
+			try {
+				Object[] elements = DOMUtil.nodes(xspConfig, "/faces-config/*/component-class[normalize-space(text())='" + def.getJavaClass().getName() + "']");
+				return elements.length == 0 ? null : (Element)((Element)elements[0]).getParentNode();
+			} catch(XMLException e) {
+				throw new RuntimeException(e);
+			}		
+		}
+		return null;
+	}
+
+	/**
+	 * Finds the XML element for the given property in its original .xsp-config file.
+	 * 
+	 * @param def the containing {@link FacesDefinition} for the property
+	 * @param prop the {@link FacesProperty} to search for
+	 * @return an {@link Element} describing the definition, or {@code null} if it cannot be found
+	 */
+	private Element findDefinitionElement(FacesDefinition def, FacesProperty prop) {
+		try {
+			Element parent = findDefinitionElement(def);
+			if(parent != null) {
+				// Check for the property directly
+				Element propElement = Stream.of(DOMUtil.nodes(parent, "property/property-name[normalize-space(text())='" + prop.getName() + "']"))
+					.filter(Element.class::isInstance)
+					.map(Element.class::cast)
+					.map(el -> el.getParentNode())
+					.map(Element.class::cast)
+					.findFirst()
+					.orElse(null);
+				if(propElement != null) {
+					// Great!
+					return propElement;
+				}
+				
+				// Check its parent
+				if(def.getParent() != null) {
+					propElement = findDefinitionElement(def.getParent(), prop);
+					if(propElement != null) {
+						return propElement;
+					}
+				}
+				
+				Collection<String> groups = def.getGroupTypeRefs();
+				if(groups != null && !groups.isEmpty()) {
+					String propFile = prop.getFile().getFilePath();
+					Document propDoc = getXspConfig(propFile);
+					if(propDoc != null) {
+						return findInGroups(prop, propDoc, groups);
+					}
+				}
+			}
+			return null;
+		} catch(XMLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private Element findInGroups(FacesProperty prop, Document propDoc, Collection<String> groups) throws XMLException {
+		if(groups == null || groups.isEmpty()) {
+			return null;
+		}
+		
+		Element groupElement = groups.stream()
+				.map(group -> {
+					try {
+						return DOMUtil.nodes(propDoc, "/faces-config/group/group-type[normalize-space(text())='" + group + "']");
+					} catch (XMLException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.filter(nodes -> nodes.length > 0)
+				.map(nodes -> nodes[0])
+				.map(Element.class::cast)
+				.map(Element::getParentNode)
+				.map(Element.class::cast)
+				.findFirst()
+				.orElse(null);
+		if(groupElement == null) {
+			// No dice
+			return null;
+		}
+		// Check the group for a property element
+		Object[] nodes = DOMUtil.nodes(groupElement, "property/property-name[normalize-space(text())='" + prop.getName() + "']");
+		if(nodes.length > 0) {
+			// Then we found it
+			return (Element)((Element)nodes[0]).getParentNode();
+		} else {
+			// Otherwise, search the group's group refs
+			List<String> groupRefs = Stream.of(DOMUtil.nodes(groupElement, "group-type-ref"))
+				.map(Element.class::cast)
+				.map(el -> el.getTextContent())
+				.collect(Collectors.toList());
+			
+			return findInGroups(prop, propDoc, groupRefs);
+		}
 	}
 }
