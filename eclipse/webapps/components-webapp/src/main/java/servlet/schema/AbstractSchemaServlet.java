@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +54,7 @@ import com.ibm.xsp.library.XspLibrary;
 import com.ibm.xsp.registry.AbstractContainerProperty;
 import com.ibm.xsp.registry.FacesComplexDefinition;
 import com.ibm.xsp.registry.FacesComponentDefinition;
+import com.ibm.xsp.registry.FacesContainerProperty;
 import com.ibm.xsp.registry.FacesDefinition;
 import com.ibm.xsp.registry.FacesProperty;
 import com.ibm.xsp.registry.FacesSimpleProperty;
@@ -62,7 +62,6 @@ import com.ibm.xsp.registry.FacesValidatorDefinition;
 import com.ibm.xsp.registry.SharableRegistryImpl;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
-import com.ibm.xsp.util.HtmlUtil;
 
 public class AbstractSchemaServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -90,7 +89,6 @@ public class AbstractSchemaServlet extends HttpServlet {
 			Document doc = DOMUtil.createDocument(namespace, "xs:schema");
 			doc.setXmlStandalone(true);
 			Element schema = doc.getDocumentElement();
-			schema.setAttribute("xmlns", namespace);
 			schema.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
 			schema.setAttribute("xmlns:" + extMap.get(namespace), namespace);
 			schema.setAttribute("targetNamespace", namespace);
@@ -253,7 +251,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 			// Output the concrete definition
 			Element element = DOMUtil.createElement(doc, schema, "xs:element");
 			element.setAttribute("name", def.getTagName());
-			String prefix = StringUtil.equals(def.getNamespaceUri(), namespace) ? "" : (extMap.get(def.getNamespaceUri()) + ':');
+			String prefix = extMap.get(def.getNamespaceUri()) + ':';
 			element.setAttribute("type", prefix + def.getTagName());
 			outAnnotations(def, element);
 		}
@@ -267,6 +265,16 @@ public class AbstractSchemaServlet extends HttpServlet {
 			element.insertBefore(annotation, element.getFirstChild());
 		} else {
 			element.appendChild(annotation);
+		}
+		
+		Element component = findDefinitionElement(def);
+		{
+			Element appinfo = DOMUtil.createElement(doc, annotation, "xs:appinfo");
+			if(component != null) {
+				appinfo.setTextContent(component.getElementsByTagName("display-name").item(0).getTextContent());
+			} else {
+				appinfo.setTextContent(def.getTagName());
+			}
 		}
 		{
 			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
@@ -283,40 +291,32 @@ public class AbstractSchemaServlet extends HttpServlet {
 			documentation.setAttribute("source", "description");
 			
 			StringBuilder description = new StringBuilder();
-			
-			Element component = findDefinitionElement(def);
+
+			if(component != null) {
+				p(description, component.getElementsByTagName("description").item(0).getTextContent());
+			}
 			
 			if(def instanceof FacesComponentDefinition) {
 				FacesComponentDefinition fcd = (FacesComponentDefinition)def;
-				if(component != null) {
-					p(description, "<b>", component.getElementsByTagName("display-name").item(0).getTextContent(), "</b>");
-					p(description, component.getElementsByTagName("description").item(0).getTextContent());
-				}
 				
-
-				description.append("<dl>");
 				Collection<String> facets = fcd.getFacetNames();
 				if(facets != null && !facets.isEmpty()) {
-					dt(description, "Facets", sb -> {
-						sb.append("<ul>");
-						facets.stream()
-							.map(f -> "<li>" + f + "</li>")
-							.forEach(sb::append);
-						sb.append("</ul>");
-					});
+					p(description, "Facets:");
+					description.append("<ul>");
+					facets.stream()
+						.map(f -> "<li>" + f + "</li>")
+						.forEach(description::append);
+					description.append("</ul>");
 				}
 				dt(description, "Component Type", fcd.getComponentType());
 				dt(description, "Component Family", fcd.getComponentFamily());
 				dt(description, "Renderer Type", fcd.getRendererType());
 			} else if(def instanceof FacesComplexDefinition) {
 				
-				description.append("<dl>");
 				dt(description, "Complex ID", ((FacesComplexDefinition)def).getComplexId());
 				if(def instanceof FacesValidatorDefinition) {
 					dt(description, "Validator ID", ((FacesValidatorDefinition)def).getValidatorId());
 				}
-			} else {
-				description.append("<dl>");
 			}
 			if(component != null) {
 				try {
@@ -330,27 +330,16 @@ public class AbstractSchemaServlet extends HttpServlet {
 			}
 			dt(description, "Class", def.getJavaClass().getName());
 			
-			// Expected to be opened in every if condition
-			description.append("</dl>");
-			
-			documentation.setTextContent(HtmlUtil.toHTMLContentString(description.toString(), false));
+			documentation.setTextContent(description.toString());
 		}
 	}
 	
 	private static StringBuilder dt(StringBuilder stringBuilder, Object name, Object value) {
-		stringBuilder.append("<dt>");
+		stringBuilder.append("<p><b>");
 		stringBuilder.append(name);
-		stringBuilder.append("</dt><dd>");
+		stringBuilder.append(":</b> ");
 		stringBuilder.append(value);
-		stringBuilder.append("</dd>");
-		return stringBuilder;
-	}
-	private static StringBuilder dt(StringBuilder stringBuilder, Object name, Consumer<StringBuilder> value) {
-		stringBuilder.append("<dt>");
-		stringBuilder.append(name);
-		stringBuilder.append("</dt><dd>");
-		value.accept(stringBuilder);
-		stringBuilder.append("</dd>");
+		stringBuilder.append("</p>");
 		return stringBuilder;
 	}
 	
@@ -520,6 +509,15 @@ public class AbstractSchemaServlet extends HttpServlet {
 		} else {
 			element.appendChild(annotation);
 		}
+		Element propElement = findDefinitionElement(def, prop);
+		{
+			Element appinfo = DOMUtil.createElement(doc, annotation, "xs:appinfo");
+			if(propElement != null) {
+				appinfo.setTextContent(propElement.getElementsByTagName("display-name").item(0).getTextContent());
+			} else {
+				appinfo.setTextContent(prop.getName());
+			}
+		}
 		{
 			Element documentation = DOMUtil.createElement(doc, annotation, "xs:documentation");
 			documentation.setAttribute("source", "version");
@@ -539,9 +537,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 			
 			StringBuilder description = new StringBuilder();
 
-			Element propElement = findDefinitionElement(def, prop);
 			if(propElement != null) {
-				p(description, "<b>", propElement.getElementsByTagName("display-name").item(0).getTextContent(), "</b>");
 				p(description, propElement.getElementsByTagName("description").item(0).getTextContent());
 				
 				description.append("<dl>");
@@ -556,13 +552,20 @@ public class AbstractSchemaServlet extends HttpServlet {
 			} else {
 				description.append("<dl>");
 			}
-					
-			dt(description, "Class", prop.getJavaClass().getName());
+			
+			String className = prop.getJavaClass().getName();
+			if(prop instanceof FacesContainerProperty) {
+				FacesContainerProperty fcp = (FacesContainerProperty)prop;
+				if(fcp.isCollection()) {
+					className += "&lt;" + fcp.getItemProperty().getJavaClass().getName() + "&gt;";
+				}
+			}
+			dt(description, "Class", className);
 			
 			// Expected to be opened in every if condition
 			description.append("</dl>");
 			
-			documentation.setTextContent(HtmlUtil.toHTMLContentString(description.toString(), false));
+			documentation.setTextContent(description.toString());
 		}
 	}
 	
@@ -601,7 +604,15 @@ public class AbstractSchemaServlet extends HttpServlet {
 		Document xspConfig = getXspConfig(filePath);
 		if(xspConfig != null) {
 			try {
-				Object[] elements = DOMUtil.nodes(xspConfig, "/faces-config/*/component-class[normalize-space(text())='" + def.getJavaClass().getName() + "']");
+				String elementName;
+				if(def instanceof FacesComplexDefinition) {
+					elementName = "complex-class";
+				} else if(def instanceof FacesComponentDefinition) {
+					elementName = "component-class";
+				} else {
+					return null;
+				}
+				Object[] elements = DOMUtil.nodes(xspConfig, "/faces-config/*/" + elementName + "[normalize-space(text())='" + def.getJavaClass().getName() + "']");
 				return elements.length == 0 ? null : (Element)((Element)elements[0]).getParentNode();
 			} catch(XMLException e) {
 				throw new RuntimeException(e);
