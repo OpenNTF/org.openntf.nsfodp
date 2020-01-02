@@ -430,7 +430,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 		// Special handling for xp:actionGroup et al to allow for actions without this.actions
 		if(isWorkaroundContainerType(def)) {
 			Element all = (Element)element.getFirstChild();
-			DOMUtil.createElement(element.getOwnerDocument(), all, "xs:any");
+			DOMUtil.createElement(element.getOwnerDocument(), all, "xs:any").setAttribute("processContents", "lax");
 		}
 		
 //		if(names.isEmpty()) {
@@ -501,7 +501,9 @@ public class AbstractSchemaServlet extends HttpServlet {
 				sequence.setAttribute("maxOccurs", "unbounded");
 			}
 			sequence.setAttribute("minOccurs", "0");
-			DOMUtil.createElement(doc, sequence, "xs:any").setAttribute("maxOccurs", "unbounded");
+			Element any = DOMUtil.createElement(doc, sequence, "xs:any");
+			any.setAttribute("maxOccurs", "unbounded");
+			any.setAttribute("processContents", "lax");
 		} else {
 			thisElement.setAttribute("type", type);
 		}
