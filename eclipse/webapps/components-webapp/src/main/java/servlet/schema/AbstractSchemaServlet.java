@@ -49,6 +49,7 @@ import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.Format;
 import com.ibm.commons.xml.XMLException;
 import com.ibm.xsp.actions.ActionGroup;
+import com.ibm.xsp.extlib.tree.complex.ComplexContainerTreeNode;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
@@ -426,8 +427,8 @@ public class AbstractSchemaServlet extends HttpServlet {
 			attrId.setAttribute("ref", "xp:key");
 		}
 		
-		// Special handling for xp:actionGroup to allow for actions without this.actions
-		if(ActionGroup.class.equals(def.getJavaClass())) {
+		// Special handling for xp:actionGroup et al to allow for actions without this.actions
+		if(isWorkaroundContainerType(def)) {
 			Element all = (Element)element.getFirstChild();
 			DOMUtil.createElement(element.getOwnerDocument(), all, "xs:any");
 		}
@@ -727,5 +728,23 @@ public class AbstractSchemaServlet extends HttpServlet {
 			
 			return findInGroups(prop, propDoc, groupRefs);
 		}
+	}
+	
+	/**
+	 * Determines whether the provided type definition should get special support for
+	 * direct children even though it's technically not correct.
+	 * 
+	 * @param def the type definition to check
+	 * @return whether or not this should get a special child-element workaround
+	 * @see <a href="https://github.com/OpenNTF/org.openntf.nsfodp/issues/146">GitHub issue #146</a>
+	 */
+	private boolean isWorkaroundContainerType(FacesDefinition def) {
+		Class<?> clazz = def.getJavaClass();
+		if(ActionGroup.class.equals(clazz)) {
+			return true;
+		} else if(ComplexContainerTreeNode.class.equals(clazz)) {
+			return true;
+		}
+		return false;
 	}
 }
