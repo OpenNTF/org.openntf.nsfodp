@@ -66,10 +66,12 @@ import com.ibm.xsp.registry.config.XspRegistryProvider;
 public class AbstractSchemaServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
+	private static final String NS_XP = "http://www.ibm.com/xsp/core";
+	
 	private static final Map<String, String> extMap = new HashMap<>();
 	static {
 		extMap.put("http://www.ibm.com/xsp/jsf/core", "f");
-		extMap.put("http://www.ibm.com/xsp/core", "xp");
+		extMap.put(NS_XP, "xp");
 		extMap.put("http://www.ibm.com/xsp/coreex", "xe");
 	}
 	
@@ -207,6 +209,13 @@ public class AbstractSchemaServlet extends HttpServlet {
 			Element pattern = DOMUtil.createElement(doc, restriction, "xs:pattern");
 			// TODO allow text before and/or after this, but require a binding
 			pattern.setAttribute("value", "$\\{[.\\s\\S]*\\}");
+		}
+		
+		// For xp: only, output a reusable xp:key attribute
+		{
+			Element attribute = DOMUtil.createElement(doc, schema, "xs:attribute");
+			attribute.setAttribute("name", "key");
+			attribute.setAttribute("type", "xs:string");
 		}
 	}
 	
@@ -400,7 +409,8 @@ public class AbstractSchemaServlet extends HttpServlet {
 			outProperty(def, prop, element, registry);
 		}
 		
-		// Everything allows id
+		// Everything allows id and key (to cover for facets)
+		// TODO see if xp:key can be restricted to when it's immediately under a facets tag
 		if(!names.contains("id")) {
 			Element all = (Element)element.getFirstChild();
 			Element thisId = DOMUtil.createElement(element.getOwnerDocument(), all, "xs:element");
@@ -409,6 +419,10 @@ public class AbstractSchemaServlet extends HttpServlet {
 			Element attrId = DOMUtil.createElement(element.getOwnerDocument(), element, "xs:attribute");
 			attrId.setAttribute("name", "id");
 			attrId.setAttribute("type", "xs:ID");
+		}
+		if(!names.contains("xp:key")) {
+			Element attrId = DOMUtil.createElement(element.getOwnerDocument(), element, "xs:attribute");
+			attrId.setAttribute("ref", "xp:key");
 		}
 		
 //		if(names.isEmpty()) {
