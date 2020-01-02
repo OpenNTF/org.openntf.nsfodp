@@ -48,6 +48,7 @@ import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.Format;
 import com.ibm.commons.xml.XMLException;
+import com.ibm.xsp.actions.ActionGroup;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
@@ -423,6 +424,12 @@ public class AbstractSchemaServlet extends HttpServlet {
 		if(!names.contains("xp:key")) {
 			Element attrId = DOMUtil.createElement(element.getOwnerDocument(), element, "xs:attribute");
 			attrId.setAttribute("ref", "xp:key");
+		}
+		
+		// Special handling for xp:actionGroup to allow for actions without this.actions
+		if(ActionGroup.class.equals(def.getJavaClass())) {
+			Element all = (Element)element.getFirstChild();
+			DOMUtil.createElement(element.getOwnerDocument(), all, "xs:any");
 		}
 		
 //		if(names.isEmpty()) {

@@ -26812,6 +26812,7 @@
         </xs:annotation>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
+      <xs:any/>
     </xs:choice>
     <xs:attribute name="loaded" type="xp:attrBoolean">
       <xs:annotation>
