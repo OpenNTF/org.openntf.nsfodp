@@ -24,7 +24,7 @@ import org.eclipse.lsp4xml.services.extensions.save.ISaveContext;
  * LSP4XML extension to provide access to the Domino DXL schemas.
  * 
  * @author Jesse Gallagher
- * @since 2.5.0
+ * @since 3.0.0
  */
 public class DominoSchemasPlugin implements IXMLExtension {
 	

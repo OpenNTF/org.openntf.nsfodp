@@ -28,7 +28,7 @@ import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
  * XML Completion participant to provide custom controls and attributes.
  * 
  * @author Jesse Gallagher
- * @since 2.5.0
+ * @since 3.0.0
  */
 public class XspCompletionParticipant extends CompletionParticipantAdapter {
 	

@@ -31,7 +31,7 @@ import org.openntf.nsfodp.lsp4xml.xsp.schema.XspCoreSchemaResolver;
  * LSP4XML contributor for XSP language syntax.
  * 
  * @author Jesse Gallagher
- * @since 2.5.0
+ * @since 3.0.0
  */
 public class XspPlugin implements IXMLExtension {
 	
