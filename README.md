@@ -6,9 +6,9 @@ There are three main components: a Maven plugin, a set of Domino OSGi plugins, a
 
 ### ODP Compiler
 
-The ODP compiler allows the use of a Domino server to compile an on-disk project into a full NSF without the need of Domino Designer. This compilation supports classic design elements as well as XPages, and allows for using OSGi plugins to resolve classes and XPages components.
+The ODP compiler allows the use of a Domino server or local Notes installation to compile an on-disk project into a full NSF without the need of Domino Designer. This compilation supports classic design elements as well as XPages, and allows for using OSGi plugins to resolve classes and XPages components.
 
-To use this, install the Domino plugins on an otherwise-clean Domino server - this is important to allow the plugins to be loaded and unloaded dynamically without interfering with existing plugins.
+To use this for remote compilation, install the Domino plugins on an otherwise-clean Domino server - this is important to allow the plugins to be loaded and unloaded dynamically without interfering with existing plugins.
 
 ### ODP Exporter
 
@@ -18,7 +18,7 @@ The ODP exporter allows the use of a Domino server to export an NSF into a Desig
 
 The Eclipse plugins provide the Eclipse IDE with basic knowledge of the ODP and autocompletion capabilities for XPages and Custom Controls.
 
-Currently, autocompletion knows about the stock components and Extension Library that ship with 9.0.1 FP10 as well as any Custom Controls inside the same project.
+Currently, autocompletion knows about the stock components and Extension Library that ship with 10.0.1 as well as any Custom Controls inside the same project.
 
 Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the context menu, which are shortcuts for the equivalent Maven goals.
 
@@ -54,7 +54,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>2.0.0</version>
+                <version>3.0.0-SNAPSHOT</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
