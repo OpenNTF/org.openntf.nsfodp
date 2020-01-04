@@ -38,6 +38,7 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 			// Custom controls
 			ComponentCache.getCustomControls(request.getXMLDocument().getDocumentURI()).stream()
 				.map(AbstractComponent::getPrefixedName)
+				.filter(name -> name != null && !name.isEmpty())
 				.map(CompletionItem::new)
 				.forEach(response::addCompletionItem);
 			
@@ -49,6 +50,7 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 					.map(AbstractComponent::getProperties)
 					.flatMap(Collection::stream)
 					.map(ComponentProperty::getName)
+					.filter(name -> name != null && !name.isEmpty())
 					.map(name -> request.getParentElement().getPrefix() + ":this." + name) //$NON-NLS-1$
 					.map(CompletionItem::new)
 					.forEach(response::addCompletionItem);
@@ -67,6 +69,7 @@ public class XspCompletionParticipant extends CompletionParticipantAdapter {
 				.map(AbstractComponent::getProperties)
 				.flatMap(Collection::stream)
 				.map(ComponentProperty::getName)
+				.filter(name -> name != null && !name.isEmpty())
 				.map(CompletionItem::new)
 				.forEach(response::addCompletionItem);
 		}
