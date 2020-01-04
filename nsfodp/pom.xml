@@ -35,9 +35,9 @@
 	</developers>
 
 	<modules>
-		<module>plugins/org.openntf.nsfodp.commons</module>
-		<module>plugins/org.openntf.nsfodp.commons.dxl</module>
-		<module>plugins/org.openntf.nsfodp.commons.odp</module>
+		<module>bundles/org.openntf.nsfodp.commons</module>
+		<module>bundles/org.openntf.nsfodp.commons.dxl</module>
+		<module>bundles/org.openntf.nsfodp.commons.odp</module>
 		
 		<!--
 			Language Server Protocol 
@@ -48,24 +48,24 @@
 		<!--
 			ODP Compiler 
 		-->
-		<module>plugins/org.openntf.nsfodp.compiler</module>
-		<module>plugins/org.openntf.nsfodp.compiler.servlet</module>
-		<module>plugins/org.openntf.nsfodp.compiler.equinox</module>
+		<module>bundles/org.openntf.nsfodp.compiler</module>
+		<module>bundles/org.openntf.nsfodp.compiler.servlet</module>
+		<module>bundles/org.openntf.nsfodp.compiler.equinox</module>
 		<module>features/org.openntf.nsfodp.compiler.feature</module>
 		
 		<!--
 			ODP Exporter 
 		-->
-		<module>plugins/org.openntf.nsfodp.exporter</module>
-		<module>plugins/org.openntf.nsfodp.exporter.servlet</module>
-		<module>plugins/org.openntf.nsfodp.exporter.equinox</module>
+		<module>bundles/org.openntf.nsfodp.exporter</module>
+		<module>bundles/org.openntf.nsfodp.exporter.servlet</module>
+		<module>bundles/org.openntf.nsfodp.exporter.equinox</module>
 		<module>features/org.openntf.nsfodp.exporter.feature</module>
 		
 		<!--
 			NSF Deployment 
 		-->
-		<module>plugins/org.openntf.nsfodp.deployment</module>
-		<module>plugins/org.openntf.nsfodp.deployment.servlet</module>
+		<module>bundles/org.openntf.nsfodp.deployment</module>
+		<module>bundles/org.openntf.nsfodp.deployment.servlet</module>
 		<module>features/org.openntf.nsfodp.deployment.feature</module>
 		
 		<module>releng/org.openntf.nsfodp.domino.source.updatesite</module>
@@ -74,13 +74,13 @@
 		<!--
 			Eclipse Support
 		-->
-		<module>plugins/org.openntf.nsfodp.eclipse</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.nature</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.ui</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.m2e</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.schemas</module>
-		<module>plugins/org.openntf.nsfodp.eclipse.lsp</module>
-		<module>features/org.openntf.nsfodp.eclipse.feature</module>
+		<module>bundles/org.openntf.nsfodp.eclipse</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.nature</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.ui</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.m2e</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.schemas</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.lsp</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
 		<!--
