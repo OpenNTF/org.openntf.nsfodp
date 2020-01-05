@@ -7,14 +7,10 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.ui.navigator,
- org.eclipse.ui.forms,
  org.eclipse.core.resources,
+ org.eclipse.ui;bundle-version="3.115.0",
+ org.eclipse.ui.navigator;bundle-version="3.9.100",
+ org.eclipse.ui.ide;bundle-version="3.16.100",
  org.openntf.nsfodp.eclipse;bundle-version="2.0.0",
- org.openntf.nsfodp.eclipse.nature;bundle-version="2.0.0",
- org.openntf.nsfodp.eclipse.schemas;bundle-version="2.0.0",
- org.eclipse.pde.ui;bundle-version="3.9.100",
- org.eclipse.wst.xml.ui,
- org.eclipse.ui.ide
+ org.openntf.nsfodp.eclipse.nature;bundle-version="2.0.0"
 Bundle-Localization: plugin

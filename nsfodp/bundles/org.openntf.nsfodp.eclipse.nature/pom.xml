@@ -9,4 +9,28 @@
 	</parent>
 	<artifactId>org.openntf.nsfodp.eclipse.nature</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+<!-- 	<dependencies> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.apache.commons</groupId> -->
+<!-- 		  <artifactId>commons-lang3</artifactId> -->
+<!-- 		  <version>3.9</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.ui</artifactId> -->
+<!-- 		  <version>3.115.0</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.core.resources</artifactId> -->
+<!-- 		  <version>3.13.600</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.ui.navigator</artifactId> -->
+<!-- 		  <version>3.9.100</version> -->
+<!-- 		</dependency> -->
+<!-- 	</dependencies> -->
 </project>

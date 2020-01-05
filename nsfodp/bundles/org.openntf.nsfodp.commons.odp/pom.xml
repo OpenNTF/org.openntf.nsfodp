@@ -9,4 +9,12 @@
 	</parent>
 	<artifactId>org.openntf.nsfodp.commons.odp</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<dependencies>
+		<dependency>
+		  <groupId>org.eclipse.platform</groupId>
+		  <artifactId>org.eclipse.core.runtime</artifactId>
+		  <version>3.17.0</version>
+		</dependency>
+	</dependencies>
 </project>

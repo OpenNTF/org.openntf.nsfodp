@@ -80,7 +80,7 @@
 		<module>bundles/org.openntf.nsfodp.eclipse.m2e</module>
 		<module>bundles/org.openntf.nsfodp.eclipse.schemas</module>
 		<module>bundles/org.openntf.nsfodp.eclipse.lsp</module>
-		<module>bundles/org.openntf.nsfodp.eclipse.feature</module>
+		<module>features/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
 		<!--
@@ -124,24 +124,42 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-2019-12</id>
+			<id>eclipse-201912</id>
+			<url>http://download.eclipse.org/releases/2019-12</url>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2019-12/</url>
 		</repository>
 		<repository>
-			<id>notes</id>
-			<layout>p2</layout>
+			<id>com.hcl.repo</id>
 			<url>${notes-platform}</url>
+			<layout>p2</layout>
 		</repository>
 		<repository>
 			<id>bazaar</id>
-			<layout>p2</layout>
 			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.2</url>
+			<layout>p2</layout>
 		</repository>
 		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+		<repository>
+			<id>org.eclipse.m2e.p2</id>
+			<name>org.eclipse.m2e</name>
+			<url>http://download.eclipse.org/technology/m2e/releases</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>org.eclipse.wildwebdeveloper.p2</id>
+			<name>org.eclipse.wildwebdeveloper</name>
+			<url>https://download.eclipse.org/wildwebdeveloper/releases/0.8.0/</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>org.eclipse.wst.p2</id>
+			<name>org.eclipse.wst</name>
+			<url>https://download.eclipse.org/webtools/downloads/drops/R3.15.0/R-3.15.0-20190830034720/repository/</url>
+			<layout>p2</layout>
 		</repository>
 	</repositories>
 	
@@ -155,6 +173,12 @@
 
 	<build>
 		<plugins>
+			<!-- <plugin>
+				<groupId>org.openntf.maven</groupId>
+				<artifactId>p2-layout-resolver</artifactId>
+				<version>1.1.0</version>
+				<extensions>true</extensions>
+			</plugin> -->
 			<plugin>
 				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
@@ -413,29 +437,20 @@
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
 					<version>4.2.1</version>
-					<executions>
-						<execution>
-							<id>bundle-manifest</id>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>manifest</goal>
-							</goals>
-							<configuration>
-								<manifestLocation>${manifest-location}</manifestLocation>
-								<excludeDependencies>true</excludeDependencies>
-								<supportedProjectTypes>
-									<supportedProjectType>jar</supportedProjectType>
-									<supportedProjectType>bundle</supportedProjectType>
-								</supportedProjectTypes>
-								<instructions>
-									<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-									<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-									<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
-									<_snapshot>${osgi.qualifier}</_snapshot>
-								</instructions>
-							</configuration>
-						</execution>
-					</executions>
+					<configuration>
+						<manifestLocation>${manifest-location}</manifestLocation>
+						<excludeDependencies>true</excludeDependencies>
+						<supportedProjectTypes>
+							<supportedProjectType>jar</supportedProjectType>
+							<supportedProjectType>bundle</supportedProjectType>
+						</supportedProjectTypes>
+						<instructions>
+							<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+							<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+							<_snapshot>${osgi.qualifier}</_snapshot>
+						</instructions>
+					</configuration>
 				</plugin>
 				
 				

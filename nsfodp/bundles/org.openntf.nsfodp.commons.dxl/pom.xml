@@ -9,4 +9,23 @@
 	</parent>
 	<artifactId>org.openntf.nsfodp.commons.dxl</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>org.openntf.nsfodp.commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	
+	<!-- <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>4.2.1</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build> -->
 </project>

@@ -9,4 +9,57 @@
 	</parent>
 	<artifactId>org.openntf.nsfodp.eclipse</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<dependencies>
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.ui</artifactId> -->
+<!-- 		  <version>3.115.0</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		Provides chain-required Declarative Services capability -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.equinox.ds</artifactId> -->
+<!-- 		  <version>1.6.100</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.e4.core.di</artifactId> -->
+<!-- 		  <version>1.7.500</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.e4.core.di.extensions</artifactId> -->
+<!-- 		  <version>0.15.400</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.e4.core.di.extensions.supplier</artifactId> -->
+<!-- 		  <version>0.15.400</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.equinox.event</artifactId> -->
+<!-- 		  <version>1.5.300</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.osgi</groupId> -->
+<!-- 		    <artifactId>org.osgi.util.promise</artifactId> -->
+<!-- 		    <version>1.1.1</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.apache.xmlgraphics</groupId> -->
+<!-- 		  <artifactId>batik-css</artifactId> -->
+<!-- 		  <version>1.12</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		This version has OSGi metadata --> 
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.lucee</groupId> -->
+<!-- 		  <artifactId>javax.inject</artifactId> -->
+<!-- 		  <version>1.0.0</version> -->
+<!-- 		</dependency> -->
+	</dependencies>
 </project>
