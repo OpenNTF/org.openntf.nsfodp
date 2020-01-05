@@ -18,8 +18,8 @@ package org.openntf.nsfodp.eclipse.ui.resources;
 import java.util.function.Predicate;
 
 import org.eclipse.core.resources.IFile;
-import org.openntf.nsfodp.eclipse.ODPIcon;
 import org.openntf.nsfodp.eclipse.ui.Messages;
+import org.openntf.nsfodp.eclipse.ui.ODPIcon;
 
 public enum DesignElementType {
 	Forms(Messages.DesignElementType_Forms, ODPIcon.FORM, "Forms"), //$NON-NLS-1$

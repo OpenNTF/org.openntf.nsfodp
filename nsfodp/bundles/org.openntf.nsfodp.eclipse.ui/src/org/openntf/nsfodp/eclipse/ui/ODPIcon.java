@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfodp.eclipse;
+package org.openntf.nsfodp.eclipse.ui;
 
 public enum ODPIcon {
 	CUSTOM_CONTROL("icons/emblem-system.png"),

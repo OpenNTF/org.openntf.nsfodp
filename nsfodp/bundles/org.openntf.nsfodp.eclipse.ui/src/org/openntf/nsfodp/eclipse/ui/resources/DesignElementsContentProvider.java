@@ -33,8 +33,8 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.IPipelinedTreeContentProvider;
 import org.eclipse.ui.navigator.PipelinedShapeModification;
 import org.eclipse.ui.navigator.PipelinedViewerUpdate;
-import org.openntf.nsfodp.eclipse.Activator;
 import org.openntf.nsfodp.eclipse.nature.OnDiskProjectNature;
+import org.openntf.nsfodp.eclipse.ui.Activator;
 import org.openntf.nsfodp.eclipse.ui.Messages;
 
 @SuppressWarnings({"unchecked", "rawtypes"})

@@ -14,3 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.openntf.nsfodp.eclipse;bundle-version="2.0.0",
  org.openntf.nsfodp.eclipse.nature;bundle-version="2.0.0"
 Bundle-Localization: plugin
+Bundle-Activator: org.openntf.nsfodp.eclipse.ui.Activator
+Bundle-ActivationPolicy: lazy

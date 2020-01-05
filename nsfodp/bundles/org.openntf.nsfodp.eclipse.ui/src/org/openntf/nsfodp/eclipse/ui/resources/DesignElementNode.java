@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.openntf.nsfodp.eclipse.Activator;
+import org.openntf.nsfodp.eclipse.ui.Activator;
 import org.openntf.nsfodp.eclipse.ui.Messages;
 
 public class DesignElementNode extends WorkbenchContentProvider implements IWorkbenchAdapter, IAdaptable {
