@@ -31,6 +31,7 @@ import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
  * @since 3.0.0
  */
 public class XspCompletionParticipant extends CompletionParticipantAdapter {
+	public static final String NS_XC = "http://www.ibm.com/xsp/custom";
 	
 	@Override
 	public void onTagOpen(ICompletionRequest request, ICompletionResponse response) throws Exception {

@@ -19,11 +19,13 @@ import java.util.logging.Logger;
 
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4xml.services.extensions.ICompletionParticipant;
+import org.eclipse.lsp4xml.services.extensions.IDefinitionParticipant;
 import org.eclipse.lsp4xml.services.extensions.IXMLExtension;
 import org.eclipse.lsp4xml.services.extensions.XMLExtensionsRegistry;
 import org.eclipse.lsp4xml.services.extensions.save.ISaveContext;
 import org.eclipse.lsp4xml.uriresolver.URIResolverExtension;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.XspCompletionParticipant;
+import org.openntf.nsfodp.lsp4xml.xsp.definition.CustomControlDefinitionParticipant;
 import org.openntf.nsfodp.lsp4xml.xsp.schema.ExtLibSchemaResolver;
 import org.openntf.nsfodp.lsp4xml.xsp.schema.XspCoreSchemaResolver;
 
@@ -37,11 +39,9 @@ public class XspPlugin implements IXMLExtension {
 	
 	public static final Logger log = Logger.getLogger(XspPlugin.class.getPackage().getName());
 	
-	public static final String EXT_XSP = ".xsp"; //$NON-NLS-1$
-	public static final String EXT_XSP_CONFIG = ".xsp-config"; //$NON-NLS-1$
-	
 	private final ICompletionParticipant completionParticipant;
 	private final URIResolverExtension[] resolvers;
+	private final IDefinitionParticipant ccParticipant;
 	
 	public XspPlugin() {
 		log.info(getClass().getName() + " initialize");
@@ -51,6 +51,7 @@ public class XspPlugin implements IXMLExtension {
 			new XspCoreSchemaResolver(),
 			new ExtLibSchemaResolver()
 		};
+		this.ccParticipant = new CustomControlDefinitionParticipant();
 	}
 
 	@Override
@@ -59,6 +60,7 @@ public class XspPlugin implements IXMLExtension {
 		for(URIResolverExtension resolver : this.resolvers) {
 			registry.getResolverExtensionManager().registerResolver(resolver);
 		}
+		registry.registerDefinitionParticipant(ccParticipant);
 	}
 
 	@Override
@@ -67,6 +69,7 @@ public class XspPlugin implements IXMLExtension {
 		for(URIResolverExtension resolver : this.resolvers) {
 			registry.getResolverExtensionManager().unregisterResolver(resolver);
 		}
+		registry.unregisterDefinitionParticipant(ccParticipant);
 	}
 
 	@Override
