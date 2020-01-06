@@ -18,9 +18,12 @@ package org.openntf.maven.nsfodp.equinox;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -203,7 +207,7 @@ public abstract class AbstractEquinoxTask {
 			
 			ProcessBuilder builder = new ProcessBuilder()
 					.command(command)
-					.redirectOutput(Redirect.INHERIT)
+					.redirectOutput(Redirect.PIPE)
 //					.redirectError(Redirect.INHERIT)
 					.redirectInput(Redirect.INHERIT);
 			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
@@ -220,9 +224,12 @@ public abstract class AbstractEquinoxTask {
 			Collection<Path> jars = initJreJars(notesProgram);
 			try {
 				Process proc = builder.start();
+				watchOutput(proc.getInputStream(), proc);
 				proc.waitFor();
 				int exitValue = proc.exitValue();
-				if(exitValue != 0) {
+				
+				// Look for 0 (success) or 137 (terminated by watchOutput)
+				if(!(exitValue == 0 || exitValue == 137)) {
 					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 				}
 			} finally {
@@ -471,5 +478,61 @@ public abstract class AbstractEquinoxTask {
     			Files.deleteIfExists(jar);
     		}
     	}
+    }
+    
+    private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };
+    
+    /**
+     * Monitors the given {@link InputStream} and performs two actions:
+     * 
+     * <ul>
+     *   <li>Redirects all output to {@link System#out}</li>
+     *   <li>Looks for the character sequence "#end" and ends execution if found</li>
+     * </ul>
+     * 
+     * @param is the {@link InputStream} to monitor
+     * @param proc the {@link Process} to kill when "#end" is found
+     * @since 3.0.0
+     */
+    // TODO figure out why this is needed.
+    //   The trouble is that the Equinox process sometimes will remain running indefinitely,
+    //   even when execution of the IApplication completes successfully.
+    private static void watchOutput(InputStream is, Process proc) {
+    	Executors.newSingleThreadExecutor().submit(() -> {
+    		char[] lastFour = new char[4];
+    		
+    		try {
+	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) {
+	    			int ch;
+	    			while((ch = r.read()) != -1) {
+	    				System.out.write(ch);
+	    				
+	    				addChar(lastFour, (char)ch);
+	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
+	    					System.out.println();
+	    					proc.destroyForcibly();
+	    					return;
+	    				}
+	    			}
+	    		}
+    		} catch(Exception e) {
+    			e.printStackTrace();
+    		}
+    	});
+    }
+    
+    /**
+     * Shifts all characters in the provided away one slot down and assigns
+     * the value of {@code ch} to the last slot.
+     * 
+     * @param lastFour the array to modify
+     * @param ch the character to assign to the end
+     * @since 3.0.0
+     */
+    private static void addChar(char[] lastFour, char ch) {
+    	for(int i = 0; i < lastFour.length-1; i++) {
+    		lastFour[i] = lastFour[i+1];
+    	}
+    	lastFour[lastFour.length-1] = ch;
     }
 }

@@ -22,6 +22,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -39,11 +41,11 @@ import com.ibm.commons.util.io.json.JsonException;
 import com.ibm.commons.util.io.json.JsonJavaFactory;
 import com.ibm.commons.util.io.json.JsonParser;
 
-import lotus.domino.NotesFactory;
 import lotus.domino.NotesThread;
-import lotus.domino.Session;
 
 public class CompilerApplication implements IApplication {
+	private static final ExecutorService exec = Executors.newSingleThreadExecutor(NotesThread::new);
+	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		NotesThread.sinitThread();
@@ -53,70 +55,58 @@ public class CompilerApplication implements IApplication {
 		List<Path> updateSites = toPaths(System.getProperty(NSFODPConstants.PROP_UPDATESITE));
 		Path outputFile = toPath(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
 		
-		Session session = NotesFactory.createSession();
-		try {
-			IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
-			OnDiskProject odp = new OnDiskProject(odpDirectory);
-			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
-			
-			// See if the client requested a specific compiler level
-			String compilerLevel = System.getProperty(NSFODPConstants.PROP_COMPILERLEVEL);
-			if(StringUtil.isNotEmpty(compilerLevel)) {
-				compiler.setCompilerLevel(compilerLevel);
-			}
-			String appendTimestamp = System.getProperty(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
-			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-				compiler.setAppendTimestampToTitle(true);
-			}
-			String templateName = System.getProperty(NSFODPConstants.PROP_TEMPLATENAME);
-			if(StringUtil.isNotEmpty(templateName)) {
-				compiler.setTemplateName(templateName);
-				String templateVersion = System.getProperty(NSFODPConstants.PROP_TEMPLATEVERSION);
-				if(StringUtil.isNotEmpty(templateVersion)) {
-					compiler.setTemplateVersion(templateVersion);
-				}
-			}
-			String setXspOptions = System.getProperty(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
-			if("true".equals(setXspOptions)) { //$NON-NLS-1$
-				compiler.setSetProductionXspOptions(true);
-			}
-			
-			if(updateSites != null && !updateSites.isEmpty()) {
-				updateSites.stream()
-					.map(Path::toFile)
-					.map(FilesystemUpdateSite::new)
-					.forEach(compiler::addUpdateSite);
-			}
-			
-			Path[] nsf = new Path[1];
-			NotesThread notes = new NotesThread(() -> {
-				try {
-					nsf[0] = compiler.compile();
-					mon.done();
-				} catch(RuntimeException e) {
-					throw e;
-				} catch(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-			notes.run();
-			notes.join();
-			
-			Files.move(nsf[0], outputFile, StandardCopyOption.REPLACE_EXISTING);
-		} finally {
-			session.recycle();
+		IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
+		OnDiskProject odp = new OnDiskProject(odpDirectory);
+		ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
+		
+		// See if the client requested a specific compiler level
+		String compilerLevel = System.getProperty(NSFODPConstants.PROP_COMPILERLEVEL);
+		if(StringUtil.isNotEmpty(compilerLevel)) {
+			compiler.setCompilerLevel(compilerLevel);
 		}
+		String appendTimestamp = System.getProperty(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
+		if("true".equals(appendTimestamp)) { //$NON-NLS-1$
+			compiler.setAppendTimestampToTitle(true);
+		}
+		String templateName = System.getProperty(NSFODPConstants.PROP_TEMPLATENAME);
+		if(StringUtil.isNotEmpty(templateName)) {
+			compiler.setTemplateName(templateName);
+			String templateVersion = System.getProperty(NSFODPConstants.PROP_TEMPLATEVERSION);
+			if(StringUtil.isNotEmpty(templateVersion)) {
+				compiler.setTemplateVersion(templateVersion);
+			}
+		}
+		String setXspOptions = System.getProperty(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
+		if("true".equals(setXspOptions)) { //$NON-NLS-1$
+			compiler.setSetProductionXspOptions(true);
+		}
+		
+		if(updateSites != null && !updateSites.isEmpty()) {
+			updateSites.stream()
+				.map(Path::toFile)
+				.map(FilesystemUpdateSite::new)
+				.forEach(compiler::addUpdateSite);
+		}
+		
+		exec.submit(() -> {
+			try {
+				Path nsf = compiler.compile();
+				Files.move(nsf, outputFile, StandardCopyOption.REPLACE_EXISTING);
+				mon.done();
+			} catch(RuntimeException e) {
+				throw e;
+			} catch(Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).get();
+		System.out.println(getClass().getName() + "#end");
 		
 		return EXIT_OK;
 	}
-
+	
 	@Override
 	public void stop() {
-		try {
-			NotesThread.stermThread();
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}
+		// NOP
 	}
 	
 	private Path toPath(String pathString) {
