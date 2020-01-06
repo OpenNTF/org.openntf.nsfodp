@@ -391,15 +391,15 @@ public abstract class AbstractEquinoxTask {
     private void addIBMJars(Path notesProgram, Collection<Path> classpath) {
     	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
     	
+    	// Add ibmpkcs.jar if available, though it's gone in V11
     	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
     	if(!Files.isReadable(ibmPkcs)) {
     		// Different path on macOS
     		ibmPkcs = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     	}
-    	if(!Files.isReadable(ibmPkcs)) {
-    		throw new IllegalStateException("Unable to locate ibmpkcs.jar at expected path " +  lib.resolve("ibmpkcs.jar")); //$NON-NLS-2$
+    	if(Files.isReadable(ibmPkcs)) {
+    		classpath.add(ibmPkcs);
     	}
-    	classpath.add(ibmPkcs);
     	
     	Path notesJar = lib.resolve("ext").resolve("Notes.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     	if(!Files.isReadable(notesJar)) {
