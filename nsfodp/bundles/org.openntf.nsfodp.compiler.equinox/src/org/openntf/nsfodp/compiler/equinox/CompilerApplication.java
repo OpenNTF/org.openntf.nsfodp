@@ -99,7 +99,7 @@ public class CompilerApplication implements IApplication {
 				throw new RuntimeException(e);
 			}
 		}).get();
-		System.out.println(getClass().getName() + "#end");
+		System.out.println(getClass().getName() + "#end"); //$NON-NLS-1$
 		
 		return EXIT_OK;
 	}
