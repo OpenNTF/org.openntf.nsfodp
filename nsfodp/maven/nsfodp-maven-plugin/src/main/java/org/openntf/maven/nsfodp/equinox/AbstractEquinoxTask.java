@@ -179,10 +179,16 @@ public abstract class AbstractEquinoxTask {
 			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
 			config.put("osgi.instance.area", workspace.toAbsolutePath().toString()); //$NON-NLS-1$
 			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
-			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
 			config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			// Logger configuration
+			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
+			Path logFile = configuration.resolve("nsfodp.log"); //$NON-NLS-1$
+			Files.deleteIfExists(logFile);
+			config.put("osgi.logfile", logFile.toString()); //$NON-NLS-1$
+			
 			try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
 			}
@@ -227,9 +233,16 @@ public abstract class AbstractEquinoxTask {
 				watchOutput(proc.getInputStream(), proc);
 				proc.waitFor();
 				int exitValue = proc.exitValue();
-				
-				// Look for 0 (success) or 137 (terminated by watchOutput)
-				if(!(exitValue == 0 || exitValue == 137)) {
+				switch(exitValue) {
+				case 0: // Success
+				case 137: // teminated by watchOutput
+					break;
+				case 13: // Equinox launch failure - look for log file
+					if(Files.isReadable(logFile)) {
+						Files.lines(logFile).forEach(log::error);
+					}
+					// Passthrough intentional
+				default:
 					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 				}
 			} finally {
