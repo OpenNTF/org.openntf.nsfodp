@@ -10,8 +10,13 @@ import org.apache.commons.lang3.SystemUtils;
  */
 public class ExampleClass {
 	private String foo;
+	
+	// Class referenced in in-NSF Jar
 	private com.example.embedded.ExampleClass inner = new com.example.embedded.ExampleClass();
-	private boolean is8 = SystemUtils.IS_JAVA_1_8; // To see if Maven dependencies are used
+	// Class inside a Maven dependency
+	private boolean is8 = SystemUtils.IS_JAVA_1_8;
+	// Class inside the plugin from the update site
+	private org.openntf.nsfodp.example.Activator pluginActivator = org.openntf.nsfodp.example.Activator.getDefault();
 	
 	public String getFoo() {
 		return foo;
