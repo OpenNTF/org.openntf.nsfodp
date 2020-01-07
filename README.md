@@ -62,7 +62,11 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
 </project>
 ```
 
-Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration. There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://stash.openntf.org/projects/P2T/repos/generate-domino-update-site/browse). For server-based operations, there are properties for each task to set the remote server:
+Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration.
+
+There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://github.com/OpenNTF/generate-domino-update-site). In practice, I've found that update sites generated from Domino instead of Notes are more reliable.
+
+For server-based operations, there are properties for each task to set the remote server:
 
 ```xml
 <?xml version="1.0"?>
