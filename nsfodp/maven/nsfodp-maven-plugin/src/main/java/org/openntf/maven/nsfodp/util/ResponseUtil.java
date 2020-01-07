@@ -18,6 +18,7 @@ package org.openntf.maven.nsfodp.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -26,8 +27,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.IOUtil;
 import org.openntf.maven.nsfodp.Messages;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.ibm.commons.util.StringUtil;
 
 public enum ResponseUtil {
 	;
@@ -72,16 +72,15 @@ public enum ResponseUtil {
 		// Start streaming the JSON responses until done
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		String line;
-		JsonParser parser = new JsonParser();
 		while((line = readLine(is, buffer)) != null) {
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("ResponseUtil_jsonMessage", line)); //$NON-NLS-1$
 			}
-			JsonObject obj = parser.parse(line).getAsJsonObject();
-			switch(obj.get("type").getAsString()) { //$NON-NLS-1$
+			Map<String, Object> obj = JsonUtil.fromJson(line);
+			switch(obj.get("type").toString()) { //$NON-NLS-1$
 			case "beginTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name").getAsString()));  //$NON-NLS-1$//$NON-NLS-2$
+					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name")));  //$NON-NLS-1$//$NON-NLS-2$
 				}
 				break;
 			case "internalWorked": //$NON-NLS-1$
@@ -89,12 +88,12 @@ public enum ResponseUtil {
 				break;
 			case "task": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name").getAsString()));  //$NON-NLS-1$//$NON-NLS-2$
+					log.info(Messages.getString("ResponseUtil_beginTask", obj.get("name")));  //$NON-NLS-1$//$NON-NLS-2$
 				}
 				break;
 			case "subTask": //$NON-NLS-1$
 				if(log.isInfoEnabled()) {
-					log.info(obj.get("name").getAsString()); //$NON-NLS-1$
+					log.info(StringUtil.toString(obj.get("name"))); //$NON-NLS-1$
 				}
 				break;
 			case "work": //$NON-NLS-1$
@@ -105,7 +104,7 @@ public enum ResponseUtil {
 			case "done": //$NON-NLS-1$
 				return;
 			case "error": //$NON-NLS-1$
-				System.err.println(obj.get("stackTrace").getAsString()); //$NON-NLS-1$
+				System.err.println(obj.get("stackTrace")); //$NON-NLS-1$
 				throw new RuntimeException(Messages.getString("ResponseUtil_serverError")); //$NON-NLS-1$
 			default:
 				throw new IllegalArgumentException(Messages.getString("ResponseUtil_unexpectedJsonMessage", line)); //$NON-NLS-1$

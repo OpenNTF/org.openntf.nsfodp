@@ -29,11 +29,9 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.openntf.maven.nsfodp.util.JsonUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Represents an Equinox environment to compile the provided project.
@@ -42,8 +40,6 @@ import com.google.gson.GsonBuilder;
  * @since 2.0.0
  */
 public class EquinoxCompiler extends AbstractEquinoxTask {
-	private final Gson gson = new GsonBuilder().create();
-	
 	public EquinoxCompiler(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
 		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
 	}
@@ -59,7 +55,7 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 				.map(Path::toAbsolutePath)
 				.map(Object::toString)
 				.collect(Collectors.toList());
-			String paths = gson.toJson(pathStrings);
+			String paths = JsonUtil.toJson(pathStrings);
 			props.put(NSFODPConstants.PROP_UPDATESITE, paths);
 		}
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, outputFile.toAbsolutePath().toString());
