@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -78,20 +79,25 @@ public class SwiperOutputStream extends OutputStream {
 		if(this.isSwiper) {
 			os.close();
 			byte[] xml = ((ByteArrayOutputStream)os).toByteArray();
-			try(InputStream is = new ByteArrayInputStream(xml)) {
-				try {
-					Transformer transformer = createTransformer();
-					
-					try(OutputStream os = Files.newOutputStream(path)) {
-						StreamResult result = new StreamResult(os);
-						transformer.transform(new StreamSource(is), result);
-					}
-				} catch (TransformerException e) {
-					throw new IOException(e);
+			try {
+				Transformer transformer = createTransformer();
+				try(InputStream is = new ByteArrayInputStream(xml)) {
+					transform(transformer, is, path);
 				}
+			} catch(RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new IOException(e);
 			}
 		} else {
 			os.close();
+		}
+	}
+	
+	protected void transform(Transformer transformer, InputStream is, Path destination) throws Exception {
+		try(OutputStream os = Files.newOutputStream(destination)) {
+			StreamResult result = new StreamResult(os);
+			transformer.transform(new StreamSource(is), result);
 		}
 	}
 	
@@ -100,7 +106,6 @@ public class SwiperOutputStream extends OutputStream {
 
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
-
 		transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes"); //$NON-NLS-1$
 		
 		return transformer;

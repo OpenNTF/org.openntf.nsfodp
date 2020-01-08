@@ -47,9 +47,9 @@ import java.util.regex.Pattern;
 
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
-import org.openntf.nsfodp.commons.io.SwiperOutputStream;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.commons.odp.util.NoteTypeUtil;
+import org.openntf.nsfodp.exporter.io.CommonsSwiperOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -194,7 +194,7 @@ public class ODPExporter {
 
 			Path databaseProperties = result.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 			Files.createDirectories(databaseProperties.getParent());
-			try(OutputStream os = new SwiperOutputStream(databaseProperties, isSwiperFilter())) {
+			try(OutputStream os = new CommonsSwiperOutputStream(databaseProperties, isSwiperFilter())) {
 				exporter.exportDbProperties(os, database);
 			}
 			
@@ -555,7 +555,7 @@ public class ODPExporter {
 		Path fullPath = baseDir.resolve(path);
 		Files.createDirectories(fullPath.getParent());
 		
-		try(OutputStream os = new SwiperOutputStream(fullPath, isSwiperFilter())) {
+		try(OutputStream os = new CommonsSwiperOutputStream(fullPath, isSwiperFilter())) {
 			exporter.exportNote(os, note);
 		}
 	}
