@@ -155,6 +155,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
     <xsl:template match="//n:database/n:databaseinfo/@odsversion"/>
     <xsl:template match="//n:database/n:databaseinfo/n:datamodified"/>
     <xsl:template match="//n:database/n:databaseinfo/n:designmodified"/>
+    
+    <!--
+    	Clean mutable parts of fulltextsettings 
+    -->
+    <xsl:template match="//n:database/n:fulltextsettings/@size"/>
+    <xsl:template match="//n:database/n:fulltextsettings/@unindexeddocumentcount"/>
+    <xsl:template match="//n:database/n:fulltextsettings/n:lastindexed"/>
 
     <!-- 
          Remove any items that begin with $ and end with _O
