@@ -196,11 +196,6 @@ public abstract class AbstractEquinoxTask {
 			List<String> command = new ArrayList<>();
 			command.add(javaBin.toAbsolutePath().toString());
 			command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
-			if(systemProperties != null) {
-				for(Map.Entry<String, String> prop : systemProperties.entrySet()) {
-					command.add("-D" + prop.getKey() + "=" + prop.getValue()); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-			}
 			command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
 			command.add("-framwork"); //$NON-NLS-1$
 			command.add(framework.toAbsolutePath().toString());
@@ -216,16 +211,20 @@ public abstract class AbstractEquinoxTask {
 					.redirectOutput(Redirect.PIPE)
 //					.redirectError(Redirect.INHERIT)
 					.redirectInput(Redirect.INHERIT);
-			builder.environment().put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			builder.environment().put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			builder.environment().put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			builder.environment().put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			builder.environment().put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
-			builder.environment().put("CLASSPATH", //$NON-NLS-1$
+			Map<String, String> env = builder.environment();
+			env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			env.put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+			env.put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
+			env.put("CLASSPATH", //$NON-NLS-1$
 					classpath.stream()
 					.map(path -> path.toString())
 					.collect(Collectors.joining(File.pathSeparator))
 			);
+			if(systemProperties != null) {
+				env.putAll(systemProperties);
+			}
 			
 			Collection<Path> jars = initJreJars(notesProgram);
 			try {

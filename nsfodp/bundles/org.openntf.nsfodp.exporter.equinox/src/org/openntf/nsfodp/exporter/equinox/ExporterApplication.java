@@ -41,16 +41,16 @@ public class ExporterApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
-		String databasePath = System.getProperty(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH);
+		String databasePath = System.getenv(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH);
 		if(databasePath == null) {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.ExporterApplication_dbPathCannotBeEmpty, NSFODPConstants.PROP_EXPORTER_DATABASE_PATH));
 		}
-		Path odpDir = Paths.get(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
+		Path odpDir = Paths.get(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
 		
-		boolean binaryDxl = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_BINARY_DXL)); //$NON-NLS-1$
-		boolean swiperFilter = "true".equals(System.getProperty(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
-		boolean richTextAsItemData = "true".equals(System.getProperty(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA)); //$NON-NLS-1$
-		String projectName = System.getProperty(NSFODPConstants.PROP_PROJECT_NAME);
+		boolean binaryDxl = "true".equals(System.getenv(NSFODPConstants.PROP_EXPORTER_BINARY_DXL)); //$NON-NLS-1$
+		boolean swiperFilter = "true".equals(System.getenv(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER)); //$NON-NLS-1$
+		boolean richTextAsItemData = "true".equals(System.getenv(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA)); //$NON-NLS-1$
+		String projectName = System.getenv(NSFODPConstants.PROP_PROJECT_NAME);
 		
 		NotesThread runner = new NotesThread(() -> {
 			C.initLibrary(null);

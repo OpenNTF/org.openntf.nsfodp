@@ -48,35 +48,32 @@ public class CompilerApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
-		NotesThread.sinitThread();
-		
-		
-		Path odpDirectory = toPath(System.getProperty(NSFODPConstants.PROP_ODPDIRECTORY));
-		List<Path> updateSites = toPaths(System.getProperty(NSFODPConstants.PROP_UPDATESITE));
-		Path outputFile = toPath(System.getProperty(NSFODPConstants.PROP_OUTPUTFILE));
+		Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
+		List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
+		Path outputFile = toPath(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
 		
 		IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
 		OnDiskProject odp = new OnDiskProject(odpDirectory);
 		ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
 		
 		// See if the client requested a specific compiler level
-		String compilerLevel = System.getProperty(NSFODPConstants.PROP_COMPILERLEVEL);
+		String compilerLevel = System.getenv(NSFODPConstants.PROP_COMPILERLEVEL);
 		if(StringUtil.isNotEmpty(compilerLevel)) {
 			compiler.setCompilerLevel(compilerLevel);
 		}
-		String appendTimestamp = System.getProperty(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
+		String appendTimestamp = System.getenv(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
 		if("true".equals(appendTimestamp)) { //$NON-NLS-1$
 			compiler.setAppendTimestampToTitle(true);
 		}
-		String templateName = System.getProperty(NSFODPConstants.PROP_TEMPLATENAME);
+		String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
 		if(StringUtil.isNotEmpty(templateName)) {
 			compiler.setTemplateName(templateName);
-			String templateVersion = System.getProperty(NSFODPConstants.PROP_TEMPLATEVERSION);
+			String templateVersion = System.getenv(NSFODPConstants.PROP_TEMPLATEVERSION);
 			if(StringUtil.isNotEmpty(templateVersion)) {
 				compiler.setTemplateVersion(templateVersion);
 			}
 		}
-		String setXspOptions = System.getProperty(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
+		String setXspOptions = System.getenv(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
 		if("true".equals(setXspOptions)) { //$NON-NLS-1$
 			compiler.setSetProductionXspOptions(true);
 		}
