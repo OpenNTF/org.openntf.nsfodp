@@ -10,11 +10,11 @@
 	<artifactId>org.openntf.nsfodp.exporter</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	
-	<dependencies>
-		<dependency>
-		  <groupId>org.eclipse.platform</groupId>
-		  <artifactId>org.eclipse.osgi</artifactId>
-		  <version>3.15.100</version>
-		</dependency>
-	</dependencies>
+<!-- 	<dependencies> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.osgi</artifactId> -->
+<!-- 		  <version>3.15.100</version> -->
+<!-- 		</dependency> -->
+<!-- 	</dependencies> -->
 </project>
