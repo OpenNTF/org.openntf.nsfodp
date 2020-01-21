@@ -234,6 +234,10 @@
 				</executions>
 				<configuration>
 					<includeBinaryFeature>false</includeBinaryFeature>
+					<excludes>
+						<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
+						<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
