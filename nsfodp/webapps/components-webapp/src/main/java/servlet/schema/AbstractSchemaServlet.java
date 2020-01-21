@@ -496,7 +496,7 @@ public class AbstractSchemaServlet extends HttpServlet {
 				// Bindings are a mess
 				complexType.setAttribute("mixed", "true");
 			}
-			Element sequence = DOMUtil.createElement(doc, complexType, "xs:sequence");
+			Element sequence = DOMUtil.createElement(doc, complexType, "xs:choice");
 			if(prop instanceof AbstractContainerProperty) {
 				// Then mark its upper bound as unlimited
 				sequence.setAttribute("maxOccurs", "unbounded");
