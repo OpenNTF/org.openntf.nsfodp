@@ -87,9 +87,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before creating a new document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.queryOpenDocument">
@@ -99,9 +99,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before opening the document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.querySaveDocument">
@@ -111,9 +111,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before saving the document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.postNewDocument">
@@ -123,9 +123,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after creating the document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.postOpenDocument">
@@ -135,9 +135,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after opening the document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.postSaveDocument">
@@ -147,9 +147,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after saving the document.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.computeDocument">
@@ -159,9 +159,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered when the document needs to be recomputed.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.databaseName" type="xs:string">
@@ -463,9 +463,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before opening the view&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.postOpenView">
@@ -475,9 +475,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after opening the view&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.databaseName" type="xs:string">
@@ -933,9 +933,9 @@
           <xs:documentation source="description">&lt;p&gt;The context to be passed to the embedded experience. This is a key value pair.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.htmlFilter" type="xs:string">
@@ -1125,9 +1125,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -1193,9 +1193,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.var" type="xs:string">
@@ -1763,9 +1763,9 @@
           <xs:documentation source="description">&lt;p&gt;A list of parameters&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.documentId" type="xs:string">
@@ -2966,9 +2966,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; boolean&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.clientScript" type="xs:string">
@@ -3519,9 +3519,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -3580,9 +3580,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -3599,9 +3599,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -3611,9 +3611,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -3623,9 +3623,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -3705,9 +3705,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -3717,9 +3717,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.htmlConversionWarning" type="xs:string">
@@ -4230,9 +4230,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -4284,9 +4284,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -4296,9 +4296,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.value" type="xs:string">
@@ -4487,9 +4487,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -4541,9 +4541,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.initClosed" type="xp:attrBoolean">
@@ -5005,9 +5005,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -5080,9 +5080,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.selectedTab" type="xs:string">
@@ -5313,9 +5313,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -5367,9 +5367,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.label" type="xs:string">
@@ -5691,9 +5691,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -5745,9 +5745,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing the application action to invoke when this control is activated by the user. The expression must evaluate to a public method that takes no parameters, and returns a String (the logical outcome) that is passed to the NavigationHandler for this application.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListener">
@@ -5757,9 +5757,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing an action listener method that will be notified when this control is activated by the user. The expression must evaluate to a public method that takes an ActionEvent parameter with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListeners" type="xs:string">
@@ -5846,9 +5846,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -5858,9 +5858,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.type" type="xs:string">
@@ -6420,9 +6420,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -6481,9 +6481,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -6493,9 +6493,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.autocomplete" type="xs:string">
@@ -6915,9 +6915,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -6976,9 +6976,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -6988,9 +6988,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -7480,9 +7480,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -7541,9 +7541,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -7553,9 +7553,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -7905,9 +7905,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -7966,9 +7966,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -7978,9 +7978,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -8358,9 +8358,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -8419,9 +8419,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -8431,9 +8431,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -8769,9 +8769,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -8830,9 +8830,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -8842,9 +8842,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -9166,9 +9166,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -9227,9 +9227,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -9239,9 +9239,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -9381,9 +9381,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -9442,9 +9442,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -9454,9 +9454,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -9778,9 +9778,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -9846,9 +9846,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.styleClass" type="xs:string">
@@ -10282,9 +10282,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -10336,9 +10336,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.facetName" type="xs:string">
@@ -10436,9 +10436,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -10497,9 +10497,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.dojoUsage" type="xs:string">
@@ -10646,9 +10646,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -10700,9 +10700,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing the application action to invoke when this control is activated by the user. The expression must evaluate to a public method that takes no parameters, and returns a String (the logical outcome) that is passed to the NavigationHandler for this application.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListener">
@@ -10712,9 +10712,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing an action listener method that will be notified when this control is activated by the user. The expression must evaluate to a public method that takes an ActionEvent parameter with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListeners" type="xs:string">
@@ -10794,9 +10794,9 @@
           <xs:documentation source="description">&lt;p&gt;A list of parameters&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.onStart" type="xs:string">
@@ -10827,9 +10827,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Event Handlers to be executed for the Event Handlers specified event&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.event.ClientEventHandler&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.script">
@@ -10839,9 +10839,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the script to execute on the client when the event is triggered.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.submit" type="xp:attrBoolean">
@@ -11072,9 +11072,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -11161,9 +11161,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the data associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.model.DataSource&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -11173,9 +11173,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.rowAttrs">
@@ -11185,9 +11185,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the table row element. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -11838,9 +11838,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -11899,9 +11899,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -11918,9 +11918,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -11930,9 +11930,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -11942,9 +11942,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -11996,9 +11996,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -12586,9 +12586,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -12675,9 +12675,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the data associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.model.DataSource&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -12687,9 +12687,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.rowAttrs">
@@ -12699,9 +12699,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the table row element. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.fileNameTitle" type="xs:string">
@@ -12774,9 +12774,9 @@
           <xs:documentation source="description">&lt;p&gt;Overrides the Last Modified value.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Date&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.displayCreated" type="xp:attrBoolean">
@@ -12800,9 +12800,9 @@
           <xs:documentation source="description">&lt;p&gt;Overrides the Created value.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Date&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.displayType" type="xp:attrBoolean">
@@ -13628,9 +13628,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -13717,9 +13717,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the data associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.model.DataSource&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -13729,9 +13729,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.rowAttrs">
@@ -13741,9 +13741,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the table row element. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.pageName" type="xs:string">
@@ -14240,9 +14240,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -14294,9 +14294,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.value" type="xs:string">
@@ -14313,9 +14313,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -14539,9 +14539,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -14593,9 +14593,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.layout" type="xs:string">
@@ -14889,9 +14889,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -14943,9 +14943,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.layout" type="xs:string">
@@ -15407,9 +15407,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -15461,9 +15461,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing the application action to invoke when this control is activated by the user. The expression must evaluate to a public method that takes no parameters, and returns a String (the logical outcome) that is passed to the NavigationHandler for this application.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListener">
@@ -15473,9 +15473,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing an action listener method that will be notified when this control is activated by the user. The expression must evaluate to a public method that takes an ActionEvent parameter with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.actionListeners" type="xs:string">
@@ -15506,9 +15506,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.type" type="xs:string">
@@ -15991,9 +15991,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -16080,9 +16080,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.converter">
@@ -16092,9 +16092,9 @@
           <xs:documentation source="description">&lt;p&gt;Converter instance registered with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.showCheckbox" type="xp:attrBoolean">
@@ -16402,9 +16402,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -16484,9 +16484,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.sortable" type="xp:attrBoolean">
@@ -16682,9 +16682,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -16736,9 +16736,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.value" type="xs:string">
@@ -17004,9 +17004,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -17153,9 +17153,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -17207,9 +17207,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -17335,9 +17335,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -17396,9 +17396,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataSource&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.dataContexts">
@@ -17408,9 +17408,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataContext&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.acl">
@@ -17420,9 +17420,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.acl.ACL&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.readonly" type="xp:attrBoolean">
@@ -17453,9 +17453,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -17472,9 +17472,9 @@
           <xs:documentation source="description">&lt;p&gt;Defines a list of rules that effect the navigation between pages&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.application.NavigationRule&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.resources">
@@ -17484,9 +17484,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of resources that are to be included in the page, such as CSS style sheets&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.resource.Resource&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.createForm" type="xp:attrBoolean">
@@ -17531,9 +17531,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before a page is loaded&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.afterPageLoad">
@@ -17543,9 +17543,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after a page is loaded&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.afterRestoreView">
@@ -17555,9 +17555,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after the Restore View phase of the JSF lifecycle&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.beforeRenderResponse">
@@ -17567,9 +17567,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered before the Render Response phase of the JSF lifecycle&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.afterRenderResponse">
@@ -17579,9 +17579,9 @@
           <xs:documentation source="description">&lt;p&gt;Triggered after the Render Response phase of the JSF lifecycle&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; events&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.pageTitle" type="xs:string">
@@ -17612,9 +17612,9 @@
           <xs:documentation source="description">&lt;p&gt;String representing the HTML page base URL, used by links.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.complex.ViewRootBaseUrl&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.properties">
@@ -17624,9 +17624,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the list of properties to be defined at the view level.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.enableModifiedFlag" type="xp:attrBoolean">
@@ -17941,9 +17941,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -18002,9 +18002,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -18021,9 +18021,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -18033,9 +18033,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -18045,9 +18045,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -18099,9 +18099,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.disableClientSideValidation" type="xp:attrBoolean">
@@ -18139,9 +18139,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.htmlFilter" type="xs:string">
@@ -18372,9 +18372,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -18426,9 +18426,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -18445,9 +18445,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -18457,9 +18457,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -18469,9 +18469,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -18523,9 +18523,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.disableClientSideValidation" type="xp:attrBoolean">
@@ -18563,9 +18563,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.redisplay" type="xp:attrBoolean">
@@ -19223,9 +19223,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -19284,9 +19284,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -19303,9 +19303,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -19315,9 +19315,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -19327,9 +19327,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -19381,9 +19381,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.disableClientSideValidation" type="xp:attrBoolean">
@@ -19421,9 +19421,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -20018,9 +20018,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -20093,9 +20093,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -20410,9 +20410,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -20485,9 +20485,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -20816,9 +20816,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -20870,9 +20870,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -20882,9 +20882,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -21297,9 +21297,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -21358,9 +21358,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.parameters">
@@ -21370,9 +21370,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.text" type="xs:string">
@@ -21389,9 +21389,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -21937,9 +21937,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -21991,9 +21991,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.value" type="xs:string">
@@ -22017,9 +22017,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -22306,9 +22306,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -22367,9 +22367,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -22386,9 +22386,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -22398,9 +22398,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -22410,9 +22410,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -22478,9 +22478,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultValue" type="xs:string">
@@ -22497,9 +22497,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -23087,9 +23087,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -23148,9 +23148,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -23167,9 +23167,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -23179,9 +23179,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -23191,9 +23191,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -23259,9 +23259,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultValue" type="xs:string">
@@ -23285,9 +23285,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -23854,9 +23854,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -23915,9 +23915,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -23934,9 +23934,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -23946,9 +23946,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -23958,9 +23958,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -24019,9 +24019,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultValue" type="xs:string">
@@ -24038,9 +24038,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -24565,9 +24565,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -24626,9 +24626,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -24645,9 +24645,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -24657,9 +24657,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -24669,9 +24669,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -24730,9 +24730,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of Dojo attributes.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; dojo&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultValue" type="xs:string">
@@ -24749,9 +24749,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.style" type="xs:string">
@@ -25332,9 +25332,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -25393,9 +25393,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -25412,9 +25412,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -25424,9 +25424,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -25436,9 +25436,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -25476,9 +25476,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -25488,9 +25488,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultChecked" type="xp:attrBoolean">
@@ -26029,9 +26029,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -26090,9 +26090,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.convert.Converter&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.required" type="xp:attrBoolean">
@@ -26109,9 +26109,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a validator method that will be called during Process Validations to perform correctness checks on the value of this control. The expression must evaluate to a public method that takes FacesContext, UIComponent, and Object parameters, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.validators">
@@ -26121,9 +26121,9 @@
           <xs:documentation source="description">&lt;p&gt;An array of Validators associated with this control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; [Ljavax.faces.validator.Validator;&amp;lt;javax.faces.validator.Validator&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListener">
@@ -26133,9 +26133,9 @@
           <xs:documentation source="description">&lt;p&gt;MethodBinding representing a value change listener method that will be notified when a new value has been set for this input control. The expression must evaluate to a public method that takes a ValueChangeEvent parameter, with a return type of void.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.valueChangeListeners" type="xs:string">
@@ -26173,9 +26173,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.attrs">
@@ -26185,9 +26185,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.defaultSelected" type="xp:attrBoolean">
@@ -26747,9 +26747,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the script expression to be executed.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
@@ -26799,9 +26799,9 @@
           <xs:documentation source="description">&lt;p&gt;Ordered list of simple actions to execute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;javax.faces.el.MethodBinding&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.condition" type="xp:attrBoolean">
@@ -26812,7 +26812,7 @@
         </xs:annotation>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
-      <xs:any/>
+      <xs:any processContents="lax"/>
     </xs:choice>
     <xs:attribute name="loaded" type="xp:attrBoolean">
       <xs:annotation>
@@ -26866,9 +26866,9 @@
           <xs:documentation source="description">&lt;p&gt;The binding indicates where the value should be stored. It should be a computed Expression Language (EL) expression resolving to a field or other editable location.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.ValueBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.value" type="xs:string">
@@ -27026,9 +27026,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the ordered list of client simple actions to execute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;javax.faces.el.MethodBinding&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.conditionScript" type="xs:string">
@@ -27146,9 +27146,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
@@ -27252,9 +27252,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.getAsObject">
@@ -27264,9 +27264,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.el.MethodBinding&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
@@ -27499,9 +27499,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.src" type="xs:string">
@@ -27710,9 +27710,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.href" type="xs:string">
@@ -27968,9 +27968,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.name" type="xs:string">
@@ -28097,9 +28097,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies the list of attributes to be generated by the tag.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.complex.Parameter&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
@@ -28231,9 +28231,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.dir" type="xs:string">
@@ -28531,9 +28531,9 @@
           <xs:documentation source="description">&lt;p&gt;Lists entries for access control&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.acl.ACLEntry&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.id" type="xp:attrLoadBinding"/>
@@ -28829,9 +28829,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -28890,9 +28890,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:any processContents="lax"/>
@@ -28983,9 +28983,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -29072,9 +29072,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:any processContents="lax"/>
@@ -29193,9 +29193,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -29247,9 +29247,9 @@
           <xs:documentation source="description">&lt;p&gt;Control Data List&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataSource&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.dataContexts">
@@ -29259,9 +29259,9 @@
           <xs:documentation source="description">&lt;p&gt;Control Data Context List&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataContext&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.acl">
@@ -29271,9 +29271,9 @@
           <xs:documentation source="description">&lt;p&gt;Specifies a list of users and their permissions&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; data&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.acl.ACL&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.readonly" type="xp:attrBoolean">
@@ -29332,9 +29332,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.role" type="xs:string">
@@ -29365,9 +29365,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.tagName" type="xs:string">
@@ -29563,9 +29563,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; javax.faces.component.UIComponent&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.loaded" type="xp:attrBoolean">
@@ -29617,9 +29617,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataSource&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.dataContexts">
@@ -29629,9 +29629,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.Collection&amp;lt;com.ibm.xsp.model.DataContext&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.acl">
@@ -29641,9 +29641,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; com.ibm.xsp.acl.ACL&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.readonly" type="xp:attrBoolean">
@@ -29702,9 +29702,9 @@
           <xs:documentation source="description">&lt;dl&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.ArrayList&amp;lt;com.ibm.xsp.dojo.DojoAttribute&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.role" type="xs:string">
@@ -29735,9 +29735,9 @@
           <xs:documentation source="description">&lt;p&gt;The extra attributes to be output on the base element at the root of this control or object tag. This should only be used when none of the properties in the All Properties pane correspond to the desired attribute.&lt;/p&gt;&lt;dl&gt;&lt;p&gt;&lt;b&gt;Property Group:&lt;/b&gt; basics&lt;/p&gt;&lt;p&gt;&lt;b&gt;Class:&lt;/b&gt; java.util.List&amp;lt;com.ibm.xsp.complex.Attr&amp;gt;&lt;/p&gt;&lt;/dl&gt;</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-          <xs:sequence maxOccurs="unbounded" minOccurs="0">
-            <xs:any maxOccurs="unbounded"/>
-          </xs:sequence>
+          <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:any maxOccurs="unbounded" processContents="lax"/>
+          </xs:choice>
         </xs:complexType>
       </xs:element>
       <xs:element name="this.componentId" type="xs:string">
