@@ -65,6 +65,7 @@ import com.ibm.xsp.registry.SharableRegistryImpl;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
 import com.ibm.xsp.registry.config.XspRegistryProvider;
 
+@SuppressWarnings("nls")
 public class AbstractSchemaServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
