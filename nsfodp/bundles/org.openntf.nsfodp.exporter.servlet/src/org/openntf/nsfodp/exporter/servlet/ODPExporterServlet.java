@@ -43,10 +43,11 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
 
+import com.darwino.domino.napi.DominoAPI;
+import com.darwino.domino.napi.wrap.NSFDatabase;
+import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.designer.domino.napi.NotesDatabase;
-import com.ibm.designer.domino.napi.NotesSession;
 import com.ibm.designer.domino.napi.util.NotesUtils;
 import com.ibm.domino.osgi.core.context.ContextInfo;
 
@@ -88,9 +89,9 @@ public class ODPExporterServlet extends HttpServlet {
 			}
 			
 			
-			NotesSession session = new NotesSession();
+			NSFSession session = new NSFSession(DominoAPI.get());
 			try {
-				NotesDatabase database;
+				NSFDatabase database;
 				
 				if(post) {
 					// Then read the NSF from the body
@@ -110,7 +111,7 @@ public class ODPExporterServlet extends HttpServlet {
 						}
 					}
 					
-					database = session.getDatabaseByPath(nsfFile.toString());
+					database = session.getDatabase(nsfFile.toString());
 				} else {
 					// Then look for an NSF path in the headers
 					String databasePath = req.getHeader(NSFODPConstants.HEADER_DATABASE_PATH);
@@ -128,12 +129,10 @@ public class ODPExporterServlet extends HttpServlet {
 						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_insufficientAccess, NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()), databasePath));
 					}
 
-					database = session.getDatabaseByPath(databasePath);
+					database = session.getDatabase(databasePath);
 				}
 				
 				try {
-					database.open();
-					
 					IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
 					
 					ODPExporter exporter = new ODPExporter(database);
@@ -180,11 +179,13 @@ public class ODPExporterServlet extends HttpServlet {
 					
 				} finally {
 					if(post) {
-						database.delete();
+						String filePath = database.getFilePath();
+						database.free();
+						session.deleteDatabase(filePath);
 					}
 				}
 			} finally {
-				session.recycle();
+				session.free();
 			}
 			
 		} catch(Throwable e) {

@@ -48,4 +48,8 @@ public interface StdNames {
 	public static final String ITEM_NAME_IMAGES_WIDE = "$ImagesWide"; //$NON-NLS-1$
 	public static final String ITEM_NAME_IMAGES_HIGH = "$ImagesHigh"; //$NON-NLS-1$
 	public static final String ITEM_NAME_IMAGES_COLORIZE = "$ImagesColorize"; //$NON-NLS-1$
+	
+	// Not in official API, but in NAPI NotesConstants
+	public static final String ITEM_NAME_CONFIG_FILE_DATA = "$ConfigData"; //$NON-NLS-1$
+	public static final String ITEM_NAME_CONFIG_FILE_SIZE = "$ConfigSize"; //$NON-NLS-1$
 }

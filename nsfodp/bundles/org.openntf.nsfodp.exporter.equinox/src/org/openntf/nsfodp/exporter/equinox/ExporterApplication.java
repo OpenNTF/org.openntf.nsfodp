@@ -28,9 +28,9 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
 
-import com.ibm.designer.domino.napi.NotesDatabase;
-import com.ibm.designer.domino.napi.NotesSession;
-import com.ibm.domino.napi.c.C;
+import com.darwino.domino.napi.DominoAPI;
+import com.darwino.domino.napi.wrap.NSFDatabase;
+import com.darwino.domino.napi.wrap.NSFSession;
 
 import lotus.domino.NotesThread;
 
@@ -53,13 +53,10 @@ public class ExporterApplication implements IApplication {
 		String projectName = System.getenv(NSFODPConstants.PROP_PROJECT_NAME);
 		
 		NotesThread runner = new NotesThread(() -> {
-			C.initLibrary(null);
-			
 			try {
-				NotesSession session = new NotesSession();
+				NSFSession session = new NSFSession(DominoAPI.get());
 				try {
-					NotesDatabase database = session.getDatabaseByPath(databasePath);
-					database.open();
+					NSFDatabase database = session.getDatabase(databasePath);
 					
 					ODPExporter exporter = new ODPExporter(database);
 					exporter.setBinaryDxl(binaryDxl);
@@ -84,7 +81,7 @@ public class ExporterApplication implements IApplication {
 						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 					}
 				} finally {
-					session.recycle();
+					session.free();
 				}
 			} catch(Exception e) {
 				throw new RuntimeException(e);

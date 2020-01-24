@@ -17,3 +17,5 @@ Import-Package: lotus.domino,
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.openntf.nsfodp.exporter
+Bundle-ClassPath: lib/com.darwino.domino.napi.jar,
+ .

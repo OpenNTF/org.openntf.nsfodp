@@ -17,4 +17,60 @@
 <!-- 		  <version>3.15.100</version> -->
 <!-- 		</dependency> -->
 <!-- 	</dependencies> -->
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>lib</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<profiles>
+		<profile>
+			<id>m2e-avoid</id>
+			<activation>
+				<property>
+					<name>!m2e.version</name>
+				</property>
+			</activation>
+			
+			<build>
+				<plugins>
+					<!-- Copy in third-party jar dependencies -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>lib</outputDirectory>
+									<stripVersion>true</stripVersion>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.darwino.domino</groupId>
+											<artifactId>com.darwino.domino.napi</artifactId>
+											<version>2.6.0-SNAPSHOT</version>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
