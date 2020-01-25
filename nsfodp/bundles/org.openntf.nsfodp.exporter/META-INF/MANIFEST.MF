@@ -7,7 +7,6 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
- com.ibm.domino.napi;bundle-version="9.0.1",
  org.openntf.nsfodp.commons,
  org.openntf.nsfodp.commons.dxl,
  org.openntf.nsfodp.commons.odp,

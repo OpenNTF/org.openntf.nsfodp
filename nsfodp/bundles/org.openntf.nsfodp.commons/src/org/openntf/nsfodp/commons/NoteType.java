@@ -122,7 +122,7 @@ public enum NoteType {
 		this.inOdp = false;
 		this.extension = null;
 		this.path = null;
-		this.fileItem = null;
+		this.fileItem = ITEM_NAME_FILE_DATA;
 		this.itemNameIgnorePattern = null;
 		this.outputFormat = null;
 		this.singleton = false;
@@ -131,7 +131,7 @@ public enum NoteType {
 		this(null, path, singleton, outputFormat);
 	}
 	private NoteType(String extension, Path path, boolean singleton, OutputFormat outputFormat) {
-		this(extension, path, null, null, singleton, outputFormat);
+		this(extension, path, ITEM_NAME_FILE_DATA, null, singleton, outputFormat);
 	}
 	private NoteType(String extension, Path path, String fileItem, String itemNameIgnorePattern, boolean singleton, OutputFormat outputFormat) {
 		this.inOdp = true;

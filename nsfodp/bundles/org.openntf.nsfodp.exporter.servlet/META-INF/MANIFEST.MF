@@ -13,4 +13,5 @@ Fragment-Host: org.openntf.nsfodp.exporter
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.http.registry,
  com.ibm.commons;bundle-version="9.0.1",
+ com.ibm.domino.napi;bundle-version="9.0.1",
  com.ibm.domino.osgi.core
