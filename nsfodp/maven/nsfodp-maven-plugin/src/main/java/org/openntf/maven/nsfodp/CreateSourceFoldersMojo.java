@@ -67,7 +67,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		log = getLog();
 		
-		if(!project.getPackaging().equals("domino-nsf")) {
+		if(!project.getPackaging().equals("domino-nsf")) { //$NON-NLS-1$
 			if(log.isInfoEnabled()) {
 				log.info(Messages.getString("GeneratePDEStructureMojo.skip")); //$NON-NLS-1$
 			}
@@ -88,7 +88,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 	}
 
 	private void generateSourceFolders() throws IOException, XMLException {
-		Path classpath = odpDirectory.toPath().resolve(".classpath");
+		Path classpath = odpDirectory.toPath().resolve(".classpath"); //$NON-NLS-1$
 		if(!Files.isReadable(classpath) || !Files.isRegularFile(classpath)) {
 			return;
 		}
@@ -97,19 +97,19 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		try(InputStream is = Files.newInputStream(classpath)) {
 			classpathXml = DOMUtil.createDocument(is);
 		}
-		Collection<String> sourceFolders = Stream.of(DOMUtil.nodes(classpathXml, "/classpath/classpathentry[kind=src]"))
+		Collection<String> sourceFolders = Stream.of(DOMUtil.nodes(classpathXml, "/classpath/classpathentry[kind=src]")) //$NON-NLS-1$
 			.map(Element.class::cast)
-			.map(el -> el.getAttribute("path"))
-			.filter(path -> !"Local".equals(path))
+			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
+			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
 			.collect(Collectors.toCollection(LinkedHashSet::new));
-		sourceFolders.add("Code/Java");
+		sourceFolders.add("Code/Java"); //$NON-NLS-1$
 		
 		sourceFolders.stream()
 			.map(path -> odpDirectory.toPath().resolve(path.replace('/', File.separatorChar)))
 			.filter(path -> !Files.exists(path))
 			.forEach(path -> {
 				if(log.isInfoEnabled()) {
-					log.info(Messages.getString("CreateSourceFoldersMojo.generatingFolder", project.getBasedir().toPath().relativize(path)));
+					log.info(Messages.getString("CreateSourceFoldersMojo.generatingFolder", project.getBasedir().toPath().relativize(path))); //$NON-NLS-1$
 				}
 				try {
 					Files.createDirectories(path);
@@ -121,7 +121,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 	}
 	
 	private void generateResourcesFiles() throws IOException {
-		Path files = odpDirectory.toPath().resolve("Resources").resolve("Files");
+		Path files = odpDirectory.toPath().resolve("Resources").resolve("Files"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.exists(files)) {
 			Files.createDirectories(files);
 			buildContext.refresh(files.toFile());
