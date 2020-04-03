@@ -16,6 +16,7 @@
 package org.openntf.nsfodp.deployment;
 
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -68,7 +69,7 @@ public class DeployNSFTask implements Runnable {
 				}
 				Database dest = session.getDatabase(server, filePath, true);
 				if(dest.isOpen() && !replaceDesign) {
-					throw new IllegalStateException(Messages.DeployNSFTask_dbExists + destPath);
+					throw new IllegalStateException(MessageFormat.format(Messages.DeployNSFTask_dbExists, destPath));
 				}
 				
 				if(dest.isOpen()) {
