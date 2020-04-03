@@ -249,17 +249,19 @@ public class ODPExporter {
 				entries.setReadMask(READ_MASK_NOTEID | READ_MASK_NOTECLASS);
 				entries.eachEntry(entry -> {
 					int noteId = 0;
+					NoteType type = null;
 					try {
 						noteId = entry.getNoteId();
 						NSFNote note = database.getNoteByID(noteId);
+						type = forNote(note);
 						try {
 							exportNote(note, exporter, result);
 						} finally {
 							note.free();
 						}
 					} catch(Throwable e) {
+						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage(), type));
 						e.printStackTrace(System.out);
-						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage()));
 					}
 				});
 			} catch(DominoException e) {
@@ -317,7 +319,10 @@ public class ODPExporter {
 		NoteType type = forNote(note);
 		if(type == NoteType.Unknown) {
 			String flags = note.hasItem(DESIGN_FLAGS) ? note.getAsString(DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
-			String title = note.hasItem(FIELD_TITLE) ? note.getAsString(FIELD_TITLE, ' ') : Integer.toString(note.getNoteID(), 16);
+			String title = getTitle(note);
+			if(StringUtil.isEmpty(title)) {
+				title = Integer.toString(note.getNoteID(), 16);
+			}
 			System.out.println(StringUtil.format(Messages.ODPExporter_unknownNote, flags, title, (note.getNoteClassValue() & ~DominoAPI.NOTE_CLASS_DEFAULT)));
 			return;
 		}
@@ -394,7 +399,7 @@ public class ODPExporter {
 			// Then it's a "true" VFS path
 			return Paths.get(note.get(ITEM_NAME_FILE_NAMES, String[].class)[0].replace('/', File.separatorChar));
 		} else {
-			title = note.get(FIELD_TITLE, String[].class)[0];
+			title = getTitle(note);
 			
 			int pipe = title.indexOf('|');
 			String clean = pipe > -1 ? title.substring(0, pipe) : title;
@@ -743,7 +748,7 @@ public class ODPExporter {
 	
 	public static NoteType forNote(NSFNote note) throws DominoException {
 		String flags = note.hasItem(DominoAPI.DESIGN_FLAGS) ? note.getAsString(DominoAPI.DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
-		String title = note.hasItem(DominoAPI.FIELD_TITLE) ? note.get(DominoAPI.FIELD_TITLE, String[].class)[0] : StringUtil.EMPTY_STRING;
+		String title = getTitle(note);
 		String flagsExt = note.hasItem(DESIGN_FLAGS_EXTENDED) ? note.getAsString(DESIGN_FLAGS_EXTENDED, ' ') : StringUtil.EMPTY_STRING;
 		
 		switch(note.getNoteClassValue() & ~DominoAPI.NOTE_CLASS_DEFAULT) {
@@ -901,5 +906,15 @@ public class ODPExporter {
 		}
 		
 		return null;
+	}
+	
+	private static String getTitle(NSFNote note) throws DominoException {
+		if(note.hasItem(DominoAPI.FIELD_TITLE)) {
+			String[] titles = note.get(DominoAPI.FIELD_TITLE, String[].class);
+			if(titles != null && titles.length > 0) {
+				return StringUtil.toString(titles[0]);
+			}
+		}
+		return StringUtil.EMPTY_STRING;
 	}
 }
