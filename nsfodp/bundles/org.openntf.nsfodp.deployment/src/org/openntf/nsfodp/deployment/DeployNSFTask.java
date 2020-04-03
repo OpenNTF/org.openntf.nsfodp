@@ -15,15 +15,17 @@
  */
 package org.openntf.nsfodp.deployment;
 
-import com.ibm.domino.osgi.core.context.ContextInfo;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.openntf.nsfodp.commons.odp.util.DominoThreadFactory;
 
 import lotus.domino.AdministrationProcess;
 import lotus.domino.Database;
 import lotus.domino.NotesException;
+import lotus.domino.NotesFactory;
 import lotus.domino.Session;
 
 /**
@@ -53,36 +55,38 @@ public class DeployNSFTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Session session = ContextInfo.getUserSession();
-			
-			String server, filePath;
-			int bangIndex = destPath.indexOf("!!"); //$NON-NLS-1$
-			if(bangIndex > -1) {
-				server = destPath.substring(0, bangIndex);
-				filePath = destPath.substring(bangIndex+2);
-			} else {
-				server = ""; //$NON-NLS-1$
-				filePath = destPath;
+			Session session = NotesFactory.createSession();
+			try {
+				String server, filePath;
+				int bangIndex = destPath.indexOf("!!"); //$NON-NLS-1$
+				if(bangIndex > -1) {
+					server = destPath.substring(0, bangIndex);
+					filePath = destPath.substring(bangIndex+2);
+				} else {
+					server = ""; //$NON-NLS-1$
+					filePath = destPath;
+				}
+				Database dest = session.getDatabase(server, filePath, true);
+				if(dest.isOpen() && !replaceDesign) {
+					throw new IllegalStateException(Messages.DeployNSFTask_dbExists + destPath);
+				}
+				
+				if(dest.isOpen()) {
+					// Then do a replace design
+					ReplaceDesignTaskLocal task = new ReplaceDesignTaskLocal(filePath, nsfFile, new NullProgressMonitor());
+					DominoThreadFactory.executor.submit(task).get();
+				} else {
+					Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString()); //$NON-NLS-1$
+					dest = source.createFromTemplate(server, filePath, false);
+				}
+				AdministrationProcess adminp = session.createAdministrationProcess(server);
+				adminp.signDatabaseWithServerID(server, filePath);
+				session.sendConsoleCommand(server, "tell adminp p im"); //$NON-NLS-1$
+			} finally {
+				session.recycle();
 			}
-			Database dest = session.getDatabase(server, filePath, true);
-			if(dest.isOpen() && !replaceDesign) {
-				throw new IllegalStateException(Messages.DeployNSFTask_dbExists + destPath);
-			}
 			
-			if(dest.isOpen()) {
-				// Then do a replace design
-				ReplaceDesignTaskLocal task = new ReplaceDesignTaskLocal(filePath, nsfFile, new NullProgressMonitor());
-				task.run();
-			} else {
-				Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString()); //$NON-NLS-1$
-				dest = source.createFromTemplate(server, filePath, false);
-			}
-			AdministrationProcess adminp = session.createAdministrationProcess(server);
-			adminp.signDatabaseWithServerID(server, filePath);
-			session.sendConsoleCommand(server, "tell adminp p im"); //$NON-NLS-1$
-			
-			
-		} catch(NotesException ne) {
+		} catch(NotesException | ExecutionException | InterruptedException ne) {
 			throw new RuntimeException(Messages.DeployNSFTask_exceptionDeploying, ne);
 		}
 	}

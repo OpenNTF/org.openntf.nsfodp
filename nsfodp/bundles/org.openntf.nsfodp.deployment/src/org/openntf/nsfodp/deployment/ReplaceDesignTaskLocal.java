@@ -21,8 +21,7 @@ import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.ibm.domino.osgi.core.context.ContextInfo;
-
+import lotus.domino.NotesFactory;
 import lotus.domino.Session;
 
 public class ReplaceDesignTaskLocal implements Runnable {
@@ -42,12 +41,15 @@ public class ReplaceDesignTaskLocal implements Runnable {
 		monitor.setTaskName(Messages.ReplaceDesignTaskLocal_label);
 		
 		try {
-			Session session = ContextInfo.getUserSession();
-			
-			String command = MessageFormat.format("load convert -d {0} * {1}", targetDbName, templatePath.toAbsolutePath().toString()); //$NON-NLS-1$
-			session.sendConsoleCommand("", command); //$NON-NLS-1$
-			
-			monitor.done();
+			Session session = NotesFactory.createSession();
+			try {
+				String command = MessageFormat.format("load convert -d {0} * {1}", targetDbName, templatePath.toAbsolutePath().toString()); //$NON-NLS-1$
+				session.sendConsoleCommand("", command); //$NON-NLS-1$
+				
+				monitor.done();
+			} finally {
+				session.recycle();
+			}
 		} catch(Throwable t) {
 			throw new RuntimeException(t);
 		}

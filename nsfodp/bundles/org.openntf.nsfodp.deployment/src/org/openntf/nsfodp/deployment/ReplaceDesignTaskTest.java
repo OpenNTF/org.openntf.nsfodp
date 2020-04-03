@@ -21,12 +21,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.domino.osgi.core.context.ContextInfo;
 
 import lotus.domino.Database;
 import lotus.domino.Document;
 import lotus.domino.NoteCollection;
 import lotus.domino.NotesException;
+import lotus.domino.NotesFactory;
 import lotus.domino.Session;
 
 /**
@@ -57,79 +57,82 @@ public class ReplaceDesignTaskTest extends Job {
 	@Override
 	public IStatus run(IProgressMonitor monitor) {
 		try {
-			Session session = ContextInfo.getUserSession();
-			
-			Database sourceDb = getDatabase(session, sourcePath);
-			Database targetDb = getDatabase(session, targetPath);
-			
-			// Delete elements from the target database
-			// Ignore elements having "prohibit design..." property or Master Template defined
-			NoteCollection targetNoteColl = targetDb.createNoteCollection(true);
-			
-			targetNoteColl.selectAllAdminNotes(false);
-			targetNoteColl.selectAllDataNotes(false);
-			targetNoteColl.setSelectIcon(false);
-			targetNoteColl.setSelectHelpAbout(false);
-			targetNoteColl.setSelectHelpIndex(false);
-			targetNoteColl.setSelectHelpUsing(false);
-			
-			// Select notes without "prohibit design" or master templates
-			targetNoteColl.setSelectionFormula(" !(@IsAvailable($Class) | @Contains($Flags; 'P')) "); //$NON-NLS-1$
-			
-			// Remove selected notes
-			targetNoteColl.buildCollection();
-			String noteId = targetNoteColl.getFirstNoteID();
-			while(StringUtil.isNotEmpty(noteId)) {
-				Document note = targetDb.getDocumentByID(noteId);
-//				System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemoving", noteId, note.getItemValueString("$TITLE"))); //$NON-NLS-1$ //$NON-NLS-2$
-				note.remove(true);
+			Session session = NotesFactory.createSession();
+			try {
+				Database sourceDb = getDatabase(session, sourcePath);
+				Database targetDb = getDatabase(session, targetPath);
 				
-				noteId = targetNoteColl.getNextNoteID(noteId);
-			}
-			
-			// Check for Help About and Help Using
-			boolean isHelpAbout = false, isHelpUsing = false;
-			
-			targetNoteColl.selectAllNotes(false);
-			targetNoteColl.clearCollection();
-			targetNoteColl.setSelectHelpAbout(true);
-			targetNoteColl.buildCollection();
-			if(targetNoteColl.getCount() > 0) {
-				noteId = targetNoteColl.getFirstNoteID();
-				Document helpAbout = targetDb.getDocumentByID(noteId);
-				if(helpAbout.getItemValueString("$Flags").contains("R")) { //$NON-NLS-1$ //$NON-NLS-2$
-//					System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemovingHelpAbout")); //$NON-NLS-1$
-					helpAbout.remove(true);
-					isHelpAbout = true;
+				// Delete elements from the target database
+				// Ignore elements having "prohibit design..." property or Master Template defined
+				NoteCollection targetNoteColl = targetDb.createNoteCollection(true);
+				
+				targetNoteColl.selectAllAdminNotes(false);
+				targetNoteColl.selectAllDataNotes(false);
+				targetNoteColl.setSelectIcon(false);
+				targetNoteColl.setSelectHelpAbout(false);
+				targetNoteColl.setSelectHelpIndex(false);
+				targetNoteColl.setSelectHelpUsing(false);
+				
+				// Select notes without "prohibit design" or master templates
+				targetNoteColl.setSelectionFormula(" !(@IsAvailable($Class) | @Contains($Flags; 'P')) "); //$NON-NLS-1$
+				
+				// Remove selected notes
+				targetNoteColl.buildCollection();
+				String noteId = targetNoteColl.getFirstNoteID();
+				while(StringUtil.isNotEmpty(noteId)) {
+					Document note = targetDb.getDocumentByID(noteId);
+	//				System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemoving", noteId, note.getItemValueString("$TITLE"))); //$NON-NLS-1$ //$NON-NLS-2$
+					note.remove(true);
+					
+					noteId = targetNoteColl.getNextNoteID(noteId);
 				}
-			}
-
-			targetNoteColl.selectAllNotes(false);
-			targetNoteColl.clearCollection();
-			targetNoteColl.setSelectHelpUsing(true);
-			targetNoteColl.buildCollection();
-			if(targetNoteColl.getCount() > 0) {
-				noteId = targetNoteColl.getFirstNoteID();
-				Document helpUsing = targetDb.getDocumentByID(noteId);
-				if(helpUsing.getItemValueString("$Flags").contains("R")) { //$NON-NLS-1$ //$NON-NLS-2$
-//					System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemovingHelpUsing")); //$NON-NLS-1$
-					helpUsing.remove(true);
-					isHelpUsing = true;
+				
+				// Check for Help About and Help Using
+				boolean isHelpAbout = false, isHelpUsing = false;
+				
+				targetNoteColl.selectAllNotes(false);
+				targetNoteColl.clearCollection();
+				targetNoteColl.setSelectHelpAbout(true);
+				targetNoteColl.buildCollection();
+				if(targetNoteColl.getCount() > 0) {
+					noteId = targetNoteColl.getFirstNoteID();
+					Document helpAbout = targetDb.getDocumentByID(noteId);
+					if(helpAbout.getItemValueString("$Flags").contains("R")) { //$NON-NLS-1$ //$NON-NLS-2$
+	//					System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemovingHelpAbout")); //$NON-NLS-1$
+						helpAbout.remove(true);
+						isHelpAbout = true;
+					}
 				}
+	
+				targetNoteColl.selectAllNotes(false);
+				targetNoteColl.clearCollection();
+				targetNoteColl.setSelectHelpUsing(true);
+				targetNoteColl.buildCollection();
+				if(targetNoteColl.getCount() > 0) {
+					noteId = targetNoteColl.getFirstNoteID();
+					Document helpUsing = targetDb.getDocumentByID(noteId);
+					if(helpUsing.getItemValueString("$Flags").contains("R")) { //$NON-NLS-1$ //$NON-NLS-2$
+	//					System.out.println(Messages.getString("ReplaceDesignTaskTest.consoleRemovingHelpUsing")); //$NON-NLS-1$
+						helpUsing.remove(true);
+						isHelpUsing = true;
+					}
+				}
+				
+				// Set "More Fields" option
+				targetDb.setOption(Database.DBOPT_MOREFIELDS, true);
+				
+				// Copy all design elements from source DB to target DB except Help About and Help Using
+				NoteCollection sourceNoteColl = sourceDb.createNoteCollection(true);
+				sourceNoteColl.selectAllAdminNotes(false);
+				sourceNoteColl.selectAllDataNotes(false);
+				sourceNoteColl.setSelectIcon(false);
+				sourceNoteColl.setSelectHelpAbout(isHelpAbout);
+				sourceNoteColl.setSelectHelpUsing(isHelpUsing);
+			
+				return Status.OK_STATUS;
+			} finally {
+				session.recycle();
 			}
-			
-			// Set "More Fields" option
-			targetDb.setOption(Database.DBOPT_MOREFIELDS, true);
-			
-			// Copy all design elements from source DB to target DB except Help About and Help Using
-			NoteCollection sourceNoteColl = sourceDb.createNoteCollection(true);
-			sourceNoteColl.selectAllAdminNotes(false);
-			sourceNoteColl.selectAllDataNotes(false);
-			sourceNoteColl.setSelectIcon(false);
-			sourceNoteColl.setSelectHelpAbout(isHelpAbout);
-			sourceNoteColl.setSelectHelpUsing(isHelpUsing);
-		
-			return Status.OK_STATUS;
 		} catch(Exception e) {
 			return new Status(IStatus.ERROR, Messages.ReplaceDesignTaskTest_errorReplacingDesign, e.toString(), e);
 		}
