@@ -21,7 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -217,16 +217,24 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 					compileOdpLocal(odpDirectory, updateSites, outputFile);
 				} else {
 					Path odpZip = zipDirectory(odpDirectory);
-					List<Path> updateSiteZips = null;
-					if(updateSites != null && !updateSites.isEmpty()) {
-						updateSiteZips = updateSites.stream()
-							.map(this::zipDirectory)
-							.collect(Collectors.toList());
+					try {
+						List<Path> updateSiteZips = null;
+						if(updateSites != null && !updateSites.isEmpty()) {
+							updateSiteZips = updateSites.stream()
+								.map(this::zipDirectory)
+								.collect(Collectors.toList());
+						}
+						
+						Path packageZip = createPackage(odpZip, updateSiteZips);
+						try {
+							Path result = compileOdpOnServer(packageZip);
+							Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
+						} finally {
+							Files.deleteIfExists(packageZip);
+						}
+					} finally {
+						Files.deleteIfExists(odpZip);
 					}
-					
-					Path packageZip = createPackage(odpZip, updateSiteZips);
-					Path result = compileOdpOnServer(packageZip);
-					Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 				}
 				
 				if(log.isInfoEnabled()) {
@@ -276,7 +284,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		}
 		
 		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-		packageZip.toFile().deleteOnExit();
 		try(OutputStream fos = Files.newOutputStream(packageZip)) {
 			try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
 				zos.setLevel(Deflater.BEST_COMPRESSION);
@@ -340,11 +347,14 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 			}
 			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			
-			FileEntity fileEntity = new FileEntity(packageZip.toFile());
-			post.setEntity(fileEntity);
-			
-			HttpResponse res = client.execute(post);
-			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
+			HttpEntity responseEntity;
+			try(InputStream fileIs = Files.newInputStream(packageZip)) {
+				HttpEntity entity = new InputStreamEntity(fileIs, Files.size(packageZip));
+				post.setEntity(entity);
+				
+				HttpResponse res = client.execute(post);
+				responseEntity = ResponseUtil.checkResponse(log, res);
+			}
  			
 			try(InputStream is = responseEntity.getContent()) {
 				ResponseUtil.monitorResponse(log, is);
@@ -366,7 +376,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		
 		try {
 			Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			result.toFile().deleteOnExit();
 			
 			try(OutputStream fos = Files.newOutputStream(result)) {
 				try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
