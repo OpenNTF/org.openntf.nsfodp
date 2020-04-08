@@ -42,7 +42,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compiler>1.8</compiler>
-		<bazaar-version>2.0.3</bazaar-version>
+		<bazaar-version>2.0.4</bazaar-version>
 		<nsfodp-version>${project.version}</nsfodp-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
@@ -206,7 +206,7 @@
 		<dependency>
 			<groupId>com.darwino.domino</groupId>
 			<artifactId>com.darwino.domino.napi</artifactId>
-			<version>2.5.0</version>
+			<version>2.5.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.darwino</groupId>
