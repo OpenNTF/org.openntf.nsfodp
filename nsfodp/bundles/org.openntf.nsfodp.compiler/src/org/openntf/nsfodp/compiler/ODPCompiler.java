@@ -25,7 +25,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -149,12 +148,7 @@ public class ODPCompiler {
 	private final FacesProject facesProject;
 	private final DynamicXPageBean dynamicXPageBean = new DynamicXPageBean();
 	private final ResourceBundleSource resourceBundleSource;
-	private final IconUrlSource iconUrlSource = new IconUrlSource() {
-		@Override public URL getIconUrl(String arg0) {
-			// TODO ???
-			return null;
-		}
-	};
+	private final IconUrlSource iconUrlSource = icon -> getClass().getResource(icon);
 	private boolean appendTimestampToTitle = false;
 	private String templateName;
 	private String templateVersion;
