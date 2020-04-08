@@ -228,16 +228,20 @@ public class ODPExporter {
 			Path databaseProperties = result.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 			Files.createDirectories(databaseProperties.getParent());
 			NSFNoteIDCollection iconColl = database.getParent().createNoteIDCollection();
-			iconColl.add(NOTE_ID_SPECIAL | NOTE_CLASS_ICON);
-			NSFNote acl = database.getNoteByID(NOTE_ID_SPECIAL | NOTE_CLASS_ACL);
 			try {
-				iconColl.add(acl.getNoteID());
+				iconColl.add(NOTE_ID_SPECIAL | NOTE_CLASS_ICON);
+				NSFNote acl = database.getNoteByID(NOTE_ID_SPECIAL | NOTE_CLASS_ACL);
+				try {
+					iconColl.add(acl.getNoteID());
+				} finally {
+					acl.free();
+				}
+				
+				try(OutputStream os = new CommonsSwiperOutputStream(databaseProperties, isSwiperFilter())) {
+					exporter.export(database, iconColl, os);
+				}
 			} finally {
-				acl.free();
-			}
-			
-			try(OutputStream os = new CommonsSwiperOutputStream(databaseProperties, isSwiperFilter())) {
-				exporter.export(database, iconColl, os);
+				iconColl.free();
 			}
 			
 			exporter.setForceNoteFormat(isBinaryDxl());
