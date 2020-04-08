@@ -110,6 +110,7 @@ import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.DominoException;
 import com.darwino.domino.napi.LotusScriptCompilationException;
 import com.darwino.domino.napi.enums.DBClass;
+import com.darwino.domino.napi.wrap.NSFBase;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFNote;
 import com.darwino.domino.napi.wrap.NSFSession;
@@ -353,6 +354,7 @@ public class ODPCompiler {
 	 * @since 1.0.0
 	 */
 	public synchronized Path compile(ClassLoader cl) throws Exception {
+		NSFBase.setTraceCreation(true);
 		Collection<Bundle> bundles = installBundles();
 		JavaSourceClassLoader classLoader = null;
 		Set<Path> cleanup = new HashSet<>();
@@ -1012,19 +1014,23 @@ public class ODPCompiler {
 			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
 			try {
 				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
-				String noteId = importer.getFirstImportedNoteID();
-				while(StringUtil.isNotEmpty(noteId)) {
-					importedIds.add(noteId);
-					
-					NSFNote note = nsfDatabase.getNoteByID(noteId);
-					try {
-						note.sign();
-						note.save();
-					} finally {
-						note.free();
+				try {
+					String noteId = importer.getFirstImportedNoteID();
+					while(StringUtil.isNotEmpty(noteId)) {
+						importedIds.add(noteId);
+						
+						NSFNote note = nsfDatabase.getNoteByID(noteId);
+						try {
+							note.sign();
+							note.save();
+						} finally {
+							note.free();
+						}
+						
+						noteId = importer.getNextImportedNoteID(noteId);
 					}
-					
-					noteId = importer.getNextImportedNoteID(noteId);
+				} finally {
+					nsfDatabase.free();
 				}
 			} finally {
 				nsfSession.free();
@@ -1056,38 +1062,42 @@ public class ODPCompiler {
 			NSFSession nsfSession = NSFSession.fromLotus(DominoAPI.get(), database.getParent(), false, true);
 			try {
 				NSFDatabase nsfDatabase = new NSFDatabase(nsfSession, XSPNative.getDBHandle(database), database.getServer(), false);
-				for(int i = 0; i < noteIds.size(); i++) {
-					Queue<String> nextPass = new ArrayDeque<>();
-					
-					String noteId;
-					while((noteId = remaining.poll()) != null) {
-						NSFNote note = nsfDatabase.getNoteByID(noteId);
-						String title = null;
-						try {
-							title = note.get("$TITLE", String.class); //$NON-NLS-1$
-							titles.put(noteId, title);
-							note.compileLotusScript();
-							note.sign();
-							note.save();
-						} catch(LotusScriptCompilationException err) {
-							nextPass.add(noteId);
-							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-						} catch(DominoException err) {
-							if(err.getStatus() == 12051) { // Same as above, but not encapsulated
-								titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+				try {
+					for(int i = 0; i < noteIds.size(); i++) {
+						Queue<String> nextPass = new ArrayDeque<>();
+						
+						String noteId;
+						while((noteId = remaining.poll()) != null) {
+							NSFNote note = nsfDatabase.getNoteByID(noteId);
+							String title = null;
+							try {
+								title = note.get("$TITLE", String.class); //$NON-NLS-1$
+								titles.put(noteId, title);
+								note.compileLotusScript();
+								note.sign();
+								note.save();
+							} catch(LotusScriptCompilationException err) {
 								nextPass.add(noteId);
-							} else {
-								throw err;
+								titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+							} catch(DominoException err) {
+								if(err.getStatus() == 12051) { // Same as above, but not encapsulated
+									titles.put(noteId, title + " - " + err); //$NON-NLS-1$
+									nextPass.add(noteId);
+								} else {
+									throw err;
+								}
+							} finally {
+								note.free();
 							}
-						} finally {
-							note.free();
+						}
+						
+						remaining = nextPass;
+						if(nextPass.isEmpty()) {
+							break;
 						}
 					}
-					
-					remaining = nextPass;
-					if(nextPass.isEmpty()) {
-						break;
-					}
+				} finally {
+					nsfDatabase.free();
 				}
 			} finally {
 				nsfSession.free();
