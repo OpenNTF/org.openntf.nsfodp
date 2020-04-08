@@ -698,7 +698,7 @@ public class ODPCompiler {
 	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException, DominoException {
 		subTask(Messages.ODPCompiler_creatingNSF);
 		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
-		temp.toFile().deleteOnExit();
+		Files.deleteIfExists(temp);
 		String filePath = temp.toAbsolutePath().toString();
 		
 		NSFSession session = NSFSession.fromLotus(DominoAPI.get(), lotusSession, false, true);
