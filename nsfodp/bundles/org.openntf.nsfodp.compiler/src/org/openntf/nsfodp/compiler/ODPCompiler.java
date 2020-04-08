@@ -161,11 +161,7 @@ public class ODPCompiler {
 		);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
 	
-	private static final ThreadLocal<DateFormat> TIMESTAMP = new ThreadLocal<DateFormat>() {
-		protected DateFormat initialValue() {
-			return new SimpleDateFormat("yyyy-MM-dd h:mm a zzz"); //$NON-NLS-1$
-		}
-	};
+	private static final ThreadLocal<DateFormat> TIMESTAMP = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd h:mm a zzz")); //$NON-NLS-1$
 	
 	/**
 	 * Notes.ini property to set to "1" to output debug information about imported DXL
