@@ -51,6 +51,7 @@ import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
+import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 
@@ -208,6 +209,10 @@ public class ODPCompilerServlet extends HttpServlet {
 				}
 			}
 			resp.flushBuffer();
+			
+			// Delete the NSF via the Notes API
+			DominoAPI.get().NSFDbDelete(nsf[0].toString());
+			
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PrintWriter out = new PrintWriter(baos);

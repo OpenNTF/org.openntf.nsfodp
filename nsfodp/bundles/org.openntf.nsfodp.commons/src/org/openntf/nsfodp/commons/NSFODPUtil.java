@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.commons;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -25,7 +24,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 public enum NSFODPUtil {
 	;
@@ -49,13 +47,30 @@ public enum NSFODPUtil {
 	
 	public static void deltree(Collection<Path> paths) throws IOException {
 		for(Path path : paths) {
-			if(Files.isDirectory(path)) {
-				Files.walk(path)
-				    .sorted(Comparator.reverseOrder())
-				    .map(Path::toFile)
-				    .forEach(File::delete);
-			}
+			deltree(path);
+		}
+	}
+	
+	/**
+	 * @since 3.0.0
+	 */
+	public static void deltree(Path path) throws IOException {
+		if(Files.isDirectory(path)) {
+			Files.list(path)
+			    .forEach(t -> {
+					try {
+						NSFODPUtil.deltree(t);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+		}
+		try {
 			Files.deleteIfExists(path);
+		} catch(IOException e) {
+			// This is likely a Windows file-locking thing. In this case,
+			//   punt and hand it off to File#deleteOnExit
+			path.toFile().deleteOnExit();
 		}
 	}
 	

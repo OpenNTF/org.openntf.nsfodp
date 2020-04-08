@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -419,62 +418,66 @@ public class ODPCompiler {
 			try {
 				Path file = createDatabase(lotusSession);
 				Database database = lotusSession.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
-				DxlImporter importer = lotusSession.createDxlImporter();
-				importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_CREATE);
-				importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
-				importer.setReplaceDbProperties(true);
-				importer.setReplicaRequiredForReplaceOrUpdate(false);
-				
-				importDbProperties(importer, database);
-				importBasicElements(importer, database);
-				importFileResources(importer, database);
-				importLotusScriptLibraries(importer, database);
-				importDbScript(importer, database);
-				
-				if(hasXPages) {
-					Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
-					importCustomControls(importer, database, classLoader, compiledClassNames);
-					importXPages(importer, database, classLoader, compiledClassNames);
-					importJavaElements(importer, database, classLoader, compiledClassNames);
-				}
-
-				// Append a timestamp if requested
-				if(this.isAppendTimestampToTitle()) {
-					database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
-				}
-				
-				// Set the template info if requested
-				String templateName = this.getTemplateName();
-				if(StringUtil.isNotEmpty(templateName)) {
-					NoteCollection notes = database.createNoteCollection(false);
-					notes.selectAllDesignElements(true);
-					notes.setSelectionFormula("$TITLE='$TemplateBuild'"); //$NON-NLS-1$
-					notes.buildCollection();
-					String noteId = notes.getFirstNoteID();
-
-					lotus.domino.Document doc;
-					if(StringUtil.isNotEmpty(noteId)) {
-						doc = database.getDocumentByID(noteId);
-					} else {
-						// Import an empty one
-						try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-							String dxl = StreamUtil.readString(is);
-							List<String> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
-							doc = database.getDocumentByID(ids.get(0));
+				try {
+					DxlImporter importer = lotusSession.createDxlImporter();
+					importer.setDesignImportOption(DxlImporter.DXLIMPORTOPTION_CREATE);
+					importer.setAclImportOption(DxlImporter.DXLIMPORTOPTION_REPLACE_ELSE_IGNORE);
+					importer.setReplaceDbProperties(true);
+					importer.setReplicaRequiredForReplaceOrUpdate(false);
+					
+					importDbProperties(importer, database);
+					importBasicElements(importer, database);
+					importFileResources(importer, database);
+					importLotusScriptLibraries(importer, database);
+					importDbScript(importer, database);
+					
+					if(hasXPages) {
+						Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
+						importCustomControls(importer, database, classLoader, compiledClassNames);
+						importXPages(importer, database, classLoader, compiledClassNames);
+						importJavaElements(importer, database, classLoader, compiledClassNames);
+					}
+	
+					// Append a timestamp if requested
+					if(this.isAppendTimestampToTitle()) {
+						database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
+					}
+					
+					// Set the template info if requested
+					String templateName = this.getTemplateName();
+					if(StringUtil.isNotEmpty(templateName)) {
+						NoteCollection notes = database.createNoteCollection(false);
+						notes.selectAllDesignElements(true);
+						notes.setSelectionFormula("$TITLE='$TemplateBuild'"); //$NON-NLS-1$
+						notes.buildCollection();
+						String noteId = notes.getFirstNoteID();
+	
+						lotus.domino.Document doc;
+						if(StringUtil.isNotEmpty(noteId)) {
+							doc = database.getDocumentByID(noteId);
+						} else {
+							// Import an empty one
+							try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+								String dxl = StreamUtil.readString(is);
+								List<String> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
+								doc = database.getDocumentByID(ids.get(0));
+							}
 						}
+						String version = this.getTemplateVersion();
+						if(StringUtil.isNotEmpty(version)) {
+							doc.replaceItemValue("$TemplateBuild", version); //$NON-NLS-1$
+						}
+						doc.replaceItemValue("$TemplateBuildName", templateName); //$NON-NLS-1$
+						DateTime dt = database.getParent().createDateTime(Calendar.getInstance());
+						try {
+							doc.replaceItemValue("$TemplateBuildDate", dt); //$NON-NLS-1$
+						} finally {
+							dt.recycle();
+						}
+						doc.save();
 					}
-					String version = this.getTemplateVersion();
-					if(StringUtil.isNotEmpty(version)) {
-						doc.replaceItemValue("$TemplateBuild", version); //$NON-NLS-1$
-					}
-					doc.replaceItemValue("$TemplateBuildName", templateName); //$NON-NLS-1$
-					DateTime dt = database.getParent().createDateTime(Calendar.getInstance());
-					try {
-						doc.replaceItemValue("$TemplateBuildDate", dt); //$NON-NLS-1$
-					} finally {
-						dt.recycle();
-					}
-					doc.save();
+				} finally {
+					database.recycle();
 				}
 				
 				return file;
@@ -489,19 +492,11 @@ public class ODPCompiler {
 		} finally {
 			uninstallBundles(bundles);
 			
-			for(Path path : cleanup) {
-				if(Files.isDirectory(path)) {
-					Files.walk(path)
-					    .sorted(Comparator.reverseOrder())
-					    .map(Path::toFile)
-					    .forEach(File::delete);
-				}
-				Files.deleteIfExists(path);
-			}
-			
 			if(classLoader != null) {
 				classLoader.close();
 			}
+
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 	
@@ -528,6 +523,9 @@ public class ODPCompiler {
 		
 		bundles.stream().forEach(t -> {
 			try {
+				if(t.getState() == Bundle.RESOLVED) {
+					t.stop();
+				}
 				t.uninstall();
 			} catch (BundleException e) {
 				throw new RuntimeException(e);
