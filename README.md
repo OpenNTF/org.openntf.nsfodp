@@ -198,6 +198,8 @@ The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires
 
 Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 or above.
 
+Note: if you use local compilation, either your ID file should have no password or you should configure Notes's User Security to allow non-Notes-based programs to execute without prompting for a password.
+
 #### Compilation on macOS
 
 Due to the way the macOS Notes JVM is set up, the process currently requires that the running user have access to modify the application bundle, which is the default for admin users.
