@@ -294,9 +294,12 @@ public abstract class AbstractEquinoxTask {
 	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
 		// Look to see if we can find a Notes JVM
 		Path jvmBin = notesProgram.resolve("jvm").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$
-		if(!Files.isDirectory(jvmBin)) {
+		if(!Files.isDirectory(jvmBin) && SystemUtils.IS_OS_MAC) {
 			// macOS 10.0.1+ embedded JVM
-			jvmBin = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			Path notesApp = getMacNotesAppDir(notesProgram);
+			if(notesApp != null) {
+				jvmBin = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			}
 		}
 		if(!Files.isDirectory(jvmBin)) {
 			if(log.isWarnEnabled()) {
@@ -412,9 +415,12 @@ public abstract class AbstractEquinoxTask {
     	
     	// Add ibmpkcs.jar if available, though it's gone in V11
     	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
-    	if(!Files.isReadable(ibmPkcs)) {
+    	if(!Files.isReadable(ibmPkcs) && SystemUtils.IS_OS_MAC) {
     		// Different path on macOS
-    		ibmPkcs = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+    		Path notesApp = getMacNotesAppDir(notesProgram);
+    		if(notesApp != null) {
+    			ibmPkcs = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+    		}
     	}
     	if(Files.isReadable(ibmPkcs)) {
     		classpath.add(ibmPkcs);
@@ -451,28 +457,31 @@ public abstract class AbstractEquinoxTask {
 
     		Collection<Path> toLink = new LinkedHashSet<>();
     		addIBMJars(notesProgram, toLink);
-    		
-    		Path destBase = notesProgram.getParent().getParent().resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-    		if(!Files.isDirectory(destBase)) {
-    			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
-    		}
-    		if(!Files.isWritable(destBase)) {
-    			throw new IllegalStateException("Unable to write to embedded Notes JRE ext directory at " + destBase);
-    		}
-    		
+
     		Collection<Path> result = new LinkedHashSet<>();
-    		for(Path jar : toLink) {
-    			Path destJar = destBase.resolve(jar.getFileName());
-    			if(!Files.exists(destJar)) {
-    				Files.copy(jar, destJar);
-    				result.add(destJar);
-    			}
-    		}
-    		
-    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
-    		if(!Files.exists(toolsDest)) {
-    			Files.copy(tools, toolsDest);
-    			result.add(toolsDest);
+    		Path notesApp = getMacNotesAppDir(notesProgram);
+    		if(notesApp != null) {
+	    		Path destBase = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	    		if(!Files.isDirectory(destBase)) {
+	    			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
+	    		}
+	    		if(!Files.isWritable(destBase)) {
+	    			throw new IllegalStateException("Unable to write to embedded Notes JRE ext directory at " + destBase);
+	    		}
+	    		
+	    		for(Path jar : toLink) {
+	    			Path destJar = destBase.resolve(jar.getFileName());
+	    			if(!Files.exists(destJar)) {
+	    				Files.copy(jar, destJar);
+	    				result.add(destJar);
+	    			}
+	    		}
+	    		
+	    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
+	    		if(!Files.exists(toolsDest)) {
+	    			Files.copy(tools, toolsDest);
+	    			result.add(toolsDest);
+	    		}
     		}
     		
     		return result;
@@ -546,5 +555,19 @@ public abstract class AbstractEquinoxTask {
     		lastFour[i] = lastFour[i+1];
     	}
     	lastFour[lastFour.length-1] = ch;
+    }
+    
+    /**
+     * @since 3.0.0
+     */
+    private static Path getMacNotesAppDir(Path notesProgram) {
+    	if(notesProgram == null) {
+    		return null;
+    	}
+    	Path notesApp = notesProgram.getParent();
+    	if(notesApp.getParent() == null) {
+    		return null;
+    	}
+    	return notesApp.getParent();
     }
 }
