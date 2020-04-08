@@ -67,6 +67,8 @@ public abstract class AbstractEquinoxTask {
 	
 	private Collection<Path> classpathJars;
 	private Map<String, String> systemProperties;
+	
+	private boolean successFlag;
 
 	public AbstractEquinoxTask(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
 		this.pluginDescriptor = pluginDescriptor;
@@ -90,6 +92,7 @@ public abstract class AbstractEquinoxTask {
 	}
 	
 	protected void run(String applicationId) {
+		successFlag = false;
 		try {
 			Path equinox = getDependencyJar("org.eclipse.equinox.launcher"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
@@ -236,6 +239,12 @@ public abstract class AbstractEquinoxTask {
 				case 0: // Success
 				case 137: // teminated by watchOutput
 					break;
+				case 1: // also likely terminated - check successFlag
+					if(successFlag) {
+						break;
+					} else {
+						throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
+					}
 				case 13: // Equinox launch failure - look for log file
 					if(Files.isReadable(logFile)) {
 						Files.lines(logFile).forEach(log::error);
@@ -518,12 +527,12 @@ public abstract class AbstractEquinoxTask {
     // TODO figure out why this is needed.
     //   The trouble is that the Equinox process sometimes will remain running indefinitely,
     //   even when execution of the IApplication completes successfully.
-    private static void watchOutput(InputStream is, Process proc) {
+    private void watchOutput(InputStream is, Process proc) {
     	Executors.newSingleThreadExecutor().submit(() -> {
     		char[] lastFour = new char[4];
     		
     		try {
-	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) {
+	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) { //$NON-NLS-1$
 	    			int ch;
 	    			while((ch = r.read()) != -1) {
 	    				System.out.write(ch);
@@ -532,6 +541,7 @@ public abstract class AbstractEquinoxTask {
 	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
 	    					System.out.println();
 	    					proc.destroyForcibly();
+	    					successFlag = true;
 	    					return;
 	    				}
 	    			}
