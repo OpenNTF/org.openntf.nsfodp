@@ -234,6 +234,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
+		<!--
+			Domino default classpath 
+		-->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>19.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

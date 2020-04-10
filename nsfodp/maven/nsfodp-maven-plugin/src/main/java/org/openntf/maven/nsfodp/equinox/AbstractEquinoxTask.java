@@ -106,6 +106,7 @@ public abstract class AbstractEquinoxTask {
 				classpath.addAll(classpathJars);
 			}
 			addIBMJars(notesProgram, classpath);
+			addNdextJars(classpath);
 			
 			if(!Files.exists(notesProgram)) {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesProgramDirDoesNotExist", notesProgram)); //$NON-NLS-1$
@@ -447,6 +448,17 @@ public abstract class AbstractEquinoxTask {
     	}
     	classpath.add(websvc);
     }
+    
+    /**
+     * Adds JARs that are provided in the "ndext" directory of Domino but aren't IBM/HCL-specific.
+     * 
+     * @param classpath the classpath collection to add to
+     * @throws MojoExecutionException if there is an exception locating the JARs
+     * @since 3.0.0
+     */
+	private void addNdextJars(Collection<Path> classpath) throws MojoExecutionException {
+		classpath.add(getDependencyJar("guava")); //$NON-NLS-1$
+	}
     
 	private Collection<Path> initJreJars(Path notesProgram) throws MojoExecutionException, IOException {
     	// On macOS, we'll need to create some symlinks in our active JRE due to the way the ext folder works
