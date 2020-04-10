@@ -16,14 +16,19 @@
 package org.openntf.nsfodp.commons;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public enum NSFODPUtil {
 	;
@@ -88,6 +93,18 @@ public enum NSFODPUtil {
 		deltree(Collections.singleton(source));
 	}
 	
+	/**
+	 * Copies the source directory to the destination.
+	 * 
+	 * @param source the source directory to copy (e.g. "/foo/bar")
+	 * @param dest the destination path of the directory (e.g. "/baz/bar")
+	 * @throws IOException if there is a filesystem problem copying the directory
+	 * @since 3.0.0
+	 */
+	public static void copyDirectory(Path source, Path dest) throws IOException {
+		Files.walkFileTree(source, new CopyFileVisitor(dest));
+	}
+	
 	private static class CopyFileVisitor extends SimpleFileVisitor<Path> {
 		private final Path targetPath;
 		private Path sourcePath = null;
@@ -110,6 +127,33 @@ public enum NSFODPUtil {
 		public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
 			Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
 			return FileVisitResult.CONTINUE;
+		}
+	}
+	
+	/**
+	 * Expands the contents of the provided ZIP file to the destination directory.
+	 * 
+	 * @param zipFile the ZIP file to expand
+	 * @param destDirectory the destination base directory
+	 * @throws IOException if there is a problem reading the ZIP or expanding the contents
+	 * @since 3.0.0
+	 */
+	public static void unzip(Path zipFile, Path destDirectory) throws IOException {
+		try(InputStream is = Files.newInputStream(zipFile)) {
+			try(ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8)) {
+				ZipEntry entry = zis.getNextEntry();
+				while(entry != null) {
+					Path dest = destDirectory.resolve(entry.getName());
+					if(entry.isDirectory()) {
+						Files.createDirectories(dest);
+					} else {
+						Files.createDirectories(dest.getParent());
+						Files.copy(zis, dest, StandardCopyOption.REPLACE_EXISTING);
+					}
+					
+					entry = zis.getNextEntry();
+				}
+			}
 		}
 	}
 }
