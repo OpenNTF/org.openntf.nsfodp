@@ -22,14 +22,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.openntf.maven.nsfodp.util.JsonUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
@@ -61,15 +58,7 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		
 		Map<String, String> props = new HashMap<>();
 		props.put(NSFODPConstants.PROP_ODPDIRECTORY, odpDirectory.toAbsolutePath().toString());
-		if(updateSites != null && !updateSites.isEmpty()) {
-			List<String> pathStrings = updateSites.stream()
-				.filter(Objects::nonNull)
-				.map(Path::toAbsolutePath)
-				.map(Object::toString)
-				.collect(Collectors.toList());
-			String paths = JsonUtil.toJson(pathStrings);
-			props.put(NSFODPConstants.PROP_UPDATESITE, paths);
-		}
+		setUpdateSites(updateSites);
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, outputFile.toAbsolutePath().toString());
 		if(compilerLevel != null) {
 			props.put(NSFODPConstants.PROP_COMPILERLEVEL, compilerLevel);

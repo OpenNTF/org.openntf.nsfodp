@@ -56,6 +56,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
+import org.openntf.nsfodp.commons.NSFODPUtil;
 
 public abstract class AbstractEquinoxTask {
 	private final PluginDescriptor pluginDescriptor;
@@ -67,6 +68,7 @@ public abstract class AbstractEquinoxTask {
 	
 	private Collection<Path> classpathJars;
 	private Map<String, String> systemProperties;
+	private List<Path> updateSites;
 	
 	private boolean successFlag;
 
@@ -89,6 +91,10 @@ public abstract class AbstractEquinoxTask {
 	
 	protected void setSystemProperties(Map<String, String> properties) {
 		this.systemProperties = properties;
+	}
+	
+	public void setUpdateSites(List<Path> updateSites) {
+		this.updateSites = updateSites;
 	}
 	
 	protected void run(String applicationId) {
@@ -121,6 +127,10 @@ public abstract class AbstractEquinoxTask {
 			Path framework = target.resolve("nsfodpequinox"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("EquinoxMojo.creatingOsgi", framework)); //$NON-NLS-1$
+			}
+			if(Files.exists(framework)) {
+				// Always start clean, as existing data can cause trouble
+				NSFODPUtil.deltree(framework);
 			}
 			Files.createDirectories(framework);
 			
@@ -163,10 +173,22 @@ public abstract class AbstractEquinoxTask {
 					}
 					return true;
 				})
-				.map(p -> "reference:" + p.toUri()) //$NON-NLS-1$
+				.map(p -> getPathRef(p, -1))
 				.forEach(platform::add);
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
+			}
+			
+			if(this.updateSites != null) {
+				for(Path updateSite : this.updateSites) {
+					Path sitePlugins = updateSite.resolve("plugins"); //$NON-NLS-1$
+					if(Files.isDirectory(sitePlugins)) {
+						Files.list(sitePlugins)
+							.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+							.map(p -> getPathRef(p, -1))
+							.forEach(platform::add);
+					}
+				}
 			}
 
 			Path workspace = framework.resolve("workspace"); //$NON-NLS-1$
@@ -294,10 +316,14 @@ public abstract class AbstractEquinoxTask {
 	
 	private String getDependencyRef(String artifactId, int startLevel) throws MojoExecutionException {
 		Path path = getDependencyJar(artifactId);
+		return getPathRef(path, startLevel);
+	}
+	
+	private String getPathRef(Path path, int startLevel) {
 		if(startLevel < 1) {
-			return "reference:" + path.toAbsolutePath().toUri(); //$NON-NLS-1$
+			return "reference:" + path.toUri(); //$NON-NLS-1$
 		} else {
-			return "reference:" + path.toAbsolutePath().toUri() + "@" + startLevel + ":start"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return "reference:" + path.toUri() + "@" + startLevel + ":start"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 	
