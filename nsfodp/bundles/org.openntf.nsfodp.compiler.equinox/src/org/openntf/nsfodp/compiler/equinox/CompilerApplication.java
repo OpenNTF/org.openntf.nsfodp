@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,57 +49,69 @@ public class CompilerApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
-		Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
-		List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
-		Path outputFile = toPath(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
-		
-		IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
-		OnDiskProject odp = new OnDiskProject(odpDirectory);
-		ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
-		
-		// See if the client requested a specific compiler level
-		String compilerLevel = System.getenv(NSFODPConstants.PROP_COMPILERLEVEL);
-		if(StringUtil.isNotEmpty(compilerLevel)) {
-			compiler.setCompilerLevel(compilerLevel);
-		}
-		String appendTimestamp = System.getenv(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
-		if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-			compiler.setAppendTimestampToTitle(true);
-		}
-		String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
-		if(StringUtil.isNotEmpty(templateName)) {
-			compiler.setTemplateName(templateName);
-			String templateVersion = System.getenv(NSFODPConstants.PROP_TEMPLATEVERSION);
-			if(StringUtil.isNotEmpty(templateVersion)) {
-				compiler.setTemplateVersion(templateVersion);
+		NotesThread.sinitThread();
+		try {
+			Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
+			List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
+			Path outputFile = toPath(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
+			
+			IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
+			OnDiskProject odp = new OnDiskProject(odpDirectory);
+			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
+			
+			// See if the client requested a specific compiler level
+			String compilerLevel = System.getenv(NSFODPConstants.PROP_COMPILERLEVEL);
+			if(StringUtil.isNotEmpty(compilerLevel)) {
+				compiler.setCompilerLevel(compilerLevel);
 			}
-		}
-		String setXspOptions = System.getenv(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
-		if("true".equals(setXspOptions)) { //$NON-NLS-1$
-			compiler.setSetProductionXspOptions(true);
-		}
-		
-		if(updateSites != null && !updateSites.isEmpty()) {
-			updateSites.stream()
-				.map(Path::toFile)
-				.map(FilesystemUpdateSite::new)
-				.forEach(compiler::addUpdateSite);
-		}
-		
-		exec.submit(() -> {
-			try {
-				Path nsf = compiler.compile();
-				Files.move(nsf, outputFile, StandardCopyOption.REPLACE_EXISTING);
-				mon.done();
-			} catch(RuntimeException e) {
-				throw e;
-			} catch(Exception e) {
-				throw new RuntimeException(e);
+			String appendTimestamp = System.getenv(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
+			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
+				compiler.setAppendTimestampToTitle(true);
 			}
-		}).get();
-		System.out.println(getClass().getName() + "#end"); //$NON-NLS-1$
-		
-		return EXIT_OK;
+			String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
+			if(StringUtil.isNotEmpty(templateName)) {
+				compiler.setTemplateName(templateName);
+				String templateVersion = System.getenv(NSFODPConstants.PROP_TEMPLATEVERSION);
+				if(StringUtil.isNotEmpty(templateVersion)) {
+					compiler.setTemplateVersion(templateVersion);
+				}
+			}
+			String setXspOptions = System.getenv(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
+			if("true".equals(setXspOptions)) { //$NON-NLS-1$
+				compiler.setSetProductionXspOptions(true);
+			}
+			String odsRelease = System.getenv(NSFODPConstants.PROP_ODSRELEASE);
+			if(StringUtil.isNotEmpty(odsRelease)) {
+				compiler.setOdsRelease(odsRelease);
+			}
+			
+			if(updateSites != null && !updateSites.isEmpty()) {
+				updateSites.stream()
+					.map(Path::toFile)
+					.map(FilesystemUpdateSite::new)
+					.forEach(compiler::addUpdateSite);
+			}
+			
+			exec.submit(() -> {
+				try {
+					Path nsf = compiler.compile();
+					Files.move(nsf, outputFile, StandardCopyOption.REPLACE_EXISTING);
+					mon.done();
+				} catch(RuntimeException e) {
+					throw e;
+				} catch(Exception e) {
+					throw new RuntimeException(e);
+				}
+			}).get();
+			System.out.println(getClass().getName() + "#end"); //$NON-NLS-1$
+			
+			exec.shutdownNow();
+			exec.awaitTermination(30, TimeUnit.SECONDS);
+			
+			return EXIT_OK;
+		} finally {
+			NotesThread.stermThread();
+		}
 	}
 	
 	@Override
