@@ -523,7 +523,7 @@ public class ODPCompiler {
 		
 		bundles.stream().forEach(t -> {
 			try {
-				if(t.getState() == Bundle.RESOLVED) {
+				if(t.getState() == Bundle.RESOLVED && StringUtil.isEmpty(t.getHeaders().get("Fragment-Host"))) {
 					t.stop();
 				}
 				t.uninstall();
