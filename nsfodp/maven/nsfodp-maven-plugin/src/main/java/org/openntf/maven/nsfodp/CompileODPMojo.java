@@ -38,6 +38,8 @@ import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
+import com.ibm.commons.util.StringUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,7 +143,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	 * Whether or not to append a timestamp to the generated NSF's title. Defaults to
 	 * {@value}.
 	 */
-	@Parameter(required=false)
+	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false)
 	private boolean appendTimestampToTitle = false;
 	
 	/**
@@ -151,7 +153,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	 * used by this database when it is a template for others, not the name of a template
 	 * to inherit from.</p>
 	 */
-	@Parameter(required=false)
+	@Parameter(property="nsfodp.compiler.templateName", required=false)
 	private String templateName;
 	
 	/**
@@ -172,6 +174,17 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	 */
 	@Parameter(required=false)
 	private File[] classpathJars;
+	
+	/**
+	 * The Notes/Domino ODS release level to target.
+	 * 
+	 * <p>This value is used in the file extension - e.g. {@code "8"} for ".ns8" - when creating
+	 * the temporary compilation NSF.</p>
+	 * 
+	 * @since 3.0.0
+	 */
+	@Parameter(property="nsfodp.compiler.odsRelease", required=false)
+	private String odsRelease;
 	
 	private Log log;
 
@@ -271,7 +284,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease);
 	}
 	
 	// *******************************************************************************
@@ -346,6 +359,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
 			}
 			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
+			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			
 			HttpEntity responseEntity;
 			try(InputStream fileIs = Files.newInputStream(packageZip)) {

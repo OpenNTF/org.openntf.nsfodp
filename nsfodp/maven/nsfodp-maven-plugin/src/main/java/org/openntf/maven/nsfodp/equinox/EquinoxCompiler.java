@@ -33,6 +33,8 @@ import org.openntf.maven.nsfodp.util.JsonUtil;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
+import com.ibm.commons.util.StringUtil;
+
 /**
  * Represents an Equinox environment to compile the provided project.
  * 
@@ -44,7 +46,17 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
 	}
 
-	public void compileOdp(Path odpDirectory, List<Path> updateSites, Collection<Path> classpathJars, Path outputFile, String compilerLevel, boolean appendTimestampToTitle, String templateName, boolean setProductionXspOptions) {
+	public void compileOdp(
+			Path odpDirectory,
+			List<Path> updateSites,
+			Collection<Path> classpathJars,
+			Path outputFile,
+			String compilerLevel,
+			boolean appendTimestampToTitle,
+			String templateName,
+			boolean setProductionXspOptions,
+			String odsRelease
+		) {
 		setClasspathJars(classpathJars);
 		
 		Map<String, String> props = new HashMap<>();
@@ -68,6 +80,8 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			props.put(NSFODPConstants.PROP_TEMPLATEVERSION, ODPMojoUtil.calculateVersion(getProject()));
 		}
 		props.put(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, Boolean.toString(setProductionXspOptions));
+		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
+		
 		setSystemProperties(props);
 		
 		run("org.openntf.nsfodp.compiler.equinox.CompilerApplication"); //$NON-NLS-1$

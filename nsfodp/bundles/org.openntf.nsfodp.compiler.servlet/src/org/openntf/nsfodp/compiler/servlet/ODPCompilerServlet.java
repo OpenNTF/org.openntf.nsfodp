@@ -176,6 +176,10 @@ public class ODPCompilerServlet extends HttpServlet {
 			if("true".equals(setXspOptions)) { //$NON-NLS-1$
 				compiler.setSetProductionXspOptions(true);
 			}
+			String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
+			if(StringUtil.isNotEmpty(odsRelease)) {
+				compiler.setOdsRelease(odsRelease);
+			}
 			
 			if(siteZips != null && !siteZips.isEmpty()) {
 				for(Path siteZip : siteZips) {

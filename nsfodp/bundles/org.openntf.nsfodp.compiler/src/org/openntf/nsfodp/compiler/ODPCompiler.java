@@ -153,6 +153,7 @@ public class ODPCompiler {
 	private String templateName;
 	private String templateVersion;
 	private boolean setProductionXspOptions = false;
+	private String odsRelease;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -315,6 +316,32 @@ public class ODPCompiler {
 	 */
 	public boolean isSetProductionXspOptions() {
 		return setProductionXspOptions;
+	}
+	
+	/**
+	 * Sets the Notes/Domino ODS release level to target.
+	 * 
+	 * <p>This value is used in the file extension - e.g. {@code "8"} for ".ns8" - when creating
+	 * the temporary compilation NSF.</p>
+	 * 
+	 * @param odsRelease the ODS release string to use in the file extension
+	 * @since 3.0.0
+	 */
+	public void setOdsRelease(String odsRelease) {
+		this.odsRelease = odsRelease;
+	}
+	
+	/**
+	 * The Notes/Domino ODS release level to target.
+	 * 
+	 * <p>This value is used in the file extension - e.g. {@code "8"} for ".ns8" - when creating
+	 * the temporary compilation NSF.</p>
+	 * 
+	 * @return the targeted ODS release, or {@code null} if no release has been set
+	 * @since 3.0.0
+	 */
+	public String getOdsRelease() {
+		return odsRelease;
 	}
 	
 	/**
@@ -687,13 +714,22 @@ public class ODPCompiler {
 	 */
 	private Path createDatabase(lotus.domino.Session lotusSession) throws IOException, NotesException, DominoException {
 		subTask(Messages.ODPCompiler_creatingNSF);
-		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		String ext;
+		String odsRelease = getOdsRelease();
+		if(StringUtil.isEmpty(odsRelease)) {
+			ext = ".nsf"; //$NON-NLS-1$
+		} else {
+			ext = ".ns" + odsRelease; //$NON-NLS-1$
+		}
+		
+		Path temp = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odpcompilertemp", ext); //$NON-NLS-1$
 		Files.deleteIfExists(temp);
 		String filePath = temp.toAbsolutePath().toString();
 		
 		NSFSession session = NSFSession.fromLotus(DominoAPI.get(), lotusSession, false, true);
 		try {
-			session.createDatabase("", filePath, DBClass.NOTEFILE, true); //$NON-NLS-1$
+			session.createDatabase("", filePath, DBClass.BY_EXTENSION, true); //$NON-NLS-1$
 		} finally {
 			session.free();
 		}
