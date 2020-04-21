@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.eclipse.lsp4xml.uriresolver.URIResolverExtension;
+import org.eclipse.lemminx.uriresolver.URIResolverExtension;
 import org.openntf.nsfodp.lsp4xml.xsp.XspPlugin;
 
 public abstract class AbstractSchemaResolver implements URIResolverExtension {

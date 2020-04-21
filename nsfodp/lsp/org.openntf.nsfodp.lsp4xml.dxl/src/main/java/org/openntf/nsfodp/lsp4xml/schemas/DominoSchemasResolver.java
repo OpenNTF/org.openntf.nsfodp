@@ -25,7 +25,7 @@ import java.nio.file.StandardCopyOption;
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.eclipse.lsp4xml.uriresolver.URIResolverExtension;
+import org.eclipse.lemminx.uriresolver.URIResolverExtension;
 
 public class DominoSchemasResolver implements URIResolverExtension {
 	public static final String DXL_NS = "http://www.lotus.com/dxl"; //$NON-NLS-1$

@@ -15,6 +15,16 @@
 			<name>JCenter</name>
 			<url>https://jcenter.bintray.com/</url>
 		</repository>
+		<repository>
+			<id>lemminx-releases</id>
+			<url>https://repo.eclipse.org/content/repositories/lemminx-releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -24,9 +34,9 @@
 			<version>0.8.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.lsp4xml</groupId>
-			<artifactId>org.eclipse.lsp4xml</artifactId>
-			<version>0.9.1</version>
+			<groupId>org.eclipse.lemminx</groupId>
+			<artifactId>org.eclipse.lemminx</artifactId>
+			<version>0.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

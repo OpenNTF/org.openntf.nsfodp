@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.lemminx.dom.DOMElement;
+import org.eclipse.lemminx.dom.DOMNode;
+import org.eclipse.lemminx.services.extensions.IDefinitionParticipant;
+import org.eclipse.lemminx.services.extensions.IDefinitionRequest;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
-import org.eclipse.lsp4xml.dom.DOMElement;
-import org.eclipse.lsp4xml.dom.DOMNode;
-import org.eclipse.lsp4xml.services.extensions.IDefinitionParticipant;
-import org.eclipse.lsp4xml.services.extensions.IDefinitionRequest;
 import org.openntf.nsfodp.lsp4xml.xsp.XspPlugin;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.XspCompletionParticipant;
 import org.w3c.dom.Element;

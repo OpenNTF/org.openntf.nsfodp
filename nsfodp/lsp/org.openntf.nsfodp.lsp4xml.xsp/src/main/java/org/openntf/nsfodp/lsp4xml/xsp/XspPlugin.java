@@ -15,15 +15,16 @@
  */
 package org.openntf.nsfodp.lsp4xml.xsp;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.lemminx.services.extensions.ICompletionParticipant;
+import org.eclipse.lemminx.services.extensions.IDefinitionParticipant;
+import org.eclipse.lemminx.services.extensions.IXMLExtension;
+import org.eclipse.lemminx.services.extensions.XMLExtensionsRegistry;
+import org.eclipse.lemminx.services.extensions.save.ISaveContext;
+import org.eclipse.lemminx.uriresolver.URIResolverExtension;
 import org.eclipse.lsp4j.InitializeParams;
-import org.eclipse.lsp4xml.services.extensions.ICompletionParticipant;
-import org.eclipse.lsp4xml.services.extensions.IDefinitionParticipant;
-import org.eclipse.lsp4xml.services.extensions.IXMLExtension;
-import org.eclipse.lsp4xml.services.extensions.XMLExtensionsRegistry;
-import org.eclipse.lsp4xml.services.extensions.save.ISaveContext;
-import org.eclipse.lsp4xml.uriresolver.URIResolverExtension;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.XspCompletionParticipant;
 import org.openntf.nsfodp.lsp4xml.xsp.definition.CustomControlDefinitionParticipant;
 import org.openntf.nsfodp.lsp4xml.xsp.schema.ExtLibSchemaResolver;
@@ -44,7 +45,9 @@ public class XspPlugin implements IXMLExtension {
 	private final IDefinitionParticipant ccParticipant;
 	
 	public XspPlugin() {
-		log.info(getClass().getName() + " initialize");
+		if(log.isLoggable(Level.INFO)) {
+			log.info(getClass().getName() + " initialize");
+		}
 		
 		this.completionParticipant = new XspCompletionParticipant();
 		this.resolvers = new URIResolverExtension[] {

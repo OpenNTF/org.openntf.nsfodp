@@ -15,7 +15,7 @@
  */
 package org.openntf.nsfodp.lsp4xml.xsp.completion;
 
-import org.eclipse.lsp4xml.dom.DOMDocument;
+import org.eclipse.lemminx.dom.DOMDocument;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
 public enum ContentAssistUtil {

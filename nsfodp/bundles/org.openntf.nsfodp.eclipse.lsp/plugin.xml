@@ -18,7 +18,7 @@
 -->
 <?eclipse version="3.4"?>
 <plugin>
-	<extension point="org.eclipse.wildwebdeveloper.xml.xmllsExtension">
+	<extension point="org.eclipse.wildwebdeveloper.xml.lemminxExtension">
 		<jar path="ext/org.openntf.nsfodp.lsp4xml.xsp.jar"/>
 		<jar path="ext/org.openntf.nsfodp.lsp4xml.dxl.jar"/>
 	</extension>
