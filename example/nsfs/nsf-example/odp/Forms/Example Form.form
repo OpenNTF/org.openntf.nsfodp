@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form name="Example Form" publicaccess="false" renderpassthrough="true" xmlns="http://www.lotus.com/dxl">
+  <actionbar bgcolor="#d4d0c8" bordercolor="black">
+    <actionbuttonstyle bgcolor="#d4d0c8"/>
+    <font color="system"/>
+    <border style="solid" width="0px 0px 1px"/>
+    <action title="Say Hello">
+      <code event="click">
+        <lotusscript>Sub Click(Source As Button)
+	Msgbox "Hello from the form"
+End Sub</lotusscript>
+      </code>
+    </action>
+  </actionbar>
+  <body>
+    <richtext>
+      <pardef id="1"/>
+      <par def="1"/>
+      <par def="1">
+        <run>
+          <font style="bold"/>Example Form</run>
+      </par>
+      <par def="1"/>
+      <table altbgcolor="white" bgcolor="#efefef" colorstyle="left"
+        columnspacing="0.0500in" refwidth="11.3750in"
+        rowspacing="0.0500in" widthtype="fitmargins">
+        <tablecolumn width="3in"/>
+        <tablecolumn width="100%"/>
+        <tablerow>
+          <tablecell borderwidth="0px">
+            <pardef id="3" keeptogether="true" keepwithnext="true"/>
+            <par def="3">Name:</par>
+          </tablecell>
+          <tablecell borderwidth="0px">
+            <pardef id="4" keeptogether="true" keepwithnext="true"/>
+            <par def="4">
+              <field kind="editable" name="$$Title" type="text"/>
+              <compositedata afterbegincount="3" aftercontainercount="1"
+                afterparcount="7" containertype="65418" nexttype="222"
+                prevtype="65418" type="98">
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata>
+            </par>
+          </tablecell>
+        </tablerow>
+        <tablerow>
+          <tablecell borderwidth="0px">
+            <par def="3">Categories:</par>
+          </tablecell>
+          <tablecell borderwidth="0px">
+            <par def="4">
+              <field allowmultivalues="true" kind="editable"
+                listdisplayseparator="semicolon"
+                listinputseparators="comma semicolon" name="Categories" type="text"/>
+              <compositedata afterbegincount="3" aftercontainercount="1"
+                afterparcount="6" containertype="65418" nexttype="222"
+                prevtype="65418" type="98">
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata>
+            </par>
+          </tablecell>
+        </tablerow>
+      </table>
+      <par def="1"/>
+    </richtext>
+  </body>
+</form>
