@@ -875,9 +875,6 @@ public class ODPCompiler {
 		byte[] byteCode = classLoader.getClassByteCode(className);
 		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page"; //$NON-NLS-1$
 		byte[] innerByteCode = classLoader.getClassByteCode(innerClassName);
-
-		String xspSource = xpage.getSource();
-		byte[] xspSourceData = xspSource.getBytes();
 		
 		Document dxlDoc = xpage.getDxl();
 		
@@ -885,8 +882,6 @@ public class ODPCompiler {
 		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize0", byteCode.length); //$NON-NLS-1$
 		DXLUtil.writeItemFileData(dxlDoc, "$ClassData1", innerByteCode); //$NON-NLS-1$
 		DXLUtil.writeItemNumber(dxlDoc, "$ClassSize1", innerByteCode.length); //$NON-NLS-1$
-		DXLUtil.writeItemFileData(dxlDoc, "$FileData", xspSourceData); //$NON-NLS-1$
-		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", xspSourceData.length); //$NON-NLS-1$
 		
 		String[] classIndex = new String[] { "WEB-INF/classes/" + ODPUtil.toJavaPath(className), "WEB-INF/classes/" + ODPUtil.toJavaPath(innerClassName) }; //$NON-NLS-1$ //$NON-NLS-2$
 		DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndex); //$NON-NLS-1$
