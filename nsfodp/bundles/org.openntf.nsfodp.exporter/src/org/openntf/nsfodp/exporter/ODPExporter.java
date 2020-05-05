@@ -518,7 +518,7 @@ public class ODPExporter {
 		Path fullPath = baseDir.resolve(path);
 		Files.createDirectories(fullPath.getParent());
 		
-		try(OutputStream os = Files.newOutputStream(fullPath)) {
+		try(OutputStream os = Files.newOutputStream(fullPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 			// readFileContent works for some but not all file types
 			switch(type) {
 			case LotusScriptLibrary:
@@ -570,7 +570,7 @@ public class ODPExporter {
 				// Special behavior: also export the config data field
 				
 				Path configPath = fullPath.getParent().resolve(fullPath.getFileName()+"-config"); //$NON-NLS-1$
-				try(OutputStream configOut = Files.newOutputStream(configPath)) {
+				try(OutputStream configOut = Files.newOutputStream(configPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 					NSFCompositeData cd = note.getCompositeData(ITEM_NAME_CONFIG_FILE_DATA);
 					if(cd != null) {
 						try {
@@ -694,7 +694,7 @@ public class ODPExporter {
 	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException, DominoException {
 		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
-			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE)) {
+			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 				Document xmlDoc = DOMUtil.createDocument();
 				Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
 				{
