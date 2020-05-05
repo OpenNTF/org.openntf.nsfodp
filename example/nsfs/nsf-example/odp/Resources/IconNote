@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<note xmlns="http://www.lotus.com/dxl" default="true" class="icon">
+<note class="icon" default="true" xmlns="http://www.lotus.com/dxl">
   <item name="IconBitmap" summary="true">
     <rawitemdata type="6">
 AiAgAQAA///////wD///4Af//8AD//4AAH/8AAA/+AAAH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAA

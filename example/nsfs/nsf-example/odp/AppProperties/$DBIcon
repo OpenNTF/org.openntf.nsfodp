@@ -1,21 +1,25 @@
-<?xml version='1.0' encoding='utf-8'?>
-<note class='form' xmlns='http://www.lotus.com/dxl' version='11.0' replicaid='8525846B005C28D2'>
-<noteinfo noteid='1b2' unid='61088A7D74BC85358525846D004D6230' sequence='1'>
-<created><datetime dst='true'>20190906T100514,08-04</datetime></created>
-<modified><datetime dst='true'>20190906T100514,14-04</datetime></modified>
-<revised><datetime dst='true'>20190906T100514,13-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20190906T100514,13-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20190906T100514,13-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
-<wassignedby><name>CN=Jesse Gallagher/O=IKSG</name></wassignedby>
-<item name='$TITLE'><text>$DBIcon</text></item>
-<item name='$Flags'><text>34Ci~Q</text></item>
-<item name='$ImagesWide' sign='true'><number>1</number></item>
-<item name='$ImagesHigh' sign='true'><number>1</number></item>
-<item name='$ImagesColorize' sign='true'><number>0</number></item>
-<item name='$FileSize' sign='true'><number>1523</number></item>
-<item name='$ImageData' sign='true'>
-<rawitemdata type='1'>
+<?xml version="1.0" encoding="UTF-8"?>
+<note class="form" xmlns="http://www.lotus.com/dxl">
+  <item name="$TITLE">
+    <text>$DBIcon</text>
+  </item>
+  <item name="$Flags">
+    <text>34Ci~Q</text>
+  </item>
+  <item name="$ImagesWide" sign="true">
+    <number>1</number>
+  </item>
+  <item name="$ImagesHigh" sign="true">
+    <number>1</number>
+  </item>
+  <item name="$ImagesColorize" sign="true">
+    <number>0</number>
+  </item>
+  <item name="$FileSize" sign="true">
+    <number>1523</number>
+  </item>
+  <item name="$ImageData" sign="true">
+    <rawitemdata type="1">
 mQAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAH0AHAAAAAIAAAAAAPMFAAABAAAAAQAAAAAAAAB8
 AP0FAADzBfQFiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhk
 iAAABapJREFUWIXll11sHFcVx3935s7sbLNrO+uPxCklLQltQlKgpC+AQfgjq7QKomoqWvpUNQ8B
@@ -44,9 +48,15 @@ ZLPZlOu6hGG4YLWLEAXRWs/xL1Qxo8wjGGNwHAff96sWUqAikmyxErvcD5ByPsdxmJ6enk8gk8kk
 q6qqsCxr3sPlsJx2fTuMMUxNTSWBWmASyGkgPjU15fX399PX13fHiy4XSik2b97MzMyMM0tAA9c1
 4ORyuTAMQ3vTpk3/MwIAvu+Ty+UMEAemAa2BHPBia2vrbmOMvdLFo4q3mM+2bWOMOQLMzI5cNEMD
 lUACcGbHfxsBH3ysZ4FbswQW/Dm1yvj/U0jJKOLf5/VYdm6zmwYAAAAASUVORK5CYIIA
-</rawitemdata></item>
-<item name='$MimeType' sign='true'><text>image/png</text></item>
-<item name='$FileModDT' sign='true'><datetime>20130116T110512,00-05</datetime></item>
-<item name='$ImageNames' sign='true'><text>H:\Pictures\Tango\accessories-text-editor.png</text></item>
-<item name='$DesignerVersion'><text>8.5.3</text></item></note>
-
+</rawitemdata>
+  </item>
+  <item name="$MimeType" sign="true">
+    <text>image/png</text>
+  </item>
+  <item name="$FileModDT" sign="true">
+    <datetime>20130116T110512,00-05</datetime>
+  </item>
+  <item name="$ImageNames" sign="true">
+    <text>H:\Pictures\Tango\accessories-text-editor.png</text>
+  </item>
+</note>
