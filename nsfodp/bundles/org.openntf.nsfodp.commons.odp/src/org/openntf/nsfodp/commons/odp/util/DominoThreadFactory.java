@@ -29,21 +29,45 @@ public class DominoThreadFactory implements ThreadFactory {
 
 	public static final DominoThreadFactory instance = new DominoThreadFactory();
 
-	public static ExecutorService executor;
-	public static ScheduledExecutorService scheduler;
+	private static ExecutorService executor;
+	private static ScheduledExecutorService scheduler;
+	private static boolean initialized;
 	
-	public static void init() {
-		executor = Executors.newCachedThreadPool(instance);
-		scheduler = Executors.newScheduledThreadPool(5, instance);
+	public static synchronized ExecutorService getExecutor() {
+		init();
+		return executor;
 	}
-	public static void term() {
-		executor.shutdownNow();
-		scheduler.shutdownNow();
-		try {
-			executor.awaitTermination(1, TimeUnit.MINUTES);
-			scheduler.awaitTermination(1, TimeUnit.MINUTES);
-		} catch (InterruptedException e) {
-			// Ignore
+	public static synchronized ScheduledExecutorService getScheduler() {
+		init();
+		return scheduler;
+	}
+	
+	public static synchronized void init() {
+		if(!initialized) {
+			executor = Executors.newCachedThreadPool(instance);
+			scheduler = Executors.newScheduledThreadPool(5, instance);
+			initialized = true;
+		}
+	}
+	public static synchronized void term() {
+		if(initialized) {
+			if(executor != null) {
+				executor.shutdownNow();
+			}
+			if(scheduler != null) {
+				scheduler.shutdownNow();
+			}
+			try {
+				if(executor != null) {
+					executor.awaitTermination(1, TimeUnit.MINUTES);
+				}
+				if(scheduler != null) {
+					scheduler.awaitTermination(1, TimeUnit.MINUTES);
+				}
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+			initialized = false;
 		}
 	}
 

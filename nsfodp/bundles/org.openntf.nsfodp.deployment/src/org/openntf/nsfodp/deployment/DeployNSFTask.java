@@ -75,7 +75,7 @@ public class DeployNSFTask implements Runnable {
 				if(dest.isOpen()) {
 					// Then do a replace design
 					ReplaceDesignTaskLocal task = new ReplaceDesignTaskLocal(filePath, nsfFile, new NullProgressMonitor());
-					DominoThreadFactory.executor.submit(task).get();
+					DominoThreadFactory.getExecutor().submit(task).get();
 				} else {
 					Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString()); //$NON-NLS-1$
 					dest = source.createFromTemplate(server, filePath, false);

@@ -7,7 +7,9 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.equinox.http.registry,
  com.ibm.commons,
- org.openntf.nsfodp.commons
+ org.openntf.nsfodp.commons,
+ org.openntf.nsfodp.deployment,
+ org.openntf.nsfodp.commons.odp
 Import-Package: com.ibm.xsp.http.fileupload,
  com.ibm.xsp.http.fileupload.disk,
  com.ibm.xsp.http.fileupload.servlet,
@@ -15,5 +17,4 @@ Import-Package: com.ibm.xsp.http.fileupload,
  javax.servlet.http;version="2.5.0",
  org.eclipse.core.runtime,
  org.osgi.framework
-Fragment-Host: org.openntf.nsfodp.deployment
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
