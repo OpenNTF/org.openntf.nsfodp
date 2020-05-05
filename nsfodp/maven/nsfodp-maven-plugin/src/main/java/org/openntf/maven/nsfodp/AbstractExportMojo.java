@@ -219,19 +219,19 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 		
 		try {
 			if(isRunLocally()) {
-				exportODPLocal(odpDir);
+				Path temp = Files.createTempDirectory("nsfodp"); //$NON-NLS-1$
+				exportODPLocal(temp);
+
+				Path eclipseProject = copyEclipseProject(odpDir);
+				NSFODPUtil.deltree(odpDir);
+				NSFODPUtil.moveDirectory(temp, odpDir);
+				if(eclipseProject != null) {
+					Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
+				}
 			} else {
 				Path zip = exportODPRemote();
 				try {
-					Path eclipseProject = odpDir.resolve(".project"); //$NON-NLS-1$
-					if(Files.exists(eclipseProject)) {
-						Path tempPath = Files.createTempFile("nsfodp", ".project"); //$NON-NLS-1$ //$NON-NLS-2$
-						Files.delete(tempPath);
-						Files.move(eclipseProject, tempPath);
-						eclipseProject = tempPath;
-					} else {
-						eclipseProject = null;
-					}
+					Path eclipseProject = copyEclipseProject(odpDir);
 					
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
@@ -272,4 +272,16 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 		}
 	}
 
+	private Path copyEclipseProject(Path odpDir) throws IOException {
+		Path eclipseProject = odpDir.resolve(".project"); //$NON-NLS-1$
+		if(Files.exists(eclipseProject)) {
+			Path tempPath = Files.createTempFile("nsfodp", ".project"); //$NON-NLS-1$ //$NON-NLS-2$
+			Files.delete(tempPath);
+			Files.move(eclipseProject, tempPath);
+			eclipseProject = tempPath;
+		} else {
+			eclipseProject = null;
+		}
+		return eclipseProject;
+	}
 }
