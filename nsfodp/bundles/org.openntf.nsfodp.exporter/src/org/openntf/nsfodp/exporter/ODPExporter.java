@@ -62,8 +62,6 @@ import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_HELP;
 import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_ICON;
 import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_INFO;
 import static com.darwino.domino.napi.DominoAPI.NOTE_ID_SPECIAL;
-import static com.darwino.domino.napi.DominoAPI.READ_MASK_NOTECLASS;
-import static com.darwino.domino.napi.DominoAPI.READ_MASK_NOTEID;
 import static com.darwino.domino.napi.DominoAPI.SCRIPTLIB_OBJECT;
 import static com.darwino.domino.napi.DominoAPI.XSP_CLASS_INDEX;
 import static org.openntf.nsfodp.commons.h.StdNames.ASSIST_TYPE_JAVA;
@@ -103,13 +101,15 @@ import org.w3c.dom.Element;
 
 import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.DominoException;
+import com.darwino.domino.napi.c.C;
 import com.darwino.domino.napi.enums.DXL_RICHTEXT_OPTION;
+import com.darwino.domino.napi.proc.NSFSEARCHPROC;
+import com.darwino.domino.napi.struct.SEARCH_MATCH;
+import com.darwino.domino.napi.wrap.FormulaException;
 import com.darwino.domino.napi.wrap.NSFDXLExporter;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFNote;
 import com.darwino.domino.napi.wrap.NSFNoteIDCollection;
-import com.darwino.domino.napi.wrap.NSFView;
-import com.darwino.domino.napi.wrap.NSFViewEntryCollection;
 import com.darwino.domino.napi.wrap.item.NSFCompositeData;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.ByteStreamCache;
@@ -218,7 +218,7 @@ public class ODPExporter {
 		return swiperFilter;
 	}
 	
-	public Path export() throws IOException, XMLException, DominoException {
+	public Path export() throws IOException, XMLException, DominoException, FormulaException {
 		Path result = Files.createTempDirectory(getClass().getName());
 		
 		NSFDXLExporter exporter = database.getParent().createDXLExporter();
@@ -247,36 +247,37 @@ public class ODPExporter {
 			exporter.setForceNoteFormat(isBinaryDxl());
 			exporter.setRichTextOption(isRichTextAsItemData() ? DXL_RICHTEXT_OPTION.ItemData : DXL_RICHTEXT_OPTION.DXL);
 			
-			NSFView designView = database.getView(DominoAPI.NOTE_CLASS_DESIGN | DominoAPI.NOTE_ID_SPECIAL);
-			try {
-				NSFViewEntryCollection entries = designView.getAllEntries();
-				entries.setReadMask(READ_MASK_NOTEID | READ_MASK_NOTECLASS);
-				entries.eachEntry(entry -> {
-					int noteId = 0;
-					NoteType type = null;
-					try {
-						noteId = entry.getNoteId();
-						NSFNote note = database.getNoteByID(noteId);
-						type = forNote(note);
+			NSFSEARCHPROC proc = new NSFSEARCHPROC() {
+				@Override public short callback(long searchMatchPtr, long summaryBufferPtr) throws DominoException {
+					SEARCH_MATCH searchMatch = new SEARCH_MATCH();
+					C.memcpy(searchMatch.getDataPtr(), 0, searchMatchPtr, 0, SEARCH_MATCH.sizeOf);
+
+					short noteClass = searchMatch.getNoteClass();
+					int noteId = searchMatch.getId().getNoteId();
+					byte retFlags = searchMatch.getSERetFlags();
+					
+					boolean deleted = (noteClass & DominoAPI.NOTE_CLASS_NOTIFYDELETION) != 0;
+					boolean isSearchMatch = (retFlags & DominoAPI.SE_FMATCH) != 0;  // The use of "since" means that non-matching notes will be returned; check this flag to make sure
+					
+					if(isSearchMatch && !deleted) {
+						NoteType type = null;
 						try {
-							exportNote(note, exporter, result);
-						} finally {
-							note.free();
+							NSFNote note = database.getNoteByID(noteId);
+							type = forNote(note);
+							try {
+								exportNote(note, exporter, result);
+							} finally {
+								note.free();
+							}
+						} catch(Throwable e) {
+							System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage(), type));
+							e.printStackTrace(System.out);
 						}
-					} catch(Throwable e) {
-						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage(), type));
-						e.printStackTrace(System.out);
 					}
-				});
-			} catch(DominoException e) {
-				throw e;
-			} catch(RuntimeException e) {
-				throw e;
-			} catch(Exception e) {
-				throw new RuntimeException(e);
-			} finally {
-				designView.free();
-			}
+					return DominoAPI.NOERROR;
+				}
+			};
+			database.search("@All", proc, (short)0, DominoAPI.NOTE_CLASS_ALLNONDATA, null, null); //$NON-NLS-1$
 			
 			// Export several notes specially
 			int[] specialIds = new int[] { NOTE_CLASS_ICON, NOTE_CLASS_HELP, NOTE_CLASS_INFO };
