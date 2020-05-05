@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -52,15 +53,15 @@ public class NSFDeploymentServlet extends HttpServlet {
 	/**
 	 * The POST param used for the "replace design" parameter.
 	 */
-	public static final String PARAM_REPLACE_DESIGN = "replaceDesign";
+	public static final String PARAM_REPLACE_DESIGN = "replaceDesign"; //$NON-NLS-1$
 	/**
 	 * The POST param used for the uploaded file.
 	 */
-	public static final String PARAM_FILE = "file";
+	public static final String PARAM_FILE = "file"; //$NON-NLS-1$
 	/**
 	 * The POST param used for the destination path.
 	 */
-	public static final String PARAM_DEST_PATH = "destPath";
+	public static final String PARAM_DEST_PATH = "destPath"; //$NON-NLS-1$
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -70,9 +71,9 @@ public class NSFDeploymentServlet extends HttpServlet {
 		ServletOutputStream os = resp.getOutputStream();
 		
 		try {
-			if("Anonymous".equalsIgnoreCase(user.getName())) {
+			if("Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				resp.setContentType("text/plain");
+				resp.setContentType("text/plain"); //$NON-NLS-1$
 				os.write("Anonymous access disallowed".getBytes());
 				return;
 			}
@@ -84,11 +85,11 @@ public class NSFDeploymentServlet extends HttpServlet {
 			Map<String, List<FileItem>> param = upload.parseParameterMap(req);
 			
 			if(!param.containsKey(PARAM_DEST_PATH)) {
-				throw new IllegalArgumentException("Content must include a " + PARAM_DEST_PATH + " component");
+				throw new IllegalArgumentException(MessageFormat.format("Content must include a {0} component", PARAM_DEST_PATH));
 			}
 			FileItem destFileItem = param.get(PARAM_DEST_PATH).get(0);
 			if(!destFileItem.isFormField()) {
-				throw new IllegalArgumentException(PARAM_DEST_PATH + " must not be a file");
+				throw new IllegalArgumentException(MessageFormat.format("{0} must not be a file", PARAM_DEST_PATH));
 			}
 			String destPath = destFileItem.getString();
 
@@ -96,28 +97,28 @@ public class NSFDeploymentServlet extends HttpServlet {
 			if(param.containsKey(PARAM_REPLACE_DESIGN)) {
 				FileItem replaceDesignItem = param.get(PARAM_REPLACE_DESIGN).get(0);
 				if(!replaceDesignItem.isFormField()) {
-					throw new IllegalArgumentException(PARAM_REPLACE_DESIGN + " must not be a file");
+					throw new IllegalArgumentException(MessageFormat.format("{0} must not be a file", PARAM_REPLACE_DESIGN));
 				}
 				replaceDesign = Boolean.valueOf(replaceDesignItem.getString());
 			}
 			
 			if(!param.containsKey(PARAM_FILE)) {
-				throw new IllegalArgumentException("Content must include a " + PARAM_FILE + " component");
+				throw new IllegalArgumentException(MessageFormat.format("Content must include a {0} component", PARAM_FILE));
 			}
 			FileItem fileItem = param.get(PARAM_FILE).get(0);
 			if(fileItem.isFormField()) {
-				throw new IllegalArgumentException(PARAM_FILE + " part must be a file");
+				throw new IllegalArgumentException(MessageFormat.format("{0} part must be a file", PARAM_FILE));
 			}
-			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data");
+			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data"); //$NON-NLS-1$ //$NON-NLS-2$
 			nsf.toFile().deleteOnExit();
 			try(InputStream reqInputStream = fileItem.getInputStream()) {
 				try(OutputStream packageOut = Files.newOutputStream(nsf)) {
 					StreamUtil.copyStream(reqInputStream, packageOut);
 				}
 			}
-			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) {
+			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) { //$NON-NLS-1$
 				// If it's a ZIP, expand it - otherwise, use the file content as-is
-				Path expanded = Files.createTempFile("nsfdeployment", ".nsf");
+				Path expanded = Files.createTempFile("nsfdeployment", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 				try(ZipFile zf = new ZipFile(nsf.toFile(), StandardCharsets.UTF_8)) {
 					ZipEntry firstEntry = zf.entries().nextElement();
 					if(firstEntry == null) {
@@ -143,8 +144,8 @@ public class NSFDeploymentServlet extends HttpServlet {
 			e.printStackTrace(out);
 			out.flush();
 			os.println(LineDelimitedJsonProgressMonitor.message(
-				"type", "error",
-				"stackTrace", baos.toString()
+				"type", "error", //$NON-NLS-1$ //$NON-NLS-2$
+				"stackTrace", baos.toString() //$NON-NLS-1$
 				)
 			);
 		}
