@@ -39,9 +39,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
+import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.deployment.DeployNSFTask;
 
+import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.xsp.http.fileupload.FileItem;
 import com.ibm.xsp.http.fileupload.disk.DiskFileItemFactory;
@@ -102,6 +104,12 @@ public class NSFDeploymentServlet extends HttpServlet {
 				replaceDesign = Boolean.valueOf(replaceDesignItem.getString());
 			}
 			
+			boolean signDatabase = true;
+			String signDatabaseParam = req.getHeader(NSFODPConstants.HEADER_DEPLOY_SIGN);
+			if(StringUtil.isNotEmpty(signDatabaseParam)) {
+				signDatabase = Boolean.valueOf(signDatabaseParam);
+			}
+			
 			if(!param.containsKey(PARAM_FILE)) {
 				throw new IllegalArgumentException(MessageFormat.format("Content must include a {0} component", PARAM_FILE));
 			}
@@ -134,7 +142,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 			
 			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
 			
-			DeployNSFTask task = new DeployNSFTask(nsf, destPath, replaceDesign);
+			DeployNSFTask task = new DeployNSFTask(nsf, destPath, replaceDesign, signDatabase);
 			task.run();
 			
 			mon.done();

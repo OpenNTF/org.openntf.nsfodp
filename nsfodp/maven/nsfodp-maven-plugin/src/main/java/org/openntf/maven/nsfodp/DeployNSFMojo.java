@@ -44,6 +44,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
+import org.openntf.nsfodp.commons.NSFODPConstants;
 
 /**
  * Goal which compiles deploys an NSF to a Domino server.
@@ -80,6 +81,14 @@ public class DeployNSFMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.deploy.destPath", required=false)
 	private String deployDestPath;
+	
+	/**
+	 * Whether the database should be signed when deployed.
+	 * 
+	 * @since 3.0.0
+	 */
+	@Parameter(property="nsfodp.deploy.signDatabase", required=false, defaultValue="true")
+	private boolean signDatabase;
 
 	private Log log;
 
@@ -126,6 +135,7 @@ public class DeployNSFMojo extends AbstractMojo {
 			HttpPost post = new HttpPost(servlet);
 			
 			ODPMojoUtil.addAuthenticationInfo(this.wagonManager, this.deployServer, post, this.log);
+			post.addHeader(NSFODPConstants.HEADER_DEPLOY_SIGN, String.valueOf(this.signDatabase));
 			
 			HttpEntity entity = MultipartEntityBuilder.create()
 					.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)

@@ -92,4 +92,12 @@ public enum NSFODPConstants {
 	public static final String HEADER_PROJECT_NAME = "X-ProjectName"; //$NON-NLS-1$
 	public static final String PROP_PROJECT_NAME = "org.openntf.nsfodp.exporter.projectName"; //$NON-NLS-1$
 	
+	// *******************************************************************************
+	// * Deployment constants
+	// *******************************************************************************
+	
+	/**
+	 * The HTTP header name used to specify whether the database should be signed during deployment.
+	 */
+	public static final String HEADER_DEPLOY_SIGN = "X-SignDatabase"; //$NON-NLS-1$
 }

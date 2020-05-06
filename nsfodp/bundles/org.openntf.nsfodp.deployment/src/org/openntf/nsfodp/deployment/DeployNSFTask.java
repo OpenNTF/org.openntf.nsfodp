@@ -41,16 +41,18 @@ public class DeployNSFTask implements Runnable {
 	private final Path nsfFile;
 	private final String destPath;
 	private final boolean replaceDesign;
+	private final boolean signDatabase;
 
 	/**
 	 * @param nsfFile the path to the NSF/NTF file on disk
 	 * @param destPath the destination path of the database in Notes API format (e.g. "server!!file.nsf")
 	 * @param replaceDesign whether the deployment should replace the design of an existing database if present
 	 */
-	public DeployNSFTask(Path nsfFile, String destPath, boolean replaceDesign) {
+	public DeployNSFTask(Path nsfFile, String destPath, boolean replaceDesign, boolean signDatabase) {
 		this.nsfFile = Objects.requireNonNull(nsfFile, Messages.DeployNSFTask_nsfFileNull);
 		this.destPath = Objects.requireNonNull(destPath, Messages.DeployNSFTask_destPathNull);
 		this.replaceDesign = replaceDesign;
+		this.signDatabase = signDatabase;
 	}
 
 	@Override
@@ -80,9 +82,12 @@ public class DeployNSFTask implements Runnable {
 					Database source = session.getDatabase("", nsfFile.toAbsolutePath().toString()); //$NON-NLS-1$
 					dest = source.createFromTemplate(server, filePath, false);
 				}
-				AdministrationProcess adminp = session.createAdministrationProcess(server);
-				adminp.signDatabaseWithServerID(server, filePath);
-				session.sendConsoleCommand(server, "tell adminp p im"); //$NON-NLS-1$
+				
+				if(this.signDatabase) {
+					AdministrationProcess adminp = session.createAdministrationProcess(server);
+					adminp.signDatabaseWithServerID(server, filePath);
+					session.sendConsoleCommand(server, "tell adminp p im"); //$NON-NLS-1$
+				}
 			} finally {
 				session.recycle();
 			}
