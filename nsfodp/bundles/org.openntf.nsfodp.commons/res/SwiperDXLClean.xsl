@@ -157,7 +157,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
     <xsl:template match="//n:database/n:databaseinfo/n:designmodified"/>
     
     <!--
-    	Clean mutable parts of fulltextsettings 
+        Clean log entries out of the ACL
+    -->
+    <xsl:template match="//n:database/n:acl/n:logentry"/>
+    
+    <!--
+        Clean mutable parts of fulltextsettings 
     -->
     <xsl:template match="//n:database/n:fulltextsettings/@size"/>
     <xsl:template match="//n:database/n:fulltextsettings/@unindexeddocumentcount"/>
