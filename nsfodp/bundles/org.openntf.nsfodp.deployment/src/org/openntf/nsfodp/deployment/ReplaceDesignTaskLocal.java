@@ -16,10 +16,11 @@
 package org.openntf.nsfodp.deployment;
 
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+
+import com.ibm.commons.util.StringUtil;
 
 import lotus.domino.NotesFactory;
 import lotus.domino.Session;
@@ -43,7 +44,7 @@ public class ReplaceDesignTaskLocal implements Runnable {
 		try {
 			Session session = NotesFactory.createSession();
 			try {
-				String command = MessageFormat.format("load convert -d {0} * {1}", targetDbName, templatePath.toAbsolutePath().toString()); //$NON-NLS-1$
+				String command = StringUtil.format("load convert -d \"{0}\" * \"{1}\"", targetDbName, templatePath.toAbsolutePath().toString()); //$NON-NLS-1$
 				session.sendConsoleCommand("", command); //$NON-NLS-1$
 				
 				monitor.done();
