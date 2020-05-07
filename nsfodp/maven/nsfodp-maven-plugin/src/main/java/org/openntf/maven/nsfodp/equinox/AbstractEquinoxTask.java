@@ -19,31 +19,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
-import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
@@ -56,7 +45,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
-import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 public abstract class AbstractEquinoxTask {
 	private final PluginDescriptor pluginDescriptor;
@@ -105,14 +94,14 @@ public abstract class AbstractEquinoxTask {
 				log.debug(Messages.getString("EquinoxMojo.usingEquinoxLauncher", equinox)); //$NON-NLS-1$
 			}
 			
-			Path javaBin = getJavaBinary(notesProgram);
+			EquinoxRunner runner = new EquinoxRunner();
+			runner.setJavaBin(getJavaBinary(notesProgram));
+			runner.setNotesProgram(notesProgram);
 			
-			List<Path> classpath = new ArrayList<>();
 			if(classpathJars != null) {
-				classpath.addAll(classpathJars);
+				classpathJars.forEach(runner::addClasspathJar);
 			}
-			addIBMJars(notesProgram, classpath);
-			addNdextJars(classpath);
+			addNdextJars(runner);
 			
 			if(!Files.exists(notesProgram)) {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesProgramDirDoesNotExist", notesProgram)); //$NON-NLS-1$
@@ -128,16 +117,9 @@ public abstract class AbstractEquinoxTask {
 			if(log.isDebugEnabled()) {
 				log.debug(Messages.getString("EquinoxMojo.creatingOsgi", framework)); //$NON-NLS-1$
 			}
-			if(Files.exists(framework)) {
-				// Always start clean, as existing data can cause trouble
-				NSFODPUtil.deltree(framework);
-			}
-			Files.createDirectories(framework);
-			
-			Path plugins = framework.resolve("plugins"); //$NON-NLS-1$
-			Files.createDirectories(plugins);
+			runner.setWorkingDirectory(framework);
 
-			List<String> platform = new ArrayList<>(Arrays.asList(
+			Stream.of(
 				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.dxl", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.odp", -1), //$NON-NLS-1$
@@ -148,12 +130,10 @@ public abstract class AbstractEquinoxTask {
 				getDependencyRef("org.openntf.nsfodp.exporter.equinox", -1), //$NON-NLS-1$
 				getDependencyRef("com.ibm.xsp.extlibx.bazaar", -1), //$NON-NLS-1$
 				getDependencyRef("com.ibm.xsp.extlibx.bazaar.interpreter", -1), //$NON-NLS-1$
-				getDependencyRef("com.darwino.domino.napi", -1), //$NON-NLS-1$
-				createJempowerShim(notesProgram),
-				createClasspathExtensionBundle(classpath, plugins)
-			));
+				getDependencyRef("com.darwino.domino.napi", -1) //$NON-NLS-1$
+			).forEach(runner::addPlatformEntry);
 			
-			classpath.add(equinox);
+			runner.addClasspathJar(equinox);
 			
 			Path notesPlatform = Paths.get(this.notesPlatform.toURI());
 			if(!Files.exists(notesPlatform)) {
@@ -174,10 +154,11 @@ public abstract class AbstractEquinoxTask {
 					return true;
 				})
 				.map(p -> getPathRef(p, -1))
-				.forEach(platform::add);
+				.forEach(runner::addPlatformEntry);
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 			}
+			runner.setOsgiBundle(osgiBundle[0]);
 			
 			if(this.updateSites != null) {
 				for(Path updateSite : this.updateSites) {
@@ -186,75 +167,20 @@ public abstract class AbstractEquinoxTask {
 						Files.list(sitePlugins)
 							.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
 							.map(p -> getPathRef(p, -1))
-							.forEach(platform::add);
+							.forEach(runner::addPlatformEntry);
 					}
 				}
 			}
-
-			Path workspace = framework.resolve("workspace"); //$NON-NLS-1$
-			Files.createDirectories(workspace);
 			
-			Path configuration = framework.resolve("configuration"); //$NON-NLS-1$
-			Files.createDirectories(configuration);
-			Path configIni = configuration.resolve("config.ini"); //$NON-NLS-1$
-			Properties config = new Properties();
-			config.put("osgi.bundles.defaultStartLevel", "4"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("osgi.bundles", String.join(",", platform)); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("eclipse.application", applicationId); //$NON-NLS-1$
-			config.put("osgi.configuration.cascaded", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("osgi.install.area", framework.toUri().toString()); //$NON-NLS-1$
-			config.put("osgi.instance.area", workspace.toAbsolutePath().toString()); //$NON-NLS-1$
-			config.put("osgi.framework", osgiBundle[0]); //$NON-NLS-1$
-			config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
-			config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			// Logger configuration
-			config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
-			Path logFile = configuration.resolve("nsfodp.log"); //$NON-NLS-1$
-			Files.deleteIfExists(logFile);
-			config.put("osgi.logfile", logFile.toString()); //$NON-NLS-1$
-			
-			try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-				config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
-			}
-			
-			List<String> command = new ArrayList<>();
-			command.add(javaBin.toAbsolutePath().toString());
-			command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
-			command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
-			command.add("-framwork"); //$NON-NLS-1$
-			command.add(framework.toAbsolutePath().toString());
-			command.add("-configuration"); //$NON-NLS-1$
-			command.add(configuration.toAbsolutePath().toString());
-			command.add("-consoleLog"); //$NON-NLS-1$
-			if(log.isDebugEnabled()) {
-				log.debug(Messages.getString("EquinoxMojo.launchingEquinox", command.stream().collect(Collectors.joining(" "))));  //$NON-NLS-1$//$NON-NLS-2$
-			}
-			
-			ProcessBuilder builder = new ProcessBuilder()
-					.command(command)
-					.redirectOutput(Redirect.PIPE)
-//					.redirectError(Redirect.INHERIT)
-					.redirectInput(Redirect.INHERIT);
-			Map<String, String> env = builder.environment();
-			env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			env.put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-			env.put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
-			env.put("CLASSPATH", //$NON-NLS-1$
-					classpath.stream()
-					.map(path -> path.toString())
-					.collect(Collectors.joining(File.pathSeparator))
-			);
 			if(systemProperties != null) {
-				env.putAll(systemProperties);
+				systemProperties.forEach(runner::addSystemProperty);
 			}
 			
 			Collection<Path> jars = initJreJars(notesProgram);
 			try {
-				Process proc = builder.start();
+				Path logFile = runner.getLogFile();
+				
+				Process proc = runner.start(applicationId);
 				watchOutput(proc.getInputStream(), proc);
 				proc.waitFor();
 				int exitValue = proc.exitValue();
@@ -357,123 +283,6 @@ public abstract class AbstractEquinoxTask {
 		}
 		return javaBin;
 	}
-	
-	public static String createJempowerShim(Path notesBin) throws IOException {
-		Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
-		try(OutputStream os = Files.newOutputStream(tempBundle)) {
-			try(JarOutputStream jos = new JarOutputStream(os)) {
-				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
-				jos.putNextEntry(entry);
-				try(InputStream is = EquinoxCompiler.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) { //$NON-NLS-1$
-					copyStream(is, jos, 8192);
-				}
-				JarEntry njempclEntry = new JarEntry("lib/njempcl.jar"); //$NON-NLS-1$
-				jos.putNextEntry(njempclEntry);
-				try(InputStream is = Files.newInputStream(njempcl)) {
-					copyStream(is, jos, 8192);
-				}
-			}
-		}
-		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
-	}
-	
-	public static String createClasspathExtensionBundle(Collection<Path> classpathJars, Path plugins) throws IOException {
-		Path tempBundle = Files.createTempFile(plugins, "org.openntf.nsfodp.frameworkextension", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
-		try(OutputStream os = Files.newOutputStream(tempBundle, StandardOpenOption.TRUNCATE_EXISTING)) {
-			try(JarOutputStream jos = new JarOutputStream(os)) {
-				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
-				jos.putNextEntry(entry);
-				
-				Manifest manifest = new Manifest();
-				Attributes attrs = manifest.getMainAttributes();
-				attrs.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
-				attrs.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
-				attrs.putValue("Bundle-SymbolicName", "org.openntf.nsfodp.classpathprovider"); //$NON-NLS-1$ //$NON-NLS-2$
-				attrs.putValue("Bundle-Version", "1.0.0." + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
-				attrs.putValue("Bundle-Name", "NSF ODP Tooling Extended Classpath Provider"); //$NON-NLS-1$ //$NON-NLS-2$
-				
-				if(classpathJars != null) {
-					String exportPackage = classpathJars.stream()
-						.map(AbstractEquinoxTask::getPackages)
-						.flatMap(Collection::stream)
-						.collect(Collectors.joining(",")); //$NON-NLS-1$
-					attrs.putValue("Export-Package", exportPackage); //$NON-NLS-1$
-					
-					attrs.putValue("Bundle-ClassPath", classpathJars.stream() //$NON-NLS-1$
-						.map(j -> "external:" + j.toAbsolutePath()) //$NON-NLS-1$
-						.collect(Collectors.joining(",")) //$NON-NLS-1$
-					);
-				}
-				
-				manifest.write(jos);
-			}
-		}
-		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
-	}
-	
-    private static long copyStream(InputStream is, OutputStream os, int bufferSize) throws IOException {
-		byte[] buffer = new byte[bufferSize];
-		long totalBytes = 0;
-		int readBytes;
-		while( (readBytes = is.read(buffer))>0 ) {
-			os.write(buffer, 0, readBytes);
-			totalBytes += readBytes;
-		}
-		return totalBytes;
-    }
-    
-    private static Collection<String> getPackages(Path jar) {
-    	try {
-    		Collection<String> packages = new HashSet<String>();
-			try(InputStream is = Files.newInputStream(jar)) {
-				try(JarInputStream jis = new JarInputStream(is)) {
-					JarEntry jarEntry = jis.getNextJarEntry();
-					while(jarEntry != null) {
-						String name = jarEntry.getName();
-						if(name.endsWith(".class") && !name.startsWith("java/") && name.indexOf('/') > 0) { //$NON-NLS-1$ //$NON-NLS-2$
-							String packagePath = name.substring(0, name.lastIndexOf('/'));
-							packages.add(packagePath.replace('/', '.'));
-						}
-						
-						jarEntry = jis.getNextJarEntry();
-					}
-				}
-			}
-			return packages;
-    	} catch(IOException e) {
-    		throw new RuntimeException(e);
-    	}
-    }
-    
-    private void addIBMJars(Path notesProgram, Collection<Path> classpath) {
-    	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
-    	
-    	// Add ibmpkcs.jar if available, though it's gone in V11
-    	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
-    	if(!Files.isReadable(ibmPkcs) && SystemUtils.IS_OS_MAC) {
-    		// Different path on macOS
-    		Path notesApp = getMacNotesAppDir(notesProgram);
-    		if(notesApp != null) {
-    			ibmPkcs = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-    		}
-    	}
-    	if(Files.isReadable(ibmPkcs)) {
-    		classpath.add(ibmPkcs);
-    	}
-    	
-    	Path notesJar = lib.resolve("ext").resolve("Notes.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    	if(!Files.isReadable(notesJar)) {
-    		throw new IllegalStateException("Unable to locate Notes.jar at expected path " + notesJar);
-    	}
-    	classpath.add(notesJar);
-    	
-    	Path websvc = lib.resolve("ext").resolve("websvc.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    	if(!Files.isReadable(websvc)) {
-    		throw new IllegalStateException("Unable to locate websvc.jar at expected path " + websvc);
-    	}
-    	classpath.add(websvc);
-    }
     
     /**
      * Adds JARs that are provided in the "ndext" directory of Domino but aren't IBM/HCL-specific.
@@ -482,8 +291,8 @@ public abstract class AbstractEquinoxTask {
      * @throws MojoExecutionException if there is an exception locating the JARs
      * @since 3.0.0
      */
-	private void addNdextJars(Collection<Path> classpath) throws MojoExecutionException {
-		classpath.add(getDependencyJar("guava")); //$NON-NLS-1$
+	private void addNdextJars(EquinoxRunner runner) throws MojoExecutionException {
+		runner.addClasspathJar(getDependencyJar("guava")); //$NON-NLS-1$
 	}
     
 	private Collection<Path> initJreJars(Path notesProgram) throws MojoExecutionException, IOException {
@@ -503,7 +312,7 @@ public abstract class AbstractEquinoxTask {
     		}
 
     		Collection<Path> toLink = new LinkedHashSet<>();
-    		addIBMJars(notesProgram, toLink);
+    		EquinoxRunner.addIBMJars(notesProgram, toLink);
 
     		Collection<Path> result = new LinkedHashSet<>();
     		Path notesApp = getMacNotesAppDir(notesProgram);

@@ -25,6 +25,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
@@ -155,5 +157,14 @@ public enum NSFODPUtil {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @return {@code true} if the current OS is macOS; {@code false} otherwise
+	 * @since 3.0.0
+	 */
+	public static boolean isOsMac() {
+		String osName = AccessController.doPrivileged((PrivilegedAction<String>)() -> System.getProperty("os.name")); //$NON-NLS-1$
+		return osName.toLowerCase().startsWith("mac"); //$NON-NLS-1$
 	}
 }

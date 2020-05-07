@@ -1,0 +1,302 @@
+package org.openntf.nsfodp.commons.osgi;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+
+import org.openntf.nsfodp.commons.NSFODPUtil;
+
+public class EquinoxRunner {
+	private Path javaBin;
+	private Path notesProgram;
+	private final List<Path> classpath = new ArrayList<>();
+	private final List<String> platform = new ArrayList<>();
+	private Path workingDirectory;
+	private final Map<String, String> systemProperties = new HashMap<>();
+	private String osgiBundle;
+	private Path logFile;
+	
+	public Path getJavaBin() {
+		return javaBin;
+	}
+	public void setJavaBin(Path javaBin) {
+		this.javaBin = javaBin;
+	}
+	public Path getNotesProgram() {
+		return notesProgram;
+	}
+	public void setNotesProgram(Path notesProgram) {
+		this.notesProgram = notesProgram;
+		addIBMJars(notesProgram, classpath);
+		addPlatformEntry(createJempowerShim(notesProgram));
+	}
+	public void setOsgiBundle(String osgiBundle) {
+		this.osgiBundle = osgiBundle;
+	}
+	
+	public void addClasspathJar(Path jar) {
+		classpath.add(jar);
+	}
+	
+	public void addPlatformEntry(String entry) {
+		platform.add(entry);
+	}
+	
+	public void setWorkingDirectory(Path workingDirectory) throws IOException {
+		this.workingDirectory = workingDirectory;
+		Path configuration = workingDirectory.resolve("configuration"); //$NON-NLS-1$
+		Files.createDirectories(configuration);
+		this.logFile = configuration.resolve("nsfodp.log"); //$NON-NLS-1$
+		Files.deleteIfExists(logFile);
+	}
+	
+	public void addSystemProperty(String name, String value) {
+		this.systemProperties.put(name, value);
+	}
+	
+	public Path getLogFile() {
+		return logFile;
+	}
+	
+	public Process start(String applicationId) throws IOException {
+		Objects.requireNonNull(javaBin, "javaBin must be set");
+		Objects.requireNonNull(notesProgram, "notesProgram must be set");
+		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
+		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
+		
+		if(Files.exists(workingDirectory)) {
+			// Always start clean, as existing data can cause trouble
+			NSFODPUtil.deltree(workingDirectory);
+		}
+		Files.createDirectories(workingDirectory);
+		
+		Path plugins = workingDirectory.resolve("plugins"); //$NON-NLS-1$
+		Files.createDirectories(plugins);
+		
+		List<String> platform = new ArrayList<>(this.platform);
+		platform.add(createClasspathExtensionBundle(this.classpath, plugins));
+		
+		Path workspace = workingDirectory.resolve("workspace"); //$NON-NLS-1$
+		Files.createDirectories(workspace);
+		
+		Path configuration = workingDirectory.resolve("configuration"); //$NON-NLS-1$
+		Files.createDirectories(configuration);
+		Path configIni = configuration.resolve("config.ini"); //$NON-NLS-1$
+		Properties config = new Properties();
+		config.put("osgi.bundles.defaultStartLevel", "4"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("osgi.bundles", String.join(",", platform)); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("eclipse.application", applicationId); //$NON-NLS-1$
+		config.put("osgi.configuration.cascaded", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("osgi.install.area", workingDirectory.toUri().toString()); //$NON-NLS-1$
+		config.put("osgi.instance.area", workspace.toAbsolutePath().toString()); //$NON-NLS-1$
+		config.put("osgi.framework", osgiBundle); //$NON-NLS-1$
+		config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		// Logger configuration
+		config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("osgi.logfile", logFile.toString()); //$NON-NLS-1$
+		
+		try(OutputStream os = Files.newOutputStream(configIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			config.store(os, "NSF ODP OSGi Configuration"); //$NON-NLS-1$
+		}
+		
+		List<String> command = new ArrayList<>();
+		command.add(getJavaBin().toString());
+		command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
+		command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
+		command.add("-framwork"); //$NON-NLS-1$
+		command.add(workingDirectory.toAbsolutePath().toString());
+		command.add("-configuration"); //$NON-NLS-1$
+		command.add(configuration.toAbsolutePath().toString());
+		command.add("-consoleLog"); //$NON-NLS-1$
+		
+		ProcessBuilder builder = new ProcessBuilder()
+				.command(command)
+				.redirectOutput(Redirect.PIPE)
+				.redirectInput(Redirect.INHERIT);
+		Map<String, String> env = builder.environment();
+		env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+		env.put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+		env.put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
+		env.put("CLASSPATH", //$NON-NLS-1$
+				classpath.stream()
+				.map(path -> path.toString())
+				.collect(Collectors.joining(File.pathSeparator))
+		);
+		env.putAll(systemProperties);
+		
+		return builder.start();
+	}
+	
+	// *******************************************************************************
+	// * Internal utility methods
+	// *******************************************************************************
+	
+	/**
+     * @since 3.0.0
+     */
+    private static Path getMacNotesAppDir(Path notesProgram) {
+    	if(notesProgram == null) {
+    		return null;
+    	}
+    	Path notesApp = notesProgram.getParent();
+    	if(notesApp.getParent() == null) {
+    		return null;
+    	}
+    	return notesApp.getParent();
+    }
+    
+    public static void addIBMJars(Path notesProgram, Collection<Path> classpath) {
+    	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
+    	
+    	// Add ibmpkcs.jar if available, though it's gone in V11
+    	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
+    	if(!Files.isReadable(ibmPkcs) && NSFODPUtil.isOsMac()) {
+    		// Different path on macOS
+    		Path notesApp = getMacNotesAppDir(notesProgram);
+    		if(notesApp != null) {
+    			ibmPkcs = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("endorsed").resolve("ibmpkcs.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+    		}
+    	}
+    	if(Files.isReadable(ibmPkcs)) {
+    		classpath.add(ibmPkcs);
+    	}
+    	
+    	Path notesJar = lib.resolve("ext").resolve("Notes.jar"); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(!Files.isReadable(notesJar)) {
+    		throw new IllegalStateException("Unable to locate Notes.jar at expected path " + notesJar);
+    	}
+    	classpath.add(notesJar);
+    	
+    	Path websvc = lib.resolve("ext").resolve("websvc.jar"); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(!Files.isReadable(websvc)) {
+    		throw new IllegalStateException("Unable to locate websvc.jar at expected path " + websvc);
+    	}
+    	classpath.add(websvc);
+    	
+    	// Look for ndext and add all those to match the Domino classpath
+    	Path ndext = notesProgram.resolve("ndext"); //$NON-NLS-1$
+    	if(Files.isDirectory(ndext)) {
+    		try {
+				Files.list(ndext)
+					.filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+					.forEach(classpath::add);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+    	}
+    }
+    
+    public static String createJempowerShim(Path notesBin) {
+    	try {
+			Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+			try(OutputStream os = Files.newOutputStream(tempBundle)) {
+				try(JarOutputStream jos = new JarOutputStream(os)) {
+					JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
+					jos.putNextEntry(entry);
+					try(InputStream is = EquinoxRunner.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) { //$NON-NLS-1$
+						copyStream(is, jos, 8192);
+					}
+					JarEntry njempclEntry = new JarEntry("lib/njempcl.jar"); //$NON-NLS-1$
+					jos.putNextEntry(njempclEntry);
+					Files.copy(njempcl, jos);
+				}
+			}
+		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
+    	} catch(IOException e) {
+    		throw new RuntimeException(e);
+    	}
+	}
+	
+    private static long copyStream(InputStream is, OutputStream os, int bufferSize) throws IOException {
+		byte[] buffer = new byte[bufferSize];
+		long totalBytes = 0;
+		int readBytes;
+		while( (readBytes = is.read(buffer))>0 ) {
+			os.write(buffer, 0, readBytes);
+			totalBytes += readBytes;
+		}
+		return totalBytes;
+    }
+    
+    public static String createClasspathExtensionBundle(Collection<Path> classpathJars, Path plugins) throws IOException {
+		Path tempBundle = Files.createTempFile(plugins, "org.openntf.nsfodp.frameworkextension", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+		try(OutputStream os = Files.newOutputStream(tempBundle, StandardOpenOption.TRUNCATE_EXISTING)) {
+			try(JarOutputStream jos = new JarOutputStream(os)) {
+				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
+				jos.putNextEntry(entry);
+				
+				Manifest manifest = new Manifest();
+				Attributes attrs = manifest.getMainAttributes();
+				attrs.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-SymbolicName", "org.openntf.nsfodp.classpathprovider"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Version", "1.0.0." + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Name", "NSF ODP Tooling Extended Classpath Provider"); //$NON-NLS-1$ //$NON-NLS-2$
+				
+				if(classpathJars != null) {
+					String exportPackage = classpathJars.stream()
+						.map(EquinoxRunner::getPackages)
+						.flatMap(Collection::stream)
+						.collect(Collectors.joining(",")); //$NON-NLS-1$
+					attrs.putValue("Export-Package", exportPackage); //$NON-NLS-1$
+					
+					attrs.putValue("Bundle-ClassPath", classpathJars.stream() //$NON-NLS-1$
+						.map(j -> "external:" + j.toAbsolutePath()) //$NON-NLS-1$
+						.collect(Collectors.joining(",")) //$NON-NLS-1$
+					);
+				}
+				
+				manifest.write(jos);
+			}
+		}
+		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
+	}
+    
+    private static Collection<String> getPackages(Path jar) {
+    	try {
+    		Collection<String> packages = new HashSet<String>();
+			try(InputStream is = Files.newInputStream(jar)) {
+				try(JarInputStream jis = new JarInputStream(is)) {
+					JarEntry jarEntry = jis.getNextJarEntry();
+					while(jarEntry != null) {
+						String name = jarEntry.getName();
+						if(name.endsWith(".class") && !name.startsWith("java/") && name.indexOf('/') > 0) { //$NON-NLS-1$ //$NON-NLS-2$
+							String packagePath = name.substring(0, name.lastIndexOf('/'));
+							packages.add(packagePath.replace('/', '.'));
+						}
+						
+						jarEntry = jis.getNextJarEntry();
+					}
+				}
+			}
+			return packages;
+    	} catch(IOException e) {
+    		throw new RuntimeException(e);
+    	}
+    }
+}
