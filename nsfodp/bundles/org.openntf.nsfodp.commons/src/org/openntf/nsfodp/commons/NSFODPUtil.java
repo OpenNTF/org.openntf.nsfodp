@@ -127,6 +127,11 @@ public enum NSFODPUtil {
 
 		@Override
 		public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+			if(file.getFileName().toString().startsWith(".DS_Store")) { //$NON-NLS-1$
+				// skip
+				return FileVisitResult.CONTINUE;
+			}
+			
 			Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
 			return FileVisitResult.CONTINUE;
 		}
