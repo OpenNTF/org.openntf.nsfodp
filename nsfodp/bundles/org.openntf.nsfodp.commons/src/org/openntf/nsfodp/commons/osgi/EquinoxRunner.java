@@ -47,7 +47,10 @@ public class EquinoxRunner {
 	public void setNotesProgram(Path notesProgram) {
 		this.notesProgram = notesProgram;
 		addIBMJars(notesProgram, classpath);
-		addPlatformEntry(createJempowerShim(notesProgram));
+		String shim = createJempowerShim(notesProgram);
+		if(shim != null) {
+			addPlatformEntry(shim);
+		}
 	}
 	public void setOsgiBundle(String osgiBundle) {
 		this.osgiBundle = osgiBundle;
@@ -213,20 +216,24 @@ public class EquinoxRunner {
     public static String createJempowerShim(Path notesBin) {
     	try {
 			Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
-			try(OutputStream os = Files.newOutputStream(tempBundle)) {
-				try(JarOutputStream jos = new JarOutputStream(os)) {
-					JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
-					jos.putNextEntry(entry);
-					try(InputStream is = EquinoxRunner.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) { //$NON-NLS-1$
-						copyStream(is, jos, 8192);
+			if(Files.isRegularFile(njempcl)) {
+				Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+				try(OutputStream os = Files.newOutputStream(tempBundle)) {
+					try(JarOutputStream jos = new JarOutputStream(os)) {
+						JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
+						jos.putNextEntry(entry);
+						try(InputStream is = EquinoxRunner.class.getResourceAsStream("/res/COM.ibm.JEmpower/META-INF/MANIFEST.MF")) { //$NON-NLS-1$
+							copyStream(is, jos, 8192);
+						}
+						JarEntry njempclEntry = new JarEntry("lib/njempcl.jar"); //$NON-NLS-1$
+						jos.putNextEntry(njempclEntry);
+						Files.copy(njempcl, jos);
 					}
-					JarEntry njempclEntry = new JarEntry("lib/njempcl.jar"); //$NON-NLS-1$
-					jos.putNextEntry(njempclEntry);
-					Files.copy(njempcl, jos);
 				}
+				return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
+			} else {
+				return null;
 			}
-		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
     	} catch(IOException e) {
     		throw new RuntimeException(e);
     	}
