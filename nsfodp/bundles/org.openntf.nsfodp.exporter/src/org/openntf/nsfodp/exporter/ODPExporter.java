@@ -827,9 +827,13 @@ public class ODPExporter {
 				}
 			} else if(assistType == -1) {
 				return NoteType.SimpleActionAgent;
-			} else {
+			} else if(assistType != 0) {
 				return NoteType.FormulaAgent;
+			} else if(assistType == 0) {
+				// As-yet-unidentified note type that reaches here and seen in issue #209
+				return NoteType.Unknown;
 			}
+			break;
 		case DominoAPI.NOTE_CLASS_FORM:
 			// Pretty much everything is a form nowadays
 			if(flags.isEmpty()) {

@@ -32,7 +32,10 @@ public interface StdNames {
 	
 	public static final char DESIGN_FLAG_JARFILE = ','; // Not actually documented
 	
-	public static final int ASSIST_TYPE_JAVA = 0xFF93; // Not actually documented, and possibly not true
+	// These types are not actually documented, and possibly not true
+	public static final int ASSIST_TYPE_JAVA = 0xFF93;
+	public static final int ASSIST_TYPE_FORMULA = 0xFF92;
+	
 	public static final String ITEM_NAME_JAVA_COMPILER_SOURCE = "$JavaCompilerSource"; // Not actually documented //$NON-NLS-1$
 	
 	public static final String FIELD_TITLE = "$TITLE"; //$NON-NLS-1$
