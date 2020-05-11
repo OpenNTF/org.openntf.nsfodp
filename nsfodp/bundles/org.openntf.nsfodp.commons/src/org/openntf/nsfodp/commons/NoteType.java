@@ -84,6 +84,7 @@ public enum NoteType {
 	/** This is wrapped up into the DB properties */
 	ACL,
 	DesignCollection,
+	AgentData,
 	Unknown;
 	
 	/**

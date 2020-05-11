@@ -756,6 +756,10 @@ public class ODPExporter {
 		String title = getTitle(note);
 		String flagsExt = note.hasItem(DESIGN_FLAGS_EXTENDED) ? note.getAsString(DESIGN_FLAGS_EXTENDED, ' ') : StringUtil.EMPTY_STRING;
 		
+		if(flags.indexOf('X') > -1) {
+			return NoteType.AgentData;
+		}
+		
 		switch(note.getNoteClassValue() & ~DominoAPI.NOTE_CLASS_DEFAULT) {
 		case DominoAPI.NOTE_CLASS_ACL:
 			return NoteType.ACL;
@@ -827,13 +831,9 @@ public class ODPExporter {
 				}
 			} else if(assistType == -1) {
 				return NoteType.SimpleActionAgent;
-			} else if(assistType != 0) {
+			} else {
 				return NoteType.FormulaAgent;
-			} else if(assistType == 0) {
-				// As-yet-unidentified note type that reaches here and seen in issue #209
-				return NoteType.Unknown;
 			}
-			break;
 		case DominoAPI.NOTE_CLASS_FORM:
 			// Pretty much everything is a form nowadays
 			if(flags.isEmpty()) {
