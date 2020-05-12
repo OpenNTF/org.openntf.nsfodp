@@ -467,7 +467,7 @@ public class ODPCompiler {
 					// Set the template info if requested
 					String templateName = this.getTemplateName();
 					if(StringUtil.isNotEmpty(templateName)) {
-						int noteId = database.getDesign().findDesignNote(DominoAPI.NOTE_CLASS_FIELD, DominoAPI.DFLAGPAT_FIELD, "$TemplateBuild", false);
+						int noteId = database.getDesign().findDesignNote(DominoAPI.NOTE_CLASS_FIELD, DominoAPI.DFLAGPAT_FIELD, "$TemplateBuild", false); //$NON-NLS-1$
 						NSFNote doc;
 						if(noteId != 0) {
 							doc = database.getNoteByID(noteId);
