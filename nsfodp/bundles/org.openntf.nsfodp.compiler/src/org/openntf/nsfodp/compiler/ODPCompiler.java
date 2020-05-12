@@ -441,7 +441,7 @@ public class ODPCompiler {
 				NSFDatabase database = session.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
 				try {
 					NSFDXLImporter importer = session.createDXLImporter();
-					importer.setDesignImportOption(DXLIMPORTOPTION.CREATE);
+					importer.setDesignImportOption(DXLIMPORTOPTION.REPLACE_ELSE_CREATE);
 					importer.setACLImportOption(DXLIMPORTOPTION.REPLACE_ELSE_IGNORE);
 					importer.setReplaceDBProperties(true);
 					importer.setReplicaRequiredForReplaceOrUpdate(false);
