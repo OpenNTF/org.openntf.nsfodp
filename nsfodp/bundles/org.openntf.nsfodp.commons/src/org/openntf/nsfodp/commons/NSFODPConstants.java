@@ -29,6 +29,11 @@ public enum NSFODPConstants {
 	 * The system property used to specify the path to store the processed results.
 	 */
 	public static final String PROP_OUTPUTFILE = "org.openntf.nsfodp.outputLocation"; //$NON-NLS-1$
+	/**
+	 * The system property used to specify the path to the active Notes INI for standalone initialization.
+	 * @since 3.0.0
+	 */
+	public static final String PROP_NOTESINI = "org.openntf.nsfodp.notesini"; //$NON-NLS-1$
 	
 	// *******************************************************************************
 	// * Notes constants

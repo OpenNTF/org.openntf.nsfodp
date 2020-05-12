@@ -15,7 +15,7 @@
  */
 package org.openntf.nsfodp.commons.odp.util;
 
-import static org.openntf.nsfodp.commons.dxl.ODSConstants.*;
+import static org.openntf.nsfodp.commons.dxl.ODSConstants.BLOBPART_SIZE_CAP;
 import static org.openntf.nsfodp.commons.h.Ods.ACTION_TYPE_JAVASCRIPT;
 import static org.openntf.nsfodp.commons.h.Ods.HTML_EVENT_LIBRARY;
 import static org.openntf.nsfodp.commons.h.Ods.SIG_CDBLOBPART;
@@ -30,20 +30,9 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.openntf.nsfodp.commons.dxl.DXLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 import com.ibm.domino.napi.c.C;
 import com.ibm.domino.napi.c.NotesUtil;
-
-import lotus.domino.Database;
-import lotus.domino.DxlImporter;
-import lotus.domino.NotesException;
 
 /**
  * Utilities for manipulating "raw"-type DXL documents.
@@ -53,26 +42,6 @@ import lotus.domino.NotesException;
  */
 public enum DXLNativeUtil {
 	;
-	
-	/**
-	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
-	 */
-	public static void importFileResource(DxlImporter importer, byte[] data, Database database, String name, String flags, String flagsExt) throws XMLException, IOException, NotesException {
-		Document dxlDoc = DOMUtil.createDocument();
-		Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
-		note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$
-		note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
-		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags); //$NON-NLS-1$
-		if(StringUtil.isNotEmpty(flagsExt)) {
-			DXLUtil.writeItemString(dxlDoc, "$FlagsExt", false, flagsExt);	 //$NON-NLS-1$
-		}
-		DXLUtil.writeItemString(dxlDoc, "$TITLE", false, name); //$NON-NLS-1$
-		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", data.length); //$NON-NLS-1$
-		DXLUtil.writeItemFileData(dxlDoc, "$FileData", data); //$NON-NLS-1$
-		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name); //$NON-NLS-1$
-		String dxl = DOMUtil.getXMLString(dxlDoc);
-		importer.importDxl(dxl, database);
-	}
 
 	public static byte[] getJavaScriptLibraryData(Path file) throws IOException {
 	

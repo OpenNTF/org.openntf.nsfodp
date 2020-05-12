@@ -41,6 +41,12 @@ public class ExporterApplication implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
+		if(notesIni != null && !notesIni.isEmpty()) {
+			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
+			DominoAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+		}
+		
 		String databasePath = System.getenv(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH);
 		if(databasePath == null) {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.ExporterApplication_dbPathCannotBeEmpty, NSFODPConstants.PROP_EXPORTER_DATABASE_PATH));

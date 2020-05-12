@@ -39,8 +39,8 @@ import com.ibm.commons.util.StringUtil;
  * @since 2.0.0
  */
 public class EquinoxCompiler extends AbstractEquinoxTask {
-	public EquinoxCompiler(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
-		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
+	public EquinoxCompiler(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform, Path notesIni) throws IOException {
+		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform, notesIni);
 	}
 
 	public void compileOdp(
@@ -70,6 +70,11 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		}
 		props.put(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, Boolean.toString(setProductionXspOptions));
 		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
+		
+		Path notesIni = getNotesIni();
+		if(notesIni != null) {
+			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
+		}
 		
 		setSystemProperties(props);
 		

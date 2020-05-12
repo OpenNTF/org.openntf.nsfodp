@@ -37,6 +37,7 @@ import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 
+import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.json.JsonException;
 import com.ibm.commons.util.io.json.JsonJavaFactory;
@@ -49,6 +50,12 @@ public class CompilerApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
+		if(notesIni != null && !notesIni.isEmpty()) {
+			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
+			DominoAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+		}
+		
 		NotesThread.sinitThread();
 		try {
 			Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));

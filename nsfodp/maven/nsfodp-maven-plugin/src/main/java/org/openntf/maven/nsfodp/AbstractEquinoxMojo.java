@@ -60,6 +60,15 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	protected URL notesPlatform;
 	
 	/**
+	 * The path to the notes.ini file to use on launch. This is primarily of importance for local
+	 * compilation on Linux systems, where the INI file is not reliably located by the runtime.
+	 * 
+	 * @since 3.0.0
+	 */
+	@Parameter(property="notes-ini")
+	protected File notesIni;
+	
+	/**
 	 * Sets the project to require server execution even if a local environment is
 	 * available.
 	 * 

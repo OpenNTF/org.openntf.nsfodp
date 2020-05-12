@@ -35,8 +35,8 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
  */
 public class EquinoxExporter extends AbstractEquinoxTask {
 
-	public EquinoxExporter(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
-		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform);
+	public EquinoxExporter(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform, Path notesIni) throws IOException {
+		super(pluginDescriptor, mavenSession, project, log, notesProgram, notesPlatform, notesIni);
 	}
 
 	public void exportOdp(Path odpDir, String databasePath, boolean binaryDxl, boolean swiperFilter, boolean richTextAsItemData) {
@@ -47,6 +47,10 @@ public class EquinoxExporter extends AbstractEquinoxTask {
 		props.put(NSFODPConstants.PROP_EXPORTER_SWIPER_FILTER, Boolean.toString(swiperFilter));
 		props.put(NSFODPConstants.PROP_RICH_TEXT_AS_ITEM_DATA, Boolean.toString(richTextAsItemData));
 		props.put(NSFODPConstants.PROP_PROJECT_NAME, getProject().getGroupId() + '.' + getProject().getArtifactId());
+		Path notesIni = getNotesIni();
+		if(notesIni != null) {
+			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
+		}
 		setSystemProperties(props);
 		
 		run("org.openntf.nsfodp.exporter.equinox.ExporterApplication"); //$NON-NLS-1$

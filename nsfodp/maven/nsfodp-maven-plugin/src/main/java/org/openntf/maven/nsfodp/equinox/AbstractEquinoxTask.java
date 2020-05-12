@@ -54,6 +54,7 @@ public abstract class AbstractEquinoxTask {
 	private final Log log;
 	private final Path notesProgram;
 	private final URL notesPlatform;
+	private final Path notesIni;
 	
 	private Collection<Path> classpathJars;
 	private Map<String, String> systemProperties;
@@ -61,13 +62,14 @@ public abstract class AbstractEquinoxTask {
 	
 	private boolean successFlag;
 
-	public AbstractEquinoxTask(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform) throws IOException {
+	public AbstractEquinoxTask(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform, Path notesIni) throws IOException {
 		this.pluginDescriptor = pluginDescriptor;
 		this.mavenSession = mavenSession;
 		this.log = log;
 		this.notesProgram = notesProgram;
 		this.project = project;
 		this.notesPlatform = notesPlatform;
+		this.notesIni = notesIni;
 	}
 	
 	protected MavenProject getProject() {
@@ -84,6 +86,13 @@ public abstract class AbstractEquinoxTask {
 	
 	public void setUpdateSites(List<Path> updateSites) {
 		this.updateSites = updateSites;
+	}
+	
+	/**
+	 * @since 3.0.0
+	 */
+	public Path getNotesIni() {
+		return notesIni;
 	}
 	
 	protected void run(String applicationId) {
