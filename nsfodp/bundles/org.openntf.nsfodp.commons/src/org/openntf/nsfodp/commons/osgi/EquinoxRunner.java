@@ -140,13 +140,20 @@ public class EquinoxRunner {
 				.redirectInput(Redirect.INHERIT);
 		Map<String, String> env = builder.environment();
 		env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-		env.put("PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
+		StringBuilder path = new StringBuilder();
+		path.append(notesProgram.toAbsolutePath().toString());
+		Path resC = notesProgram.resolve("res").resolve("C"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(Files.isDirectory(resC)) {
+			path.append(File.pathSeparatorChar);
+			path.append(resC.toString());
+		}
+		env.put("PATH", path.toString()); //$NON-NLS-1$
 		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
 		env.put("CLASSPATH", //$NON-NLS-1$
-				classpath.stream()
-				.map(path -> path.toString())
+			classpath.stream()
+				.map(Path::toString)
 				.collect(Collectors.joining(File.pathSeparator))
 		);
 		env.putAll(systemProperties);
