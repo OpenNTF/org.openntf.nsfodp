@@ -66,7 +66,7 @@ Additionally, there are some properties to set in your Maven `~/.m2/settings.xml
 
 There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://github.com/OpenNTF/generate-domino-update-site). In practice, I've found that update sites generated from Domino instead of Notes are more reliable.
 
-For server-based operations, there are properties for each task to set the remote server:
+These are the applicable properties to configure remote or server execution:
 
 ```xml
 <?xml version="1.0"?>
@@ -80,6 +80,8 @@ For server-based operations, there are properties for each task to set the remot
                 <!-- for local operations, macOS example -->
                 <notes-program>/Applications/IBM Notes.app/Contents/MacOS</notes-program>
                 <notes-platform>file:///Users/username/path/to/Domino10.0.1</notes-platform>
+                <!-- required on Linux -->
+                <notes-ini>/var/lib/domino/data/notes.ini</notes-ini>
               
                 <!-- for remote operations -->
                 <nsfodp.compiler.server>someserver</nsfodp.compiler.server>
@@ -89,6 +91,9 @@ For server-based operations, there are properties for each task to set the remot
                 <!-- Note: deployment operations currently require a server -->
                 <nsfodp.deploy.server>someserver</nsfodp.deploy.server>
                 <nsfodp.deploy.serverUrl>http://some.server/</nsfodp.deploy.serverUrl>
+
+                <!-- use a remote server even when local properties are set -->
+                <nsfodp.requireServerExecution>true</nsfodp.requireServerExecution>
             </properties>
         </profile>
     </profiles>
