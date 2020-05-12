@@ -162,6 +162,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
     <xsl:template match="//n:database/n:acl/n:logentry"/>
     
     <!--
+        Strip ephemeral/machine-specific items from icon notes
+    -->
+    <!-- TODO figure out why leaving the "/*" out doesn't match the node -->
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$PIRCRefreshModTime']/*"/>
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateModTime']/*"/>
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateFileName']/*"/>
+    
+    <!--
         Clean mutable parts of fulltextsettings 
     -->
     <xsl:template match="//n:database/n:fulltextsettings/@size"/>
