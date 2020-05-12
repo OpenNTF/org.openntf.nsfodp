@@ -760,7 +760,8 @@ public class ODPExporter {
 			return NoteType.AgentData;
 		}
 		
-		switch(note.getNoteClassValue() & ~DominoAPI.NOTE_CLASS_DEFAULT) {
+		
+		switch(note.getNoteClassValue() & DominoAPI.NOTE_CLASS_NONPRIV) {
 		case DominoAPI.NOTE_CLASS_ACL:
 			return NoteType.ACL;
 		case DominoAPI.NOTE_CLASS_DESIGN:
@@ -899,7 +900,9 @@ public class ODPExporter {
 				return NoteType.Applet;
 			} else {
 				return NoteType.Form;
-			} 
+			}
+		case DominoAPI.NOTE_CLASS_REPLFORMULA:
+			return NoteType.ReplicationFormula;
 		}
 		
 		return NoteType.Unknown;

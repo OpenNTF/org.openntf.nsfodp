@@ -85,6 +85,7 @@ public enum NoteType {
 	ACL,
 	DesignCollection,
 	AgentData,
+	ReplicationFormula,
 	Unknown;
 	
 	/**
