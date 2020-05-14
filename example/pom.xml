@@ -37,7 +37,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tycho-version>1.2.0</tycho-version>
+		<tycho-version>1.6.0</tycho-version>
 		<compiler>1.8</compiler>
 	</properties>
 
@@ -483,35 +483,6 @@
 					<url>http://download.eclipse.org/releases/oxygen</url>
 				</repository>
 			</repositories>
-		</profile>
-
-		<profile>
-			<id>java10</id>
-			<activation>
-				<jdk>[10,</jdk>
-			</activation>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-compiler-plugin</artifactId>
-						<dependencies>
-							<!-- use BETA JAVA10 binaries of JDT -->
-							<dependency>
-								<groupId>org.eclipse.tycho</groupId>
-								<artifactId>org.eclipse.jdt.core</artifactId>
-								<version>3.13.102.v20180320-1701_BETA_JAVA10</version>
-							</dependency>
-							<dependency>
-								<groupId>org.eclipse.tycho</groupId>
-								<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
-								<version>1.3.60.v20180316-1720_BETA_JAVA10</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 </project>

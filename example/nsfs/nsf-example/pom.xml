@@ -32,6 +32,7 @@
 						<updateSite>${project.baseDir}/../../../releng/org.openntf.nsfodp.example.updatesite/target/site</updateSite>
 					</updateSites>
 					<binaryDxl>true</binaryDxl>
+					<templateName>ExampleProject</templateName>
 				</configuration>
 			</plugin>
 		</plugins>
