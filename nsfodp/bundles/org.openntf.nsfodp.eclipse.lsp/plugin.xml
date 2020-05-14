@@ -46,6 +46,7 @@
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSubform" id="org.eclipse.wildwebdeveloper.xml"/>
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpNavigator" id="org.eclipse.wildwebdeveloper.xml"/>
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpOutline" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSharedColumn" id="org.eclipse.wildwebdeveloper.xml"/>
 		
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXspConfig" id="org.eclipse.wildwebdeveloper.xml"/>
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXsp" id="org.eclipse.wildwebdeveloper.xml"/>
@@ -78,6 +79,7 @@
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSubform" scopeName="source.xml"/>
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpNavigator" scopeName="source.xml"/>
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpOutline" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedColumn" scopeName="source.xml"/>
 		
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspConfig" scopeName="source.xml"/>
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" scopeName="source.xml"/>

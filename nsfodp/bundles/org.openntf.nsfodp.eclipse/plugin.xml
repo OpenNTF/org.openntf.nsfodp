@@ -176,6 +176,13 @@
 			file-extensions="outline">
 			<describer class="org.openntf.nsfodp.eclipse.content.OutlineContentDescriber"/>
 		</content-type>
+		<content-type
+			id="nsfodpSharedColumn"
+			name="%FileType.sharedColumn"
+			base-type="nsfodpDxl"
+			file-extensions="column">
+			<describer class="org.openntf.nsfodp.eclipse.content.SharedColumnContentDescriber"/>
+		</content-type>
 		
 		<!-- XPages source elements -->
 		<content-type
