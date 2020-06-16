@@ -8,7 +8,8 @@ Bundle-Vendor: %providerName
 Bundle-ClassPath: .,
  lib/com.darwino.domino.napi.jar
 Export-Package: org.openntf.nsfodp.compiler,
- org.openntf.nsfodp.compiler.update
+ org.openntf.nsfodp.compiler.update,
+ org.openntf.nsfodp.compiler.util
 Import-Package: com.ibm.xsp.extlib.javacompiler,
  lotus.domino
 Require-Bundle: org.eclipse.osgi,

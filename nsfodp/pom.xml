@@ -68,6 +68,12 @@
 		<module>bundles/org.openntf.nsfodp.deployment.servlet</module>
 		<module>features/org.openntf.nsfodp.deployment.feature</module>
 		
+		<!--
+			XSP Transpiler 
+		-->
+		<module>bundles/org.openntf.nsfodp.transpiler</module>
+		<module>bundles/org.openntf.nsfodp.transpiler.equinox</module>
+		
 		<module>releng/org.openntf.nsfodp.domino.source.updatesite</module>
 		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
 

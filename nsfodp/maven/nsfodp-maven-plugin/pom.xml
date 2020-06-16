@@ -199,6 +199,16 @@
 			<artifactId>org.openntf.nsfodp.exporter.equinox</artifactId>
 			<version>${nsfodp-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.transpiler</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.nsfodp</groupId>
+			<artifactId>org.openntf.nsfodp.transpiler.equinox</artifactId>
+			<version>${nsfodp-version}</version>
+		</dependency>
 		
 		<!--
 			Darwino Domino NAPI 

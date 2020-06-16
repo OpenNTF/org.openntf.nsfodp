@@ -105,4 +105,11 @@ public enum NSFODPConstants {
 	 * The HTTP header name used to specify whether the database should be signed during deployment.
 	 */
 	public static final String HEADER_DEPLOY_SIGN = "X-SignDatabase"; //$NON-NLS-1$
+	
+	// *******************************************************************************
+	// * Transpiler constants
+	// *******************************************************************************
+	
+	public static final String PROP_XSP_SOURCE_ROOT = "org.openntf.nsfodp.transpiler.xspSourceRoot"; //$NON-NLS-1$
+	public static final String PROP_CC_SOURCE_ROOT = "org.openntf.nsfodp.transpiler.ccSourceRoot"; //$NON-NLS-1$
 }

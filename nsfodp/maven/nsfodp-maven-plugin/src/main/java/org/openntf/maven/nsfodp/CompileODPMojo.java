@@ -64,7 +64,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -75,7 +74,7 @@ import java.util.zip.ZipOutputStream;
  * Goal which compiles an on-disk project.
  */
 @Mojo(name="compile", defaultPhase=LifecyclePhase.COMPILE, requiresDependencyResolution=ResolutionScope.COMPILE)
-public class CompileODPMojo extends AbstractEquinoxMojo {
+public class CompileODPMojo extends AbstractCompilerMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
@@ -90,11 +89,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	 */
 	@Parameter(defaultValue="${project.build.finalName}.nsf", required=true)
 	private String outputFileName;
-	/**
-	 * Location of the ODP directory.
-	 */
-	@Parameter(defaultValue="odp", required=true)
-	private File odpDirectory;
 	/**
 	 * The server id in settings.xml to use when authenticating with the compiler server, or
 	 * <code>null</code> to authenticate as anonymous.
@@ -120,16 +114,7 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	 * @deprecated use {@link #updateSites} instead
 	 */
 	@Parameter(required=false)
-	@Deprecated
-	private File updateSite;
-	
-	/**
-	 * Any update sites whose contents to use when building the ODP.
-	 * 
-	 * <p>Overrides {@link #updateSite} if both are specified.</p>
-	 */
-	@Parameter(required=false)
-	private File[] updateSites;
+	@Deprecated File updateSite;
 	
 	/**
 	 * The compiler level to target, e.g. "1.6", "1.8", "10", etc.
@@ -168,14 +153,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	private boolean setProductionXspOptions = false;
 	
 	/**
-	 * Any additional JARs to include on the compilation classpath.
-	 * 
-	 * @since 2.0.0
-	 */
-	@Parameter(required=false)
-	private File[] classpathJars;
-	
-	/**
 	 * The Notes/Domino ODS release level to target.
 	 * 
 	 * <p>This value is used in the file extension - e.g. {@code "8"} for ".ns8" - when creating
@@ -206,6 +183,11 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 		}
 		if(!Files.isDirectory(odpDirectory)) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.odpDirNotADir", odpDirectory.toAbsolutePath())); //$NON-NLS-1$
+		}
+
+		// Support projects using the older single-update-site setting
+		if((this.updateSites == null || this.updateSites.length == 0) && this.updateSite != null) {
+			this.updateSites = new File[] { this.updateSite };
 		}
 		
 		List<Path> updateSites = collectUpdateSites();
@@ -420,33 +402,6 @@ public class CompileODPMojo extends AbstractEquinoxMojo {
 	// *******************************************************************************
 	// * Misc. internal utilities
 	// *******************************************************************************
-	private List<Path> collectUpdateSites() {
-		List<Path> result = new ArrayList<>();
-		
-		// The new setting should override the old setting, so check that first
-		if(this.updateSites != null && this.updateSites.length != 0) {
-			result = Stream.of(this.updateSites)
-					.filter(Objects::nonNull)
-					.map(File::toPath)
-					.collect(Collectors.toList());
-		} else if(this.updateSite != null) {
-			result = Collections.singletonList(this.updateSite.toPath());
-		}
-		
-		for(Path updateSite : result) {
-			if(updateSite != null) {
-				if(!Files.exists(updateSite)) {
-					throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirDoesNotExist", updateSite.toAbsolutePath())); //$NON-NLS-1$
-				}
-				if(!Files.isDirectory(updateSite)) {
-					throw new IllegalArgumentException(Messages.getString("CompileODPMojo.usDirNotADir", updateSite.toAbsolutePath())); //$NON-NLS-1$
-				}
-			}
-		}
-		
-		
-		return result;
-	}
 	
 	private boolean checkNeedsCompile(Path outputFile, Path odpDirectory, List<Path> updateSites) throws MojoExecutionException {
 		if(Files.exists(outputFile)) {

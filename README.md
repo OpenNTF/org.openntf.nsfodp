@@ -26,6 +26,10 @@ Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the 
 
 The NSF deployment service allows for deployment of an NSF to a Domino server without involving the Notes client. Currently, this will only deploy new databases, but the plan is to have this also be able to perform a design replace on an existing database.
 
+### XSP Transpiler
+
+The XSP transpile translates XPages and Custom Controls into Java source files in the `target/generated-sources/java` directory of the project. This is intended for use with [non-NSF webapps](https://github.com/jesse-gallagher/xpages-runtime).
+
 ## Usage
 
 To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf` packaging type. Here is an example pom:
@@ -184,6 +188,21 @@ To specify a deployment destination and path, expand your project's pom to inclu
 ```
 
 By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.
+
+### XSP Transpiler
+
+The XSP transpiler can be invoked with the `transpile-xsp` goal in an `execution` block or via the command line:
+
+```
+mvn nsfodp:transpile-xsp
+```
+
+This will search for XPages in `odp/XPages` or `src/main/webapp/WEB-INF/xpages` and Custom Controls and definitions in `odp/CustomControls` or `src/main/webapp/WEB-INF/controls`. It currently has several restrictions:
+
+- Extra XPages libraries must still be defined in OSGi plugins and referenced in the `updateSites` property as in the ODP compiler. Libraries defined in `META-INF/services` in dependencies are not yet supported
+- Custom controls with property classes from an XPages library additionally require the class's JAR to be a direct dependency on the current project, even if it is included in a referenced update site
+  - Currently, transitive dependencies are not supported
+- In-project classes are currently not supported as custom control property classes
 
 ## Requirements
 
