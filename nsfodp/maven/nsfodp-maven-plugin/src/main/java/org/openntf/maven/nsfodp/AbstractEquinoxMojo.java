@@ -65,7 +65,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	 * 
 	 * @since 3.0.0
 	 */
-	@Parameter(property="notes-ini")
+	@Parameter(property="notes-ini", required=false)
 	protected File notesIni;
 	
 	/**
