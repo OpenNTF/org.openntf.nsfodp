@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.transpiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.transpiler
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,
