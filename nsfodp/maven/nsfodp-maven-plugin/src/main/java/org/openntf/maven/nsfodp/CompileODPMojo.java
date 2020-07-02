@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -35,6 +36,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,16 +58,22 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.filtering.MavenResourcesExecution;
+import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
+import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.ibm.commons.util.StringUtil;
 
@@ -162,7 +170,21 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Parameter(property="nsfodp.compiler.odsRelease", required=false)
 	private String odsRelease;
 	
+	/**
+	 * Additional file resources to include in the output NSF's {@code WebContent} directory.
+	 * 
+	 * @since 3.0.0
+	 */
+	@Parameter(required=false)
+	private List<Resource> webContentResources;
+	
+	@Component( role = MavenResourcesFiltering.class, hint = "default" )
+    protected MavenResourcesFiltering mavenResourcesFiltering;
+	
 	private Log log;
+
+	@Component
+	private BuildContext buildContext;
 
 	public void execute() throws MojoExecutionException {
 		log = getLog();
@@ -207,10 +229,42 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					Files.createDirectories(outputDirectory);
 				}
 				
+				// Create a copy of the ODP directory to interleave resources
+				Path odpCopy = Paths.get(project.getBuild().getDirectory()).resolve("nsfodp-odp"); //$NON-NLS-1$
+				if(log.isDebugEnabled()) {
+					log.debug(Messages.getString("CompileODPMojo.copyingOdpToTarget", odpCopy)); //$NON-NLS-1$
+				}
+				if(Files.exists(odpCopy)) {
+					NSFODPUtil.deltree(odpCopy);
+				}
+				Files.createDirectories(odpCopy);
+				NSFODPUtil.copyDirectory(odpDirectory, odpCopy);
+				
+				// Copy in any defined resources
+				if(this.webContentResources != null) {
+					Path webContent = odpCopy.resolve("WebContent"); //$NON-NLS-1$
+					Files.createDirectories(webContent);
+					MavenResourcesExecution exec = new MavenResourcesExecution(
+						this.webContentResources,
+						webContent.toFile(),
+						project,
+						StandardCharsets.UTF_8.name(),
+						Collections.emptyList(),
+						Arrays.asList("*"), //$NON-NLS-1$
+						mavenSession
+					);
+					exec.setInjectProjectBuildFilters(false);
+					exec.setOverwrite(true);
+					mavenResourcesFiltering.filterResources(exec);
+				}
+				
+				buildContext.refresh(odpCopy.toFile());
+				
+				// Compile the ODP
 				if(isRunLocally()) {
-					compileOdpLocal(odpDirectory, updateSites, outputFile);
+					compileOdpLocal(odpCopy, updateSites, outputFile);
 				} else {
-					Path odpZip = zipDirectory(odpDirectory);
+					Path odpZip = zipDirectory(odpCopy);
 					try {
 						List<Path> updateSiteZips = null;
 						if(updateSites != null && !updateSites.isEmpty()) {
@@ -223,6 +277,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						try {
 							Path result = compileOdpOnServer(packageZip);
 							Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
+							buildContext.refresh(outputFile.toFile());
 						} finally {
 							Files.deleteIfExists(packageZip);
 						}
@@ -261,7 +316,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		if(this.classpathJars != null) {
 			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);
 		}
-				
+		
 		this.project.getArtifacts().stream()
 			.map(Artifact::getFile)
 			.map(File::toPath)

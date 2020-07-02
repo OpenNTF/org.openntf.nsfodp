@@ -99,6 +99,11 @@
 			<artifactId>plexus-build-api</artifactId>
 			<version>0.0.7</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-filtering</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 		
 		<!--
 			General utilities
