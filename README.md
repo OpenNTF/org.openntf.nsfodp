@@ -6,9 +6,9 @@ There are three main components: a Maven plugin, a set of Domino OSGi plugins, a
 
 ### ODP Compiler
 
-The ODP compiler allows the use of a Domino server to compile an on-disk project into a full NSF without the need of Domino Designer. This compilation supports classic design elements as well as XPages, and allows for using OSGi plugins to resolve classes and XPages components.
+The ODP compiler allows the use of a Domino server or local Notes installation to compile an on-disk project into a full NSF without the need of Domino Designer. This compilation supports classic design elements as well as XPages, and allows for using OSGi plugins to resolve classes and XPages components.
 
-To use this, install the Domino plugins on an otherwise-clean Domino server - this is important to allow the plugins to be loaded and unloaded dynamically without interfering with existing plugins.
+To use this for remote compilation, install the Domino plugins on an otherwise-clean Domino server - this is important to allow the plugins to be loaded and unloaded dynamically without interfering with existing plugins.
 
 ### ODP Exporter
 
@@ -18,13 +18,17 @@ The ODP exporter allows the use of a Domino server to export an NSF into a Desig
 
 The Eclipse plugins provide the Eclipse IDE with basic knowledge of the ODP and autocompletion capabilities for XPages and Custom Controls.
 
-Currently, autocompletion knows about the stock components and Extension Library that ship with 9.0.1 FP10 as well as any Custom Controls inside the same project.
+Currently, autocompletion knows about the stock components and Extension Library that ship with 10.0.1 as well as any Custom Controls inside the same project.
 
 Additionally, it adds "Compile On-Disk Project" and "Deploy NSF" actions to the context menu, which are shortcuts for the equivalent Maven goals.
 
 ### NSF Deployment
 
 The NSF deployment service allows for deployment of an NSF to a Domino server without involving the Notes client. Currently, this will only deploy new databases, but the plan is to have this also be able to perform a design replace on an existing database.
+
+### XSP Transpiler
+
+The XSP transpile translates XPages and Custom Controls into Java source files in the `target/generated-sources/java` directory of the project. This is intended for use with [non-NSF webapps](https://github.com/jesse-gallagher/xpages-runtime).
 
 ## Usage
 
@@ -54,7 +58,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>2.0.0</version>
+                <version>3.0.0-SNAPSHOT</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -62,7 +66,11 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
 </project>
 ```
 
-Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration. There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://stash.openntf.org/projects/P2T/repos/generate-domino-update-site/browse). For server-based operations, there are properties for each task to set the remote server:
+Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration.
+
+There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://github.com/OpenNTF/generate-domino-update-site). In practice, I've found that update sites generated from Domino instead of Notes are more reliable.
+
+These are the applicable properties to configure remote or server execution:
 
 ```xml
 <?xml version="1.0"?>
@@ -76,6 +84,8 @@ Additionally, there are some properties to set in your Maven `~/.m2/settings.xml
                 <!-- for local operations, macOS example -->
                 <notes-program>/Applications/IBM Notes.app/Contents/MacOS</notes-program>
                 <notes-platform>file:///Users/username/path/to/Domino10.0.1</notes-platform>
+                <!-- required on Linux -->
+                <notes-ini>/var/lib/domino/data/notes.ini</notes-ini>
               
                 <!-- for remote operations -->
                 <nsfodp.compiler.server>someserver</nsfodp.compiler.server>
@@ -85,6 +95,9 @@ Additionally, there are some properties to set in your Maven `~/.m2/settings.xml
                 <!-- Note: deployment operations currently require a server -->
                 <nsfodp.deploy.server>someserver</nsfodp.deploy.server>
                 <nsfodp.deploy.serverUrl>http://some.server/</nsfodp.deploy.serverUrl>
+
+                <!-- use a remote server even when local properties are set -->
+                <nsfodp.requireServerExecution>true</nsfodp.requireServerExecution>
             </properties>
         </profile>
     </profiles>
@@ -176,6 +189,21 @@ To specify a deployment destination and path, expand your project's pom to inclu
 
 By default, compilation binds to the `compile` phase and deployment binds to the `deploy` phase, when their parameters are specified.
 
+### XSP Transpiler
+
+The XSP transpiler can be invoked with the `transpile-xsp` goal in an `execution` block or via the command line:
+
+```
+mvn nsfodp:transpile-xsp
+```
+
+This will search for XPages in `odp/XPages` or `src/main/webapp/WEB-INF/xpages` and Custom Controls and definitions in `odp/CustomControls` or `src/main/webapp/WEB-INF/controls`. It currently has several restrictions:
+
+- Extra XPages libraries must still be defined in OSGi plugins and referenced in the `updateSites` property as in the ODP compiler. Libraries defined in `META-INF/services` in dependencies are not yet supported
+- Custom controls with property classes from an XPages library additionally require the class's JAR to be a direct dependency on the current project, even if it is included in a referenced update site
+  - Currently, transitive dependencies are not supported
+- In-project classes are currently not supported as custom control property classes
+
 ## Requirements
 
 ### Maven
@@ -193,6 +221,8 @@ The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires
 ### Notes or Domino (For Local Operations)
 
 Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 or above.
+
+Note: if you use local compilation, either your ID file should have no password or you should configure Notes's User Security to allow non-Notes-based programs to execute without prompting for a password.
 
 #### Compilation on macOS
 

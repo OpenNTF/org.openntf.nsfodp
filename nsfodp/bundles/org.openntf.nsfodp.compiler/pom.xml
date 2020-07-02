@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.openntf.nsfodp</groupId>
+		<artifactId>nsfodp</artifactId>
+		<version>3.0.0</version>
+		<relativePath>../..</relativePath>
+	</parent>
+	<artifactId>org.openntf.nsfodp.compiler</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
+<!-- 	<dependencies> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.osgi</artifactId> -->
+<!-- 		  <version>3.15.100</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.eclipse.platform</groupId> -->
+<!-- 		  <artifactId>org.eclipse.core.runtime</artifactId> -->
+<!-- 		  <version>3.17.0</version> -->
+<!-- 		</dependency> -->
+<!-- 	</dependencies> -->
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>lib</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<profiles>
+		<profile>
+			<id>m2e-avoid</id>
+			<activation>
+				<property>
+					<name>!m2e.version</name>
+				</property>
+			</activation>
+			
+			<build>
+				<plugins>
+					<!-- Copy in third-party jar dependencies -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>lib</outputDirectory>
+									<stripVersion>true</stripVersion>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.darwino.domino</groupId>
+											<artifactId>com.darwino.domino.napi</artifactId>
+											<version>2.6.0-SNAPSHOT</version>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

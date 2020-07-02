@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sharedcolumn name="Example Shared Column" noreplace="true" xmlns="http://www.lotus.com/dxl">
+  <column hidedetailrows="false" itemname="ExampleField"
+    resizable="true" separatemultiplevalues="false" showaslinks="false"
+    sortnoaccent="true" sortnocase="true" width="10">
+    <columnheader title="Example">
+      <font size="9pt" style="bold"/>
+    </columnheader>
+  </column>
+</sharedcolumn>

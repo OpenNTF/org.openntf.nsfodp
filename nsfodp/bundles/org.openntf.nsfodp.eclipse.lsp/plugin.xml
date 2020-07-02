@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2018-2020 Jesse Gallagher
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<?eclipse version="3.4"?>
+<plugin>
+	<extension point="org.eclipse.wildwebdeveloper.xml.lemminxExtension">
+		<jar path="ext/org.openntf.nsfodp.lsp4xml.xsp.jar"/>
+		<jar path="ext/org.openntf.nsfodp.lsp4xml.dxl.jar"/>
+	</extension>
+	
+	<extension point="org.eclipse.lsp4e.languageServer">
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpDxl" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpDatabaseScript" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpDatabaseIcon" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpDatabaseProperties" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpMetadataFile" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpPage" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpForm" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpFrameset" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpAboutDocument" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpUsingDocument" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpIconNote" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSharedField" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpView" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpJavaLibrary" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSharedActions" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpFormulaAgent" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpLotusScriptAgent" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSimpleActionAgent" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpJavaAgent" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSubform" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpNavigator" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpOutline" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpSharedColumn" id="org.eclipse.wildwebdeveloper.xml"/>
+		
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXspConfig" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXsp" id="org.eclipse.wildwebdeveloper.xml"/>
+		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXspTheme" id="org.eclipse.wildwebdeveloper.xml"/>
+	</extension>
+	<!--<extension point="org.eclipse.ui.editors">
+		<editorContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" editorId="org.eclipse.ui.genericeditor.GenericEditor"/>
+	</extension>-->
+   
+	<extension point="org.eclipse.tm4e.registry.grammars">
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDxl" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseScript" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseIcon" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDatabaseProperties" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpMetadataFile" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpPage" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpForm" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpFrameset" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpAboutDocument" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpUsingDocument" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpIconNote" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedField" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpView" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpJavaLibrary" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedActions" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpFormulaAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpLotusScriptAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSimpleActionAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpJavaAgent" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSubform" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpNavigator" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpOutline" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpSharedColumn" scopeName="source.xml"/>
+		
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspConfig" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" scopeName="source.xml"/>
+		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspTheme" scopeName="source.xml"/>
+	</extension>
+</plugin>

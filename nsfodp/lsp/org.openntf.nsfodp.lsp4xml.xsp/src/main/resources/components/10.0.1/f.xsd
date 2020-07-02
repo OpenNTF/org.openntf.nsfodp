@@ -1,0 +1,32 @@
+<xs:schema xmlns="http://www.ibm.com/xsp/jsf/core" xmlns:f="http://www.ibm.com/xsp/jsf/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.ibm.com/xsp/jsf/core">
+  <xs:simpleType name="attrInteger">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\d+)|([#$]\{[.\s\S]*\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="attrBoolean">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(true)|(false)|([#$]\{[.\s\S]*\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="attrDecimal">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\d+(\.\d+)?)|([#$]\{[.\s\S]*\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="attrTime">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([.\s\S]*)|([#$]\{[.\s\S]*\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="attrDate">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([.\s\S]*)|([#$]\{[.\s\S]*\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="attrBinding">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[#$]\{[.\s\S]*\}"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

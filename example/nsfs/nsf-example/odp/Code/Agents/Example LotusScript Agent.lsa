@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent hide="v3" name="Example LotusScript Agent" publicaccess="false" xmlns="http://www.lotus.com/dxl">
+  <trigger type="actionsmenu"/>
+  <documentset type="runonce"/>
+  <code event="options">
+    <lotusscript>%REM
+	Agent Example LotusScript Agent
+	Created May 5, 2020 by Jesse Gallagher/IKSG
+	Description: Comments for Agent
+%END REM
+Option Public
+Option Declare
+
+
+</lotusscript>
+  </code>
+  <code event="initialize">
+    <lotusscript>Sub Initialize
+	MsgBox "Hello from LotusScript"
+End Sub</lotusscript>
+  </code>
+</agent>

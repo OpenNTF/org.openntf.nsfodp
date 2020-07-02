@@ -1,0 +1,41 @@
+{
+	"name": "vscode-nsfodp",
+	"displayName": "vscode-nsfodp",
+	"publisher": "OpenNSF",
+	"description": "NSF ODP Extension for Visual Studio Code",
+	"version": "2.5.0",
+	"engines": {
+		"vscode": "^1.39.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.helloWorld"
+	],
+	"main": "./target/out/extension.js",
+	"contributes": {
+		"xml.javaExtensions": [
+			"./jar/org.openntf.nsfodp.lsp4xml.xsp.jar",
+			"./jar/org.openntf.nsfodp.lsp4xml.dxl.jar"
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile",
+		"test": "node ./target/out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.6",
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.39.0",
+		"glob": "^7.1.4",
+		"mocha": "^6.1.4",
+		"typescript": "^3.3.1",
+		"tslint": "^5.12.1",
+		"vscode-test": "^1.2.0"
+	}
+}

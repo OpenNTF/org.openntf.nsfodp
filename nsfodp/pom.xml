@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openntf.nsfodp</groupId>
+	<artifactId>nsfodp</artifactId>
+	<version>3.0.0</version>
+	<packaging>pom</packaging>
+
+	<name>NSF ODP Tooling</name>
+
+	<url>https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling</url>
+	<inceptionYear>2018</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	
+	<distributionManagement>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+	</distributionManagement>
+
+	<developers>
+		<developer>
+			<name>Jesse Gallagher</name>
+			<email>jesse@frostillic.us</email>
+		</developer>
+	</developers>
+
+	<modules>
+		<module>bundles/org.openntf.nsfodp.commons</module>
+		<module>bundles/org.openntf.nsfodp.commons.dxl</module>
+		<module>bundles/org.openntf.nsfodp.commons.odp</module>
+		
+		<!--
+			Language Server Protocol 
+		-->
+		<module>lsp/org.openntf.nsfodp.lsp4xml.xsp</module>
+		<module>lsp/org.openntf.nsfodp.lsp4xml.dxl</module>
+		
+		<!--
+			ODP Compiler 
+		-->
+		<module>bundles/org.openntf.nsfodp.compiler</module>
+		<module>bundles/org.openntf.nsfodp.compiler.servlet</module>
+		<module>bundles/org.openntf.nsfodp.compiler.equinox</module>
+		<module>features/org.openntf.nsfodp.compiler.feature</module>
+		
+		<!--
+			ODP Exporter 
+		-->
+		<module>bundles/org.openntf.nsfodp.exporter</module>
+		<module>bundles/org.openntf.nsfodp.exporter.servlet</module>
+		<module>bundles/org.openntf.nsfodp.exporter.equinox</module>
+		<module>features/org.openntf.nsfodp.exporter.feature</module>
+		
+		<!--
+			NSF Deployment 
+		-->
+		<module>bundles/org.openntf.nsfodp.deployment</module>
+		<module>bundles/org.openntf.nsfodp.deployment.servlet</module>
+		<module>features/org.openntf.nsfodp.deployment.feature</module>
+		
+		<!--
+			XSP Transpiler 
+		-->
+		<module>bundles/org.openntf.nsfodp.transpiler</module>
+		<module>bundles/org.openntf.nsfodp.transpiler.equinox</module>
+		
+		<module>releng/org.openntf.nsfodp.domino.source.updatesite</module>
+		<module>releng/org.openntf.nsfodp.domino.updatesite</module>
+
+		<!--
+			Eclipse Support
+		-->
+		<module>bundles/org.openntf.nsfodp.eclipse</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.nature</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.ui</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.m2e</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.schemas</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.lsp</module>
+		<module>features/org.openntf.nsfodp.eclipse.feature</module>
+		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
+		
+		<!--
+			Distribution
+		-->
+		<module>releng/nsfodp-dist</module>
+		
+		<!--
+			Maven plugin 
+		-->
+		<module>maven/nsfodp-maven-plugin</module>
+<!-- 		<module>maven/it-nsfodp-maven-plugin</module> -->
+
+
+		<!--
+			Visual Studio Code extension 
+		-->
+		<module>vscode/vscode-nsfodp</module>
+	</modules>
+
+	<properties>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<tycho-version>1.6.0</tycho-version>
+		<bazaar-version>2.0.5</bazaar-version>
+		
+		<!-- Maven API version. This version should be supported by m2e -->
+		<maven.api.version>3.3.9</maven.api.version>
+		
+		<!-- OSGi/Eclipse PDE support -->
+		<manifest-location>META-INF</manifest-location>
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<osgi.qualifier>${maven.build.timestamp}</osgi.qualifier>
+	</properties>
+	
+	<prerequisites>
+		<maven>3.0.1</maven>
+	</prerequisites>
+
+	<repositories>
+		<repository>
+			<id>eclipse-202006</id>
+			<url>http://download.eclipse.org/releases/2020-06</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>com.hcl.repo</id>
+			<url>${notes-platform}</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>bazaar</id>
+			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.4</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>org.eclipse.m2e.p2</id> -->
+<!-- 			<name>org.eclipse.m2e</name> -->
+<!-- 			<url>http://download.eclipse.org/technology/m2e/releases</url> -->
+<!-- 			<layout>p2</layout> -->
+<!-- 		</repository> -->
+<!-- 		<repository> -->
+<!-- 			<id>org.eclipse.wildwebdeveloper.p2</id> -->
+<!-- 			<name>org.eclipse.wildwebdeveloper</name> -->
+<!-- 			<url>https://download.eclipse.org/wildwebdeveloper/releases/0.8.0/</url> -->
+<!-- 			<layout>p2</layout> -->
+<!-- 		</repository> -->
+<!-- 		<repository> -->
+<!-- 			<id>org.eclipse.wst.p2</id> -->
+<!-- 			<name>org.eclipse.wst</name> -->
+<!-- 			<url>https://download.eclipse.org/webtools/downloads/drops/R3.15.0/R-3.15.0-20190830034720/repository/</url> -->
+<!-- 			<layout>p2</layout> -->
+<!-- 		</repository> -->
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>artifactory.openntf.org</id>
+			<name>artifactory.openntf.org</name>
+			<url>https://artifactory.openntf.org/openntf</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<!-- <plugin>
+				<groupId>org.openntf.maven</groupId>
+				<artifactId>p2-layout-resolver</artifactId>
+				<version>1.1.0</version>
+				<extensions>true</extensions>
+			</plugin> -->
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<!-- enable tycho versions extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-versions-plugin</artifactId>
+				<version>${tycho-version}</version>
+			</plugin>
+			<plugin>
+				<!-- enable tycho packaging extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<configuration>
+					<strictVersions>false</strictVersions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<version>${tycho-version}</version>
+		
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includeBinaryFeature>false</includeBinaryFeature>
+					<excludes>
+						<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
+						<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attached-p2-metadata</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<configuration>
+
+					<pomDependencies>consider</pomDependencies>
+					<dependency-resolution>
+						<extraRequirements>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.notes.java.api.win32.linux</id>
+								<versionRange>9.0.1</versionRange>
+							</requirement>
+						</extraRequirements>
+						<optionalDependencies>ignore</optionalDependencies>
+					</dependency-resolution>
+
+					<filters>
+						<!-- work around Equinox bug 348045 -->
+						<filter>
+							<type>p2-installable-unit</type>
+							<id>org.eclipse.equinox.servletbridge.extensionbundle</id>
+							<removeAll />
+						</filter>
+					</filters>
+
+					<environments>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+					<resolver>p2</resolver>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<header>license.txt</header>
+					<excludes>
+						<exclude>**/pom.xml</exclude>
+			            <exclude>**/README</exclude>
+			            <exclude>**/src/test/resources/**</exclude>
+			            <exclude>**/src/main/resources/**</exclude>
+						<exclude>**/build.properties</exclude>
+						<exclude>**/org/thymeleaf/**</exclude>
+						<exclude>**/com/eclipsesource/**</exclude>
+                        <exclude>**/res/SwiperDXLClean.xsl</exclude>
+                        <exclude>**/dominoschemas/*</exclude>
+                        <exclude>**/nsfodp-maven-plugin/**</exclude>
+					</excludes>
+					<properties>
+						<owner>Jesse Gallagher</owner>
+						<copyrightYear>2020</copyrightYear>
+					</properties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven-and-java</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0.1</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>1.8.0</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<!-- javadoc configuration -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.0.0</version>
+					<configuration>
+						<!-- Activated by profile below -->
+						<skip>true</skip>
+
+						<failOnError>false</failOnError>
+						<excludePackageNames>com.sun.*:com.ibm.commons.*:com.ibm.sbt.core.*:com.ibm.sbt.plugin.*:com.ibm.sbt.jslibrray.*:com.ibm.sbt.proxy.*:com.ibm.sbt.security.*:*.util.*:com.ibm.sbt.portlet.*:com.ibm.sbt.playground.*:demo.*:acme.*</excludePackageNames>
+
+						<charset>UTF-8</charset>
+						<encoding>UTF-8</encoding>
+						<docencoding>UTF-8</docencoding>
+						<breakiterator>true</breakiterator>
+						<version>true</version>
+						<author>true</author>
+						<keywords>true</keywords>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+					<configuration>
+						<archive>
+							<manifestFile>${manifest-location}/MANIFEST.MF</manifestFile>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.21.0</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+						<inputEncoding>UTF-8</inputEncoding>
+						<outputEncoding>UTF-8</outputEncoding>
+						<argLine>-ea -Dfile.encoding=UTF-8</argLine>
+					</configuration>
+				</plugin>
+				<!-- This is to enable test execution only on supported platforms below -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-surefire-plugin</artifactId>
+					<version>${tycho-version}</version>
+					
+					<configuration>
+						<skip>true</skip>
+						<encoding>UTF-8</encoding>
+						<inputEncoding>UTF-8</inputEncoding>
+						<outputEncoding>UTF-8</outputEncoding>
+						<argLine>-Dfile.encoding=UTF-8</argLine>
+						<providerHint>junit4</providerHint>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-repository-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-packaging-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>4.2.1</version>
+					<configuration>
+						<manifestLocation>${manifest-location}</manifestLocation>
+						<excludeDependencies>true</excludeDependencies>
+						<supportedProjectTypes>
+							<supportedProjectType>jar</supportedProjectType>
+							<supportedProjectType>bundle</supportedProjectType>
+						</supportedProjectTypes>
+						<instructions>
+							<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+							<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+							<_snapshot>${osgi.qualifier}</_snapshot>
+						</instructions>
+					</configuration>
+				</plugin>
+				
+				
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.7.0</version>
+				</plugin>
+				
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<profiles>
+		<profile>
+			<id>devutils</id>
+			<modules>
+				<module>webapps/components-webapp</module>
+			</modules>
+		</profile>
+	</profiles>
+</project>

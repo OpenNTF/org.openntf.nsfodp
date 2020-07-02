@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2018-2020 Jesse Gallagher
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<?eclipse version="3.4"?>
+<plugin>
+	<!--
+		m2e integration
+	-->
+	<extension
+		point="org.eclipse.m2e.core.projectConfigurators">
+		<configurator
+			class="org.openntf.nsfodp.eclipse.m2e.ODPProjectConfigurator"
+			id="nsfodp-maven-plugin"
+			name="%configurator.name">
+		</configurator>
+	</extension>
+	<extension
+		point="org.eclipse.m2e.core.lifecycleMappings">
+		<lifecycleMapping
+			class="org.openntf.nsfodp.eclipse.m2e.ODPLifecycleMapping"
+			id="org.openntf.nsfodp.eclipse.m2e.odpLifecycleMapping"
+			name="%lifecycleMapping.name">
+		</lifecycleMapping>
+	</extension>
+	<extension
+		point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+	</extension>
+	
+	<!--
+		UI commands
+	-->
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+			<command
+				commandId="org.openntf.nsfodp.eclipse.compileODP"
+				label="Compile On-Disk Project">
+				<visibleWhen>
+					<reference definitionId="org.openntf.nsfodp.hasOdpNature"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+			<command
+				commandId="org.openntf.nsfodp.eclipse.deployNSF"
+				label="Deploy NSF">
+				<visibleWhen>
+					<reference definitionId="org.openntf.nsfodp.hasOdpNature"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+   
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			id="org.openntf.nsfodp.eclipse.deployNSF"
+			name="Deploy NSF"
+			defaultHandler="org.openntf.nsfodp.eclipse.m2e.handler.DeployNSFHandler">
+		</command>
+		<command
+			id="org.openntf.nsfodp.eclipse.compileODP"
+			name="Compile On-Disk Project"
+			defaultHandler="org.openntf.nsfodp.eclipse.m2e.handler.CompileODPHandler">
+		</command>
+	</extension>
+</plugin>
