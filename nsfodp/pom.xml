@@ -141,7 +141,7 @@
 		</repository>
 		<repository>
 			<id>bazaar</id>
-			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.4</url>
+			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.5</url>
 			<layout>p2</layout>
 		</repository>
 		<repository>
