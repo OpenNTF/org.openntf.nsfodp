@@ -46,6 +46,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -68,14 +72,20 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.openntf.maven.nsfodp.config.ConfigAcl;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.xml.DOMUtil;
+import com.ibm.commons.xml.Format;
 
 /**
  * Goal which compiles an on-disk project.
@@ -178,6 +188,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Parameter(required=false)
 	private List<Resource> webContentResources;
 	
+	/**
+	 * An ACL configuration to apply to the compiled database. This overrides any ACL present in
+	 * the {@code database.properties} file.
+	 * 
+	 * @since 3.1.0
+	 */
+	@Parameter(required=false)
+	private ConfigAcl acl;
+	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
     protected MavenResourcesFiltering mavenResourcesFiltering;
 	
@@ -256,6 +275,51 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					exec.setInjectProjectBuildFilters(false);
 					exec.setOverwrite(true);
 					mavenResourcesFiltering.filterResources(exec);
+				}
+				
+				// Write in the ACL, if specified
+				if(this.acl != null) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing ACL from pom.xml into AppProperties/database.properties");
+					}
+					try {
+						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+						Document props;
+						if(Files.exists(databaseProperties)) {
+							try(InputStream is = Files.newInputStream(databaseProperties)) {
+								props = DOMUtil.createDocument(is);
+							}
+						} else {
+							Files.createDirectories(databaseProperties.getParent());
+							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
+								props = DOMUtil.createDocument(is);
+							}
+						}
+						
+						for(Object nodeObj : DOMUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+							((Node)nodeObj).getParentNode().removeChild((Node)nodeObj);
+						}
+						
+						JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
+						Marshaller marshaller = jaxbContext.createMarshaller();
+						marshaller.marshal(this.acl, props.getDocumentElement());
+						
+						Element aclElement = (Element)props.getDocumentElement().getLastChild();
+						
+						// Make sure that this appears either immediately after a databaseinfo element or as the first child
+						Element databaseinfo = (Element)DOMUtil.node(props.getDocumentElement(), "/database/databaseinfo"); //$NON-NLS-1$
+						if(databaseinfo != null) {
+							DOMUtil.insertAfter(props.getDocumentElement(), aclElement, databaseinfo);
+						} else {
+							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
+						}
+						
+						try(OutputStream os = Files.newOutputStream(databaseProperties)) {
+							DOMUtil.serialize(os, props, Format.defaultFormat);
+						}
+					} catch (JAXBException | IOException e) {
+						throw new MojoExecutionException("Exception while writing new ACL", e);
+					}
 				}
 				
 				buildContext.refresh(odpCopy.toFile());

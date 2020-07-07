@@ -31,8 +31,62 @@
 					<updateSites>
 						<updateSite>${project.baseDir}/../../../releng/org.openntf.nsfodp.example.updatesite/target/site</updateSite>
 					</updateSites>
+					<!--
+						Use "binary DXL" when applicable. This is recommended for most projects for now, to avoid
+						some DXL round-trip trouble.
+					-->
 					<binaryDxl>true</binaryDxl>
+					<!--
+						The name that the compiled NSF will go by when used as a template
+					-->
 					<templateName>ExampleProject</templateName>
+					
+					<!--
+						Setting the ACL is optional, and overrides the values in database.properties
+					-->
+					<acl>
+						<roles>
+							<role>[Admin]</role>
+						</roles>
+						<entries>
+							<entry>
+								<name>-Default-</name>
+								<defaultEntry>true</defaultEntry>
+								<level>noaccess</level>
+							</entry>
+							<entry>
+								<name>[OtherDomainServers]</name>
+								<level>noaccess</level>
+							</entry>
+							<entry>
+								<name>[LocalDomainAdmins]</name>
+								<level>manager</level>
+								<deleteDocs>true</deleteDocs>
+								<noReplicate>false</noReplicate>
+							</entry>
+							<entry>
+								<name>[LocalDomainServers]</name>
+								<level>manager</level>
+								<deleteDocs>true</deleteDocs>
+								<noReplicate>false</noReplicate>
+							</entry>
+							<entry>
+								<name>LocalDomainAdmins</name>
+								<level>manager</level>
+								<deleteDocs>true</deleteDocs>
+								<noReplicate>false</noReplicate>
+							</entry>
+							<entry>
+								<name>CN=Foo/O=Bar</name>
+								<level>manager</level>
+								<deleteDocs>true</deleteDocs>
+								<noReplicate>false</noReplicate>
+								<roles>
+									<role>[Admin]</role>
+								</roles>
+							</entry>
+						</entries>
+					</acl>
 				</configuration>
 			</plugin>
 		</plugins>
