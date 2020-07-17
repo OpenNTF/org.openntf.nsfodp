@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
 	<artifactId>nsfodp</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>NSF ODP Tooling</name>
@@ -141,7 +141,7 @@
 		</repository>
 		<repository>
 			<id>bazaar</id>
-			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.4</url>
+			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.5</url>
 			<layout>p2</layout>
 		</repository>
 		<repository>

@@ -29,6 +29,12 @@
 	<feature id="org.openntf.nsfodp.exporter.feature">
 		<category name="NSF ODP Tooling"/>
 	</feature>
+	
+	<!-- Bazaar dependency -->
+	<feature id="com.ibm.xsp.extlibx.bazaar.feature">
+		<category name="XPages Bazaar"/>
+	</feature>
    
 	<category-def name="NSF ODP Tooling" label="NSF ODP Tooling"/>
+	<category-def name="XPages Bazaar" label="XPages Bazaar"/>
 </site>

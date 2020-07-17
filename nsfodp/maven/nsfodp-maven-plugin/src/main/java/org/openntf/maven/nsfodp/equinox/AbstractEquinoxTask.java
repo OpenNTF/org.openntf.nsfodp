@@ -388,16 +388,27 @@ public abstract class AbstractEquinoxTask {
     private void watchOutput(InputStream is, Process proc) {
     	Executors.newSingleThreadExecutor().submit(() -> {
     		char[] lastFour = new char[4];
+    		StringBuilder buffer = new StringBuilder();
     		
     		try {
 	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) { //$NON-NLS-1$
 	    			int ch;
 	    			while((ch = r.read()) != -1) {
-	    				System.out.write(ch);
+	    				if(ch == '\n' || ch == '\r') {
+	    					// Flush the buffer
+	    					if(buffer.length() > 0) {
+		    					if(log.isInfoEnabled()) {
+		    						log.info(buffer.toString());
+		    					}
+		    					buffer.setLength(0);
+	    					}
+	    				} else {
+	    					// Otherwise, enqeue
+	    					buffer.append((char)ch);
+	    				}
 	    				
 	    				addChar(lastFour, (char)ch);
 	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
-	    					System.out.println();
 	    					proc.destroyForcibly();
 	    					successFlag = true;
 	    					return;
@@ -406,6 +417,12 @@ public abstract class AbstractEquinoxTask {
 	    		}
     		} catch(Exception e) {
     			e.printStackTrace();
+    		} finally {
+    	    	if(buffer.length() > 0) {
+    	    		if(log.isInfoEnabled()) {
+    	    			log.info(buffer.toString());
+    	    		}
+    	    	}
     		}
     	});
     }

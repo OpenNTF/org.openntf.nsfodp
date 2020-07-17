@@ -15,31 +15,6 @@
  */
 package org.openntf.maven.nsfodp;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
-import org.openntf.maven.nsfodp.util.ODPMojoUtil;
-import org.openntf.maven.nsfodp.util.ResponseUtil;
-import org.openntf.nsfodp.commons.NSFODPConstants;
-
-import com.ibm.commons.util.StringUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -69,6 +45,47 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.filtering.MavenResourcesExecution;
+import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.openntf.maven.nsfodp.config.ConfigAcl;
+import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
+import org.openntf.maven.nsfodp.util.ODPMojoUtil;
+import org.openntf.maven.nsfodp.util.ResponseUtil;
+import org.openntf.nsfodp.commons.NSFODPConstants;
+import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.xml.DOMUtil;
+import com.ibm.commons.xml.Format;
 
 /**
  * Goal which compiles an on-disk project.
@@ -163,7 +180,30 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Parameter(property="nsfodp.compiler.odsRelease", required=false)
 	private String odsRelease;
 	
+	/**
+	 * Additional file resources to include in the output NSF's {@code WebContent} directory.
+	 * 
+	 * @since 3.0.0
+	 */
+	@Parameter(required=false)
+	private List<Resource> webContentResources;
+	
+	/**
+	 * An ACL configuration to apply to the compiled database. This overrides any ACL present in
+	 * the {@code database.properties} file.
+	 * 
+	 * @since 3.1.0
+	 */
+	@Parameter(required=false)
+	private ConfigAcl acl;
+	
+	@Component( role = MavenResourcesFiltering.class, hint = "default" )
+    protected MavenResourcesFiltering mavenResourcesFiltering;
+	
 	private Log log;
+
+	@Component
+	private BuildContext buildContext;
 
 	public void execute() throws MojoExecutionException {
 		log = getLog();
@@ -208,10 +248,87 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					Files.createDirectories(outputDirectory);
 				}
 				
+				// Create a copy of the ODP directory to interleave resources
+				Path odpCopy = Paths.get(project.getBuild().getDirectory()).resolve("nsfodp-odp"); //$NON-NLS-1$
+				if(log.isDebugEnabled()) {
+					log.debug(Messages.getString("CompileODPMojo.copyingOdpToTarget", odpCopy)); //$NON-NLS-1$
+				}
+				if(Files.exists(odpCopy)) {
+					NSFODPUtil.deltree(odpCopy);
+				}
+				Files.createDirectories(odpCopy);
+				NSFODPUtil.copyDirectory(odpDirectory, odpCopy);
+				
+				// Copy in any defined resources
+				if(this.webContentResources != null) {
+					Path webContent = odpCopy.resolve("WebContent"); //$NON-NLS-1$
+					Files.createDirectories(webContent);
+					MavenResourcesExecution exec = new MavenResourcesExecution(
+						this.webContentResources,
+						webContent.toFile(),
+						project,
+						StandardCharsets.UTF_8.name(),
+						Collections.emptyList(),
+						Arrays.asList("*"), //$NON-NLS-1$
+						mavenSession
+					);
+					exec.setInjectProjectBuildFilters(false);
+					exec.setOverwrite(true);
+					mavenResourcesFiltering.filterResources(exec);
+				}
+				
+				// Write in the ACL, if specified
+				if(this.acl != null) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing ACL from pom.xml into AppProperties/database.properties");
+					}
+					try {
+						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+						Document props;
+						if(Files.exists(databaseProperties)) {
+							try(InputStream is = Files.newInputStream(databaseProperties)) {
+								props = DOMUtil.createDocument(is);
+							}
+						} else {
+							Files.createDirectories(databaseProperties.getParent());
+							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
+								props = DOMUtil.createDocument(is);
+							}
+						}
+						
+						for(Object nodeObj : DOMUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+							((Node)nodeObj).getParentNode().removeChild((Node)nodeObj);
+						}
+						
+						JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
+						Marshaller marshaller = jaxbContext.createMarshaller();
+						marshaller.marshal(this.acl, props.getDocumentElement());
+						
+						Element aclElement = (Element)props.getDocumentElement().getLastChild();
+						
+						// Make sure that this appears either immediately after a databaseinfo element or as the first child
+						Element databaseinfo = (Element)DOMUtil.node(props.getDocumentElement(), "/database/databaseinfo"); //$NON-NLS-1$
+						if(databaseinfo != null) {
+							DOMUtil.insertAfter(props.getDocumentElement(), aclElement, databaseinfo);
+						} else {
+							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
+						}
+						
+						try(OutputStream os = Files.newOutputStream(databaseProperties)) {
+							DOMUtil.serialize(os, props, Format.defaultFormat);
+						}
+					} catch (JAXBException | IOException e) {
+						throw new MojoExecutionException("Exception while writing new ACL", e);
+					}
+				}
+				
+				buildContext.refresh(odpCopy.toFile());
+				
+				// Compile the ODP
 				if(isRunLocally()) {
-					compileOdpLocal(odpDirectory, updateSites, outputFile);
+					compileOdpLocal(odpCopy, updateSites, outputFile);
 				} else {
-					Path odpZip = zipDirectory(odpDirectory);
+					Path odpZip = zipDirectory(odpCopy);
 					try {
 						List<Path> updateSiteZips = null;
 						if(updateSites != null && !updateSites.isEmpty()) {
@@ -224,6 +341,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						try {
 							Path result = compileOdpOnServer(packageZip);
 							Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
+							buildContext.refresh(outputFile.toFile());
 						} finally {
 							Files.deleteIfExists(packageZip);
 						}
@@ -262,7 +380,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		if(this.classpathJars != null) {
 			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);
 		}
-				
+		
 		this.project.getArtifacts().stream()
 			.map(Artifact::getFile)
 			.map(File::toPath)
