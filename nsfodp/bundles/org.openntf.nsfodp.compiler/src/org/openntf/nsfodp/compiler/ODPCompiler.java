@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -660,7 +661,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, cc);
 			
 			String xspConfig = cc.getXspConfigSource();
-			byte[] xspConfigData = xspConfig.getBytes();
+			byte[] xspConfigData = xspConfig.getBytes(StandardCharsets.UTF_8);
 			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData); //$NON-NLS-1$
 			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length); //$NON-NLS-1$
 			
@@ -815,11 +816,11 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			if(DEBUG_DXL) {
 				String tempFileName = NSFODPUtil.getTempDirectory() + File.separator + name.replace('/', '-').replace('\\', '-') + ".xml"; //$NON-NLS-1$
 				try(OutputStream os = Files.newOutputStream(Paths.get(tempFileName))) {
-					os.write(dxl.getBytes());
+					os.write(dxl.getBytes(StandardCharsets.UTF_8));
 				}
 			}
 			NSFNoteIDCollection imported;
-			try(InputStream is = new ByteArrayInputStream(dxl.getBytes())) {
+			try(InputStream is = new ByteArrayInputStream(dxl.getBytes(StandardCharsets.UTF_8))) {
 				imported = importer.importDxl(database, is);
 			}
 
