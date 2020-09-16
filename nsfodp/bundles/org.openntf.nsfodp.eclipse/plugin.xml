@@ -26,7 +26,7 @@
 		<content-type
 			id="nsfodpDxl"
 			name="%FileType.dxl"
-			base-type="org.eclipse.wildwebdeveloper.xml"
+			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="dxl">
 		</content-type>
 		<content-type
@@ -188,12 +188,12 @@
 		<content-type
 			id="nsfodpXspConfig"
 			name="%FileType.xspconfig"
-			base-type="org.eclipse.wildwebdeveloper.xml"
+			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="xsp-config">
 			<describer class="org.openntf.nsfodp.eclipse.content.XspConfigContentDescriber"/>
 		</content-type>
 		<content-type
-        	base-type="org.eclipse.wildwebdeveloper.xml"
+        	base-type="org.eclipse.core.runtime.xml"
         	file-extensions="xsp"
         	id="nsfodpXsp"
         	name="%FileType.xsp"
@@ -203,7 +203,7 @@
 		<content-type
 			id="nsfodpXspTheme"
 			name="%FileType.theme"
-			base-type="org.eclipse.wildwebdeveloper.xml"
+			base-type="org.eclipse.core.runtime.xml"
 			file-extensions="theme">
 			<describer class="org.openntf.nsfodp.eclipse.content.ThemeContentDescriber"/>
 		</content-type>
