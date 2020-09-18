@@ -52,9 +52,27 @@
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXsp" id="org.eclipse.wildwebdeveloper.xml"/>
 		<contentTypeMapping contentType="org.openntf.nsfodp.eclipse.nsfodpXspTheme" id="org.eclipse.wildwebdeveloper.xml"/>
 	</extension>
-	<!--<extension point="org.eclipse.ui.editors">
-		<editorContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp" editorId="org.eclipse.ui.genericeditor.GenericEditor"/>
-	</extension>-->
+	
+	<!-- Explicitly associate our types with the Wild Web Developer editor -->
+	<!-- Should Eclipse move to this for the base XML type, this can be removed -->
+	<extension point="org.eclipse.ui.editors">
+		<editorContentTypeBinding
+			contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDxl"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+			/>
+		<editorContentTypeBinding
+			contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXsp"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+			/>
+		<editorContentTypeBinding
+			contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspConfig"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+			/>
+		<editorContentTypeBinding
+			contentTypeId="org.openntf.nsfodp.eclipse.nsfodpXspTheme"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+			/>
+	</extension>
    
 	<extension point="org.eclipse.tm4e.registry.grammars">
 		<scopeNameContentTypeBinding contentTypeId="org.openntf.nsfodp.eclipse.nsfodpDxl" scopeName="source.xml"/>
