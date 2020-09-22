@@ -440,7 +440,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		if(javaSourceFiles.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		Map<String, CharSequence> sources = javaSourceFiles.entrySet().stream()
+		return javaSourceFiles.entrySet().stream()
 			.map(entry ->
 				// Convert to a map of class name -> source
 				entry.getValue().stream()
@@ -451,10 +451,13 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			)
 			.map(Map::entrySet)
 			.flatMap(Set::stream)
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		
-		subTask(MessageFormat.format(Messages.ODPCompiler_compilingJavaClasses, sources.size()));
-		return classLoader.addClasses(sources);
+			.collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+				try {
+					return classLoader.addClass(entry.getKey(), entry.getValue());
+				} catch (JavaCompilerException e) {
+					throw new RuntimeException(e);
+				}
+			}));
 	}
 	
 	// *******************************************************************************
