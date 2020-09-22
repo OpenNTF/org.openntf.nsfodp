@@ -302,7 +302,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @since 1.0.0
 	 */
 	public synchronized Path compile() throws Exception {
-		return compile(getClass().getClassLoader());
+		return compile(ClassLoader.getSystemClassLoader());
 	}
 	
 	/**
