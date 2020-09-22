@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -201,7 +200,7 @@ public abstract class AbstractCompilationEnvironment {
 	
 	protected Collection<String> buildDependenciesCollection(Collection<Path> cleanup) throws IOException {
 		// Build our classpath
-		Collection<String> dependencies = new HashSet<>();;
+		Collection<String> dependencies = new LinkedHashSet<>();;
 		
 		// Special support for Notes.jar
 		Optional<Bundle> bundle = ODPUtil.findBundle(bundleContext, "com.ibm.notes.java.api.win32.linux", true); //$NON-NLS-1$
