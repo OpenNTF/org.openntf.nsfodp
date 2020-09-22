@@ -113,7 +113,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>1.6.0</tycho-version>
-		<bazaar-version>2.0.5</bazaar-version>
+		<bazaar-version>2.0.6-SNAPSHOT</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -141,7 +141,7 @@
 		</repository>
 		<repository>
 			<id>bazaar</id>
-			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.5</url>
+			<url>https://p2.openntf.org/p2/bazaar206.nsf/2.0.6/</url>
 			<layout>p2</layout>
 		</repository>
 		<repository>
