@@ -63,6 +63,8 @@ import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.commons.odp.XPage;
 import org.openntf.nsfodp.commons.odp.XSPCompilationResult;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
+import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
 import org.openntf.nsfodp.compiler.util.CompilerUtil;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.osgi.framework.Bundle;
@@ -822,6 +824,21 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			NSFNoteIDCollection imported;
 			try(InputStream is = new ByteArrayInputStream(dxl.getBytes(StandardCharsets.UTF_8))) {
 				imported = importer.importDxl(database, is);
+				String logXml = importer.getResultLog();
+				if(StringUtil.isNotEmpty(logXml)) {
+					DxlImporterLog log = DxlImporterLog.forXml(logXml);
+					if(log.getErrors() != null && !log.getErrors().isEmpty()) {
+						String msg = log.getErrors().stream()
+							.map(e -> StringUtil.format("{2} (line={0}, column={1})", e.getLine(), e.getColumn(), e.getText()))
+							.collect(Collectors.joining(", ")); //$NON-NLS-1$
+						throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
+					} else if(log.getFatalErrors() != null && !log.getFatalErrors().isEmpty()) {
+						String msg = log.getErrors().stream()
+							.map(DXLError::getText)
+							.collect(Collectors.joining(", ")); //$NON-NLS-1$
+						throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
+					}
+				}
 			}
 
 			List<Integer> importedIds = new ArrayList<>();
