@@ -108,15 +108,8 @@ public class SwiperOutputStream extends OutputStream {
 		// TODO use a more-efficient way to do this
 		String dxl = new String(Files.readAllBytes(path));
 		
-		String result = dxl.replaceAll("<imageref>\\s+", "<imageref>");
+		String result = dxl.replaceAll("<imageref>\\s+", "<imageref>"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-//		StringBuffer result = new StringBuffer();
-//		Pattern imageref = Pattern.compile("<imageref>\\s+"); //$NON-NLS-1$
-//		Matcher matcher = imageref.matcher(dxl);
-//		while(matcher.find()) {
-//			matcher.appendReplacement(result, "<imageref>"); //$NON-NLS-1$
-//		}
-//		matcher.appendTail(result);
 		Files.write(path, result.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
