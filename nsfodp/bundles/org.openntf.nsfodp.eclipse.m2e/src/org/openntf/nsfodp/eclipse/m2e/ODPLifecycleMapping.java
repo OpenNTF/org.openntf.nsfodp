@@ -22,6 +22,7 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.m2e.core.internal.project.registry.AbstractMavenDependencyResolver;
 import org.eclipse.m2e.core.internal.project.registry.Capability;
 import org.eclipse.m2e.core.internal.project.registry.ILifecycleMapping2;
@@ -61,6 +62,7 @@ public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping im
     		if(!project.hasNature(OnDiskProjectNature.ID)) {
     			CoreUtility.addNatureToProject(project, OnDiskProjectNature.ID, null);
     		}
+    		ODPPDEUtil.INSTANCE.markPDEResourcesDerived(project, SubMonitor.convert(mon));
     	}
     }
             
