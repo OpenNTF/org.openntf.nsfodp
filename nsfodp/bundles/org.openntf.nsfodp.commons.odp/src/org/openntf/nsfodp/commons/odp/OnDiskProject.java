@@ -62,6 +62,7 @@ public class OnDiskProject {
 		"Pages/*", //$NON-NLS-1$
 		"Resources/AboutDocument", //$NON-NLS-1$
 		"Resources/UsingDocument", //$NON-NLS-1$
+		"Resources/Applets/*", //$NON-NLS-1$
 		"SharedElements/Columns/*", //$NON-NLS-1$
 		"SharedElements/Fields/*", //$NON-NLS-1$
 		"SharedElements/Outlines/*", //$NON-NLS-1$
