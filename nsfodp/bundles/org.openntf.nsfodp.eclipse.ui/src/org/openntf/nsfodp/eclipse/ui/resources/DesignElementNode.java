@@ -121,7 +121,7 @@ public class DesignElementNode extends WorkbenchContentProvider implements IWork
 		}
 		if(!folder.exists()) {
 			try {
-				folder.create(false, false, null);
+				folder.create(false, true, null);
 			} catch (CoreException e) {
 				Activator.logError("Error auto-creating folder " + folder, e); //$NON-NLS-1$
 			}
