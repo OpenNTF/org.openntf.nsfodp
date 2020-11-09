@@ -72,5 +72,51 @@
       <version>0.11.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <classifier>sources</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <classifier>sources</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <classifier>sources</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.xsp.extlib.bazaar</groupId>
+      <artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
+      <version>2.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
