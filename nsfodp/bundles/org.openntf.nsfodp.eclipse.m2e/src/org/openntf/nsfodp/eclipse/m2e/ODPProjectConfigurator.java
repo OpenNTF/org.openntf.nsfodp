@@ -19,6 +19,7 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
 import org.eclipse.m2e.core.project.configurator.ILifecycleMappingConfiguration;
@@ -51,6 +52,8 @@ public class ODPProjectConfigurator extends AbstractProjectConfigurator implemen
 		if(!project.hasNature(OnDiskProjectNature.ID)) {
 			CoreUtility.addNatureToProject(project, OnDiskProjectNature.ID, null);
 		}
+		
+		ODPPDEUtil.INSTANCE.markPDEResourcesDerived(project, SubMonitor.convert(monitor));
 	}
 
 	@Override

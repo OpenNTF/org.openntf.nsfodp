@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
 	<artifactId>nsfodp</artifactId>
-	<version>3.2.0</version>
+	<version>3.3.0</version>
 	<packaging>pom</packaging>
 
 	<name>NSF ODP Tooling</name>
@@ -113,7 +113,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>1.6.0</tycho-version>
-		<bazaar-version>2.0.5</bazaar-version>
+		<bazaar-version>2.0.6-SNAPSHOT</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -139,11 +139,11 @@
 			<url>${notes-platform}</url>
 			<layout>p2</layout>
 		</repository>
-		<repository>
-			<id>bazaar</id>
-			<url>https://p2.openntf.org/repository/xpages-bazaar/2.0.5</url>
-			<layout>p2</layout>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>bazaar</id> -->
+<!-- 			<url>https://p2.openntf.org/p2/bazaar206.nsf/2.0.6/</url> -->
+<!-- 			<layout>p2</layout> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
@@ -539,6 +539,56 @@
 			<modules>
 				<module>webapps/components-webapp</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>non-m2e</id>
+			<activation>
+				<property>
+					<name>!m2e.version</name>
+				</property>
+			</activation>
+	
+			<dependencies>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
+					<version>2.0.6-SNAPSHOT</version>
+					<optional>true</optional>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 </project>

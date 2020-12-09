@@ -164,10 +164,10 @@ Unless required by applicable law or agreed to in writing, software distributed 
     <!--
         Strip ephemeral/machine-specific items from icon notes
     -->
-    <!-- TODO figure out why leaving the "/*" out doesn't match the node -->
-    <xsl:template match="//n:note[@class='icon']/n:item[@name='$PIRCRefreshModTime']/*"/>
-    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateModTime']/*"/>
-    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateFileName']/*"/>
+    <!-- TODO figure out why these don't properly match the node -->
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$PIRCRefreshModTime']"/>
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateModTime']"/>
+    <xsl:template match="//n:note[@class='icon']/n:item[@name='$TemplateFileName']"/>
     
     <!--
         Clean mutable parts of fulltextsettings 

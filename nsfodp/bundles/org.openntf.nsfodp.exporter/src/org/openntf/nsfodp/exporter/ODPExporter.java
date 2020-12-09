@@ -494,11 +494,14 @@ public class ODPExporter {
 		}
 		exporter.setOmitItemNames(ignoreItems);
 		exporter.setProperty(38, true);
+		boolean rawFormat = exporter.isForceNoteFormat();
+		exporter.setForceNoteFormat(true);
 		try {
 			exportExplicitNote(note, exporter, baseDir, type.getPath().resolve(name));
 		} finally {
 			exporter.setOmitItemNames(Collections.emptySet());
 			exporter.setProperty(38, false);
+			exporter.setForceNoteFormat(rawFormat);
 		}
 	}
 	

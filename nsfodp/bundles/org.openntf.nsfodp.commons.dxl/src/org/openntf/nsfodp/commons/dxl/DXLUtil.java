@@ -108,7 +108,7 @@ public enum DXLUtil {
 			}
 			for(CharSequence val : value) {
 				Element text = DOMUtil.createElement(dxlDoc, item, "text"); //$NON-NLS-1$
-				text.setTextContent(val.toString());
+				text.setTextContent(StringUtil.toString(val));
 			}
 			return item;
 		} else {
@@ -125,7 +125,7 @@ public enum DXLUtil {
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			for(Number val : value) {
 				Element number = DOMUtil.createElement(dxlDoc, item, "number"); //$NON-NLS-1$
-				number.setTextContent(val.toString());
+				number.setTextContent(StringUtil.toString(val));
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public enum DXLUtil {
 				wrapped.append(chunkData.substring(stringIndex, Math.min(stringIndex+72, chunkData.length())));
 				wrapped.append('\n');
 			}
-			fileDataNode.setTextContent(wrapped.toString());
+			fileDataNode.setTextContent(StringUtil.toString(wrapped));
 	
 			offset += chunkSize;
 		}

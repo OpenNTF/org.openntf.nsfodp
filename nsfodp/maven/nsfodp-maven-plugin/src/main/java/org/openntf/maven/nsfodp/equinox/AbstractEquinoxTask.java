@@ -319,7 +319,9 @@ public abstract class AbstractEquinoxTask {
     			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
     		}
     		if(!Files.exists(tools)) {
-    			throw new IllegalStateException("Unable to locate tools.jar in running JVM - ensure that this is a JDK (expected " + tools + ")");
+    			if(log.isWarnEnabled()) {
+    				log.warn("Unable to locate tools.jar in running JVM - if there are downstream problems, this may be the cause (expected " + tools + ")");
+    			}
     		}
 
     		Collection<Path> toLink = new LinkedHashSet<>();
@@ -344,10 +346,12 @@ public abstract class AbstractEquinoxTask {
 	    			}
 	    		}
 	    		
-	    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
-	    		if(!Files.exists(toolsDest)) {
-	    			Files.copy(tools, toolsDest);
-	    			result.add(toolsDest);
+	    		if(Files.exists(tools)) {
+		    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
+		    		if(!Files.exists(toolsDest)) {
+		    			Files.copy(tools, toolsDest);
+		    			result.add(toolsDest);
+		    		}
 	    		}
     		}
     		

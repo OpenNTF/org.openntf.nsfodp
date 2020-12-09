@@ -51,7 +51,7 @@ public enum NoteType {
 	Page("page", Paths.get("Pages"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
 	AboutDocument(Paths.get("Resources", "AboutDocument"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
 	FileResource(null, Paths.get("Resources", "Files"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	ImageResource(null, Paths.get("Resources", "Images"), ITEM_NAME_IMAGE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	ImageResource(null, Paths.get("Resources", "Images"), ITEM_NAME_IMAGE_DATA, IMAGE_RESOURCE_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
 	StyleSheet("css", Paths.get("Resources", "StyleSheets"), ITEM_NAME_STYLE_SHEET_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	Theme(null, Paths.get("Resources", "Themes"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
 	UsingDocument(Paths.get("Resources", "UsingDocument"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$

@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
@@ -82,6 +85,8 @@ public class SwiperOutputStream extends OutputStream {
 				try(InputStream is = new ByteArrayInputStream(xml)) {
 					transform(transformer, is, path);
 				}
+				
+				cleanKnownTroubleDxl(path);
 			} catch(RuntimeException e) {
 				throw e;
 			} catch (Exception e) {
@@ -90,6 +95,22 @@ public class SwiperOutputStream extends OutputStream {
 		} else {
 			os.close();
 		}
+	}
+	
+	/**
+	 * Processes the given file to remove known gotchas from formatted DXL
+	 * 
+	 * @param path the path of the DXL file on the filesystem
+	 * @throws IOException if there is a problem reading or writing the file
+	 * @since 3.3.0
+	 */
+	protected void cleanKnownTroubleDxl(Path path) throws IOException {
+		// TODO use a more-efficient way to do this
+		String dxl = new String(Files.readAllBytes(path));
+		
+		String result = dxl.replaceAll("<imageref>\\s+", "<imageref>"); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		Files.write(path, result.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
 	protected void transform(Transformer transformer, InputStream is, Path destination) throws Exception {

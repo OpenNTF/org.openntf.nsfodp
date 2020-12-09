@@ -26,6 +26,12 @@ public enum NSFODPConstants {
 	
 	public static final String JAVA_ITEM_IGNORE_PATTERN = "^(\\$ClassData|\\$ClassSize)\\d+$"; //$NON-NLS-1$
 	/**
+	 * Pattern to ignore "$ImageData0000", etc.
+	 * @since 3.3.0
+	 */
+	public static final String IMAGE_RESOURCE_IGNORE_PATTERN = "^\\$ImageData\\d\\d\\d\\d$"; //$NON-NLS-1$
+	
+	/**
 	 * The system property used to specify the path to store the processed results.
 	 */
 	public static final String PROP_OUTPUTFILE = "org.openntf.nsfodp.outputLocation"; //$NON-NLS-1$
