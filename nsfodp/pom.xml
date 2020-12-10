@@ -113,7 +113,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>1.6.0</tycho-version>
-		<bazaar-version>2.0.6-SNAPSHOT</bazaar-version>
+		<bazaar-version>2.0.6</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -176,6 +176,27 @@
 			<url>https://artifactory.openntf.org/openntf</url>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>jakarta.activation</groupId>
+			<artifactId>jakarta.activation-api</artifactId>
+			<version>1.2.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.domino</groupId>
+			<artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -271,6 +292,21 @@
 								<type>eclipse-plugin</type>
 								<id>com.ibm.notes.java.api.win32.linux</id>
 								<versionRange>9.0.1</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>javax.activation</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>jakarta.xml.bind-api</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>org.openntf.domino.java.api.corba.patch</id>
+								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>
 						<optionalDependencies>ignore</optionalDependencies>
@@ -552,40 +588,40 @@
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 				<dependency>
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
-					<version>2.0.6-SNAPSHOT</version>
+					<version>${bazaar-version}</version>
 					<optional>true</optional>
 				</dependency>
 			</dependencies>

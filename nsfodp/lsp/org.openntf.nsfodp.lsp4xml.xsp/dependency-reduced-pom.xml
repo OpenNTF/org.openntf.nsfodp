@@ -73,48 +73,66 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>1.2.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openntf.domino</groupId>
+      <artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <classifier>sources</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <classifier>sources</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <classifier>sources</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.ibm.xsp.extlib.bazaar</groupId>
       <artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
-      <version>2.0.6-SNAPSHOT</version>
+      <version>2.0.6</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
