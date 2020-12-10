@@ -11,3 +11,4 @@ Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  org.openntf.nsfodp.commons;bundle-version="2.0.0"
 Bundle-Localization: plugin
+Import-Package: javax.activation;resolution:=optional
