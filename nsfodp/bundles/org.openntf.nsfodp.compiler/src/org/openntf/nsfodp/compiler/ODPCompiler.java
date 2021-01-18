@@ -455,8 +455,13 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			.flatMap(Set::stream)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		
+		int size = sources.size();
 		subTask(MessageFormat.format(Messages.ODPCompiler_compilingJavaClasses, sources.size()));
-		return classLoader.addClasses(sources);
+		if(size > 0) {
+			return classLoader.addClasses(sources);
+		} else {
+			return Collections.emptyMap();
+		}
 	}
 	
 	// *******************************************************************************
