@@ -107,7 +107,7 @@ public abstract class AbstractCompilationEnvironment {
 		
 		bundles.stream().forEach(t -> {
 			try {
-				if(t.getState() == Bundle.RESOLVED && StringUtil.isEmpty(t.getHeaders().get("Fragment-Host"))) {
+				if(t.getState() == Bundle.RESOLVED && StringUtil.isEmpty(t.getHeaders().get("Fragment-Host"))) { //$NON-NLS-1$
 					t.stop();
 				}
 				t.uninstall();
