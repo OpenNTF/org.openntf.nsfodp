@@ -20,15 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -42,6 +39,7 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
+import org.openntf.nsfodp.exporter.ODPExporter.ODPType;
 
 import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.wrap.NSFDatabase;
@@ -151,32 +149,12 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					exporter.setProjectName(req.getHeader(NSFODPConstants.HEADER_PROJECT_NAME));
 					
+					exporter.setOdpType(ODPType.ZIP);
 					Path result = exporter.export();
 					cleanup.add(result);
 					mon.done();
 					
-					try(ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
-						Files.walk(result)
-							.forEach(path -> {
-								String name = result.relativize(path).toString().replace('\\', '/');
-								if(Files.isDirectory(path)) {
-									name += '/';
-								}
-								ZipEntry entry = new ZipEntry(name);
-								try {
-									zos.putNextEntry(entry);
-	
-									if(Files.isRegularFile(path)) {
-										try(InputStream is = Files.newInputStream(path)) {
-											StreamUtil.copyStream(is, zos);
-										}
-									}
-								} catch (IOException e) {
-									throw new RuntimeException(e);
-								}
-							});
-					}
-					
+					Files.copy(result, os);
 				} finally {
 					if(post) {
 						String filePath = database.getFilePath();

@@ -17,7 +17,6 @@ package org.openntf.nsfodp.commons.odp.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -64,8 +63,8 @@ public enum ODPUtil {
 	}
 	
 	public static Document readXml(Path file) {
-		try(InputStream is = Files.newInputStream(file)) {
-			return DOMUtil.createDocument(is);
+		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			return DOMUtil.createDocument(r);
 		} catch(IOException | XMLException e) {
 			throw new RuntimeException(e);
 		}

@@ -24,9 +24,10 @@ import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDBLOBPART;
 import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDEVENT;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -47,10 +48,11 @@ public enum DXLNativeUtil {
 	
 		// Read in the file data as an LMBCS string first
 		long lmbcsPtr;
-		try(InputStream is = Files.newInputStream(file)) {
-			String fileContent = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
-			lmbcsPtr = NotesUtil.toLMBCS(fileContent);
+		String fileContent;
+		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			fileContent = StreamUtil.readString(r);
 		}
+		lmbcsPtr = NotesUtil.toLMBCS(fileContent);
 		if(lmbcsPtr == 0) {
 			return new byte[0];
 		}

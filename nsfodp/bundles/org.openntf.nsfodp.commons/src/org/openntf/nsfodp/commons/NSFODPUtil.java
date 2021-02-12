@@ -17,7 +17,7 @@ package org.openntf.nsfodp.commons;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -36,10 +37,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public enum NSFODPUtil {
 	;
@@ -234,6 +235,15 @@ public enum NSFODPUtil {
 	 * @since 3.4.0
 	 */
 	public static Path openZipPath(Path zipFilePath) throws IOException {
+		// Create the ZIP file if it doesn't exist already
+		if(!Files.exists(zipFilePath) || Files.size(zipFilePath) == 0) {
+			try(OutputStream fos = Files.newOutputStream(zipFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+				try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
+					zos.setLevel(Deflater.BEST_COMPRESSION);
+				}
+			}
+		}
+		
 		URI uri = URI.create("jar:" + zipFilePath.toUri()); //$NON-NLS-1$
 		Map<String, String> env = new HashMap<>();
 		env.put("create", "true"); //$NON-NLS-1$ //$NON-NLS-2$

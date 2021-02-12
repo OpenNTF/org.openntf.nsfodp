@@ -490,12 +490,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		
 		try {
 			Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			try(OutputStream fos = Files.newOutputStream(result, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-				try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
-					zos.setLevel(Deflater.BEST_COMPRESSION);
-				}
-			}
-			
 			Path dest = NSFODPUtil.openZipPath(result);
 			NSFODPUtil.copyDirectory(path, dest);
 			dest.getFileSystem().close();

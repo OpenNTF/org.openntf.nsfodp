@@ -19,8 +19,9 @@ import static org.openntf.nsfodp.commons.h.StdNames.*;
 import static org.openntf.nsfodp.commons.NSFODPConstants.*;
 import static org.openntf.nsfodp.commons.NoteType.OutputFormat.*;
 
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -32,55 +33,55 @@ import java.util.regex.Pattern;
  */
 public enum NoteType {
 	/** The icon note is also represented in "database.properties" */
-	IconNote(Paths.get("Resources", "IconNote"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	DBIcon(Paths.get("AppProperties", "$DBIcon"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	DBScript(Paths.get("Code", "dbscript.lsdb"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	XSPDesignProperties(Paths.get("AppProperties", "xspdesign.properties"), true, RAWFILE), //$NON-NLS-1$ //$NON-NLS-2$
-	Java(null, Paths.get("Code", "Java"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	JavaScriptLibrary("js", Paths.get("Code", "ScriptLibraries"), JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	LotusScriptLibrary("lss", Paths.get("Code", "ScriptLibraries"), SCRIPTLIB_ITEM_NAME, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	JavaLibrary("javalib", Paths.get("Code", "ScriptLibraries"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	CustomControl("xsp", Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	CustomControlProperties("properties", Paths.get("CustomControls"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	XPage("xsp", Paths.get("XPages"), ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	XPageProperties("properties", Paths.get("XPages"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	Form("form", Paths.get("Forms"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	Frameset("frameset", Paths.get("Framesets"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	ServerJavaScriptLibrary("jss", Paths.get("Code", "ScriptLibraries"), SERVER_JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Subform("subform", Paths.get("SharedElements", "Subforms"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Page("page", Paths.get("Pages"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	AboutDocument(Paths.get("Resources", "AboutDocument"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	FileResource(null, Paths.get("Resources", "Files"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	ImageResource(null, Paths.get("Resources", "Images"), ITEM_NAME_IMAGE_DATA, IMAGE_RESOURCE_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	StyleSheet("css", Paths.get("Resources", "StyleSheets"), ITEM_NAME_STYLE_SHEET_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Theme(null, Paths.get("Resources", "Themes"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	UsingDocument(Paths.get("Resources", "UsingDocument"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	SharedField("field", Paths.get("SharedElements", "Fields"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Outline("outline", Paths.get("SharedElements", "Outlines"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	View("view", Paths.get("Views"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	JavaAgent("ja", Paths.get("Code", "Agents"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	ImportedJavaAgent("ija", Paths.get("Code", "Agents"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	LotusScriptAgent("lsa", Paths.get("Code", "Agents"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Folder("folder", Paths.get("Folders"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
-	SharedColumn("column", Paths.get("SharedElements", "Columns"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Jar(null, Paths.get("Code", "Jars"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
-	JavaWebService("jws", Paths.get("Code", "WebServices"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	LotusScriptWebService("lws", Paths.get("Code", "WebServices"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	SharedActions(Paths.get("Code", "actions", "Shared Actions"), true, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	SimpleActionAgent("aa", Paths.get("Code", "Agents"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	FormulaAgent("fa", Paths.get("Code", "Agents"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Navigator("navigator", Paths.get("SharedElements", "Navigators"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	LotusScriptWebServiceConsumer("lswsc", Paths.get("Code", "WebServiceConsumer"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	JavaWebServiceConsumer("javalib", Paths.get("Code", "WebServiceConsumer"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	WebContentFile(null, Paths.get("WebContent"), ITEM_NAME_FILE_DATA, null, false, RAWFILE), //$NON-NLS-1$
-	DataConnection("dcr", Paths.get("Data", "DataConnections"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	DB2AccessView("db2v", Paths.get("Data", "DB2AccessViews"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	Applet("applet", Paths.get("Resources", "Applets"), false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	CompositeApplication("xml", Paths.get("CompositeApplications", "Applications"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	CompositeComponent("component", Paths.get("CompositeApplications", "Components"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	WiringProperties("wsdl", Paths.get("CompositeApplications", "WiringProperties"), ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	IconNote(new String[] { "Resources", "IconNote" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	DBIcon(new String[] { "AppProperties", "$DBIcon" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	DBScript(new String[] { "Code", "dbscript.lsdb" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	XSPDesignProperties(new String[] { "AppProperties", "xspdesign.properties" }, true, RAWFILE), //$NON-NLS-1$ //$NON-NLS-2$
+	Java(null, new String[] { "Code", "Java" }, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	JavaScriptLibrary("js", new String[] { "Code", "ScriptLibraries" }, JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	LotusScriptLibrary("lss", new String[] { "Code", "ScriptLibraries" }, SCRIPTLIB_ITEM_NAME, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	JavaLibrary("javalib", new String[] { "Code", "ScriptLibraries" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	CustomControl("xsp", new String[] { "CustomControls" }, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	CustomControlProperties("properties", new String[] { "CustomControls" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	XPage("xsp", new String[] { "XPages" }, ITEM_NAME_FILE_DATA, JAVA_ITEM_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	XPageProperties("properties", new String[] { "XPages" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	Form("form", new String[] { "Forms" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	Frameset("frameset", new String[] { "Framesets" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	ServerJavaScriptLibrary("jss", new String[] { "Code", "ScriptLibraries" }, SERVER_JAVASCRIPTLIBRARY_CODE, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Subform("subform", new String[] { "SharedElements", "Subforms" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Page("page", new String[] { "Pages" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	AboutDocument(new String[] { "Resources", "AboutDocument" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	FileResource(null, new String[] { "Resources", "Files" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	ImageResource(null, new String[] { "Resources", "Images" }, ITEM_NAME_IMAGE_DATA, IMAGE_RESOURCE_IGNORE_PATTERN, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	StyleSheet("css", new String[] { "Resources", "StyleSheets" }, ITEM_NAME_STYLE_SHEET_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Theme(null, new String[] { "Resources", "Themes" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	UsingDocument(new String[] { "Resources", "UsingDocument" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	SharedField("field", new String[] { "SharedElements", "Fields" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Outline("outline", new String[] { "SharedElements", "Outlines" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	View("view", new String[] { "Views" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	JavaAgent("ja", new String[] { "Code", "Agents" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	ImportedJavaAgent("ija", new String[] { "Code", "Agents" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	LotusScriptAgent("lsa", new String[] { "Code", "Agents" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Folder("folder", new String[] { "Folders" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$
+	SharedColumn("column", new String[] { "SharedElements", "Columns" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Jar(null, new String[] { "Code", "Jars" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$
+	JavaWebService("jws", new String[] { "Code", "WebServices" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	LotusScriptWebService("lws", new String[] { "Code", "WebServices" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	SharedActions(new String[] { "Code", "actions", "Shared Actions" }, true, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	SimpleActionAgent("aa", new String[] { "Code", "Agents" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	FormulaAgent("fa", new String[] { "Code", "Agents" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Navigator("navigator", new String[] { "SharedElements", "Navigators" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	LotusScriptWebServiceConsumer("lswsc", new String[] { "Code", "WebServiceConsumer" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	JavaWebServiceConsumer("javalib", new String[] { "Code", "WebServiceConsumer" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	WebContentFile(null, new String[] { "WebContent" }, ITEM_NAME_FILE_DATA, null, false, RAWFILE), //$NON-NLS-1$
+	DataConnection("dcr", new String[] { "Data", "DataConnections" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	DB2AccessView("db2v", new String[] { "Data", "DB2AccessViews" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	Applet("applet", new String[] { "Resources", "Applets" }, false, DXL), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	CompositeApplication("xml", new String[] { "CompositeApplications", "Applications" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	CompositeComponent("component", new String[] { "CompositeApplications", "Components" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	WiringProperties("wsdl", new String[] { "CompositeApplications", "WiringProperties" }, ITEM_NAME_FILE_DATA, null, false, METADATA), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	/** e.g. plugin.xml, etc. */
-	GenericFile(Paths.get("."), false, RAWFILE), //$NON-NLS-1$
+	GenericFile(new String[] { "." }, false, RAWFILE), //$NON-NLS-1$
 	/** This is wrapped up into the DB properties */
 	ACL,
 	DesignCollection,
@@ -114,7 +115,7 @@ public enum NoteType {
 	private final boolean inOdp;
 	
 	private final String extension;
-	private final Path path;
+	private final String[] pathComponents;
 	private final String fileItem;
 	private final Pattern itemNameIgnorePattern;
 	private final OutputFormat outputFormat;
@@ -123,22 +124,22 @@ public enum NoteType {
 	private NoteType() {
 		this.inOdp = false;
 		this.extension = null;
-		this.path = null;
+		this.pathComponents = null;
 		this.fileItem = ITEM_NAME_FILE_DATA;
 		this.itemNameIgnorePattern = null;
 		this.outputFormat = null;
 		this.singleton = false;
 	}
-	private NoteType(Path path, boolean singleton, OutputFormat outputFormat) {
-		this(null, path, singleton, outputFormat);
+	private NoteType(String[] pathComponents, boolean singleton, OutputFormat outputFormat) {
+		this(null, pathComponents, singleton, outputFormat);
 	}
-	private NoteType(String extension, Path path, boolean singleton, OutputFormat outputFormat) {
-		this(extension, path, ITEM_NAME_FILE_DATA, null, singleton, outputFormat);
+	private NoteType(String extension, String[] pathComponents, boolean singleton, OutputFormat outputFormat) {
+		this(extension, pathComponents, ITEM_NAME_FILE_DATA, null, singleton, outputFormat);
 	}
-	private NoteType(String extension, Path path, String fileItem, String itemNameIgnorePattern, boolean singleton, OutputFormat outputFormat) {
+	private NoteType(String extension, String[] pathComponents, String fileItem, String itemNameIgnorePattern, boolean singleton, OutputFormat outputFormat) {
 		this.inOdp = true;
 		this.extension = extension;
-		this.path = path;
+		this.pathComponents = pathComponents;
 		this.fileItem = fileItem;
 		this.itemNameIgnorePattern = itemNameIgnorePattern == null ? null : Pattern.compile(itemNameIgnorePattern);
 		this.singleton = singleton;
@@ -161,10 +162,12 @@ public enum NoteType {
 	 * The relative path for exporting the file, either a directory (for individually-named
 	 * elements) or an explicit file path (for singleton elements).
 	 * 
+	 * @param contextFileSystem the context {@link FileSystem} for generating paths
+	 * @return a relative {@link Path} instance for the type
 	 * @see #isSingleton()
 	 */
-	public Path getPath() {
-		return path;
+	public Path getPath(FileSystem contextFileSystem) {
+		return contextFileSystem.getPath(this.pathComponents[0], Arrays.copyOfRange(pathComponents, 1, pathComponents.length));
 	}
 	/**
 	 * The item containing file data to export, if applicable

@@ -80,9 +80,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,6 +92,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
@@ -102,6 +103,7 @@ import org.w3c.dom.Element;
 import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.DominoException;
 import com.darwino.domino.napi.c.C;
+import com.darwino.domino.napi.enums.DXL_EXPORT_CHARSET;
 import com.darwino.domino.napi.enums.DXL_RICHTEXT_OPTION;
 import com.darwino.domino.napi.proc.NSFSEARCHPROC;
 import com.darwino.domino.napi.struct.SEARCH_MATCH;
@@ -126,6 +128,10 @@ import com.ibm.commons.xml.XMLException;
  * @since 1.4.0
  */
 public class ODPExporter {
+	public enum ODPType {
+		DIRECTORY, ZIP
+	}
+	
 	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
 	private static final Collection<NoteType> IGNORE_FILENAMES_TYPES = EnumSet.of(NoteType.FileResource, NoteType.StyleSheet, NoteType.ImageResource, NoteType.Theme);
 	
@@ -134,6 +140,7 @@ public class ODPExporter {
 	private boolean richTextAsItemData = false;
 	private boolean swiperFilter = false;
 	private String projectName;
+	private ODPType odpType = ODPType.DIRECTORY;
 
 	public ODPExporter(NSFDatabase database) {
 		this.database = database;
@@ -202,9 +209,8 @@ public class ODPExporter {
 	 * Sets whether to filter exported DXL using the XSLT files from Swiper.
 	 * 
 	 * @param swiperFilter the value to set
-	 * @throws IOException if there is a problem initializing Swiper
 	 */
-	public void setSwiperFilter(boolean swiperFilter) throws IOException {
+	public void setSwiperFilter(boolean swiperFilter) {
 		this.swiperFilter = swiperFilter;
 	}
 	
@@ -218,14 +224,54 @@ public class ODPExporter {
 		return swiperFilter;
 	}
 	
+	/**
+	 * Sets the type of ODP to create on export.
+	 * 
+	 * @param odpType an {@link ODPType} value, or {@code null} to set to the default
+	 */
+	public void setOdpType(ODPType odpType) {
+		this.odpType = odpType == null ? ODPType.DIRECTORY : odpType;
+	}
+	
+	/**
+	 * Gets the current type of ODP to be generated.
+	 * 
+	 * @return the configured {@link ODPType} value
+	 */
+	public ODPType getOdpType() {
+		return odpType;
+	}
+	
+	/**
+	 * Exports the NSF to an on-disk project using the configured settings.
+	 * 
+	 * @return a {@link Path} to the on-disk project root, either a directory or a ZIP file
+	 * @throws IOException if there is a problem reading or writing filesystem data
+	 * @throws XMLException if there is a problem parsing DXL or other configuration information in the ODP
+	 * @throws DominoException if there is an underlying Notes API problem
+	 * @throws FormulaException if there is a problem with evaluating Notes formulas
+	 */
 	public Path export() throws IOException, XMLException, DominoException, FormulaException {
-		Path result = Files.createTempDirectory(getClass().getName());
+		Path target;
+		Path returnPath;
+		ODPType odpType = this.odpType == null ? ODPType.DIRECTORY : this.odpType;
+		switch(odpType) {
+		case ZIP:
+			returnPath = Files.createTempFile(NSFODPUtil.getTempDirectory(), "org.openntf.nsfodp.exporter", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
+			target = NSFODPUtil.openZipPath(returnPath);
+			break;
+		case DIRECTORY:
+		default:
+			target = returnPath = Files.createTempDirectory(getClass().getName());
+			break;
+		}
 		
 		NSFDXLExporter exporter = database.getParent().createDXLExporter();
+		exporter.setExportCharset(DXL_EXPORT_CHARSET.Utf8);
 		try {
 			exporter.setOutputDoctype(false);
 			
-			Path databaseProperties = result.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+			Path databaseProperties = target.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 			Files.createDirectories(databaseProperties.getParent());
 			NSFNoteIDCollection iconColl = database.getParent().createNoteIDCollection();
 			try {
@@ -265,7 +311,7 @@ public class ODPExporter {
 							NSFNote note = database.getNoteByID(noteId);
 							type = forNote(note);
 							try {
-								exportNote(note, exporter, result);
+								exportNote(note, exporter, target);
 							} finally {
 								note.free();
 							}
@@ -287,7 +333,7 @@ public class ODPExporter {
 					if(iconNote != null) {
 						try {
 							if(iconNote.isRefValid()) {
-								exportNote(iconNote, exporter, result);
+								exportNote(iconNote, exporter, target);
 							}
 						} catch(Throwable e) {
 							e.printStackTrace();
@@ -309,15 +355,19 @@ public class ODPExporter {
 				}
 			}
 			
-			generateManifestMf(result);
-			generateEclipseProjectFile(result);
-			createClasspathDirectories(result);
-			createStubFiles(result);
+			generateManifestMf(target);
+			generateEclipseProjectFile(target);
+			createClasspathDirectories(target);
+			createStubFiles(target);
 		} finally {
 			exporter.free();
 		}
 		
-		return result;
+		if(odpType == ODPType.ZIP) {
+			target.getFileSystem().close();
+		}
+		
+		return returnPath;
 	}
 
 	private void exportNote(NSFNote note, NSFDXLExporter exporter, Path baseDir) throws IOException, XMLException, DominoException {
@@ -338,12 +388,12 @@ public class ODPExporter {
 		if(type.isSingleton()) {
 			switch(type.getOutputFormat()) {
 			case RAWFILE:
-				exportFileData(note, exporter, baseDir, type.getPath(), type);
+				exportFileData(note, exporter, baseDir, type.getPath(baseDir.getFileSystem()), type);
 				break;
 			case METADATA:
 			case DXL:
 			default:
-				exportExplicitNote(note, exporter, baseDir, type.getPath());
+				exportExplicitNote(note, exporter, baseDir, type.getPath(baseDir.getFileSystem()));
 				break;
 			}
 		} else {
@@ -373,36 +423,38 @@ public class ODPExporter {
 	 * @throws DominoException 
 	 */
 	private void exportNamedNote(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, DominoException {
-		Path name = getCleanName(note, type);
+		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension());
+				name = baseDir.getFileSystem().getPath(name.getFileName().toString() + '.' + type.getExtension());
 			} else {
 				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension());
 			}
 		}
 		
-		exportExplicitNote(note, exporter, baseDir, type.getPath().resolve(name));
+		exportExplicitNote(note, exporter, baseDir, type.getPath(baseDir.getFileSystem()).resolve(name));
 	}
 	
 	/**
 	 * Converted a VFS-style file name to an FS-friendly version.
 	 * 
+	 * @param contextFileSystem the contextual filesystem for generating names
 	 * @param note the note to get a title for
+	 * @param type the {@link NoteType} value corresponding to the note
 	 * @return an FS-friendly version of the title
 	 * @throws DominoException 
 	 */
-	private Path getCleanName(NSFNote note, NoteType type) throws DominoException {
+	private Path getCleanName(FileSystem contextFileSystem, NSFNote note, NoteType type) throws DominoException {
 		if(!note.hasItem(FIELD_TITLE)) {
-			return Paths.get("(Untitled)"); //$NON-NLS-1$
+			return contextFileSystem.getPath("(Untitled)"); //$NON-NLS-1$
 		}
 		
 		String title;
 		String path = note.hasItem(ITEM_NAME_FILE_NAMES) ? note.get(ITEM_NAME_FILE_NAMES, String[].class)[0] : null;
 		if(StringUtil.isNotEmpty(path) && !IGNORE_FILENAMES_TYPES.contains(type)) {
 			// Then it's a "true" VFS path
-			return Paths.get(note.get(ITEM_NAME_FILE_NAMES, String[].class)[0].replace('/', File.separatorChar));
+			return contextFileSystem.getPath(note.get(ITEM_NAME_FILE_NAMES, String[].class)[0].replace('/', File.separatorChar));
 		} else {
 			title = getTitle(note);
 			
@@ -411,7 +463,7 @@ public class ODPExporter {
 			clean = clean.isEmpty() ? "(Untitled)" : clean; //$NON-NLS-1$
 			
 			// TODO replace with a proper algorithm 
-			return Paths.get(clean
+			return contextFileSystem.getPath(clean
 				.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("/", "_2f") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("*", "_2a") //$NON-NLS-1$ //$NON-NLS-2$
@@ -431,24 +483,24 @@ public class ODPExporter {
 	 * @throws DominoException 
 	 */
 	private void exportNamedData(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException, DominoException {
-		Path name = getCleanName(note, type);
+		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension());
+				name = baseDir.getFileSystem().getPath(name.getFileName().toString() + '.' + type.getExtension());
 			} else {
 				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension());
 			}
 		}
 		
 		// These are normal files in the NSF, but should not be exported
-		if(name.startsWith(Paths.get("WebContent", "WEB-INF", "classes")) || name.startsWith(Paths.get("WEB-INF", "classes"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		if(name.startsWith(baseDir.getFileSystem().getPath("WebContent", "WEB-INF", "classes")) || name.startsWith(baseDir.getFileSystem().getPath("WEB-INF", "classes"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			return;
 		} else if(name.getFileName().toString().equals("build.properties")) { //$NON-NLS-1$
 			return;
 		}
 		
-		exportFileData(note, exporter, baseDir, type.getPath().resolve(name), type);
+		exportFileData(note, exporter, baseDir, type.getPath(baseDir.getFileSystem()).resolve(name), type);
 	}
 	
 	/**
@@ -465,18 +517,18 @@ public class ODPExporter {
 	private void exportNamedDataAndMetadata(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException, DominoException {
 		exportNamedData(note, exporter, baseDir, type);
 		
-		Path name = getCleanName(note, type);
+		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + '.' + type.getExtension() + EXT_METADATA);
+				name = baseDir.getFileSystem().getPath(name.getFileName().toString() + '.' + type.getExtension() + EXT_METADATA);
 			} else {
 				name = parent.resolve(name.getFileName().toString() + '.' + type.getExtension() + EXT_METADATA);
 			}
 		} else {
 			Path parent = name.getParent();
 			if(parent == null) {
-				name = Paths.get(name.getFileName().toString() + EXT_METADATA);
+				name = baseDir.getFileSystem().getPath(name.getFileName().toString() + EXT_METADATA);
 			} else {
 				name = parent.resolve(name.getFileName().toString() + EXT_METADATA);
 			}
@@ -497,7 +549,7 @@ public class ODPExporter {
 		boolean rawFormat = exporter.isForceNoteFormat();
 		exporter.setForceNoteFormat(true);
 		try {
-			exportExplicitNote(note, exporter, baseDir, type.getPath().resolve(name));
+			exportExplicitNote(note, exporter, baseDir, type.getPath(baseDir.getFileSystem()).resolve(name));
 		} finally {
 			exporter.setOmitItemNames(Collections.emptySet());
 			exporter.setProperty(38, false);
@@ -518,7 +570,7 @@ public class ODPExporter {
 	 * @throws DominoException 
 	 */
 	private void exportFileData(NSFNote note, NSFDXLExporter exporter, Path baseDir, Path path, NoteType type) throws IOException, XMLException, DominoException {
-		Path fullPath = baseDir.resolve(path);
+		Path fullPath = baseDir.resolve(path.toString());
 		Files.createDirectories(fullPath.getParent());
 		
 		try(OutputStream os = Files.newOutputStream(fullPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -662,7 +714,7 @@ public class ODPExporter {
 	 * @throws DominoException 
 	 */
 	private void exportExplicitNote(NSFNote note, NSFDXLExporter exporter, Path baseDir, Path path) throws IOException, DominoException {
-		Path fullPath = baseDir.resolve(path);
+		Path fullPath = baseDir.resolve(path.toString());
 		Files.createDirectories(fullPath.getParent());
 		
 		try(OutputStream os = new CommonsSwiperOutputStream(fullPath, isSwiperFilter())) {
