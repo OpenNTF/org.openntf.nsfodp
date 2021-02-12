@@ -17,9 +17,14 @@ package org.openntf.nsfodp.commons;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
@@ -29,6 +34,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -120,7 +129,7 @@ public enum NSFODPUtil {
 			if (sourcePath == null) {
 				sourcePath = dir;
 			} else {
-				Files.createDirectories(targetPath.resolve(sourcePath.relativize(dir)));
+				Files.createDirectories(targetPath.resolve(sourcePath.relativize(dir).toString()));
 			}
 			return FileVisitResult.CONTINUE;
 		}
@@ -132,7 +141,7 @@ public enum NSFODPUtil {
 				return FileVisitResult.CONTINUE;
 			}
 			
-			Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+			Files.copy(file, targetPath.resolve(sourcePath.relativize(file).toString()));
 			return FileVisitResult.CONTINUE;
 		}
 	}
@@ -171,5 +180,64 @@ public enum NSFODPUtil {
 	public static boolean isOsMac() {
 		String osName = AccessController.doPrivileged((PrivilegedAction<String>)() -> System.getProperty("os.name")); //$NON-NLS-1$
 		return osName.toLowerCase().startsWith("mac"); //$NON-NLS-1$
+	}
+
+	/**
+	 * Expands the provided ZIP file to a temporary directory and returns that directory path.
+	 * 
+	 * <p>This method may rename ZIP entries with non-ASCII characters to URL-encoded variants if the
+	 * underlying filesystem driver throws an exception. This was seen on Linux in particular.</p>
+	 * 
+	 * @param zipFilePath a {@link Path} to the ZIP file to expand
+	 * @return a {@link Path} to the expanded contents of the ZIP file
+	 * @throws IOException if there is a problem reading the ZIP file or writing to the temporary directory
+	 * @since 3.4.0
+	 */
+	public static Path expandZip(Path zipFilePath) throws IOException {
+		Path result = Files.createTempDirectory(getTempDirectory(), "zipFile"); //$NON-NLS-1$
+		
+		try(InputStream is = Files.newInputStream(zipFilePath)) {
+			try(ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8)) {
+				ZipEntry entry;
+				while((entry = zis.getNextEntry()) != null) {
+					String name = entry.getName();
+
+					Path subFile;
+					try {
+						subFile = result.resolve(name);
+					} catch(InvalidPathException e) {
+						// This occurs with non-ASCII characters on Unix sometimes
+						String urlName = URLEncoder.encode(name, "UTF-8") //$NON-NLS-1$
+							.replace("%2F", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+						subFile = result.resolve(urlName);
+					}
+					
+					if(entry.isDirectory()) {
+						Files.createDirectories(subFile);
+					} else {
+						Files.createDirectories(subFile.getParent());
+						Files.copy(zis, subFile);
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Creates an NIO {@link Path} reference for the contents of the provided ZIP file.
+	 * 
+	 * @param zipFilePath a {@link Path} to the ZIP file
+	 * @return a {@link Path} object representing the contents of the ZIP
+	 * @throws IOException if there is a problem creating the path
+	 * @since 3.4.0
+	 */
+	public static Path openZipPath(Path zipFilePath) throws IOException {
+		URI uri = URI.create("jar:" + zipFilePath.toUri()); //$NON-NLS-1$
+		Map<String, String> env = new HashMap<>();
+		env.put("create", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		env.put("encoding", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		return FileSystems.newFileSystem(uri, env).getPath("/"); //$NON-NLS-1$
 	}
 }

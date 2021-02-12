@@ -167,10 +167,10 @@ public class OnDiskProject {
 		return pluginXml;
 	}
 	
-	public Map<Path, String> getDbScriptFile() throws IOException {
+	public Path getDbScriptFile() throws IOException {
 		Path dbScript = baseDir.resolve("Code").resolve("dbscript.lsdb"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.exists(dbScript) && Files.size(dbScript) > 0) {
-			return Collections.singletonMap(dbScript, ODPUtil.readFile(dbScript));
+			return dbScript;
 		} else {
 			return null;
 		}
@@ -247,9 +247,9 @@ public class OnDiskProject {
 	 * Returns a list of DXL content that does not need any additional processing
 	 * or contextual information to import, such as forms and views.
 	 * 
-	 * @return a {@link Map} of file {@link Path}s to {@link String}s containing DXL
+	 * @return a {@link Stream} of {@link Path}s containing DXL to import
 	 */
-	public Map<Path, String> getDirectDXLElements() {
+	public Stream<Path> getDirectDXLElements() {
 		return DIRECT_DXL_FILES.stream()
 			.map(glob -> {
 				try {
@@ -258,8 +258,7 @@ public class OnDiskProject {
 					throw new RuntimeException(e);
 				}
 			})
-			.flatMap(Function.identity())
-			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile));
+			.flatMap(Function.identity());
 	}
 	
 	public List<AbstractSplitDesignElement> getFileResources() {

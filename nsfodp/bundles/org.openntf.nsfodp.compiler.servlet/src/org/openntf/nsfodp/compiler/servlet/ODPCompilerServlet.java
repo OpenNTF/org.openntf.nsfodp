@@ -23,10 +23,9 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,9 +110,7 @@ public class ODPCompilerServlet extends HttpServlet {
 					odpZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "odp", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 					cleanup.add(odpZip);
 					try(InputStream odpIs = packageZip.getInputStream(odpEntry)) {
-						try(OutputStream odpOs = Files.newOutputStream(odpZip)) {
-							StreamUtil.copyStream(odpIs, odpOs);
-						}
+						Files.copy(odpIs, odpZip, StandardCopyOption.REPLACE_EXISTING);
 					}
 					
 					// Look for any embedded update sites and classpath entries
@@ -125,9 +122,7 @@ public class ODPCompilerServlet extends HttpServlet {
 									Path siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 									cleanup.add(siteZip);
 									try(InputStream siteIs = packageZip.getInputStream(entry)) {
-										try(OutputStream siteOs = Files.newOutputStream(siteZip)) {
-											StreamUtil.copyStream(siteIs, siteOs);
-										}
+										Files.copy(siteIs, siteZip, StandardCopyOption.REPLACE_EXISTING);
 									}
 									siteZips.add(siteZip);
 								} else if(entry.getName().startsWith("classpath/")) { //$NON-NLS-1$
@@ -135,9 +130,7 @@ public class ODPCompilerServlet extends HttpServlet {
 									Path cpJar = Files.createTempFile(NSFODPUtil.getTempDirectory(), "classpathJar", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 									cleanup.add(cpJar);
 									try(InputStream jarIs = packageZip.getInputStream(entry)) {
-										try(OutputStream jarOs = Files.newOutputStream(cpJar)) {
-											StreamUtil.copyStream(jarIs, jarOs);
-										}
+										Files.copy(jarIs, cpJar, StandardCopyOption.REPLACE_EXISTING);
 									}
 									classPathJars.add(cpJar);
 								}
@@ -150,7 +143,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
 			
-			Path odpFile = expandZip(odpZip, cleanup);
+			Path odpFile = NSFODPUtil.openZipPath(odpZip);
 			
 			OnDiskProject odp = new OnDiskProject(odpFile);
 			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
@@ -183,8 +176,9 @@ public class ODPCompilerServlet extends HttpServlet {
 			
 			if(siteZips != null && !siteZips.isEmpty()) {
 				for(Path siteZip : siteZips) {
-					Path siteFile = expandZip(siteZip, cleanup);
-					UpdateSite updateSite = new FilesystemUpdateSite(siteFile.toFile());
+					Path siteFile = NSFODPUtil.expandZip(siteZip);
+					cleanup.add(siteFile);
+					UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
 					compiler.addUpdateSite(updateSite);
 				}
 			}
@@ -230,26 +224,5 @@ public class ODPCompilerServlet extends HttpServlet {
 		} finally {
 			NSFODPUtil.deltree(cleanup);
 		}
-	}
-	
-	public static Path expandZip(Path zipFilePath, Collection<Path> cleanup) throws IOException {
-		Path result = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), "zipFile"); //$NON-NLS-1$
-		cleanup.add(result);
-		
-		try(ZipFile zipFile = new ZipFile(zipFilePath.toFile(), StandardCharsets.UTF_8)) {
-			for(ZipEntry entry : Collections.list(zipFile.entries())) {
-				Path subFile = result.resolve(entry.getName());
-				if(entry.isDirectory()) {
-					Files.createDirectories(subFile);
-				} else {
-					Files.createDirectories(subFile.getParent());
-					try(InputStream is = zipFile.getInputStream(entry)) {
-						Files.copy(is, subFile);
-					}
-				}
-			}
-		}
-		
-		return result;
 	}
 }

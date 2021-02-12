@@ -74,7 +74,6 @@ public class TranspilerApplication implements IApplication {
 			
 			if(updateSites != null && !updateSites.isEmpty()) {
 				updateSites.stream()
-					.map(Path::toFile)
 					.map(FilesystemUpdateSite::new)
 					.forEach(transpiler::addUpdateSite);
 			}

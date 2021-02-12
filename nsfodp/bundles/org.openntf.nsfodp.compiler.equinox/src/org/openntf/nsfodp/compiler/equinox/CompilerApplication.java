@@ -94,7 +94,6 @@ public class CompilerApplication implements IApplication {
 			
 			if(updateSites != null && !updateSites.isEmpty()) {
 				updateSites.stream()
-					.map(Path::toFile)
 					.map(FilesystemUpdateSite::new)
 					.forEach(compiler::addUpdateSite);
 			}

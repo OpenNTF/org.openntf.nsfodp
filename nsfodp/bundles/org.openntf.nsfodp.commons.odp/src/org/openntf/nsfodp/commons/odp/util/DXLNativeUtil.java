@@ -48,7 +48,7 @@ public enum DXLNativeUtil {
 		// Read in the file data as an LMBCS string first
 		long lmbcsPtr;
 		try(InputStream is = Files.newInputStream(file)) {
-			String fileContent = StreamUtil.readString(is);
+			String fileContent = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
 			lmbcsPtr = NotesUtil.toLMBCS(fileContent);
 		}
 		if(lmbcsPtr == 0) {

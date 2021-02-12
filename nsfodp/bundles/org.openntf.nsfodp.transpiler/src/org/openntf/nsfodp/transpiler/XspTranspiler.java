@@ -146,7 +146,7 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 		try {
 			String xspSource;
 			try(InputStream is = Files.newInputStream(xspFile)) {
-				xspSource = StreamUtil.readString(is);
+				xspSource = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
 			}
 			
 			Path relativeFile = rootDir.relativize(xspFile);

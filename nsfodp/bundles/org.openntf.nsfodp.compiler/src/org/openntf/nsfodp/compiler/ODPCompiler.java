@@ -17,7 +17,6 @@ package org.openntf.nsfodp.compiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -338,7 +337,15 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				
 				// Add any Jars from the ODP
 				for(Path jar : odp.getJars()) {
-					dependencies.add("jar:" + jar.toUri()); //$NON-NLS-1$
+					// If the path is inside a JAR, extract it
+					if("jar".equals(jar.toUri().getScheme())) { //$NON-NLS-1$
+						Path tempJar = Files.createTempFile(NSFODPUtil.getTempDirectory(), jar.getFileName().toString(), ".jar"); //$NON-NLS-1$
+						cleanup.add(tempJar);
+						Files.copy(jar, tempJar, StandardCopyOption.REPLACE_EXISTING);
+						dependencies.add("jar:" + tempJar.toUri()); //$NON-NLS-1$
+					} else {
+						dependencies.add("jar:" + jar.toUri()); //$NON-NLS-1$	
+					}
 				}
 				
 				String[] classPath = dependencies.toArray(new String[dependencies.size()]);
@@ -393,7 +400,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						} else {
 							// Import an empty one
 							try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-								String dxl = StreamUtil.readString(is);
+								String dxl = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
 								List<Integer> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
 								doc = database.getNoteByID(ids.get(0));
 							}
@@ -571,15 +578,23 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	
 	private void importBasicElements(NSFDXLImporter importer, NSFDatabase database) throws Exception {
 		subTask(Messages.ODPCompiler_importingDesignElements);
-		for(Map.Entry<Path, String> entry : odp.getDirectDXLElements().entrySet()) {
-			if(StringUtil.isNotEmpty(entry.getValue())) {
+		odp.getDirectDXLElements()
+			.filter(p -> {
 				try {
-					importDxl(importer, entry.getValue(), database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(entry.getKey())));
-				} catch(DominoException ne) {
-					throw new DominoException(ne, ne.getStatus(), "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey())); //$NON-NLS-1$
+					return Files.size(p) > 0;
+				} catch (IOException e) {
+					throw new RuntimeException(e);
 				}
-			}
-		}
+			})
+			.forEach(p -> {
+				try {
+					try(InputStream is = Files.newInputStream(p)) {
+						importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+					}
+				} catch(Exception e) {
+					throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
+				}
+			});
 	}
 	
 	private void importFileResources(NSFDXLImporter importer, NSFDatabase database) throws Exception {
@@ -784,14 +799,16 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @since 2.5.0
 	 */
 	private void importDbScript(NSFDXLImporter importer, NSFDatabase database) throws Exception {
-		Map<Path, String> dbScript = odp.getDbScriptFile();
+		Path dbScript = odp.getDbScriptFile();
 		if(dbScript != null) {
-			Map.Entry<Path, String> entry = dbScript.entrySet().iterator().next();
 			try {
-				List<Integer> noteIds = importDxl(importer, entry.getValue(), database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(entry.getKey())));
+				List<Integer> noteIds;
+				try(InputStream is = Files.newInputStream(dbScript)) {
+					noteIds = importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(dbScript)));
+				}
 				compileLotusScript(database, noteIds);
 			} catch(DominoException ne) {
-				throw new DominoException(ne, ne.getStatus(), "Exception while importing element " + odp.getBaseDirectory().relativize(entry.getKey())); //$NON-NLS-1$
+				throw new DominoException(ne, ne.getStatus(), "Exception while importing element " + odp.getBaseDirectory().relativize(dbScript)); //$NON-NLS-1$
 			}
 		}
 	}
@@ -819,30 +836,41 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @return a {@link List} of imported note IDs
 	 */
 	private List<Integer> importDxl(NSFDXLImporter importer, String dxl, NSFDatabase database, String name) throws Exception {
-		try {
-			if(DEBUG_DXL) {
-				String tempFileName = NSFODPUtil.getTempDirectory() + File.separator + name.replace('/', '-').replace('\\', '-') + ".xml"; //$NON-NLS-1$
-				try(OutputStream os = Files.newOutputStream(Paths.get(tempFileName))) {
-					os.write(dxl.getBytes(StandardCharsets.UTF_8));
-				}
+		if(DEBUG_DXL) {
+			Path dxlFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), name.replace('/', '-').replace('\\', '-'), ".xml"); //$NON-NLS-1$
+			try(OutputStream os = Files.newOutputStream(dxlFile)) {
+				os.write(dxl.getBytes(StandardCharsets.UTF_8));
 			}
+		}
+		try(InputStream baos = new ByteArrayInputStream(dxl.getBytes(StandardCharsets.UTF_8))) {
+			return importDxl(importer, baos, database, name);
+		}
+	}
+	/**
+	 * @param importer the importer to use during the process
+	 * @param dxl an XML {@link InputStream} to import
+	 * @param database the database to import to
+	 * @param name a human-readable name of the element, for logging
+	 * @return a {@link List} of imported note IDs
+	 * @since 3.4.0
+	 */
+	private List<Integer> importDxl(NSFDXLImporter importer, InputStream dxl, NSFDatabase database, String name) throws Exception {
+		try {
 			NSFNoteIDCollection imported;
-			try(InputStream is = new ByteArrayInputStream(dxl.getBytes(StandardCharsets.UTF_8))) {
-				imported = importer.importDxl(database, is);
-				String logXml = importer.getResultLog();
-				if(StringUtil.isNotEmpty(logXml)) {
-					DxlImporterLog log = DxlImporterLog.forXml(logXml);
-					if(log.getErrors() != null && !log.getErrors().isEmpty()) {
-						String msg = log.getErrors().stream()
-							.map(e -> StringUtil.format("{2} (line={0}, column={1})", e.getLine(), e.getColumn(), e.getText()))
-							.collect(Collectors.joining(", ")); //$NON-NLS-1$
-						throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
-					} else if(log.getFatalErrors() != null && !log.getFatalErrors().isEmpty()) {
-						String msg = log.getErrors().stream()
-							.map(DXLError::getText)
-							.collect(Collectors.joining(", ")); //$NON-NLS-1$
-						throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
-					}
+			imported = importer.importDxl(database, dxl);
+			String logXml = importer.getResultLog();
+			if(StringUtil.isNotEmpty(logXml)) {
+				DxlImporterLog log = DxlImporterLog.forXml(logXml);
+				if(log.getErrors() != null && !log.getErrors().isEmpty()) {
+					String msg = log.getErrors().stream()
+						.map(e -> StringUtil.format("{2} (line={0}, column={1})", e.getLine(), e.getColumn(), e.getText()))
+						.collect(Collectors.joining(", ")); //$NON-NLS-1$
+					throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
+				} else if(log.getFatalErrors() != null && !log.getFatalErrors().isEmpty()) {
+					String msg = log.getErrors().stream()
+						.map(DXLError::getText)
+						.collect(Collectors.joining(", ")); //$NON-NLS-1$
+					throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
 				}
 			}
 

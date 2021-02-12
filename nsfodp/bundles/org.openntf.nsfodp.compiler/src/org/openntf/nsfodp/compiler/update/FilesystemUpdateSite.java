@@ -15,9 +15,10 @@
  */
 package org.openntf.nsfodp.compiler.update;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,27 +30,31 @@ import java.util.stream.Collectors;
  * @since 2.0.0
  */
 public class FilesystemUpdateSite implements UpdateSite {
-	private final File baseDir;
+	private final Path baseDir;
 	
-	public FilesystemUpdateSite(File baseDirectory) {
+	/**
+	 * @since 3.4.0
+	 */
+	public FilesystemUpdateSite(Path baseDirectory) {
 		this.baseDir = Objects.requireNonNull(baseDirectory);
-		if(!this.baseDir.isDirectory()) {
+		if(!Files.isDirectory(this.baseDir)) {
 			throw new IllegalArgumentException("baseDir must be a directory");
 		}
 	}
 	
 	@Override
 	public Collection<URI> getBundleURIs() {
-		File plugins = new File(baseDir, "plugins");
-		if(!plugins.exists()) {
-			throw new IllegalStateException("plugins directory does not exist: " + plugins.getAbsolutePath());
-		}
-		if(!plugins.isDirectory()) {
-			throw new IllegalStateException("plugins directory is not a directory: " + plugins.getAbsolutePath());
+		Path plugins = baseDir.resolve("plugins"); //$NON-NLS-1$
+		if(!Files.isDirectory(plugins)) {
+			throw new IllegalStateException("plugins directory is not a directory: " + plugins);
 		}
 		
-		return Arrays.stream(plugins.listFiles())
-			.map(File::toURI)
-			.collect(Collectors.toList());
+		try {
+			return Files.list(plugins)
+				.map(Path::toUri)
+				.collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
