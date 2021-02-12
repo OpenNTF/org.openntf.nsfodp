@@ -41,12 +41,22 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.ClasspathEntry;
+import org.eclipse.m2e.actions.MavenLaunchConstants;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.project.IMavenProjectFacade;
+import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.m2e.core.project.MavenProjectUtils;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
@@ -265,5 +275,40 @@ public enum ODPPDEUtil {
 				file.setDerived(true, monitor);
 			}
 		}
+	}
+	
+	/**
+	 * Executes the given Maven goal on the provided project and waits for it to complete.
+	 * 
+	 * @param project the context project
+	 * @param monitor a {@link IProgressMonitor} implementation
+	 * @param goal the goal to execute, e.g. {@code "nsfodp:compile"}
+	 * @return an {@link IStatus} implementation indicating the result
+	 * @since 3.4.0
+	 */
+	public IStatus executeMavenGoal(IProject project, IProgressMonitor monitor, String goal) {
+		IMavenProjectRegistry projectManager = MavenPlugin.getMavenProjectRegistry();
+		IMavenProjectFacade mavenProject = projectManager.getProject(project);
+		File pomFile = mavenProject.getPomFile().getAbsoluteFile();
+		
+		try {
+			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+			ILaunchConfigurationType launchConfigurationType = launchManager.getLaunchConfigurationType(MavenLaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID);
+			ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance(null, Messages.CompileODPJob_executingPOM);
+			workingCopy.setAttribute(MavenLaunchConstants.ATTR_POM_DIR, pomFile.getParent());
+			workingCopy.setAttribute(MavenLaunchConstants.ATTR_GOALS, goal + " -f " + pomFile.getAbsolutePath()); //$NON-NLS-1$
+			workingCopy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
+			ILaunch launch = workingCopy.launch("run", monitor, false, true); //$NON-NLS-1$
+			synchronized(workingCopy) {
+				while(!launch.isTerminated()) {
+					try{ workingCopy.wait(500L); } catch(InterruptedException e){}
+				}
+			}
+			
+			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		} catch(Exception e) {
+			return new Status(IStatus.ERROR, Messages.CompileODPJob_errorExecutingMaven, "", e); //$NON-NLS-1$
+		}
+		return Status.OK_STATUS;
 	}
 }
