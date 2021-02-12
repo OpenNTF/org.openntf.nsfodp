@@ -79,7 +79,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -580,7 +582,7 @@ public class ODPExporter {
 				// This is actually just a set of text items. The NAPI wrapper, however, doesn't
 				//   properly handle multiple text items of the same name, so we have to do it
 				//   manually
-				try(PrintWriter writer = new PrintWriter(os)) {
+				try(Writer writer = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
 					// TODO replace with better NAPI implementation. Using the direct NAPI methods for
 					//   item info led to UnsatisfiedLinkErrors. The legacy API also falls on its face,
 					//   with iterating over the items properly finding the right count, but then returning
