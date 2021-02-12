@@ -401,6 +401,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				ZipEntry entry = new ZipEntry("odp.zip"); //$NON-NLS-1$
 				zos.putNextEntry(entry);
 				Files.copy(odpZip, zos);
+				zos.closeEntry();
 				
 				if(updateSiteZips != null && !updateSiteZips.isEmpty()) {
 					for(int i = 0; i < updateSiteZips.size(); i++) {
