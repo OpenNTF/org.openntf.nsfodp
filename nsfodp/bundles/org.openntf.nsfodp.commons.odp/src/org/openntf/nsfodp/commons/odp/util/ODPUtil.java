@@ -18,7 +18,6 @@ package org.openntf.nsfodp.commons.odp.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.tools.JavaFileObject;
 
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.openntf.nsfodp.commons.odp.JavaSource;
 import org.openntf.nsfodp.commons.odp.Messages;
 import org.osgi.framework.Bundle;
@@ -92,27 +90,6 @@ public enum ODPUtil {
 					.map(path -> new JavaSource(path))
 					.collect(Collectors.toList());
 		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Retrieves the temporary user token for the provided extension registry.
-	 * 
-	 * <p>This method uses reflection with the assumption that the implementing
-	 * class has a "getTemporaryUserToken()" method.</p>
-	 * 
-	 * @param reg the registry to get the token for
-	 * @return the registry's user token
-	 */
-	public static Object getTemporaryUserToken(IExtensionRegistry reg) {
-		try {
-			Method getTemporaryUserToken = reg.getClass().getMethod("getTemporaryUserToken"); //$NON-NLS-1$
-			Object token = getTemporaryUserToken.invoke(reg);
-			return token;
-		} catch(RuntimeException e) {
-			throw e;
-		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
