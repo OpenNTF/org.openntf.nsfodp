@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -227,14 +228,14 @@ public enum NSFODPUtil {
 	}
 	
 	/**
-	 * Creates an NIO {@link Path} reference for the contents of the provided ZIP file.
+	 * Creates an NIO {@link FileSystem} reference for the contents of the provided ZIP file.
 	 * 
 	 * @param zipFilePath a {@link Path} to the ZIP file
-	 * @return a {@link Path} object representing the contents of the ZIP
+	 * @return a {@link FileSystem} object representing the contents of the ZIP
 	 * @throws IOException if there is a problem creating the path
 	 * @since 3.4.0
 	 */
-	public static Path openZipPath(Path zipFilePath) throws IOException {
+	public static FileSystem openZipPath(Path zipFilePath) throws IOException {
 		// Create the ZIP file if it doesn't exist already
 		if(!Files.exists(zipFilePath) || Files.size(zipFilePath) == 0) {
 			try(OutputStream fos = Files.newOutputStream(zipFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -248,6 +249,6 @@ public enum NSFODPUtil {
 		Map<String, String> env = new HashMap<>();
 		env.put("create", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		env.put("encoding", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
-		return FileSystems.newFileSystem(uri, env).getPath("/"); //$NON-NLS-1$
+		return FileSystems.newFileSystem(uri, env); //$NON-NLS-1$
 	}
 }

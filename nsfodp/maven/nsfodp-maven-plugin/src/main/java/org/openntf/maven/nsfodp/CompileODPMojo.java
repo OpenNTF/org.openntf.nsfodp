@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -491,9 +492,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		
 		try {
 			Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			Path dest = NSFODPUtil.openZipPath(result);
-			NSFODPUtil.copyDirectory(path, dest);
-			dest.getFileSystem().close();
+			try(FileSystem fs = NSFODPUtil.openZipPath(result)) {
+				Path dest = fs.getPath("/"); //$NON-NLS-1$
+				NSFODPUtil.copyDirectory(path, dest);
+			}
 			
 			return result;
 		} catch(IOException e) {

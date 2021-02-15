@@ -18,10 +18,10 @@ package org.openntf.nsfodp.exporter.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -45,7 +45,6 @@ import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.util.NotesUtils;
 import com.ibm.domino.osgi.core.context.ContextInfo;
 
@@ -104,9 +103,7 @@ public class ODPExporterServlet extends HttpServlet {
 					Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
 					cleanup.add(nsfFile);
 					try(InputStream reqInputStream = req.getInputStream()) {
-						try(OutputStream packageOut = Files.newOutputStream(nsfFile)) {
-							StreamUtil.copyStream(reqInputStream, packageOut);
-						}
+						Files.copy(reqInputStream, nsfFile, StandardCopyOption.REPLACE_EXISTING);
 					}
 					
 					database = session.getDatabase(nsfFile.toString());

@@ -661,9 +661,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				if(fileRes.isCopyToClasses()) {
 					// Also create a copy beneath WEB-INF/classes
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					try(InputStream is = Files.newInputStream(fileRes.getDataFile())) {
-						StreamUtil.copyStream(is, baos);
-					}
+					Files.copy(fileRes.getDataFile(), baos);
 					// Use expanded syntax due to the presence of the xmlns
 					String title = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").getStringValue(); //$NON-NLS-1$
 					if(StringUtil.isEmpty(title)) {

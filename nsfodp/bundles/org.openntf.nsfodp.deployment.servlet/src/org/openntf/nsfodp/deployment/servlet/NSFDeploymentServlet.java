@@ -18,7 +18,6 @@ package org.openntf.nsfodp.deployment.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -44,7 +43,6 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.deployment.DeployNSFTask;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.xsp.http.fileupload.FileItem;
 import com.ibm.xsp.http.fileupload.disk.DiskFileItemFactory;
 import com.ibm.xsp.http.fileupload.servlet.ServletFileUpload;
@@ -120,9 +118,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data"); //$NON-NLS-1$ //$NON-NLS-2$
 			nsf.toFile().deleteOnExit();
 			try(InputStream reqInputStream = fileItem.getInputStream()) {
-				try(OutputStream packageOut = Files.newOutputStream(nsf)) {
-					StreamUtil.copyStream(reqInputStream, packageOut);
-				}
+				Files.copy(reqInputStream, nsf, StandardCopyOption.REPLACE_EXISTING);
 			}
 			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) { //$NON-NLS-1$
 				// If it's a ZIP, expand it - otherwise, use the file content as-is

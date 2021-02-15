@@ -260,7 +260,7 @@ public class ODPExporter {
 		switch(odpType) {
 		case ZIP:
 			returnPath = Files.createTempFile(NSFODPUtil.getTempDirectory(), "org.openntf.nsfodp.exporter", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			target = NSFODPUtil.openZipPath(returnPath);
+			target = NSFODPUtil.openZipPath(returnPath).getPath("/"); //$NON-NLS-1$
 			break;
 		case DIRECTORY:
 		default:
@@ -751,18 +751,18 @@ public class ODPExporter {
 	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException, DominoException {
 		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
+			Document xmlDoc = DOMUtil.createDocument();
+			Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
+			{
+				Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name"); //$NON-NLS-1$
+				String path = database.getFilePath().replace('\\', '/');
+				name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			DOMUtil.createElement(xmlDoc, projectDescription, "comment"); //$NON-NLS-1$
+			DOMUtil.createElement(xmlDoc, projectDescription, "projects"); //$NON-NLS-1$
+			DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec"); //$NON-NLS-1$
+			DOMUtil.createElement(xmlDoc, projectDescription, "natures"); //$NON-NLS-1$
 			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-				Document xmlDoc = DOMUtil.createDocument();
-				Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
-				{
-					Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name"); //$NON-NLS-1$
-					String path = database.getFilePath().replace('\\', '/');
-					name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-				DOMUtil.createElement(xmlDoc, projectDescription, "comment"); //$NON-NLS-1$
-				DOMUtil.createElement(xmlDoc, projectDescription, "projects"); //$NON-NLS-1$
-				DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec"); //$NON-NLS-1$
-				DOMUtil.createElement(xmlDoc, projectDescription, "natures"); //$NON-NLS-1$
 				DOMUtil.serialize(os, xmlDoc, Format.defaultFormat);
 			}
 		}
