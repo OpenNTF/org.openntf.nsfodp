@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2019 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,7 +184,7 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 			if(nodes.length > 0) {
 				attrs.putValue("Require-Bundle", Stream.of(nodes) //$NON-NLS-1$
 					.map(Element.class::cast)
-					.map(e -> e.getAttribute("plugin") + ("true".equals(e.getAttribute("optional")) ? ";resolution:=optional" : "")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					.map(e -> e.getAttribute("plugin") + (isOptionalImport(e) ? ";resolution:=optional" : "")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 					.collect(Collectors.joining(",")) //$NON-NLS-1$
 				);
 			}
@@ -216,5 +216,15 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		try(OutputStream os = buildContext.newFileOutputStream(manifestMf.toFile())) {
 			manifest.write(os);
 		}
+	}
+	
+	private boolean isOptionalImport(Element e) {
+		if("true".equals(e.getAttribute("optional"))) { //$NON-NLS-1$ //$NON-NLS-2$
+			return true;
+		} else if("org.eclipse.ui".equals(e.getAttribute("plugin"))) { //$NON-NLS-1$ //$NON-NLS-2$
+			// org.eclipse.ui is marked as required, but this is problematic for server-generated update sites
+			return true;
+		}
+		return false;
 	}
 }

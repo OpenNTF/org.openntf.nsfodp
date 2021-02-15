@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,32 @@
  */
 package org.openntf.nsfodp.compiler.util;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import com.ibm.xsp.library.DirectoryResourceBundleSource;
+import com.ibm.xsp.library.ClasspathResourceBundleSource;
 import com.ibm.xsp.registry.config.ResourceBundleSource;
 
 public class MultiPathResourceBundleSource implements ResourceBundleSource {
-	private final Collection<DirectoryResourceBundleSource> sources;
+	private final Collection<ResourceBundleSource> sources;
 	
 	public MultiPathResourceBundleSource(Collection<Path> paths) {
 		this.sources = Objects.requireNonNull(paths).stream()
-			.map(path -> new DirectoryResourceBundleSource(path.toFile()))
+			.map(Path::toUri)
+			.map(uri -> {
+				try {
+					return new URLClassLoader(new URL[] { uri.toURL() });
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.map(ClasspathResourceBundleSource::new)
 			.collect(Collectors.toList());
 	}
 

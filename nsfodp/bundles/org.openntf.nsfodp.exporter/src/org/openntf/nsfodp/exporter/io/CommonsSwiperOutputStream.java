@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 package org.openntf.nsfodp.exporter.io;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -34,7 +35,7 @@ import com.ibm.commons.xml.Format;
  * This subclass of {@link SwiperOutputStream} serializes via IBM Commons {@link DOMUtil} instead
  * of the JRE's default serializer.
  * 
- * <p>This provides for more-consistent indentation than the varying implementations that can be
+ * <p>This provides for more-consistent indentation than the varying implementations than can be
  * provided normally.</p>
  * 
  * @since 3.0.0
@@ -46,11 +47,11 @@ public class CommonsSwiperOutputStream extends SwiperOutputStream {
 	}
 	
 	@Override
-	protected void transform(Transformer transformer, InputStream is, Path destination) throws Exception {
+	protected void transform(Transformer transformer, Reader r, Path destination) throws Exception {
 		DOMResult result = new DOMResult();
-		transformer.transform(new StreamSource(is), result);
-		try(OutputStream os = Files.newOutputStream(destination)) {
-			DOMUtil.serialize(os, result.getNode(), Format.defaultFormat);
+		transformer.transform(new StreamSource(r), result);
+		try(Writer w = Files.newBufferedWriter(destination, StandardCharsets.UTF_8)) {
+			DOMUtil.serialize(w, result.getNode(), Format.defaultFormat);
 		}
 	}
 }

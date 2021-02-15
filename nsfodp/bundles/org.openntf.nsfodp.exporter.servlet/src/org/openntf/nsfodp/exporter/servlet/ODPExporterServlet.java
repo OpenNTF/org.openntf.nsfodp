@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,14 @@ package org.openntf.nsfodp.exporter.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -42,12 +39,12 @@ import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.exporter.ODPExporter;
+import org.openntf.nsfodp.exporter.ODPExporter.ODPType;
 
 import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.designer.domino.napi.util.NotesUtils;
 import com.ibm.domino.osgi.core.context.ContextInfo;
 
@@ -106,9 +103,7 @@ public class ODPExporterServlet extends HttpServlet {
 					Path nsfFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
 					cleanup.add(nsfFile);
 					try(InputStream reqInputStream = req.getInputStream()) {
-						try(OutputStream packageOut = Files.newOutputStream(nsfFile)) {
-							StreamUtil.copyStream(reqInputStream, packageOut);
-						}
+						Files.copy(reqInputStream, nsfFile, StandardCopyOption.REPLACE_EXISTING);
 					}
 					
 					database = session.getDatabase(nsfFile.toString());
@@ -151,32 +146,12 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					exporter.setProjectName(req.getHeader(NSFODPConstants.HEADER_PROJECT_NAME));
 					
+					exporter.setOdpType(ODPType.ZIP);
 					Path result = exporter.export();
 					cleanup.add(result);
 					mon.done();
 					
-					try(ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
-						Files.walk(result)
-							.forEach(path -> {
-								String name = result.relativize(path).toString().replace('\\', '/');
-								if(Files.isDirectory(path)) {
-									name += '/';
-								}
-								ZipEntry entry = new ZipEntry(name);
-								try {
-									zos.putNextEntry(entry);
-	
-									if(Files.isRegularFile(path)) {
-										try(InputStream is = Files.newInputStream(path)) {
-											StreamUtil.copyStream(is, zos);
-										}
-									}
-								} catch (IOException e) {
-									throw new RuntimeException(e);
-								}
-							});
-					}
-					
+					Files.copy(result, os);
 				} finally {
 					if(post) {
 						String filePath = database.getFilePath();

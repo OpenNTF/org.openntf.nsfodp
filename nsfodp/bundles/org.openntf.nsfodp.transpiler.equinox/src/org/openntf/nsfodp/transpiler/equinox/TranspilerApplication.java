@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,6 @@ public class TranspilerApplication implements IApplication {
 			
 			if(updateSites != null && !updateSites.isEmpty()) {
 				updateSites.stream()
-					.map(Path::toFile)
 					.map(FilesystemUpdateSite::new)
 					.forEach(transpiler::addUpdateSite);
 			}

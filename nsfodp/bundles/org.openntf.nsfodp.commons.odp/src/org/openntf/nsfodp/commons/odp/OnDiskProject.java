@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ package org.openntf.nsfodp.commons.odp;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -167,10 +168,10 @@ public class OnDiskProject {
 		return pluginXml;
 	}
 	
-	public Map<Path, String> getDbScriptFile() throws IOException {
+	public Path getDbScriptFile() throws IOException {
 		Path dbScript = baseDir.resolve("Code").resolve("dbscript.lsdb"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.exists(dbScript) && Files.size(dbScript) > 0) {
-			return Collections.singletonMap(dbScript, ODPUtil.readFile(dbScript));
+			return dbScript;
 		} else {
 			return null;
 		}
@@ -247,9 +248,9 @@ public class OnDiskProject {
 	 * Returns a list of DXL content that does not need any additional processing
 	 * or contextual information to import, such as forms and views.
 	 * 
-	 * @return a {@link Map} of file {@link Path}s to {@link String}s containing DXL
+	 * @return a {@link Stream} of {@link Path}s containing DXL to import
 	 */
-	public Map<Path, String> getDirectDXLElements() {
+	public Stream<Path> getDirectDXLElements() {
 		return DIRECT_DXL_FILES.stream()
 			.map(glob -> {
 				try {
@@ -258,8 +259,7 @@ public class OnDiskProject {
 					throw new RuntimeException(e);
 				}
 			})
-			.flatMap(Function.identity())
-			.collect(Collectors.toMap(Function.identity(), ODPUtil::readFile));
+			.flatMap(Function.identity());
 	}
 	
 	public List<AbstractSplitDesignElement> getFileResources() {
@@ -337,8 +337,8 @@ public class OnDiskProject {
 		}
 		
 		Document domDoc;
-		try(InputStream is = Files.newInputStream(classpath)) {
-			domDoc = DOMUtil.createDocument(is);
+		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
+			domDoc = DOMUtil.createDocument(r);
 		}
 		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=src]"); //$NON-NLS-1$
 		List<String> paths = Arrays.stream(xresult.getNodes())
@@ -359,8 +359,8 @@ public class OnDiskProject {
 			return Collections.emptyList();
 		}
 		Document domDoc;
-		try(InputStream is = Files.newInputStream(classpath)) {
-			domDoc = DOMUtil.createDocument(is);
+		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
+			domDoc = DOMUtil.createDocument(r);
 		}
 		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=lib]"); //$NON-NLS-1$
 		return Arrays.stream(xresult.getNodes())

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ package org.openntf.nsfodp.commons.odp.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.tools.JavaFileObject;
 
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.openntf.nsfodp.commons.odp.JavaSource;
 import org.openntf.nsfodp.commons.odp.Messages;
 import org.osgi.framework.Bundle;
@@ -54,16 +53,16 @@ public enum ODPUtil {
 	;
 	
 	public static String readFile(Path path) {
-		try(InputStream is = Files.newInputStream(path)) {
-			return StreamUtil.readString(is);
+		try(Reader r = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+			return StreamUtil.readString(r);
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	public static Document readXml(Path file) {
-		try(InputStream is = Files.newInputStream(file)) {
-			return DOMUtil.createDocument(is);
+		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			return DOMUtil.createDocument(r);
 		} catch(IOException | XMLException e) {
 			throw new RuntimeException(e);
 		}
@@ -91,27 +90,6 @@ public enum ODPUtil {
 					.map(path -> new JavaSource(path))
 					.collect(Collectors.toList());
 		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Retrieves the temporary user token for the provided extension registry.
-	 * 
-	 * <p>This method uses reflection with the assumption that the implementing
-	 * class has a "getTemporaryUserToken()" method.</p>
-	 * 
-	 * @param reg the registry to get the token for
-	 * @return the registry's user token
-	 */
-	public static Object getTemporaryUserToken(IExtensionRegistry reg) {
-		try {
-			Method getTemporaryUserToken = reg.getClass().getMethod("getTemporaryUserToken"); //$NON-NLS-1$
-			Object token = getTemporaryUserToken.invoke(reg);
-			return token;
-		} catch(RuntimeException e) {
-			throw e;
-		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2019 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class GenerateMetadataMojo extends AbstractMojo {
 		
 		for(NoteType type : NoteType.values()) {
 			if(type.getOutputFormat() == NoteType.OutputFormat.METADATA) {
-				Path noteDir = odpDir.resolve(type.getPath());
+				Path noteDir = odpDir.resolve(type.getPath(odpDir.getFileSystem()));
 				if(Files.isDirectory(noteDir)) {
 					Files.walk(noteDir, Integer.MAX_VALUE)
 						.filter(Files::isRegularFile)

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2019 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -40,7 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -398,12 +396,13 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		}
 		
 		Path packageZip = Files.createTempFile("odpcompiler-package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-		try(OutputStream fos = Files.newOutputStream(packageZip)) {
+		try(OutputStream fos = Files.newOutputStream(packageZip, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 			try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
 				zos.setLevel(Deflater.BEST_COMPRESSION);
 				ZipEntry entry = new ZipEntry("odp.zip"); //$NON-NLS-1$
 				zos.putNextEntry(entry);
 				Files.copy(odpZip, zos);
+				zos.closeEntry();
 				
 				if(updateSiteZips != null && !updateSiteZips.isEmpty()) {
 					for(int i = 0; i < updateSiteZips.size(); i++) {
@@ -411,6 +410,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						entry = new ZipEntry("site" + i + ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 						zos.putNextEntry(entry);
 						Files.copy(updateSiteZip, zos);
+						zos.closeEntry();
 					}
 				}
 				
@@ -421,6 +421,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					entry = new ZipEntry("classpath/" + dedupeName); //$NON-NLS-1$
 					zos.putNextEntry(entry);
 					Files.copy(artifactPath, zos);
+					zos.closeEntry();
 				}
 			}
 		}
@@ -491,24 +492,9 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 		
 		try {
 			Path result = Files.createTempFile("odpcompiler-dir", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			try(OutputStream fos = Files.newOutputStream(result)) {
-				try(ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
-					zos.setLevel(Deflater.BEST_COMPRESSION);
-					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-						@Override
-						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-							if(attrs.isRegularFile()) {
-								Path relativePath = path.relativize(file);
-								String unixPath = StreamSupport.stream(relativePath.spliterator(), false).map(String::valueOf).collect(Collectors.joining("/")); //$NON-NLS-1$
-								ZipEntry entry = new ZipEntry(unixPath);
-								zos.putNextEntry(entry);
-								Files.copy(file, zos);
-							}
-							return FileVisitResult.CONTINUE;
-						}
-					});
-				}
+			try(FileSystem fs = NSFODPUtil.openZipPath(result)) {
+				Path dest = fs.getPath("/"); //$NON-NLS-1$
+				NSFODPUtil.copyDirectory(path, dest);
 			}
 			
 			return result;

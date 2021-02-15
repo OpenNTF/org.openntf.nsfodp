@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2020 Jesse Gallagher
+ * Copyright © 2018-2021 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
@@ -45,7 +47,9 @@ public class SwiperOutputStream extends OutputStream {
 	
 	static {
 		try(InputStream is = SwiperOutputStream.class.getResourceAsStream("/res/SwiperDXLClean.xsl")) { //$NON-NLS-1$
-			swiper = TransformerFactory.newInstance().newTemplates(new StreamSource(is));
+			try(Reader r = new InputStreamReader(is)) {
+				swiper = TransformerFactory.newInstance().newTemplates(new StreamSource(r));
+			}
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError | IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -83,7 +87,9 @@ public class SwiperOutputStream extends OutputStream {
 			try {
 				Transformer transformer = createTransformer();
 				try(InputStream is = new ByteArrayInputStream(xml)) {
-					transform(transformer, is, path);
+					try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+						transform(transformer, r, path);
+					}
 				}
 				
 				cleanKnownTroubleDxl(path);
@@ -106,17 +112,17 @@ public class SwiperOutputStream extends OutputStream {
 	 */
 	protected void cleanKnownTroubleDxl(Path path) throws IOException {
 		// TODO use a more-efficient way to do this
-		String dxl = new String(Files.readAllBytes(path));
+		String dxl = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 		
 		String result = dxl.replaceAll("<imageref>\\s+", "<imageref>"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		Files.write(path, result.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+		Files.write(path, result.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
-	protected void transform(Transformer transformer, InputStream is, Path destination) throws Exception {
-		try(OutputStream os = Files.newOutputStream(destination)) {
-			StreamResult result = new StreamResult(os);
-			transformer.transform(new StreamSource(is), result);
+	protected void transform(Transformer transformer, Reader r, Path destination) throws Exception {
+		try(Writer w = Files.newBufferedWriter(destination, StandardCharsets.UTF_8)) {
+			StreamResult result = new StreamResult(w);
+			transformer.transform(new StreamSource(r), result);
 		}
 	}
 	
