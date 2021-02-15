@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -29,11 +30,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -52,7 +57,6 @@ import org.openntf.nsfodp.compiler.update.UpdateSite;
 
 import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 
 import lotus.domino.NotesThread;
 
@@ -62,6 +66,27 @@ public class ODPCompilerServlet extends HttpServlet {
 	private static final Pattern SITE_ZIP_PATTERN = Pattern.compile("^site\\d*\\.zip$"); //$NON-NLS-1$
 	
 	public static boolean ALLOW_ANONYMOUS = "true".equals(System.getProperty("org.openntf.nsfodp.allowAnonymous")); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	private ExecutorService exec;
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		
+		this.exec = Executors.newSingleThreadExecutor(NotesThread::new);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		
+		this.exec.shutdownNow();
+		try {
+			this.exec.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -91,9 +116,7 @@ public class ODPCompilerServlet extends HttpServlet {
 			Path packageFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), "package", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			cleanup.add(packageFile);
 			try(InputStream reqInputStream = req.getInputStream()) {
-				try(OutputStream packageOut = Files.newOutputStream(packageFile)) {
-					StreamUtil.copyStream(reqInputStream, packageOut);
-				}
+				Files.copy(reqInputStream, packageFile, StandardCopyOption.REPLACE_EXISTING);
 			}
 			
 			// Look for an ODP item
@@ -142,74 +165,66 @@ public class ODPCompilerServlet extends HttpServlet {
 			}
 			
 			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
-			
-			Path odpFile = NSFODPUtil.openZipPath(odpZip);
-			
-			OnDiskProject odp = new OnDiskProject(odpFile);
-			ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
-			
-			// See if the client requested a specific compiler level
-			String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
-			if(StringUtil.isNotEmpty(compilerLevel)) {
-				compiler.setCompilerLevel(compilerLevel);
-			}
-			String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
-			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-				compiler.setAppendTimestampToTitle(true);
-			}
-			String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
-			if(StringUtil.isNotEmpty(templateName)) {
-				compiler.setTemplateName(templateName);
-				String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
-				if(StringUtil.isNotEmpty(templateVersion)) {
-					compiler.setTemplateVersion(templateVersion);
+
+			Path nsf;
+			try(FileSystem fs = NSFODPUtil.openZipPath(odpZip)) {
+				Path odpFile = fs.getPath("/"); //$NON-NLS-1$
+				
+				OnDiskProject odp = new OnDiskProject(odpFile);
+				ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
+				
+				// See if the client requested a specific compiler level
+				String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
+				if(StringUtil.isNotEmpty(compilerLevel)) {
+					compiler.setCompilerLevel(compilerLevel);
 				}
-			}
-			String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
-			if("true".equals(setXspOptions)) { //$NON-NLS-1$
-				compiler.setSetProductionXspOptions(true);
-			}
-			String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
-			if(StringUtil.isNotEmpty(odsRelease)) {
-				compiler.setOdsRelease(odsRelease);
-			}
-			
-			if(siteZips != null && !siteZips.isEmpty()) {
-				for(Path siteZip : siteZips) {
-					Path siteFile = NSFODPUtil.expandZip(siteZip);
-					cleanup.add(siteFile);
-					UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
-					compiler.addUpdateSite(updateSite);
+				String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
+				if("true".equals(appendTimestamp)) { //$NON-NLS-1$
+					compiler.setAppendTimestampToTitle(true);
 				}
-			}
-			classPathJars.forEach(compiler::addClassPathEntry);
-			
-			Path[] nsf = new Path[1];
-			NotesThread notes = new NotesThread(() -> {
-				try {
-					nsf[0] = compiler.compile();
+				String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
+				if(StringUtil.isNotEmpty(templateName)) {
+					compiler.setTemplateName(templateName);
+					String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
+					if(StringUtil.isNotEmpty(templateVersion)) {
+						compiler.setTemplateVersion(templateVersion);
+					}
+				}
+				String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
+				if("true".equals(setXspOptions)) { //$NON-NLS-1$
+					compiler.setSetProductionXspOptions(true);
+				}
+				String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
+				if(StringUtil.isNotEmpty(odsRelease)) {
+					compiler.setOdsRelease(odsRelease);
+				}
+				
+				if(siteZips != null && !siteZips.isEmpty()) {
+					for(Path siteZip : siteZips) {
+						Path siteFile = NSFODPUtil.expandZip(siteZip);
+						cleanup.add(siteFile);
+						UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
+						compiler.addUpdateSite(updateSite);
+					}
+				}
+				classPathJars.forEach(compiler::addClassPathEntry);
+				
+				nsf = this.exec.submit(() -> {
+					Path result = compiler.compile();
 					mon.done();
-				} catch(RuntimeException e) {
-					throw e;
-				} catch(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-			notes.run();
-			notes.join();
-			
+					return result;
+				}).get();
+			}
 			
 			// Now stream the NSF
-			cleanup.add(nsf[0]);
-			try(InputStream is = Files.newInputStream(nsf[0])) {
-				try(OutputStream gzos = new GZIPOutputStream(os)) {
-					StreamUtil.copyStream(is, gzos);
-				}
+			cleanup.add(nsf);
+			try(OutputStream gzos = new GZIPOutputStream(os)) {
+				Files.copy(nsf, gzos);
 			}
 			resp.flushBuffer();
 			
 			// Delete the NSF via the Notes API
-			DominoAPI.get().NSFDbDelete(nsf[0].toString());
+			DominoAPI.get().NSFDbDelete(nsf.toString());
 			
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
