@@ -139,34 +139,11 @@
 			<url>${notes-platform}</url>
 			<layout>p2</layout>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>bazaar</id> -->
-<!-- 			<url>https://p2.openntf.org/p2/bazaar206.nsf/2.0.6/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
 		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.m2e.p2</id> -->
-<!-- 			<name>org.eclipse.m2e</name> -->
-<!-- 			<url>http://download.eclipse.org/technology/m2e/releases</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.wildwebdeveloper.p2</id> -->
-<!-- 			<name>org.eclipse.wildwebdeveloper</name> -->
-<!-- 			<url>https://download.eclipse.org/wildwebdeveloper/releases/0.8.0/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.wst.p2</id> -->
-<!-- 			<name>org.eclipse.wst</name> -->
-<!-- 			<url>https://download.eclipse.org/webtools/downloads/drops/R3.15.0/R-3.15.0-20190830034720/repository/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
 	</repositories>
 	
 	<pluginRepositories>
