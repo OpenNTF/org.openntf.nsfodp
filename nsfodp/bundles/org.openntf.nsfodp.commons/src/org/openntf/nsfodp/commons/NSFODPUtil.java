@@ -249,6 +249,93 @@ public enum NSFODPUtil {
 		Map<String, String> env = new HashMap<>();
 		env.put("create", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		env.put("encoding", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
-		return FileSystems.newFileSystem(uri, env); //$NON-NLS-1$
+		return FileSystems.newFileSystem(uri, env);
+	}
+	
+	/**
+	 * Determines whether the provided pattern matches the flags value from a note, in the fashion
+	 * of the Notes C API.
+	 * 
+	 * @param flags a design flag value to test
+	 * @param pattern a flag pattern to test against (DFLAGPAT_*)
+	 * @return whether the flags match the pattern
+	 * @since 3.5.0
+	 */
+	public static boolean matchesFlagsPattern(String flags, String pattern) {
+		if(pattern == null || pattern.isEmpty()) {
+			return false;
+		}
+		
+		String toTest = flags == null ? "" : flags; //$NON-NLS-1$
+		
+		// Patterns start with one of four characters:
+		// "+" (match any)
+		// "-" (match none)
+		// "*" (match all)
+		// "(" (multi-part test)
+		String matchers = null;
+		String antiMatchers = null;
+		String allMatchers = null;
+		char first = pattern.charAt(0);
+		switch(first) {
+		case '+':
+			matchers = pattern.substring(1);
+			antiMatchers = ""; //$NON-NLS-1$
+			allMatchers = ""; //$NON-NLS-1$
+			break;
+		case '-':
+			matchers = ""; //$NON-NLS-1$
+			antiMatchers = pattern.substring(1);
+			allMatchers = ""; //$NON-NLS-1$
+			break;
+		case '*':
+			matchers = ""; //$NON-NLS-1$
+			antiMatchers = ""; //$NON-NLS-1$
+			allMatchers = pattern.substring(1);
+		case '(':
+			// The order is always +-*
+			int plusIndex = pattern.indexOf('+');
+			int minusIndex = pattern.indexOf('-');
+			int starIndex = pattern.indexOf('*');
+			
+			matchers = pattern.substring(plusIndex+1, minusIndex == -1 ? pattern.length() : minusIndex);
+			antiMatchers = minusIndex == -1 ? "" : pattern.substring(minusIndex+1, starIndex == -1 ? pattern.length() : starIndex); //$NON-NLS-1$
+			allMatchers = starIndex == -1 ? "" : pattern.substring(starIndex+1); //$NON-NLS-1$
+			break;
+		}
+		if(matchers == null) { matchers = ""; } //$NON-NLS-1$
+		if(antiMatchers == null) { antiMatchers = ""; } //$NON-NLS-1$
+		if(allMatchers == null) { allMatchers = ""; } //$NON-NLS-1$
+		
+		// Test "match against any" and fail if it doesn't
+		boolean matchedAny = matchers.isEmpty();
+		for(int i = 0; i < matchers.length(); i++) {
+			if(toTest.indexOf(matchers.charAt(i)) > -1) {
+				matchedAny = true;
+				break;
+			}
+		}
+		if(!matchedAny) {
+			return false;
+		}
+		
+		// Test "match none" and fail if it does
+		for(int i = 0; i < antiMatchers.length(); i++) {
+			if(toTest.indexOf(antiMatchers.charAt(i)) > -1) {
+				// Exit immediately
+				return false;
+			}
+		}
+		
+		// Test "match all" and fail if it doesn't
+		for(int i = 0; i < allMatchers.length(); i++) {
+			if(toTest.indexOf(allMatchers.charAt(i)) == -1) {
+				// Exit immediately
+				return false;
+			}
+		}
+		
+		// If we survived to here, it must match
+		return true;
 	}
 }

@@ -37,19 +37,18 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.exporter.ODPExporter;
 import org.openntf.nsfodp.exporter.ODPExporter.ODPType;
 
-import com.darwino.domino.napi.DominoAPI;
-import com.darwino.domino.napi.wrap.NSFDatabase;
-import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.designer.domino.napi.util.NotesUtils;
 import com.ibm.domino.osgi.core.context.ContextInfo;
 
 import lotus.domino.ACL;
 import lotus.domino.Database;
+import lotus.domino.NotesException;
 import lotus.domino.Session;
 
 public class ODPExporterServlet extends HttpServlet {
@@ -86,9 +85,8 @@ public class ODPExporterServlet extends HttpServlet {
 			}
 			
 			
-			NSFSession session = new NSFSession(DominoAPI.get());
-			try {
-				NSFDatabase database;
+			try(NotesAPI session = NotesAPI.get()) {
+				NDatabase database;
 				
 				if(post) {
 					// Then read the NSF from the body
@@ -106,7 +104,7 @@ public class ODPExporterServlet extends HttpServlet {
 						Files.copy(reqInputStream, nsfFile, StandardCopyOption.REPLACE_EXISTING);
 					}
 					
-					database = session.getDatabase(nsfFile.toString());
+					database = session.openDatabase(nsfFile.toString());
 				} else {
 					// Then look for an NSF path in the headers
 					String databasePath = req.getHeader(NSFODPConstants.HEADER_DATABASE_PATH);
@@ -116,7 +114,7 @@ public class ODPExporterServlet extends HttpServlet {
 					
 					// Verify that the user can indeed export this DB
 					Session lotusSession = ContextInfo.getUserSession();
-					Database lotusDatabase = ODPUtil.getDatabase(lotusSession, databasePath);
+					Database lotusDatabase = getDatabase(lotusSession, databasePath);
 					if(!lotusDatabase.isOpen()) {
 						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_unableToOpenDb, databasePath));
 					} else if(lotusDatabase.queryAccess(lotusSession.getEffectiveUserName()) < ACL.LEVEL_DESIGNER) {
@@ -124,7 +122,7 @@ public class ODPExporterServlet extends HttpServlet {
 						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_insufficientAccess, NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()), databasePath));
 					}
 
-					database = session.getDatabase(databasePath);
+					database = session.openDatabase(databasePath);
 				}
 				
 				try {
@@ -155,12 +153,10 @@ public class ODPExporterServlet extends HttpServlet {
 				} finally {
 					if(post) {
 						String filePath = database.getFilePath();
-						database.free();
+						database.close();
 						session.deleteDatabase(filePath);
 					}
 				}
-			} finally {
-				session.free();
 			}
 			
 		} catch(Throwable e) {
@@ -178,4 +174,17 @@ public class ODPExporterServlet extends HttpServlet {
 		}
 	}
 
+	private static Database getDatabase(Session session, String databasePath) throws NotesException {
+		if(StringUtil.isEmpty(databasePath)) {
+			return session.getDatabase(StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING);
+		}
+		int bangIndex = databasePath.indexOf("!!"); //$NON-NLS-1$
+		if(bangIndex > -1) {
+			String server = databasePath.substring(0, bangIndex);
+			String filePath = databasePath.substring(bangIndex+2);
+			return session.getDatabase(server, filePath);
+		} else {
+			return session.getDatabase(StringUtil.EMPTY_STRING, databasePath);
+		}
+	}
 }

@@ -38,6 +38,7 @@
 		<module>bundles/org.openntf.nsfodp.commons</module>
 		<module>bundles/org.openntf.nsfodp.commons.dxl</module>
 		<module>bundles/org.openntf.nsfodp.commons.odp</module>
+		<module>bundles/org.openntf.nsfodp.notesapi.darwinonapi</module>
 		
 		<!--
 			Language Server Protocol 

@@ -26,11 +26,9 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.exporter.ODPExporter;
-
-import com.darwino.domino.napi.DominoAPI;
-import com.darwino.domino.napi.wrap.NSFDatabase;
-import com.darwino.domino.napi.wrap.NSFSession;
 
 import lotus.domino.NotesThread;
 
@@ -44,7 +42,9 @@ public class ExporterApplication implements IApplication {
 		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
 		if(notesIni != null && !notesIni.isEmpty()) {
 			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
-			DominoAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+			try(NotesAPI api = NotesAPI.get()) {
+				api.NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+			}
 		}
 		
 		String databasePath = System.getenv(NSFODPConstants.PROP_EXPORTER_DATABASE_PATH);
@@ -59,11 +59,9 @@ public class ExporterApplication implements IApplication {
 		String projectName = System.getenv(NSFODPConstants.PROP_PROJECT_NAME);
 		
 		NotesThread runner = new NotesThread(() -> {
-			try {
-				NSFSession session = new NSFSession(DominoAPI.get());
-				try {
-					NSFDatabase database = session.getDatabase(databasePath);
-					
+			try(NotesAPI session = NotesAPI.get()) {
+				try(NDatabase database = session.openDatabase(databasePath)) {
+				
 					ODPExporter exporter = new ODPExporter(database);
 					exporter.setBinaryDxl(binaryDxl);
 					exporter.setSwiperFilter(swiperFilter);
@@ -86,8 +84,6 @@ public class ExporterApplication implements IApplication {
 					if(eclipseProject != null) {
 						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 					}
-				} finally {
-					session.free();
 				}
 			} catch(Exception e) {
 				throw new RuntimeException(e);

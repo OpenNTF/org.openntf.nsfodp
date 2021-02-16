@@ -5,8 +5,6 @@ Bundle-SymbolicName: org.openntf.nsfodp.compiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler
 Bundle-Version: 3.5.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
-Bundle-ClassPath: .,
- lib/com.darwino.domino.napi.jar
 Import-Package: com.ibm.xsp.extlib.javacompiler,
  javax.xml.bind;resolution:=optional,
  javax.xml.bind.annotation;resolution:=optional,
@@ -14,6 +12,7 @@ Import-Package: com.ibm.xsp.extlib.javacompiler,
  org.openntf.nsfodp.commons;version="3.5.0",
  org.openntf.nsfodp.commons.dxl;version="3.5.0",
  org.openntf.nsfodp.commons.odp;version="3.5.0",
+ org.openntf.nsfodp.commons.odp.notesapi;version="3.5.0",
  org.openntf.nsfodp.commons.odp.util;version="3.5.0"
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,

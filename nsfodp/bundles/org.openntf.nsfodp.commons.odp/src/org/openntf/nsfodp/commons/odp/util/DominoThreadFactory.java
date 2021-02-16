@@ -21,14 +21,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import lotus.domino.NotesThread;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 
-public class DominoThreadFactory implements ThreadFactory {
-	private static int spawnCount = 0;
-	private static final Object sync = new Object();
-
-	public static final DominoThreadFactory instance = new DominoThreadFactory();
-
+public class DominoThreadFactory {
+	private static NotesAPI notesApi;
 	private static ExecutorService executor;
 	private static ScheduledExecutorService scheduler;
 	private static boolean initialized;
@@ -44,8 +40,10 @@ public class DominoThreadFactory implements ThreadFactory {
 	
 	public static synchronized void init() {
 		if(!initialized) {
-			executor = Executors.newCachedThreadPool(instance);
-			scheduler = Executors.newScheduledThreadPool(5, instance);
+			notesApi = NotesAPI.get();
+			ThreadFactory fac = notesApi.createThreadFactory();
+			executor = Executors.newCachedThreadPool(fac);
+			scheduler = Executors.newScheduledThreadPool(5, fac);
 			initialized = true;
 		}
 	}
@@ -67,15 +65,8 @@ public class DominoThreadFactory implements ThreadFactory {
 			} catch (InterruptedException e) {
 				// Ignore
 			}
+			notesApi.close();
 			initialized = false;
 		}
-	}
-
-	@Override
-	public Thread newThread(final Runnable runnable) {
-		synchronized(sync) {
-			spawnCount++;
-		}
-		return new NotesThread(runnable, "DominoThreadFactory Thread " + spawnCount); //$NON-NLS-1$
 	}
 }

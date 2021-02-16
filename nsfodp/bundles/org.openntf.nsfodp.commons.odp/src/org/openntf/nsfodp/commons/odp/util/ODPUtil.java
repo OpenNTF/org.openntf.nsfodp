@@ -21,6 +21,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +32,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.tools.JavaFileObject;
 
@@ -40,14 +45,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 
+import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-
-import lotus.domino.Database;
-import lotus.domino.NotesException;
-import lotus.domino.Session;
 
 public enum ODPUtil {
 	;
@@ -161,17 +163,17 @@ public enum ODPUtil {
 		return baseDir.relativize(file).toString().replace(File.separatorChar, '/');
 	}
 	
-	public static Database getDatabase(Session session, String databasePath) throws NotesException {
-		if(StringUtil.isEmpty(databasePath)) {
-			return session.getDatabase(StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING);
-		}
-		int bangIndex = databasePath.indexOf("!!"); //$NON-NLS-1$
-		if(bangIndex > -1) {
-			String server = databasePath.substring(0, bangIndex);
-			String filePath = databasePath.substring(bangIndex+2);
-			return session.getDatabase(server, filePath);
-		} else {
-			return session.getDatabase(StringUtil.EMPTY_STRING, databasePath);
-		}
+	/**
+	 * Finds extension objects for the provided service class.
+	 *
+	 * @param <T> the expected type of extension objects
+	 * @param serviceClass the class representing the desired extension point
+	 * @return a {@link Stream} of available implementation objects
+	 * @since 3.5.0
+	 */
+	public static <T> Stream<T> findServices(final Class<T> serviceClass) {
+		return AccessController.doPrivileged((PrivilegedAction<Stream<T>>)() ->
+			StreamSupport.stream(ServiceLoader.load(serviceClass).spliterator(), false)
+		);
 	}
 }

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.openntf.nsfodp.notesapi.darwinonapi
+Automatic-Module-Name: org.openntf.nsfodp.notesapi.darwinonapi
+Bundle-Version: 3.5.0.qualifier
+Bundle-Vendor: %Bundle-Vendor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: lib/com.darwino.domino.napi.jar,
+ .
+Require-Bundle: com.ibm.commons
+Import-Package: org.openntf.nsfodp.commons.odp.notesapi
+Fragment-Host: org.openntf.nsfodp.commons.odp

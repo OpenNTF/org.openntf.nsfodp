@@ -50,12 +50,12 @@ import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
 
-import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.StringUtil;
 
 import lotus.domino.NotesThread;
@@ -224,7 +224,9 @@ public class ODPCompilerServlet extends HttpServlet {
 			resp.flushBuffer();
 			
 			// Delete the NSF via the Notes API
-			DominoAPI.get().NSFDbDelete(nsf.toString());
+			try(NotesAPI api = NotesAPI.get()) {
+				api.deleteDatabase(nsf.toString());
+			}
 			
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -130,6 +130,7 @@ public abstract class AbstractEquinoxTask {
 
 			Stream.of(
 				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.notesapi.darwinonapi", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.dxl", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.odp", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.compiler", 2), //$NON-NLS-1$

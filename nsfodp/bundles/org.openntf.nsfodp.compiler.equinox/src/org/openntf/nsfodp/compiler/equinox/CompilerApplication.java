@@ -33,11 +33,11 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.PrintStreamProgressMonitor;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 
-import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.json.JsonException;
 import com.ibm.commons.util.io.json.JsonJavaFactory;
@@ -53,7 +53,9 @@ public class CompilerApplication implements IApplication {
 		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
 		if(notesIni != null && !notesIni.isEmpty()) {
 			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
-			DominoAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+			try(NotesAPI api = NotesAPI.get()) {
+				api.NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+			}
 		}
 		
 		NotesThread.sinitThread();
