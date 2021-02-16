@@ -519,7 +519,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				}
 				
 				// Check if any ODP files changed
-				if(Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0) {
+				if(Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).findFirst().isPresent()) {
 					return true;
 				}
 				
