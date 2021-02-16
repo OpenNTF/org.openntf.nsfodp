@@ -18,7 +18,10 @@ package org.openntf.maven.nsfodp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -284,13 +287,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 						Document props;
 						if(Files.exists(databaseProperties)) {
-							try(InputStream is = Files.newInputStream(databaseProperties)) {
-								props = DOMUtil.createDocument(is);
+							try(Reader r = Files.newBufferedReader(databaseProperties, StandardCharsets.UTF_8)) {
+								props = DOMUtil.createDocument(r);
 							}
 						} else {
 							Files.createDirectories(databaseProperties.getParent());
 							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
-								props = DOMUtil.createDocument(is);
+								try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+									props = DOMUtil.createDocument(r);
+								}
 							}
 						}
 						
@@ -312,8 +317,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
 						}
 						
-						try(OutputStream os = Files.newOutputStream(databaseProperties)) {
-							DOMUtil.serialize(os, props, Format.defaultFormat);
+						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
+							DOMUtil.serialize(w, props, Format.defaultFormat);
 						}
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
