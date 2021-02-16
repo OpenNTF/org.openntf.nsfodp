@@ -12,5 +12,7 @@ The `xpages-library` example shows the case of a multi-module, Tycho-based Maven
 
 - A Maven module hierarchy
 - The use of Tycho to build OSGi applications
+- Use of an embedded XPages-land JAR
+- Use of a Maven dependency as an expected jvm/lib/ext JAR
 - Extended NSF ODP configuration options, such as a pom-defined ACL, a template name, and OSGi and Maven dependencies
 - A distribution project in "releng" to create a ZIP of the update site and NSF
