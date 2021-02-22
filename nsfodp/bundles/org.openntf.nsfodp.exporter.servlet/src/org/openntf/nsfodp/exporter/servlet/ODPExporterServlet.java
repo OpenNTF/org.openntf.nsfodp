@@ -43,13 +43,6 @@ import org.openntf.nsfodp.exporter.ODPExporter;
 import org.openntf.nsfodp.exporter.ODPExporter.ODPType;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.designer.domino.napi.util.NotesUtils;
-import com.ibm.domino.osgi.core.context.ContextInfo;
-
-import lotus.domino.ACL;
-import lotus.domino.Database;
-import lotus.domino.NotesException;
-import lotus.domino.Session;
 
 public class ODPExporterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -113,13 +106,12 @@ public class ODPExporterServlet extends HttpServlet {
 					}
 					
 					// Verify that the user can indeed export this DB
-					Session lotusSession = ContextInfo.getUserSession();
-					Database lotusDatabase = getDatabase(lotusSession, databasePath);
-					if(!lotusDatabase.isOpen()) {
-						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_unableToOpenDb, databasePath));
-					} else if(lotusDatabase.queryAccess(lotusSession.getEffectiveUserName()) < ACL.LEVEL_DESIGNER) {
-						// Note: this uses queryAccess to skip past Maximum Internet Access levels
-						throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_insufficientAccess, NotesUtils.DNAbbreviate(lotusSession.getEffectiveUserName()), databasePath));
+					try(NotesAPI userApi = NotesAPI.get(user.getName(), false, false)) {
+						try(NDatabase userDb = userApi.openDatabase(databasePath)) {
+							if(userDb.getCurrentAccessLevel() < 5) { // Designer access
+								throw new UnsupportedOperationException(MessageFormat.format(Messages.ODPExporterServlet_insufficientAccess, user.getName(), databasePath));
+							}
+						}
 					}
 
 					database = session.openDatabase(databasePath);
@@ -171,20 +163,6 @@ public class ODPExporterServlet extends HttpServlet {
 			);
 		} finally {
 			NSFODPUtil.deltree(cleanup);
-		}
-	}
-
-	private static Database getDatabase(Session session, String databasePath) throws NotesException {
-		if(StringUtil.isEmpty(databasePath)) {
-			return session.getDatabase(StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING);
-		}
-		int bangIndex = databasePath.indexOf("!!"); //$NON-NLS-1$
-		if(bangIndex > -1) {
-			String server = databasePath.substring(0, bangIndex);
-			String filePath = databasePath.substring(bangIndex+2);
-			return session.getDatabase(server, filePath);
-		} else {
-			return session.getDatabase(StringUtil.EMPTY_STRING, databasePath);
 		}
 	}
 }

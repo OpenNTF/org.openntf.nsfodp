@@ -16,5 +16,7 @@ public interface NDatabase extends AutoCloseable {
 	
 	void eachDesignNote(BiConsumer<Integer, NNote> consumer);
 	
+	short getCurrentAccessLevel();
+	
 	@Override void close();
 }

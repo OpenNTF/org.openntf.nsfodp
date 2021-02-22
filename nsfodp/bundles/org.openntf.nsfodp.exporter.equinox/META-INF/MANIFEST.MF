@@ -8,3 +8,4 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openntf.nsfodp.exporter
 Require-Bundle: org.eclipse.core.runtime
+Import-Package: lotus.domino

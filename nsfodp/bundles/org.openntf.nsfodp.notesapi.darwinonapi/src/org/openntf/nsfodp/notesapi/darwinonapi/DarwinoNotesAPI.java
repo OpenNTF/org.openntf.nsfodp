@@ -25,6 +25,14 @@ public class DarwinoNotesAPI implements NotesAPI {
 		this.session = new NSFSession(DominoAPI.get());
 	}
 	
+	public DarwinoNotesAPI(String effectiveUserName, boolean internetSession, boolean fullAccess) {
+		try {
+			this.session = new NSFSession(DominoAPI.get(), effectiveUserName, internetSession, fullAccess);
+		} catch (DominoException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	@Override
 	public void NotesInitExtended(String... argv) {
 		try {

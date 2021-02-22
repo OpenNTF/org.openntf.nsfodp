@@ -7,8 +7,7 @@ import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 
 /**
  * This service interface represents an abstracted version of the Notes/Domino API calls required
- * by NSF ODP. Clients should find an implementation using the {@code org.openntf.nsfodp.commons.odp.notesapi.NotesAPI}
- * extension point.
+ * by NSF ODP.
  * 
  * @author Jesse Gallagher
  * @since 3.5.0
@@ -16,8 +15,16 @@ import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 public interface NotesAPI extends AutoCloseable {
 	
 	static NotesAPI get() {
-		return ODPUtil.findServices(NotesAPI.class)
+		return ODPUtil.findServices(NotesAPIFactory.class)
 			.findFirst()
+			.map(NotesAPIFactory::createAPI)
+			.orElseThrow(() -> new IllegalStateException(MessageFormat.format("Unable to find implementation for {0}", NotesAPI.class.getName())));
+	}
+	
+	static NotesAPI get(String effectiveUserName, boolean internetSession, boolean fullAccess) {
+		return ODPUtil.findServices(NotesAPIFactory.class)
+			.findFirst()
+			.map(fac -> fac.createAPI(effectiveUserName, internetSession, fullAccess))
 			.orElseThrow(() -> new IllegalStateException(MessageFormat.format("Unable to find implementation for {0}", NotesAPI.class.getName())));
 	}
 	

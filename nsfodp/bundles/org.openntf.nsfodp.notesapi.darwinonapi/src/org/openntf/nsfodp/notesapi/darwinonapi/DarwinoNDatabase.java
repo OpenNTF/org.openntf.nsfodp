@@ -110,6 +110,11 @@ public class DarwinoNDatabase implements NDatabase {
 			throw new NDominoException(0, e);
 		}
 	}
+	
+	@Override
+	public short getCurrentAccessLevel() {
+		return database.getCurrentAccessLevel().getValue();
+	}
 
 	@Override
 	public void close() {

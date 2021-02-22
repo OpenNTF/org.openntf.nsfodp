@@ -8,8 +8,7 @@ Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  org.eclipse.osgi
-Import-Package: lotus.domino,
- org.eclipse.core.runtime,
+Import-Package: org.eclipse.core.runtime,
  org.openntf.nsfodp.commons;version="3.5.0",
  org.openntf.nsfodp.commons.dxl;version="3.5.0",
  org.openntf.nsfodp.commons.h;version="3.5.0",
