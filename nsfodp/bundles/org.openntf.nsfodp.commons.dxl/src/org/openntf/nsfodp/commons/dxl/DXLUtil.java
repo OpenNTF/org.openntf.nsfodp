@@ -220,7 +220,6 @@ public enum DXLUtil {
 	public static byte[] getImageResourceData(Path file, Document dxlDoc) throws IOException, XMLException {
 		int fileLength = (int)Files.size(file);
 		// Load image info
-		File imageFile = file.toFile();
 		int height = 0; // true value not actually stored
 		int width = 0; // true value not actually stored
 		String mimeType;
@@ -241,7 +240,7 @@ public enum DXLUtil {
 		}
 		// Finally, try to guess it
 		if(StringUtil.isEmpty(mimeType)) {
-			mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
+			mimeType = new MimetypesFileTypeMap().getContentType(file.getFileName().toString());
 		}
 		if(mimeType == null) {
 			throw new RuntimeException(MessageFormat.format(Messages.getString("DXLUtil.noMimeType"), file)); //$NON-NLS-1$

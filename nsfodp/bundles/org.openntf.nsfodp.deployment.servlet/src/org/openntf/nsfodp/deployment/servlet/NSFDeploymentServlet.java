@@ -25,8 +25,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -70,6 +72,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 		
 		ServletOutputStream os = resp.getOutputStream();
 		
+		Set<Path> cleanup = new HashSet<>();
 		try {
 			if("Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -116,7 +119,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 				throw new IllegalArgumentException(MessageFormat.format("{0} part must be a file", PARAM_FILE));
 			}
 			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data"); //$NON-NLS-1$ //$NON-NLS-2$
-			nsf.toFile().deleteOnExit();
+			cleanup.add(nsf);
 			try(InputStream reqInputStream = fileItem.getInputStream()) {
 				Files.copy(reqInputStream, nsf, StandardCopyOption.REPLACE_EXISTING);
 			}
@@ -130,7 +133,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 					}
 					try(InputStream is = zf.getInputStream(firstEntry)) {
 						Files.copy(is, expanded, StandardCopyOption.REPLACE_EXISTING);
-						expanded.toFile().deleteOnExit();
+						cleanup.add(expanded);
 						nsf = expanded;
 					}
 				}
@@ -152,6 +155,8 @@ public class NSFDeploymentServlet extends HttpServlet {
 				"stackTrace", baos.toString() //$NON-NLS-1$
 				)
 			);
+		} finally {
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 }

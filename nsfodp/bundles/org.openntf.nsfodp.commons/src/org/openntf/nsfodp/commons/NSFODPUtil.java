@@ -86,9 +86,7 @@ public enum NSFODPUtil {
 		try {
 			Files.deleteIfExists(path);
 		} catch(IOException e) {
-			// This is likely a Windows file-locking thing. In this case,
-			//   punt and hand it off to File#deleteOnExit
-			path.toFile().deleteOnExit();
+			// This is likely a Windows file-locking thing
 		}
 	}
 	
