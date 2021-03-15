@@ -31,7 +31,6 @@ import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDIMAGEHEADER;
 import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDIMAGESEGMENT;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
