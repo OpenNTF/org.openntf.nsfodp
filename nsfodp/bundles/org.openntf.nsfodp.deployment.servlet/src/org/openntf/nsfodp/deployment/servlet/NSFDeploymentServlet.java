@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -126,14 +126,14 @@ public class NSFDeploymentServlet extends HttpServlet {
 			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) { //$NON-NLS-1$
 				// If it's a ZIP, expand it - otherwise, use the file content as-is
 				Path expanded = Files.createTempFile("nsfdeployment", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
-				try(ZipFile zf = new ZipFile(nsf.toFile(), StandardCharsets.UTF_8)) {
-					ZipEntry firstEntry = zf.entries().nextElement();
-					if(firstEntry == null) {
-						throw new IllegalArgumentException("ZIP file must contain an entry");
-					}
-					try(InputStream is = zf.getInputStream(firstEntry)) {
+				cleanup.add(expanded);
+				try(InputStream is = Files.newInputStream(nsf)) {
+					try(ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8)) {
+						ZipEntry firstEntry = zis.getNextEntry();
+						if(firstEntry == null) {
+							throw new IllegalArgumentException("ZIP file must contain an entry");
+						}
 						Files.copy(is, expanded, StandardCopyOption.REPLACE_EXISTING);
-						cleanup.add(expanded);
 						nsf = expanded;
 					}
 				}
@@ -147,9 +147,9 @@ public class NSFDeploymentServlet extends HttpServlet {
 			mon.done();
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintWriter out = new PrintWriter(baos);
-			e.printStackTrace(out);
-			out.flush();
+			try(PrintWriter out = new PrintWriter(baos)) {
+				e.printStackTrace(out);
+			}
 			os.println(LineDelimitedJsonProgressMonitor.message(
 				"type", "error", //$NON-NLS-1$ //$NON-NLS-2$
 				"stackTrace", baos.toString() //$NON-NLS-1$
