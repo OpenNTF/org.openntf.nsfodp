@@ -10,6 +10,7 @@ import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 
 import com.darwino.domino.napi.DominoAPI;
 import com.darwino.domino.napi.DominoException;
+import com.darwino.domino.napi.c.C;
 import com.darwino.domino.napi.enums.DBClass;
 import com.darwino.domino.napi.enums.DXLIMPORTOPTION;
 import com.darwino.domino.napi.enums.DXL_EXPORT_CHARSET;
@@ -17,6 +18,7 @@ import com.darwino.domino.napi.wrap.NSFDXLExporter;
 import com.darwino.domino.napi.wrap.NSFDXLImporter;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFSession;
+import com.ibm.commons.util.StringUtil;
 
 public class DarwinoNotesAPI implements NotesAPI {
 	private final NSFSession session;
@@ -108,6 +110,25 @@ public class DarwinoNotesAPI implements NotesAPI {
 			DominoAPI.get().NSFDbDelete(filePath);
 		} catch (DominoException e) {
 			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public byte[] toLMBCSString(String value) {
+		if(StringUtil.isEmpty(value)) {
+			return new byte[0];
+		}
+		long ptr = C.toLMBCSString(value);
+		try {
+			long len = C.strlen(ptr, 0);
+			if(len > Integer.MAX_VALUE) {
+				throw new IllegalArgumentException("Cannot convert value of length " + len);
+			}
+			byte[] result = new byte[(int)len];
+			C.readByteArray(result, 0, ptr, 0, result.length);
+			return result;
+		} finally {
+			C.free(ptr);
 		}
 	}
 	
