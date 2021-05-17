@@ -348,6 +348,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						Stream.of("-source", compilerLevel, "-target", compilerLevel) //$NON-NLS-1$ //$NON-NLS-2$
 					).collect(Collectors.toList());
 				classLoader = new JavaSourceClassLoader(cl, options, classPath);
+				// Bar loading of different-version SSJS classes from ndext
+				classLoader.getJavaFileManager().setNonDelegatingPackages(Arrays.asList("com.ibm.jscript")); //$NON-NLS-1$
 
 				// Compile Java classes
 				compileJavaSources(classLoader);
