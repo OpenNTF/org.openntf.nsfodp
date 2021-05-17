@@ -73,12 +73,10 @@ public enum ODPUtil {
 		String name = path.toString();
 		if(name.endsWith(JavaFileObject.Kind.SOURCE.extension)) {
 			return name.substring(0, name.length()-JavaFileObject.Kind.SOURCE.extension.length())
-				.replace('\\', '.')
-				.replace('/', '.');
+				.replace(path.getFileSystem().getSeparator(), "."); //$NON-NLS-1$
 		} else if(name.endsWith(JavaFileObject.Kind.CLASS.extension)) {
 			return name.substring(0, name.length()-JavaFileObject.Kind.CLASS.extension.length())
-				.replace('\\', '.')
-				.replace('/', '.');
+				.replace(path.getFileSystem().getSeparator(), "."); //$NON-NLS-1$
 		} else {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.ODPUtil_cannotInferClassName, path));
 		}

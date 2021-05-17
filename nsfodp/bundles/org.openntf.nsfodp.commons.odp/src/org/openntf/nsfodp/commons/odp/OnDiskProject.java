@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -49,7 +50,7 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	public static final List<PathMatcher> DIRECT_DXL_FILES = Stream.of(
+	public static final List<String> DIRECT_DXL_FILE_GLOBS = Stream.of(
 		"AppProperties/$DBIcon", //$NON-NLS-1$
 		"Code/actions/Shared Actions", //$NON-NLS-1$
 		"Code/Agents/*.ja", //$NON-NLS-1$
@@ -70,12 +71,14 @@ public class OnDiskProject {
 		"SharedElements/Navigators/*", //$NON-NLS-1$
 		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
-	).map(GlobMatcher::glob).collect(Collectors.toList());
+	).collect(Collectors.toList());
+	private final List<PathMatcher> directDxlFiles;
 	
-	public static final List<PathMatcher> IGNORED_FILES = Stream.of(
+	public static final List<String> IGNORED_FILE_GLOBS = Stream.of(
 		"**/.DS_Store", //$NON-NLS-1$
 		"**/Thumbs.db" //$NON-NLS-1$
-	).map(GlobMatcher::glob).collect(Collectors.toList());
+	).collect(Collectors.toList());
+	private final List<PathMatcher> ignoredFileGlobs;
 
 	private final Path baseDir;
 	
@@ -105,6 +108,12 @@ public class OnDiskProject {
 			new GlobMatcher("XPages/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("CustomControls/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())) //$NON-NLS-1$ //$NON-NLS-2$
 		);
+		this.directDxlFiles = DIRECT_DXL_FILE_GLOBS.stream()
+			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
+			.collect(Collectors.toList());
+		this.ignoredFileGlobs = IGNORED_FILE_GLOBS.stream()
+			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
+			.collect(Collectors.toList());
 	}
 	
 	public Path getBaseDirectory() {
@@ -251,10 +260,12 @@ public class OnDiskProject {
 	 * @return a {@link Stream} of {@link Path}s containing DXL to import
 	 */
 	public Stream<Path> getDirectDXLElements() {
-		return DIRECT_DXL_FILES.stream()
+		return directDxlFiles.stream()
 			.map(glob -> {
 				try {
-					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)) && attr.size() > 0);
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> {
+						return glob.matches(baseDir.relativize(path)) && attr.size() > 0;
+					});
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -263,17 +274,18 @@ public class OnDiskProject {
 	}
 	
 	public List<AbstractSplitDesignElement> getFileResources() {
+		FileSystem fs = baseDir.getFileSystem();
 		return FILE_RESOURCES.stream()
 			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,
 						(path, attr) -> {
-							for(PathMatcher ignoreMatcher : IGNORED_FILES) {
+							for(PathMatcher ignoreMatcher : this.ignoredFileGlobs) {
 								if(ignoreMatcher.matches(path)) {
 									return false;
 								}
 							}
-							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
+							return attr.isRegularFile() && matcher.getMatcher(fs).matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
 						}
 					).map(matcher::getElement);
 				} catch (IOException e) {
@@ -287,7 +299,7 @@ public class OnDiskProject {
 	}
 	
 	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
-		PathMatcher glob = GlobMatcher.glob("Code/ScriptLibraries/*.lss"); //$NON-NLS-1$
+		PathMatcher glob = GlobMatcher.glob(baseDir.getFileSystem(), "Code/ScriptLibraries/*.lss"); //$NON-NLS-1$
 		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
 			.map(path -> new LotusScriptLibrary(path))
 			.collect(Collectors.toList());
