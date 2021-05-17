@@ -196,6 +196,10 @@ public class EquinoxRunner {
     
     public static void addIBMJars(Path notesProgram, Collection<Path> classpath) {
     	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(!Files.isDirectory(lib) && "MacOS".equals(notesProgram.getFileName().toString())) { //$NON-NLS-1$
+    		// Shared Java libs moved in V12
+    		lib = notesProgram.getParent().resolve("Resources").resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    	}
     	
     	// Add ibmpkcs.jar if available, though it's gone in V11
     	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
