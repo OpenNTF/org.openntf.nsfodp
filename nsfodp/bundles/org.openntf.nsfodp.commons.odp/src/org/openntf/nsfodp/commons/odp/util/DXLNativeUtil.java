@@ -29,7 +29,8 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
+import com.ibm.domino.napi.c.C;
+import com.ibm.domino.napi.c.NotesUtil;
 
 /**
  * Utilities for manipulating "raw"-type DXL documents.
@@ -43,64 +44,70 @@ public enum DXLNativeUtil {
 	public static byte[] getJavaScriptLibraryData(Path file) throws IOException {
 	
 		// Read in the file data as an LMBCS string first
+		long lmbcsPtr;
+		System.out.println("reading " + file + ", size " + Files.size(file));
 		String fileContent = String.join("\n", Files.readAllLines(file)); //$NON-NLS-1$
-		byte[] lmbcs;
-		try(NotesAPI api = NotesAPI.get()) {
-			lmbcs = api.toLMBCSString(fileContent);
+		lmbcsPtr = NotesUtil.toLMBCS(fileContent);
+		if(lmbcsPtr == 0) {
+			return new byte[0];
 		}
 		
-		int fileLength = lmbcs.length;
-		
-		// Spec out the structure
-		int segCount = fileLength / BLOBPART_SIZE_CAP;
-		if (fileLength % BLOBPART_SIZE_CAP > 0) {
-			segCount++;
-		}
-
-		int paddedLength = fileLength + 1; // Make sure there's at least one \0 at the end
-		int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + paddedLength + (paddedLength % 2);
-		
-		
-		// Now create a CD record for the file data
-		// TODO this could be a little more efficient by writing to a Base64 wrapper and
-		//   cutting off and making a new item node at size intervals
-		ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
-		// CDEVENT
-		{
-			buf.putShort(SIG_CDEVENT);                     // Header.Signature
-			buf.putShort(SIZE_CDEVENT);                    // Header.Length
-			buf.putInt(0);                                 // Flags
-			buf.putShort(HTML_EVENT_LIBRARY);              // EventType
-			buf.putShort(ACTION_TYPE_JAVASCRIPT);          // ActionType
-			buf.putInt(paddedLength + (paddedLength % 2)); // ActionLength
-			buf.putShort((short)0);                        // SignatureLength
-			buf.put(new byte[14]);                         // Reserved
-		}
-		for(int i = 0; i < segCount; i++) {
-			// Each chunk begins with a CDBLOBPART
-
-			// Figure out our data and segment sizes
-			int dataOffset = BLOBPART_SIZE_CAP * i;
-			short dataSize = (short)Math.min((paddedLength - dataOffset), BLOBPART_SIZE_CAP);
-			short segSize = (short)(dataSize + (dataSize % 2));
-
-			// CDBLOBPART
+		try {
+			int fileLength = C.strlen(lmbcsPtr, 0);
+			
+			// Spec out the structure
+			int segCount = fileLength / BLOBPART_SIZE_CAP;
+			if (fileLength % BLOBPART_SIZE_CAP > 0) {
+				segCount++;
+			}
+	
+			int paddedLength = fileLength + 1; // Make sure there's at least one \0 at the end
+			int totalSize = SIZE_CDEVENT + (SIZE_CDBLOBPART * segCount) + paddedLength + (paddedLength % 2);
+			
+			
+			// Now create a CD record for the file data
+			// TODO this could be a little more efficient by writing to a Base64 wrapper and
+			//   cutting off and making a new item node at size intervals
+			ByteBuffer buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN) ;
+			// CDEVENT
 			{
-				buf.putShort(SIG_CDBLOBPART);                     // Header.Signature
-				buf.putShort((short)(segSize + SIZE_CDBLOBPART)); // Header.Length
-				buf.putShort(SIG_CDEVENT);                        // OwnerSig
-				buf.putShort((short)segSize);                     // Length
-				buf.putShort((short)BLOBPART_SIZE_CAP);           // BlobMax
-				buf.put(new byte[8]);                             // Reserved
-				
-				byte[] segData = new byte[dataSize];
-				System.arraycopy(lmbcs, dataOffset, segData, 0, dataSize);
-				buf.put(segData);
-				if(segSize > dataSize) {
-					buf.put(new byte[segSize-dataSize]);
+				buf.putShort(SIG_CDEVENT);                     // Header.Signature
+				buf.putShort(SIZE_CDEVENT);                    // Header.Length
+				buf.putInt(0);                                 // Flags
+				buf.putShort(HTML_EVENT_LIBRARY);              // EventType
+				buf.putShort(ACTION_TYPE_JAVASCRIPT);          // ActionType
+				buf.putInt(paddedLength + (paddedLength % 2)); // ActionLength
+				buf.putShort((short)0);                        // SignatureLength
+				buf.put(new byte[14]);                         // Reserved
+			}
+			for(int i = 0; i < segCount; i++) {
+				// Each chunk begins with a CDBLOBPART
+	
+				// Figure out our data and segment sizes
+				int dataOffset = BLOBPART_SIZE_CAP * i;
+				short dataSize = (short)Math.min((paddedLength - dataOffset), BLOBPART_SIZE_CAP);
+				short segSize = (short)(dataSize + (dataSize % 2));
+	
+				// CDBLOBPART
+				{
+					buf.putShort(SIG_CDBLOBPART);                     // Header.Signature
+					buf.putShort((short)(segSize + SIZE_CDBLOBPART)); // Header.Length
+					buf.putShort(SIG_CDEVENT);                        // OwnerSig
+					buf.putShort((short)segSize);                     // Length
+					buf.putShort((short)BLOBPART_SIZE_CAP);           // BlobMax
+					buf.put(new byte[8]);                             // Reserved
+					
+					byte[] segData = new byte[dataSize];
+					C.readByteArray(segData, 0, lmbcsPtr, dataOffset, dataSize);
+					buf.put(segData);
+					if(segSize > dataSize) {
+						buf.put(new byte[segSize-dataSize]);
+					}
 				}
 			}
+			return buf.array();
+		} finally {
+			C.free(lmbcsPtr);
 		}
-		return buf.array();
 	}
 }

@@ -64,13 +64,5 @@ public interface NotesAPI extends AutoCloseable {
 	 */
 	NDXLExporter createDXLExporter();
 	
-	/**
-	 * Converts the provided string to an LMBCS byte array
-	 * 
-	 * @param value the string to convert
-	 * @return the string as LMBCS
-	 */
-	byte[] toLMBCSString(String value);
-	
 	@Override void close();
 }
