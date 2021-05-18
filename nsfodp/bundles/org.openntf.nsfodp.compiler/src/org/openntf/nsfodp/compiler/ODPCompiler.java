@@ -486,8 +486,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			);
 			
 			facesProject.register(fragment);
-			facesProject.getRegistry().refreshReferences();
 		}
+		facesProject.getRegistry().refreshReferences();
 		
 		// Now that they're all defined, try to compile them in a queue
 		for(CustomControl cc : ccs) {
