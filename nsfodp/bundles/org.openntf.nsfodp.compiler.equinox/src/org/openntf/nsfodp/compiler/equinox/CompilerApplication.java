@@ -58,7 +58,15 @@ public class CompilerApplication implements IApplication {
 			}
 		}
 		
-		NotesThread.sinitThread();
+		try {
+			NotesThread.sinitThread();
+		} catch(Exception e) {
+			// Known exception message during Notes initialization - error code 0x0102
+			if(String.valueOf(e.getMessage()).endsWith(" - err 258")) { //$NON-NLS-1$
+				throw new Exception("Encountered Notes exception ERR_PROTECTED (0x0102): Cannot write or create file (file or disk is read-only)");
+			}
+			throw e;
+		}
 		try {
 			Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
 			List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
