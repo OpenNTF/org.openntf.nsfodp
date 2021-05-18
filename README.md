@@ -228,6 +228,14 @@ Note: if you use local compilation, either your ID file should have no password 
 
 Due to the way the macOS Notes JVM is set up, the process currently requires that the running user have access to modify the application bundle, which is the default for admin users.
 
+## Debugging Local Operations
+
+Local runners launch a separate Java process with an Equinox environment to function. You can pass additional command arguments to this launcher by using the `nsfodp.equinoxJvmArgs` property, which is a string that is split on whitespace. For example, to enable debug mode during compilation and suspecd on launch until a debugger connects:
+
+```sh
+$ mvn clean install -Dnsfodp.equinoxJvmArgs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+```
+
 ## License
 
 This project is licensed under the Apache License 2.0.
