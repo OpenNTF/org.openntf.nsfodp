@@ -172,7 +172,6 @@ public abstract class AbstractCompilationEnvironment {
 	protected void initRegistry() {
 		subTask(Messages.ODPCompiler_initializingLibraries);
 
-		
 		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
 		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 		libraries.stream()
