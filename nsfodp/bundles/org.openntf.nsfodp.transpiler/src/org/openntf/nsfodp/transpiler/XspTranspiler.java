@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.transpiler;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -169,7 +168,7 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 		
 			String javaSource = dynamicXPageBean.translate(className, relativeFile.toString(), xspSource, facesRegistry);
 			
-			String outputFileName = className.replace('.', File.separatorChar) + ".java"; //$NON-NLS-1$
+			String outputFileName = className.replace(".", rootDir.getFileSystem().getSeparator()) + ".java"; //$NON-NLS-1$ //$NON-NLS-2$
 			Path outputFile = outputDirectory.resolve(outputFileName);
 			Files.createDirectories(outputFile.getParent());
 			try(Writer w = Files.newBufferedWriter(outputFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {

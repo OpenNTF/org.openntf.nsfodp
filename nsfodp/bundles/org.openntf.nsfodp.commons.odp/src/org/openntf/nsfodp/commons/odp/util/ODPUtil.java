@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.commons.odp.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -161,7 +160,7 @@ public enum ODPUtil {
 	}
 
 	public static String toBasicFilePath(Path baseDir, Path file) {
-		return baseDir.relativize(file).toString().replace(File.separatorChar, '/');
+		return baseDir.relativize(file).toString().replace(baseDir.getFileSystem().getSeparator(), "/"); //$NON-NLS-1$
 	}
 	
 	/**

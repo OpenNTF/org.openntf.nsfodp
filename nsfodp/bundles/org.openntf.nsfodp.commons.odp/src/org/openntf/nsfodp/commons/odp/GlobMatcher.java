@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.commons.odp;
 
-import java.io.File;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -29,9 +28,6 @@ import java.util.function.Function;
  * @since 2.0.0
  */
 class GlobMatcher {
-	/** Platform-specific PathMatcher separator, escaped in the case of Windows */
-	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator; //$NON-NLS-1$
-	
 	private final String unixGlob;
 	private final Function<Path, ? extends AbstractSplitDesignElement> elementProvider;
 

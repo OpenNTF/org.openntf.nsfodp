@@ -240,10 +240,11 @@ public class GenerateMetadataMojo extends AbstractMojo {
 			case Java: {
 				Path relativePath = odpDir.relativize(file);
 				
+				String separator = odpDir.getFileSystem().getSeparator();
 				note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$
-				DXLUtil.writeItemString(dxl, FIELD_TITLE, true, relativePath.toString().replace(File.separatorChar, '/'));
+				DXLUtil.writeItemString(dxl, FIELD_TITLE, true, relativePath.toString().replace(separator, "/")); //$NON-NLS-1$
 				DXLUtil.writeItemString(dxl, DESIGN_FLAGS, true, "34567Cg~["); //$NON-NLS-1$
-				DXLUtil.writeItemString(dxl, ITEM_NAME_FILE_NAMES, true, relativePath.toString().replace(File.separatorChar, '/'));
+				DXLUtil.writeItemString(dxl, ITEM_NAME_FILE_NAMES, true, relativePath.toString().replace(separator, "/")); //$NON-NLS-1$
 				break;
 			}
 			case JavaScriptLibrary: {
