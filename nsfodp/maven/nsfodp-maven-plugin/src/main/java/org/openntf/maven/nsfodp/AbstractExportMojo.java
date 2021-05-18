@@ -74,7 +74,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 	/**
 	 * The base URL of the ODP exporter server, e.g. "http://my.server".
 	 */
-	@Parameter(property = "nsfodp.exporter.serverUrl", required = true)
+	@Parameter(property = "nsfodp.exporter.serverUrl", required = false)
 	protected URL exporterServerUrl;
 	/**
 	 * Whether or not to trust self-signed SSL certificates.
@@ -214,11 +214,6 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 			}
 		}
 		
-		URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl);
-		if(log.isDebugEnabled()) {
-			log.debug(Messages.getString("GenerateODPMojo.usingServerUrl", exporterServerUrl)); //$NON-NLS-1$
-		}
-		
 		try {
 			if(isRunLocally()) {
 				Path temp = Files.createTempDirectory("nsfodp"); //$NON-NLS-1$
@@ -231,6 +226,11 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 					Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 				}
 			} else {
+				URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl, "exportServerUrl cannot be null");
+				if(log.isDebugEnabled()) {
+					log.debug(Messages.getString("GenerateODPMojo.usingServerUrl", exporterServerUrl)); //$NON-NLS-1$
+				}
+				
 				Path zip = exportODPRemote();
 				try {
 					Path eclipseProject = copyEclipseProject(odpDir);
