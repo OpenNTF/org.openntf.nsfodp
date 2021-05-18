@@ -216,7 +216,7 @@ The Eclipse plugin targets Neon and above, but may work with older releases, as 
 
 ### Domino (For Server Operations)
 
-The Domino plugins require Domino 9.0.1 FP10 or above. Additionally, it requires the [XPages Bazaar](https://www.openntf.org/main.nsf/project.xsp?r=project/XPages%20Bazaar) version 2.0.3 or above.
+The Domino plugins require Domino 9.0.1 FP10 or above.
 
 ### Notes or Domino (For Local Operations)
 
