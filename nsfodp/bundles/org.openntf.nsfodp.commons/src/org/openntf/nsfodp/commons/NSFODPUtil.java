@@ -18,6 +18,7 @@ package org.openntf.nsfodp.commons;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -75,15 +77,17 @@ public enum NSFODPUtil {
 	 */
 	public static void deltree(Path path) throws IOException {
 		if(Files.isDirectory(path)) {
-			Files.walk(path)
-				.sorted(Comparator.reverseOrder())
-				.forEach(p -> {
-					try {
-						Files.deleteIfExists(path);
-					} catch(IOException e) {
-						// This is likely a Windows file-locking thing
-					}
-				});
+			try(Stream<Path> walk = Files.walk(path)) {
+				walk
+					.sorted(Comparator.reverseOrder())
+					.forEach(p -> {
+						try {
+							Files.deleteIfExists(p);
+						} catch(IOException e) {
+							throw new UncheckedIOException(e);
+						}
+					});
+			}
 		}
 		try {
 			Files.deleteIfExists(path);
@@ -143,7 +147,7 @@ public enum NSFODPUtil {
 				return FileVisitResult.CONTINUE;
 			}
 			
-			Files.copy(file, targetPath.resolve(sourcePath.relativize(file).toString()));
+			Files.copy(file, targetPath.resolve(sourcePath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
 			return FileVisitResult.CONTINUE;
 		}
 	}
