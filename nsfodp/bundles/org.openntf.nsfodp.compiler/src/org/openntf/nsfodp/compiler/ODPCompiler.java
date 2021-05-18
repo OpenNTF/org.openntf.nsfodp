@@ -804,8 +804,10 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	
 	private XSPCompilationResult compileXSP(XPage xpage, JavaSourceClassLoader classLoader) throws Exception {
 		try {
-			String xspSource = xpage.getSource();
-			String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
+			String javaSource;
+			try(InputStream xspSource = xpage.getSourceAsStream()) {
+				javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
+			}
 			Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 			return new XSPCompilationResult(javaSource, compiled);
 		} catch(Throwable e) {

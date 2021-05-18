@@ -17,7 +17,7 @@ package org.openntf.nsfodp.commons.odp.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +46,6 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
 
@@ -54,16 +53,17 @@ public enum ODPUtil {
 	;
 	
 	public static String readFile(Path path) {
-		try(Reader r = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-			return StreamUtil.readString(r);
+		try {
+			return String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)); //$NON-NLS-1$
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	public static Document readXml(Path file) {
-		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-			return DOMUtil.createDocument(r);
+		// Let the XML parser handle reading, since XML has charset hints in the prolog
+		try(InputStream is = Files.newInputStream(file)) {
+			return DOMUtil.createDocument(is);
 		} catch(IOException | XMLException e) {
 			throw new RuntimeException(e);
 		}
