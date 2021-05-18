@@ -36,6 +36,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.Deflater;
@@ -74,12 +75,13 @@ public enum NSFODPUtil {
 	 */
 	public static void deltree(Path path) throws IOException {
 		if(Files.isDirectory(path)) {
-			Files.list(path)
-			    .forEach(t -> {
+			Files.walk(path)
+				.sorted(Comparator.reverseOrder())
+				.forEach(p -> {
 					try {
-						NSFODPUtil.deltree(t);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
+						Files.deleteIfExists(path);
+					} catch(IOException e) {
+						// This is likely a Windows file-locking thing
 					}
 				});
 		}
