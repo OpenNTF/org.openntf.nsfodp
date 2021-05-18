@@ -379,6 +379,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path outputFile) throws IOException {
 		Path notesIni = this.notesIni == null ? null : this.notesIni.toPath();
 		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform, notesIni);
+		compiler.setJvmArgs(this.equinoxJvmArgs);
 		List<Path> jars = new ArrayList<>();
 		if(this.classpathJars != null) {
 			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);

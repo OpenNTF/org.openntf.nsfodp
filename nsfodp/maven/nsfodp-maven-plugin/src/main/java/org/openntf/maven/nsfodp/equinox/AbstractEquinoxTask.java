@@ -61,6 +61,8 @@ public abstract class AbstractEquinoxTask {
 	private List<Path> updateSites;
 	
 	private boolean successFlag;
+	
+	private String jvmArgs;
 
 	public AbstractEquinoxTask(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform, Path notesIni) throws IOException {
 		this.pluginDescriptor = pluginDescriptor;
@@ -95,6 +97,13 @@ public abstract class AbstractEquinoxTask {
 		return notesIni;
 	}
 	
+	/**
+	 * @since 3.5.0
+	 */
+	public void setJvmArgs(String jvmArgs) {
+		this.jvmArgs = jvmArgs;
+	}
+	
 	protected void run(String applicationId) {
 		successFlag = false;
 		try {
@@ -106,6 +115,7 @@ public abstract class AbstractEquinoxTask {
 			EquinoxRunner runner = new EquinoxRunner();
 			runner.setJavaBin(getJavaBinary(notesProgram));
 			runner.setNotesProgram(notesProgram);
+			runner.setJvmArgs(this.jvmArgs);
 			
 			if(classpathJars != null) {
 				classpathJars.forEach(runner::addClasspathJar);

@@ -77,6 +77,13 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.requireServerExecution", required=false)
 	protected boolean requireServerExecution = false;
+	
+	/**
+	 * Sets process arguments to append to the Equinox JVM launcher, such as debug options.
+	 * @since 3.5.0
+	 */
+	@Parameter(property="nsfodp.equinoxJvmArgs", required=false)
+	protected String equinoxJvmArgs;
 
 	protected boolean isRunLocally() {
 		return notesProgram != null && notesPlatform != null && !requireServerExecution;

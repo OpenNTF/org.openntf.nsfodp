@@ -37,6 +37,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 
@@ -49,6 +50,7 @@ public class EquinoxRunner {
 	private final Map<String, String> systemProperties = new HashMap<>();
 	private String osgiBundle;
 	private Path logFile;
+	private String jvmArgs;
 	
 	public Path getJavaBin() {
 		return javaBin;
@@ -93,6 +95,14 @@ public class EquinoxRunner {
 	
 	public Path getLogFile() {
 		return logFile;
+	}
+	
+	/**
+	 * @param jvmArgs an argument string to add to the JVM launch
+	 * @since 3.5.0
+	 */
+	public void setJvmArgs(String jvmArgs) {
+		this.jvmArgs = jvmArgs;
 	}
 	
 	public Process start(String applicationId) throws IOException {
@@ -141,6 +151,11 @@ public class EquinoxRunner {
 		
 		List<String> command = new ArrayList<>();
 		command.add(getJavaBin().toString());
+		if(this.jvmArgs != null) {
+			Stream.of(this.jvmArgs.split("\\s+")) //$NON-NLS-1$
+				.filter(s -> s != null && !s.isEmpty())
+				.forEach(command::add);
+		}
 		command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
 		command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
 		command.add("-framwork"); //$NON-NLS-1$

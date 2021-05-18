@@ -170,6 +170,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 	protected void exportODPLocal(Path odpDir) throws IOException {
 		Path notesIni = this.notesIni == null ? null : this.notesIni.toPath();
 		EquinoxExporter exporter = new EquinoxExporter(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform, notesIni);
+		exporter.setJvmArgs(this.equinoxJvmArgs);
 		if(file == null) {
 			exporter.exportOdp(odpDir, databasePath, binaryDxl, swiperFilter, richTextAsItemData);
 		} else {
