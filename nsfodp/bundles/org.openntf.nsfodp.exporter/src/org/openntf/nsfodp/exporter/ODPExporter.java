@@ -74,7 +74,6 @@ import static org.openntf.nsfodp.commons.NSFODPUtil.matchesFlagsPattern;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -299,9 +298,6 @@ public class ODPExporter {
 						if(iconNote != null && iconNote.isRefValid()) {
 							exportNote(iconNote, exporter, target);
 						}
-					} catch(Throwable e) {
-						e.printStackTrace();
-						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
 					}
 				} catch(NDominoException e) {
 					switch(e.getStatus()) {
@@ -313,6 +309,9 @@ public class ODPExporter {
 						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
 						break;
 					}
+				} catch(Throwable e) {
+					e.printStackTrace();
+					System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
 				}
 			}
 			
