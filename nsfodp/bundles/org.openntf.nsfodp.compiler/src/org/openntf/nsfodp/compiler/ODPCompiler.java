@@ -87,10 +87,8 @@ import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
-import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesLibraryFragment;
 import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.xsp.registry.LibraryFragmentImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
 
@@ -477,7 +475,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			
 			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue()); //$NON-NLS-1$
 			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
-			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
+			FacesLibraryFragment fragment = configParser.createFacesLibraryFragment(
 					facesProject,
 					facesClassLoader,
 					fileName.toString(),
@@ -487,12 +485,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					namespace
 			);
 			
-			UpdatableLibrary library = getLibrary(namespace);
-			library.addLibraryFragment(fragment);
-			
-			// Load the definition to refresh its parent ref
-			CompositeComponentDefinitionImpl def = (CompositeComponentDefinitionImpl)library.getDefinition(cc.getControlName());
-			def.refreshReferences();
+			facesProject.register(fragment);
+			facesProject.getRegistry().refreshReferences();
 		}
 		
 		// Now that they're all defined, try to compile them in a queue

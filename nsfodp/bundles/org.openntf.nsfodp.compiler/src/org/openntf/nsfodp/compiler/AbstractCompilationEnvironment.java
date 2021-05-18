@@ -18,7 +18,6 @@ package org.openntf.nsfodp.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,7 +26,6 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -51,11 +49,8 @@ import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
-import com.ibm.xsp.registry.FacesLibraryImpl;
-import com.ibm.xsp.registry.FacesProject;
 import com.ibm.xsp.registry.FacesProjectImpl;
 import com.ibm.xsp.registry.SharableRegistryImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.config.IconUrlSource;
 import com.ibm.xsp.registry.config.ResourceBundleSource;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
@@ -72,7 +67,7 @@ public abstract class AbstractCompilationEnvironment {
 	protected final BundleContext bundleContext;
 	protected final Set<UpdateSite> updateSites = new LinkedHashSet<>();
 	protected final Set<Path> classPathEntries = new LinkedHashSet<>();
-	protected final FacesProject facesProject;
+	protected final FacesProjectImpl facesProject;
 	protected final DynamicXPageBean dynamicXPageBean = new DynamicXPageBean();
 	protected final ResourceBundleSource resourceBundleSource;
 	protected final IconUrlSource iconUrlSource = icon -> getClass().getResource(icon);
@@ -80,7 +75,8 @@ public abstract class AbstractCompilationEnvironment {
 	
 	public AbstractCompilationEnvironment(BundleContext bundleContext, ResourceBundleSource resourceBundleSource, IProgressMonitor mon) {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
-		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), new SharableRegistryImpl(getClass().getPackage().getName()));
+		SharableRegistryImpl registry = new SharableRegistryImpl(getClass().getPackage().getName());
+		this.facesProject = registry.createProject(getClass().getPackage().getName());
 		this.resourceBundleSource = resourceBundleSource;
 		this.mon = mon;
 	}
@@ -176,6 +172,7 @@ public abstract class AbstractCompilationEnvironment {
 	protected void initRegistry() {
 		subTask(Messages.ODPCompiler_initializingLibraries);
 
+		
 		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
 		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 		libraries.stream()
@@ -191,26 +188,6 @@ public abstract class AbstractCompilationEnvironment {
 			.map(XspRegistryProvider::getRegistry)
 			.forEach(facesRegistry::addDepend);
 		facesRegistry.refreshReferences();
-	}
-
-	protected UpdatableLibrary getLibrary(String namespace) {
-		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
-		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(namespace);
-		if(library == null) {
-			try {
-				library = new FacesLibraryImpl(facesRegistry, namespace);
-				// TODO this is probably properly done by creating a FacesProjectImpl
-				// - it can then register the library fragments itself
-				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs"); //$NON-NLS-1$
-				localLibsField.setAccessible(true);
-				@SuppressWarnings("unchecked")
-				Map<String, UpdatableLibrary> localLibs = (Map<String, UpdatableLibrary>)localLibsField.get(facesRegistry);
-				localLibs.put(namespace, library);
-			} catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return library;
 	}
 	
 	protected Collection<String> buildDependenciesCollection(Collection<Path> cleanup) throws IOException {
