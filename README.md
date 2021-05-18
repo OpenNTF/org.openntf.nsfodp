@@ -230,7 +230,7 @@ Due to the way the macOS Notes JVM is set up, the process currently requires tha
 
 ## Debugging Local Operations
 
-Local runners launch a separate Java process with an Equinox environment to function. You can pass additional command arguments to this launcher by using the `nsfodp.equinoxJvmArgs` property, which is a string that is split on whitespace. For example, to enable debug mode during compilation and suspecd on launch until a debugger connects:
+Local runners launch a separate Java process with an Equinox environment to function. You can pass additional command arguments to this launcher by using the `nsfodp.equinoxJvmArgs` property, which is a string that is split on whitespace. For example, to enable debug mode during compilation and suspend on launch until a debugger connects:
 
 ```sh
 $ mvn clean install -Dnsfodp.equinoxJvmArgs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
