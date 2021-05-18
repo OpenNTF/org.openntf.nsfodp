@@ -47,6 +47,7 @@ import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.page.compiled.PageToClassNameUtil;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
 import com.ibm.xsp.registry.LibraryFragmentImpl;
 import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.parse.ConfigParser;
@@ -166,7 +167,7 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 			Path relativeFile = rootDir.relativize(xspFile);
 			String className = PageToClassNameUtil.getClassNameForPage(relativeFile.toString());
 		
-			String javaSource = dynamicXPageBean.translate(className, relativeFile.toString(), xspSource, facesRegistry);
+			String javaSource = dynamicXPageBean.translate(className, relativeFile.toString(), xspSource, (FacesSharableRegistry)facesProject.getRegistry());
 			
 			String outputFileName = className.replace(".", rootDir.getFileSystem().getSeparator()) + ".java"; //$NON-NLS-1$ //$NON-NLS-2$
 			Path outputFile = outputDirectory.resolve(outputFileName);

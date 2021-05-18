@@ -88,6 +88,7 @@ import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
 import com.ibm.xsp.registry.LibraryFragmentImpl;
 import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.parse.ConfigParser;
@@ -806,7 +807,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		try {
 			String javaSource;
 			try(InputStream xspSource = xpage.getSourceAsStream()) {
-				javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
+				javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, (FacesSharableRegistry)facesProject.getRegistry());
 			}
 			Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 			return new XSPCompilationResult(javaSource, compiled);

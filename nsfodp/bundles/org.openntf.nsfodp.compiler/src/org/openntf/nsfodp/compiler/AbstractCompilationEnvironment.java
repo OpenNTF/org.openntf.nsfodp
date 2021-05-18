@@ -72,7 +72,6 @@ public abstract class AbstractCompilationEnvironment {
 	protected final BundleContext bundleContext;
 	protected final Set<UpdateSite> updateSites = new LinkedHashSet<>();
 	protected final Set<Path> classPathEntries = new LinkedHashSet<>();
-	protected final SharableRegistryImpl facesRegistry = new SharableRegistryImpl(getClass().getPackage().getName());
 	protected final FacesProject facesProject;
 	protected final DynamicXPageBean dynamicXPageBean = new DynamicXPageBean();
 	protected final ResourceBundleSource resourceBundleSource;
@@ -81,7 +80,7 @@ public abstract class AbstractCompilationEnvironment {
 	
 	public AbstractCompilationEnvironment(BundleContext bundleContext, ResourceBundleSource resourceBundleSource, IProgressMonitor mon) {
 		this.bundleContext = Objects.requireNonNull(bundleContext);
-		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), facesRegistry);
+		this.facesProject = new FacesProjectImpl(getClass().getPackage().getName(), new SharableRegistryImpl(getClass().getPackage().getName()));
 		this.resourceBundleSource = resourceBundleSource;
 		this.mon = mon;
 	}
@@ -177,6 +176,7 @@ public abstract class AbstractCompilationEnvironment {
 	protected void initRegistry() {
 		subTask(Messages.ODPCompiler_initializingLibraries);
 
+		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
 		List<Object> libraries = ExtensionManager.findServices((List<Object>)null, LibraryServiceLoader.class, "com.ibm.xsp.Library"); //$NON-NLS-1$
 		libraries.stream()
 			.filter(lib -> lib instanceof XspLibrary)
@@ -189,12 +189,12 @@ public abstract class AbstractCompilationEnvironment {
 				return provider;
 			})
 			.map(XspRegistryProvider::getRegistry)
-			
 			.forEach(facesRegistry::addDepend);
 		facesRegistry.refreshReferences();
 	}
 
 	protected UpdatableLibrary getLibrary(String namespace) {
+		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
 		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(namespace);
 		if(library == null) {
 			try {
