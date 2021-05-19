@@ -45,7 +45,7 @@ public class DxlImporterLog {
 				return (DxlImporterLog) unmarshaller.unmarshal(r);
 			}
 		} catch (JAXBException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Encountered exception parsing DXL log: " + xml, e);
 		}
 	}
 	
