@@ -571,8 +571,17 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				})
 				.forEach(p -> {
 					try {
-						try(InputStream is = Files.newInputStream(p)) {
-							importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+						// Work around trouble where reading the XML from Files.newInputStream(p) only
+						//   reads one WORD length properly before trailing off into nulls.
+						// Observed in Domino V12b3 on Windows
+						Path dxlTemp = Files.createTempFile("dxl", ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
+						try {
+							Files.copy(p, dxlTemp, StandardCopyOption.REPLACE_EXISTING);
+							try(InputStream is = Files.newInputStream(dxlTemp)) {
+								importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+							}
+						} finally {
+							NSFODPUtil.deltree(dxlTemp);
 						}
 					} catch(Exception e) {
 						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
