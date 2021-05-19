@@ -244,8 +244,8 @@ public class EquinoxRunner {
     	// Look for ndext and add all those to match the Domino classpath
     	Path ndext = notesProgram.resolve("ndext"); //$NON-NLS-1$
     	if(Files.isDirectory(ndext)) {
-    		try {
-				Files.list(ndext)
+    		try(Stream<Path> filesStream = Files.list(ndext)) {
+				filesStream
 					.filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
 					.forEach(classpath::add);
 			} catch (IOException e) {

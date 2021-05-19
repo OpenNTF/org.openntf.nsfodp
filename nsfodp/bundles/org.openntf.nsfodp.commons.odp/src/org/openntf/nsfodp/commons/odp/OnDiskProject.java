@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -141,15 +142,19 @@ public class OnDiskProject {
 		
 		Path jars = baseDir.resolve("Code").resolve("Jars"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.exists(jars) && Files.isDirectory(jars)) {
-			Files.find(jars, Integer.MAX_VALUE,
-					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
-				).forEach(result::add);
+			try(Stream<Path> fileStream = Files.find(jars, Integer.MAX_VALUE,
+				(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
+			)) {
+				fileStream.forEach(result::add);
+			}
 		}
 		Path lib = baseDir.resolve("WebContent").resolve("WEB-INF").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		if(Files.exists(lib) && Files.isDirectory(lib)) {
-			Files.find(lib, Integer.MAX_VALUE,
-					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
-				).forEach(result::add);
+			try(Stream<Path> fileStream = Files.find(lib, Integer.MAX_VALUE,
+				(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
+			)) {
+				fileStream.forEach(result::add);
+			}
 		}
 		result.addAll(this.findManualJars());
 		return result;
@@ -232,10 +237,13 @@ public class OnDiskProject {
 	public List<CustomControl> getCustomControls() throws IOException {
 		Path dir = baseDir.resolve("CustomControls"); //$NON-NLS-1$
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(dir, 1,
-					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			try(Stream<Path> fileStream = Files.find(dir, 1,
+				(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			) {
+				return fileStream
 					.map(path -> new CustomControl(path))
 					.collect(Collectors.toList());
+			}
 		} else {
 			return Collections.emptyList();
 		}
@@ -244,10 +252,13 @@ public class OnDiskProject {
 	public List<XPage> getXPages() throws IOException {
 		Path dir = baseDir.resolve("XPages"); //$NON-NLS-1$
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(dir, 1,
-					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			try(Stream<Path> fileStream = Files.find(dir, 1,
+				(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			) {
+				return fileStream
 					.map(path -> new XPage(path))
 					.collect(Collectors.toList());
+			}
 		} else {
 			return Collections.emptyList();
 		}
@@ -315,23 +326,17 @@ public class OnDiskProject {
 	 */
 	public boolean hasXPagesElements() throws IOException, XMLException {
 		Path xpages = baseDir.resolve("XPages"); //$NON-NLS-1$
-		if(Files.exists(xpages) && Files.list(xpages).count() > 0) {
+		if(NSFODPUtil.isNonEmptyDirectory(xpages)) {
 			return true;
 		}
 		Path ccs = baseDir.resolve("CustomControls"); //$NON-NLS-1$
-		if(Files.exists(ccs) && Files.list(ccs).count() > 0) {
+		if(NSFODPUtil.isNonEmptyDirectory(ccs)) {
 			return true;
 		}
-		boolean hasJava = findSourceFolders().stream()
-				.map(t -> {
-					try {
-						return Files.list(t);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.map(Stream::count)
-				.anyMatch(i -> i > 0);
+		boolean hasJava;
+		try(Stream<Path> sourceStream = findSourceFolders().stream()) {
+			hasJava = sourceStream.anyMatch(NSFODPUtil::isNonEmptyDirectory);
+		}
 		if(hasJava) {
 			return true;
 		}

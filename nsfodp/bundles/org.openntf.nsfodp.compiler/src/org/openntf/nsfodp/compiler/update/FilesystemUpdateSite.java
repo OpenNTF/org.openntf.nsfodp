@@ -16,12 +16,14 @@
 package org.openntf.nsfodp.compiler.update;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents an Eclipse Update site on the filesystem containing a "plugins" directory.
@@ -49,12 +51,12 @@ public class FilesystemUpdateSite implements UpdateSite {
 			throw new IllegalStateException("plugins directory is not a directory: " + plugins);
 		}
 		
-		try {
-			return Files.list(plugins)
+		try(Stream<Path> pluginStream = Files.list(plugins)) {
+			return pluginStream
 				.map(Path::toUri)
 				.collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 }

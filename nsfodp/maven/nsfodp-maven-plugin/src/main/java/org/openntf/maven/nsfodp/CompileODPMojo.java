@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -525,8 +526,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				}
 				
 				// Check if any ODP files changed
-				if(Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).findFirst().isPresent()) {
-					return true;
+				try(Stream<Path> changeStream = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0)) {
+					if(changeStream.findAny().isPresent()) {
+						return true;
+					}
 				}
 				
 				// Check if any dependent update sites changed

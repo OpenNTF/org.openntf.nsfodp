@@ -37,7 +37,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -77,23 +76,42 @@ public enum NSFODPUtil {
 	 */
 	public static void deltree(Path path) throws IOException {
 		if(Files.isDirectory(path)) {
-			try(Stream<Path> walk = Files.walk(path)) {
-				walk
-					.sorted(Comparator.reverseOrder())
-					.forEach(p -> {
-						try {
-							Files.deleteIfExists(p);
-						} catch(IOException e) {
-							throw new UncheckedIOException(e);
-						}
-					});
+			try(Stream<Path> walk = Files.list(path)) {
+				walk.forEach(p -> {
+					try {
+						deltree(p);
+					} catch(IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				});
 			}
 		}
 		try {
 			Files.deleteIfExists(path);
 		} catch(IOException e) {
 			// This is likely a Windows file-locking thing
+			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Determines whether the given {@link path} is a directory and contains at least
+	 * one entry.
+	 * 
+	 * @param path the path to check
+	 * @return {@true} if the path is a non-empty directory; {@code false} otherwise
+	 * @throws UncheckedIOException if there is a problem reading the filesystem
+	 * @since 3.5.0
+	 */
+	public static boolean isNonEmptyDirectory(Path path) {
+		if(Files.isDirectory(path)) {
+			try(Stream<Path> entryStream = Files.list(path)) {
+				return entryStream.findFirst().isPresent();
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		return false;
 	}
 	
 	/**

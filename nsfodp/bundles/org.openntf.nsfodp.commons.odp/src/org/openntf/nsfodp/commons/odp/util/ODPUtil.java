@@ -17,6 +17,7 @@ package org.openntf.nsfodp.commons.odp.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -87,12 +88,15 @@ public enum ODPUtil {
 	
 	public static List<JavaSource> listJavaFiles(Path baseDir) {
 		try {
-			return Files.find(baseDir, Integer.MAX_VALUE,
-					(path, attr) -> path.toString().endsWith(JavaFileObject.Kind.SOURCE.extension) && attr.isRegularFile())
+			try(Stream<Path> findStream = Files.find(baseDir, Integer.MAX_VALUE,
+				(path, attr) -> path.toString().endsWith(JavaFileObject.Kind.SOURCE.extension) && attr.isRegularFile())
+			) {
+				return findStream
 					.map(path -> new JavaSource(path))
 					.collect(Collectors.toList());
+			}
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	

@@ -166,8 +166,8 @@ public abstract class AbstractEquinoxTask {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesPluginsDirDoesNotExist", notesPlugins)); //$NON-NLS-1$
 			}
 			String[] osgiBundle = new String[1];
-			Files.list(notesPlugins)
-				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+			try(Stream<Path> pluginsStream = Files.list(notesPlugins)) {
+				pluginsStream.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
 				.filter(p -> {
 					if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) { //$NON-NLS-1$
 						osgiBundle[0] = p.toUri().toString();
@@ -177,6 +177,7 @@ public abstract class AbstractEquinoxTask {
 				})
 				.map(p -> getPathRef(p, -1))
 				.forEach(runner::addPlatformEntry);
+			}
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 			}
@@ -186,10 +187,11 @@ public abstract class AbstractEquinoxTask {
 				for(Path updateSite : this.updateSites) {
 					Path sitePlugins = updateSite.resolve("plugins"); //$NON-NLS-1$
 					if(Files.isDirectory(sitePlugins)) {
-						Files.list(sitePlugins)
-							.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
-							.map(p -> getPathRef(p, -1))
-							.forEach(runner::addPlatformEntry);
+						try(Stream<Path> pluginsStream = Files.list(sitePlugins)) {
+							pluginsStream.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+								.map(p -> getPathRef(p, -1))
+								.forEach(runner::addPlatformEntry);
+						}
 					}
 				}
 			}

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -81,36 +82,38 @@ public enum ComponentCache {
 	}
 	
 	private static Collection<CustomControl> readCustomControls(Path path) throws IOException {
-		return Files.list(path)
-			.filter(Files::isReadable)
-			.filter(Files::isRegularFile)
-			.filter(file -> file.toString().endsWith(".xsp-config")) //$NON-NLS-1$
-			.map(file -> {
-				XMLDocument doc = new XMLDocument();
-				try (InputStream is = Files.newInputStream(file)) {
-					doc.loadInputStream(is);
-				} catch (IOException | SAXException | ParserConfigurationException e) {
-					throw new RuntimeException(e);
-				}
-				String namespaceUri = doc
-						.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText(); //$NON-NLS-1$
-				String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix") //$NON-NLS-1$
-						.getText();
-				String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
-						.getText();
-				
-				List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property") //$NON-NLS-1$
-						.stream()
-						.map(prop -> {
-							String name = prop.selectSingleNode("property-name").getText(); //$NON-NLS-1$
-							String javaClass = prop.selectSingleNode("property-class").getText(); //$NON-NLS-1$
-							return new ComponentProperty(name, javaClass, false, null);
-						})
-						.collect(Collectors.toList());
+		try(Stream<Path> fileStream = Files.list(path)) {
+			return fileStream
+				.filter(Files::isReadable)
+				.filter(Files::isRegularFile)
+				.filter(file -> file.toString().endsWith(".xsp-config")) //$NON-NLS-1$
+				.map(file -> {
+					XMLDocument doc = new XMLDocument();
+					try (InputStream is = Files.newInputStream(file)) {
+						doc.loadInputStream(is);
+					} catch (IOException | SAXException | ParserConfigurationException e) {
+						throw new RuntimeException(e);
+					}
+					String namespaceUri = doc
+							.selectSingleNode("/faces-config/faces-config-extension/namespace-uri").getText(); //$NON-NLS-1$
+					String prefix = doc.selectSingleNode("/faces-config/faces-config-extension/default-prefix") //$NON-NLS-1$
+							.getText();
+					String tagName = doc.selectSingleNode("/faces-config/composite-component/composite-name") //$NON-NLS-1$
+							.getText();
+					
+					List<ComponentProperty> attributes = doc.selectNodes("/faces-config/composite-component/property") //$NON-NLS-1$
+							.stream()
+							.map(prop -> {
+								String name = prop.selectSingleNode("property-name").getText(); //$NON-NLS-1$
+								String javaClass = prop.selectSingleNode("property-class").getText(); //$NON-NLS-1$
+								return new ComponentProperty(name, javaClass, false, null);
+							})
+							.collect(Collectors.toList());
 
-				return new CustomControl(namespaceUri, prefix, tagName, attributes);
-			})
-			.collect(Collectors.toCollection(TreeSet::new));
+					return new CustomControl(namespaceUri, prefix, tagName, attributes);
+				})
+				.collect(Collectors.toCollection(TreeSet::new));
+		}
 	}
 	
 	public static synchronized Collection<StockComponent> getStockComponents() throws IOException {

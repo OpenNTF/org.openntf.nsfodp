@@ -560,23 +560,25 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	
 	private void importBasicElements(NDXLImporter importer, NDatabase database) throws Exception {
 		subTask(Messages.ODPCompiler_importingDesignElements);
-		odp.getDirectDXLElements()
-			.filter(p -> {
-				try {
-					return Files.size(p) > 0;
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			})
-			.forEach(p -> {
-				try {
-					try(InputStream is = Files.newInputStream(p)) {
-						importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+		try(Stream<Path> dxlElements = odp.getDirectDXLElements()) {
+			dxlElements
+				.filter(p -> {
+					try {
+						return Files.size(p) > 0;
+					} catch (IOException e) {
+						throw new RuntimeException(e);
 					}
-				} catch(Exception e) {
-					throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
-				}
-			});
+				})
+				.forEach(p -> {
+					try {
+						try(InputStream is = Files.newInputStream(p)) {
+							importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+						}
+					} catch(Exception e) {
+						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
+					}
+				});
+		}	
 	}
 	
 	private void importFileResources(NDXLImporter importer, NDatabase database) throws Exception {
