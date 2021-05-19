@@ -4,9 +4,9 @@
     <text>34567Cg~[</text>
   </item>
   <item name="$TITLE">
-    <text>org/openntf/nsfodp/example/ExampleClass.java</text>
+    <text>org/openntf/nsfodp/example/nsf/ExampleClass.java</text>
   </item>
   <item name="$FileNames" sign="true">
-    <text>org/openntf/nsfodp/example/ExampleClass.java</text>
+    <text>org/openntf/nsfodp/example/nsf/ExampleClass.java</text>
   </item>
 </note>
