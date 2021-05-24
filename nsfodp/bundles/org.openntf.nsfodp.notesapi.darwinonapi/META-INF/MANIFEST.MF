@@ -8,6 +8,7 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: lib/com.darwino.domino.napi.jar,
  .
-Require-Bundle: com.ibm.commons
+Require-Bundle: com.ibm.commons,
+ com.ibm.domino.napi
 Import-Package: org.openntf.nsfodp.commons.odp.notesapi
 Fragment-Host: org.openntf.nsfodp.commons.odp

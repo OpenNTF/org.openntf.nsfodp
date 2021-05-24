@@ -104,7 +104,7 @@ public class DarwinoNNote implements NNote {
 	public NCompositeData getCompositeData(String itemName) {
 		try {
 			NSFCompositeData data = this.note.getCompositeData(itemName);
-			return data == null ? null : new DarwinoNCompositeData(data);
+			return data == null ? null : new DarwinoNCompositeData(this.note, data);
 		} catch (DominoException e) {
 			throw new NDominoException(e.getStatus(), e);
 		}
