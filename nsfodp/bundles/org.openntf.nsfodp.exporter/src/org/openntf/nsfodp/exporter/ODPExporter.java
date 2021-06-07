@@ -400,7 +400,6 @@ public class ODPExporter {
 	 * @param note the note to get a title for
 	 * @param type the {@link NoteType} value corresponding to the note
 	 * @return an FS-friendly version of the title
-	 * @throws DominoException 
 	 */
 	private Path getCleanName(FileSystem contextFileSystem, NNote note, NoteType type) {
 		if(!note.hasItem(FIELD_TITLE)) {
