@@ -571,17 +571,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				})
 				.forEach(p -> {
 					try {
-						// Work around trouble where reading the XML from Files.newInputStream(p) only
-						//   reads one WORD length properly before trailing off into nulls.
-						// Observed in Domino V12b3 on Windows
-						Path dxlTemp = Files.createTempFile("dxl", ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
-						try {
-							Files.copy(p, dxlTemp, StandardCopyOption.REPLACE_EXISTING);
-							try(InputStream is = Files.newInputStream(dxlTemp)) {
-								importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
-							}
-						} finally {
-							NSFODPUtil.deltree(dxlTemp);
+						try(InputStream is = NSFODPUtil.newInputStream(p)) {
+							importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
 						}
 					} catch(Exception e) {
 						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
@@ -612,7 +603,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				case "WebContent/WEB-INF/xsp.properties": { //$NON-NLS-1$
 					// Special handling of xsp.properties to set production options
 					if(this.isSetProductionXspOptions()) {
-						try(InputStream is = Files.newInputStream(res.getDataFile())) {
+						try(InputStream is = NSFODPUtil.newInputStream(res.getDataFile())) {
 							Properties props = new Properties();
 							props.load(is);
 							props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -794,7 +785,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		if(dbScript != null) {
 			try {
 				List<Integer> noteIds;
-				try(InputStream is = Files.newInputStream(dbScript)) {
+				try(InputStream is = NSFODPUtil.newInputStream(dbScript)) {
 					noteIds = importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(dbScript)));
 				}
 				compileLotusScript(database, noteIds);

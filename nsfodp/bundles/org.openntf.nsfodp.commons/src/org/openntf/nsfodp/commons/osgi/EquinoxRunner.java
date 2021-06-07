@@ -328,7 +328,7 @@ public class EquinoxRunner {
     private static Collection<String> getPackages(Path jar) {
     	try {
     		Collection<String> packages = new HashSet<String>();
-			try(InputStream is = Files.newInputStream(jar)) {
+			try(InputStream is = NSFODPUtil.newInputStream(jar)) {
 				try(JarInputStream jis = new JarInputStream(is)) {
 					JarEntry jarEntry = jis.getNextJarEntry();
 					while(jarEntry != null) {

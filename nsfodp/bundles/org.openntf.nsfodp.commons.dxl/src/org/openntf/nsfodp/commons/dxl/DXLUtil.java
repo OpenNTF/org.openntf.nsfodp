@@ -49,6 +49,7 @@ import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.h.Ods;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -302,7 +303,7 @@ public enum DXLUtil {
 			buf.putInt(0);                  // Flags
 			buf.putInt(0);                  // Reserved
 		}
-		try(InputStream is = Files.newInputStream(file)) {
+		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			for(int i = 0; i < segCount; i++) {
 				// Each chunk begins with a CDIMAGESEGMENT
 	
@@ -334,7 +335,7 @@ public enum DXLUtil {
 		if(!Files.isRegularFile(file)) {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.getString("DXLUtil.cannotReadFile"), file)); //$NON-NLS-1$
 		}
-		try(InputStream is = Files.newInputStream(file)) {
+		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			writeItemFileData(dxlDoc, itemName, is, (int)Files.size(file));
 		}
 	}

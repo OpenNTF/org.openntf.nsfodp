@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -103,18 +102,9 @@ public class AbstractSplitDesignElement {
 			if(!Files.isRegularFile(file)) {
 				throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 			}
-			// Work around trouble where reading the XML from Files.newInputStream(p) only
- 			//   reads one WORD length properly before trailing off into nulls.
- 			// Observed in Domino V12b3 on Windows
-			Path dxlTemp = Files.createTempFile("dxl", ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
- 			try {
- 				Files.copy(file, dxlTemp, StandardCopyOption.REPLACE_EXISTING);
- 				try(InputStream is = Files.newInputStream(dxlTemp)) {
- 					return DXLUtil.getFileResourceData(is, (int)Files.size(file));
- 				}
- 			} finally {
- 				NSFODPUtil.deltree(dxlTemp);
- 			}
+			try(InputStream is = NSFODPUtil.newInputStream(file)) {
+				return DXLUtil.getFileResourceData(is, (int)Files.size(file));
+			}
 		}
 	}
 }

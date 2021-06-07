@@ -127,7 +127,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 				// If it's a ZIP, expand it - otherwise, use the file content as-is
 				Path expanded = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
 				cleanup.add(expanded);
-				try(InputStream is = Files.newInputStream(nsf)) {
+				try(InputStream is = NSFODPUtil.newInputStream(nsf)) {
 					try(ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8)) {
 						ZipEntry firstEntry = zis.getNextEntry();
 						if(firstEntry == null) {
