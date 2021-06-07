@@ -423,6 +423,7 @@ public class ODPExporter {
 				.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("/", "_2f") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("*", "_2a") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace(":", "_3a") //$NON-NLS-1$ //$NON-NLS-2$
 			);
 		}
 	}
