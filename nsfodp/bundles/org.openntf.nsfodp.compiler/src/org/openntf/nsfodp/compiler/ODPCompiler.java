@@ -580,7 +580,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					}
 				});
 		}
-		compileLotusScript(database, noteIds);
+		compileLotusScript(database, noteIds, false);
 	}
 	
 	private void importFileResources(NDXLImporter importer, NDatabase database) throws Exception {
@@ -771,7 +771,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
 		}
 		
-		compileLotusScript(database, noteIds);
+		compileLotusScript(database, noteIds, true);
 	}
 	
 	/**
@@ -790,7 +790,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				try(InputStream is = NSFODPUtil.newInputStream(dbScript)) {
 					noteIds = importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(dbScript)));
 				}
-				compileLotusScript(database, noteIds);
+				compileLotusScript(database, noteIds, true);
 			} catch(Exception ne) {
 				throw new Exception("Exception while importing element " + odp.getBaseDirectory().relativize(dbScript), ne); //$NON-NLS-1$
 			}
@@ -879,7 +879,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		}
 	}
 	
-	private void compileLotusScript(NDatabase database, List<Integer> noteIds) {
+	private void compileLotusScript(NDatabase database, List<Integer> noteIds, boolean retry) {
 		if(!noteIds.isEmpty()) {
 			try {
 				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
@@ -912,6 +912,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						if(err.getStatus() == 12051) { // Same as above, but not encapsulated
 							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
 							nextPass.add(noteId);
+						} else if(err.getStatus() == 0x222) {
+							// Note item not found - occurs for non-LS elements
 						} else {
 							throw err;
 						}
@@ -923,7 +925,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					break;
 				}
 			}
-			if(!remaining.isEmpty()) {
+			if(!retry || !remaining.isEmpty()) {
 				String notes = remaining.stream()
 					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
 					.collect(Collectors.joining("\n")); //$NON-NLS-1$
