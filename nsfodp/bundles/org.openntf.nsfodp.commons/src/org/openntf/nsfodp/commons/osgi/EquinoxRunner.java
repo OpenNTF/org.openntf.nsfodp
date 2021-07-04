@@ -47,7 +47,7 @@ public class EquinoxRunner {
 	private final List<Path> classpath = new ArrayList<>();
 	private final List<String> platform = new ArrayList<>();
 	private Path workingDirectory;
-	private final Map<String, String> systemProperties = new HashMap<>();
+	private final Map<String, String> environmentVars = new HashMap<>();
 	private String osgiBundle;
 	private Path logFile;
 	private String jvmArgs;
@@ -89,8 +89,8 @@ public class EquinoxRunner {
 		Files.deleteIfExists(logFile);
 	}
 	
-	public void addSystemProperty(String name, String value) {
-		this.systemProperties.put(name, value);
+	public void addEnvironmentVar(String name, String value) {
+		this.environmentVars.put(name, value);
 	}
 	
 	public Path getLogFile() {
@@ -186,7 +186,7 @@ public class EquinoxRunner {
 				.map(Path::toString)
 				.collect(Collectors.joining(File.pathSeparator))
 		);
-		env.putAll(systemProperties);
+		env.putAll(environmentVars);
 		
 		return builder.start();
 	}

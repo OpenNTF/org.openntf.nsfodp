@@ -76,7 +76,7 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
 		}
 		
-		setSystemProperties(props);
+		setEquinoxEnvironmentVars(props);
 		
 		run("org.openntf.nsfodp.compiler.equinox.CompilerApplication"); //$NON-NLS-1$
 	}

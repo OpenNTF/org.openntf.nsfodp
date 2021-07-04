@@ -57,7 +57,7 @@ public abstract class AbstractEquinoxTask {
 	private final Path notesIni;
 	
 	private Collection<Path> classpathJars;
-	private Map<String, String> systemProperties;
+	private Map<String, String> equinoxEnvironmentVars;
 	private List<Path> updateSites;
 	
 	private boolean successFlag;
@@ -82,8 +82,8 @@ public abstract class AbstractEquinoxTask {
 		this.classpathJars = classpathJars;
 	}
 	
-	protected void setSystemProperties(Map<String, String> properties) {
-		this.systemProperties = properties;
+	protected void setEquinoxEnvironmentVars(Map<String, String> properties) {
+		this.equinoxEnvironmentVars = properties;
 	}
 	
 	public void setUpdateSites(List<Path> updateSites) {
@@ -196,8 +196,8 @@ public abstract class AbstractEquinoxTask {
 				}
 			}
 			
-			if(systemProperties != null) {
-				systemProperties.forEach(runner::addSystemProperty);
+			if(equinoxEnvironmentVars != null) {
+				equinoxEnvironmentVars.forEach(runner::addEnvironmentVar);
 			}
 			
 			Collection<Path> jars = initJreJars(notesProgram);

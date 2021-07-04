@@ -51,7 +51,7 @@ public class EquinoxExporter extends AbstractEquinoxTask {
 		if(notesIni != null) {
 			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
 		}
-		setSystemProperties(props);
+		setEquinoxEnvironmentVars(props);
 		
 		run("org.openntf.nsfodp.exporter.equinox.ExporterApplication"); //$NON-NLS-1$
 	}
