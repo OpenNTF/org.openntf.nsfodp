@@ -60,11 +60,6 @@
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
 		</repository>
-		<repository>
-			<id>openmind</id>
-			<name>openmind</name>
-			<url>http://repository.openmindonline.it/</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
