@@ -288,9 +288,6 @@ public abstract class AbstractEquinoxTask {
 			}
 		}
 		if(!Files.isDirectory(jvmBin)) {
-			if(log.isWarnEnabled()) {
-				log.warn("Unable to locate Notes/Domino JVM; using active JVM instead");
-			}
 			throw new RuntimeException("Could not find JVM at " + jvmBin);
 		}
 			
