@@ -925,7 +925,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					break;
 				}
 			}
-			if(!retry || !remaining.isEmpty()) {
+			if(!retry && !remaining.isEmpty()) {
 				String notes = remaining.stream()
 					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
 					.collect(Collectors.joining("\n")); //$NON-NLS-1$
