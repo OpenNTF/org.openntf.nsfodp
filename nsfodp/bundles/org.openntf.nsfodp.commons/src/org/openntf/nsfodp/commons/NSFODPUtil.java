@@ -167,7 +167,12 @@ public enum NSFODPUtil {
 				return FileVisitResult.CONTINUE;
 			}
 			
-			Files.copy(file, targetPath.resolve(sourcePath.relativize(file).toString()), StandardCopyOption.REPLACE_EXISTING);
+			Path target = targetPath.resolve(sourcePath.relativize(file).toString());
+			// Make sure the directory was indeed created - observed oddities on macOS Docker's bridged FS
+			if(!Files.exists(target.getParent())) {
+				Files.createDirectories(target.getParent());
+			}
+ 			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
 			return FileVisitResult.CONTINUE;
 		}
 	}

@@ -71,8 +71,7 @@ public class ExporterApplication implements IApplication {
 					Path eclipseProject = odpDir.resolve(".project"); //$NON-NLS-1$
 					if(Files.exists(eclipseProject)) {
 						Path tempPath = Files.createTempFile("nsfodp", ".project"); //$NON-NLS-1$ //$NON-NLS-2$
-						Files.delete(tempPath);
-						Files.move(eclipseProject, tempPath);
+						Files.move(eclipseProject, tempPath, StandardCopyOption.REPLACE_EXISTING);
 						eclipseProject = tempPath;
 					} else {
 						eclipseProject = null;
@@ -80,6 +79,7 @@ public class ExporterApplication implements IApplication {
 					if(Files.exists(odpDir)) {
 						NSFODPUtil.deltree(Collections.singleton(odpDir));
 					}
+					Files.createDirectories(odpDir);
 					NSFODPUtil.moveDirectory(result, odpDir);
 					if(eclipseProject != null) {
 						Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
