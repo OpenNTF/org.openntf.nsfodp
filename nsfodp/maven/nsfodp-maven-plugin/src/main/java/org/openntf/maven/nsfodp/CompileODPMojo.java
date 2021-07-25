@@ -448,12 +448,13 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslBuilder.build(), null, null, NoopHostnameVerifier.INSTANCE);
 			httpBuilder.setSSLSocketFactory(sslsf);
 		}
+
+		URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
+		if(log.isInfoEnabled()) {
+			log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
+		}
 		
 		try(CloseableHttpClient client = httpBuilder.build()) {
-			URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
-			if(log.isInfoEnabled()) {
-				log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
-			}
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			
