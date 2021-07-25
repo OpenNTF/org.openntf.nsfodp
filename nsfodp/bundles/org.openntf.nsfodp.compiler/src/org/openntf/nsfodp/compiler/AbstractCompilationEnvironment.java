@@ -18,6 +18,7 @@ package org.openntf.nsfodp.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -49,8 +51,10 @@ import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
+import com.ibm.xsp.registry.FacesLibraryImpl;
 import com.ibm.xsp.registry.FacesProjectImpl;
 import com.ibm.xsp.registry.SharableRegistryImpl;
+import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.config.IconUrlSource;
 import com.ibm.xsp.registry.config.ResourceBundleSource;
 import com.ibm.xsp.registry.config.SimpleRegistryProvider;
@@ -227,4 +231,24 @@ public abstract class AbstractCompilationEnvironment {
 		return dependencies;
 	}
 
+	protected UpdatableLibrary getLibrary(String namespace) {
+		SharableRegistryImpl facesRegistry = (SharableRegistryImpl)facesProject.getRegistry();
+		UpdatableLibrary library = (UpdatableLibrary)facesRegistry.getLocalLibrary(namespace);
+		if(library == null) {
+			try {
+				library = new FacesLibraryImpl(facesRegistry, namespace);
+				// TODO this is probably properly done by creating a FacesProjectImpl
+				// - it can then register the library fragments itself
+				// Note: my first attempt at this ended with an infinite loop, so it's trickier than that
+				Field localLibsField = facesRegistry.getClass().getDeclaredField("_localLibs"); //$NON-NLS-1$
+				localLibsField.setAccessible(true);
+				@SuppressWarnings("unchecked")
+				Map<String, UpdatableLibrary> localLibs = (Map<String, UpdatableLibrary>)localLibsField.get(facesRegistry);
+				localLibs.put(namespace, library);
+			} catch(NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return library;
+	}
 }
