@@ -220,7 +220,9 @@ The Domino plugins require Domino 9.0.1 FP10 or above.
 
 ### Notes or Domino (For Local Operations)
 
-Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 or above.
+Local compilation and export require Notes or Domino 9.0.1 FP10 or above on Windows and Linux. On macOS, it requires Notes 10.0.1 through 11.0.1.
+
+Due to changes in Notes V12, local operations do not currently work with that version. Instead, you should use Notes 11.0.1 (which can work as a copy of the .app next to Notes 12) or server-based operations.
 
 Note: if you use local compilation, either your ID file should have no password or you should configure Notes's User Security to allow non-Notes-based programs to execute without prompting for a password.
 
