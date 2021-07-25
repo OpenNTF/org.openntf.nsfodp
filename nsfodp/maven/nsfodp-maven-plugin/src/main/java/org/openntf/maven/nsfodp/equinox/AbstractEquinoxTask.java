@@ -57,10 +57,12 @@ public abstract class AbstractEquinoxTask {
 	private final Path notesIni;
 	
 	private Collection<Path> classpathJars;
-	private Map<String, String> systemProperties;
+	private Map<String, String> equinoxEnvironmentVars;
 	private List<Path> updateSites;
 	
 	private boolean successFlag;
+	
+	private String jvmArgs;
 
 	public AbstractEquinoxTask(PluginDescriptor pluginDescriptor, MavenSession mavenSession, MavenProject project, Log log, Path notesProgram, URL notesPlatform, Path notesIni) throws IOException {
 		this.pluginDescriptor = pluginDescriptor;
@@ -80,8 +82,8 @@ public abstract class AbstractEquinoxTask {
 		this.classpathJars = classpathJars;
 	}
 	
-	protected void setSystemProperties(Map<String, String> properties) {
-		this.systemProperties = properties;
+	protected void setEquinoxEnvironmentVars(Map<String, String> properties) {
+		this.equinoxEnvironmentVars = properties;
 	}
 	
 	public void setUpdateSites(List<Path> updateSites) {
@@ -95,6 +97,13 @@ public abstract class AbstractEquinoxTask {
 		return notesIni;
 	}
 	
+	/**
+	 * @since 3.5.0
+	 */
+	public void setJvmArgs(String jvmArgs) {
+		this.jvmArgs = jvmArgs;
+	}
+	
 	protected void run(String applicationId) {
 		successFlag = false;
 		try {
@@ -106,6 +115,7 @@ public abstract class AbstractEquinoxTask {
 			EquinoxRunner runner = new EquinoxRunner();
 			runner.setJavaBin(getJavaBinary(notesProgram));
 			runner.setNotesProgram(notesProgram);
+			runner.setJvmArgs(this.jvmArgs);
 			
 			if(classpathJars != null) {
 				classpathJars.forEach(runner::addClasspathJar);
@@ -130,6 +140,7 @@ public abstract class AbstractEquinoxTask {
 
 			Stream.of(
 				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.notesapi.darwinonapi", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.dxl", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.commons.odp", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.compiler", 2), //$NON-NLS-1$
@@ -155,8 +166,8 @@ public abstract class AbstractEquinoxTask {
 				throw new MojoExecutionException(Messages.getString("EquinoxMojo.notesPluginsDirDoesNotExist", notesPlugins)); //$NON-NLS-1$
 			}
 			String[] osgiBundle = new String[1];
-			Files.list(notesPlugins)
-				.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+			try(Stream<Path> pluginsStream = Files.list(notesPlugins)) {
+				pluginsStream.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
 				.filter(p -> {
 					if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) { //$NON-NLS-1$
 						osgiBundle[0] = p.toUri().toString();
@@ -166,6 +177,7 @@ public abstract class AbstractEquinoxTask {
 				})
 				.map(p -> getPathRef(p, -1))
 				.forEach(runner::addPlatformEntry);
+			}
 			if(osgiBundle[0] == null) {
 				throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 			}
@@ -175,16 +187,17 @@ public abstract class AbstractEquinoxTask {
 				for(Path updateSite : this.updateSites) {
 					Path sitePlugins = updateSite.resolve("plugins"); //$NON-NLS-1$
 					if(Files.isDirectory(sitePlugins)) {
-						Files.list(sitePlugins)
-							.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
-							.map(p -> getPathRef(p, -1))
-							.forEach(runner::addPlatformEntry);
+						try(Stream<Path> pluginsStream = Files.list(sitePlugins)) {
+							pluginsStream.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+								.map(p -> getPathRef(p, -1))
+								.forEach(runner::addPlatformEntry);
+						}
 					}
 				}
 			}
 			
-			if(systemProperties != null) {
-				systemProperties.forEach(runner::addSystemProperty);
+			if(equinoxEnvironmentVars != null) {
+				equinoxEnvironmentVars.forEach(runner::addEnvironmentVar);
 			}
 			
 			Collection<Path> jars = initJreJars(notesProgram);
@@ -275,9 +288,6 @@ public abstract class AbstractEquinoxTask {
 			}
 		}
 		if(!Files.isDirectory(jvmBin)) {
-			if(log.isWarnEnabled()) {
-				log.warn("Unable to locate Notes/Domino JVM; using active JVM instead");
-			}
 			throw new RuntimeException("Could not find JVM at " + jvmBin);
 		}
 			

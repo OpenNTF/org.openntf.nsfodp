@@ -24,14 +24,11 @@ import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDBLOBPART;
 import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDEVENT;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.domino.napi.c.C;
 import com.ibm.domino.napi.c.NotesUtil;
 
@@ -48,10 +45,7 @@ public enum DXLNativeUtil {
 	
 		// Read in the file data as an LMBCS string first
 		long lmbcsPtr;
-		String fileContent;
-		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-			fileContent = StreamUtil.readString(r);
-		}
+		String fileContent = String.join("\n", Files.readAllLines(file)); //$NON-NLS-1$
 		lmbcsPtr = NotesUtil.toLMBCS(fileContent);
 		if(lmbcsPtr == 0) {
 			return new byte[0];
@@ -90,7 +84,12 @@ public enum DXLNativeUtil {
 	
 				// Figure out our data and segment sizes
 				int dataOffset = BLOBPART_SIZE_CAP * i;
-				short dataSize = (short)Math.min((paddedLength - dataOffset), BLOBPART_SIZE_CAP);
+				
+				// Data counting only real LMBCS data
+				short realDataSize = (short)Math.min(fileLength - dataOffset, BLOBPART_SIZE_CAP);
+				// Data including final \0
+				short dataSize = (short)Math.min(paddedLength - dataOffset, BLOBPART_SIZE_CAP);
+				// The segment size, which must fit a WORD boundary
 				short segSize = (short)(dataSize + (dataSize % 2));
 	
 				// CDBLOBPART
@@ -102,11 +101,11 @@ public enum DXLNativeUtil {
 					buf.putShort((short)BLOBPART_SIZE_CAP);           // BlobMax
 					buf.put(new byte[8]);                             // Reserved
 					
-					byte[] segData = new byte[dataSize];
-					C.readByteArray(segData, 0, lmbcsPtr, dataOffset, dataSize);
+					byte[] segData = new byte[realDataSize];
+					C.readByteArray(segData, 0, lmbcsPtr, dataOffset, realDataSize);
 					buf.put(segData);
-					if(segSize > dataSize) {
-						buf.put(new byte[segSize-dataSize]);
+					if(segSize > realDataSize) {
+						buf.put(new byte[segSize-realDataSize]);
 					}
 				}
 			}

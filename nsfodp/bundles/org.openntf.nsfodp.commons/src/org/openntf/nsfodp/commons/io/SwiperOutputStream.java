@@ -67,7 +67,7 @@ public class SwiperOutputStream extends OutputStream {
 		if(this.isSwiper) {
 			os = new ByteArrayOutputStream();
 		} else {
-			os = Files.newOutputStream(path);
+			os = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
 

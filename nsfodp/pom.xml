@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
 	<artifactId>nsfodp</artifactId>
-	<version>3.4.0</version>
+	<version>3.5.0</version>
 	<packaging>pom</packaging>
 
 	<name>NSF ODP Tooling</name>
@@ -38,6 +38,7 @@
 		<module>bundles/org.openntf.nsfodp.commons</module>
 		<module>bundles/org.openntf.nsfodp.commons.dxl</module>
 		<module>bundles/org.openntf.nsfodp.commons.odp</module>
+		<module>bundles/org.openntf.nsfodp.notesapi.darwinonapi</module>
 		
 		<!--
 			Language Server Protocol 
@@ -113,7 +114,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>1.6.0</tycho-version>
-		<bazaar-version>2.0.6</bazaar-version>
+		<bazaar-version>2.0.7</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -131,7 +132,7 @@
 	<repositories>
 		<repository>
 			<id>eclipse-202006</id>
-			<url>http://download.eclipse.org/releases/2020-06</url>
+			<url>https://download.eclipse.org/releases/2020-06</url>
 			<layout>p2</layout>
 		</repository>
 		<repository>
@@ -139,34 +140,11 @@
 			<url>${notes-platform}</url>
 			<layout>p2</layout>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>bazaar</id> -->
-<!-- 			<url>https://p2.openntf.org/p2/bazaar206.nsf/2.0.6/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
 		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.m2e.p2</id> -->
-<!-- 			<name>org.eclipse.m2e</name> -->
-<!-- 			<url>http://download.eclipse.org/technology/m2e/releases</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.wildwebdeveloper.p2</id> -->
-<!-- 			<name>org.eclipse.wildwebdeveloper</name> -->
-<!-- 			<url>https://download.eclipse.org/wildwebdeveloper/releases/0.8.0/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<id>org.eclipse.wst.p2</id> -->
-<!-- 			<name>org.eclipse.wst</name> -->
-<!-- 			<url>https://download.eclipse.org/webtools/downloads/drops/R3.15.0/R-3.15.0-20190830034720/repository/</url> -->
-<!-- 			<layout>p2</layout> -->
-<!-- 		</repository> -->
 	</repositories>
 	
 	<pluginRepositories>
@@ -431,7 +409,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.21.0</version>
+					<version>3.0.0-M5</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 						<inputEncoding>UTF-8</inputEncoding>
@@ -482,7 +460,7 @@
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
-					<version>4.2.1</version>
+					<version>5.1.1</version>
 					<configuration>
 						<manifestLocation>${manifest-location}</manifestLocation>
 						<excludeDependencies>true</excludeDependencies>

@@ -62,7 +62,7 @@ public class EquinoxTranspiler extends AbstractEquinoxTask {
 			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
 		}
 		
-		setSystemProperties(props);
+		setEquinoxEnvironmentVars(props);
 		
 		run("org.openntf.nsfodp.transpiler.equinox.TranspilerApplication"); //$NON-NLS-1$
 	}

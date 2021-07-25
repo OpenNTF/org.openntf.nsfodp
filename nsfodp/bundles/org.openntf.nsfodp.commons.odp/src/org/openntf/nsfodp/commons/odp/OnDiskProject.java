@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -34,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,7 +51,7 @@ import com.ibm.commons.xml.XResult;
  * @since 2.0.0
  */
 public class OnDiskProject {
-	public static final List<PathMatcher> DIRECT_DXL_FILES = Stream.of(
+	public static final List<String> DIRECT_DXL_FILE_GLOBS = Stream.of(
 		"AppProperties/$DBIcon", //$NON-NLS-1$
 		"Code/actions/Shared Actions", //$NON-NLS-1$
 		"Code/Agents/*.ja", //$NON-NLS-1$
@@ -70,12 +72,14 @@ public class OnDiskProject {
 		"SharedElements/Navigators/*", //$NON-NLS-1$
 		"SharedElements/Subforms/*", //$NON-NLS-1$
 		"Views/*" //$NON-NLS-1$
-	).map(GlobMatcher::glob).collect(Collectors.toList());
+	).collect(Collectors.toList());
+	private final List<PathMatcher> directDxlFiles;
 	
-	public static final List<PathMatcher> IGNORED_FILES = Stream.of(
+	public static final List<String> IGNORED_FILE_GLOBS = Stream.of(
 		"**/.DS_Store", //$NON-NLS-1$
 		"**/Thumbs.db" //$NON-NLS-1$
-	).map(GlobMatcher::glob).collect(Collectors.toList());
+	).collect(Collectors.toList());
+	private final List<PathMatcher> ignoredFileGlobs;
 
 	private final Path baseDir;
 	
@@ -105,6 +109,12 @@ public class OnDiskProject {
 			new GlobMatcher("XPages/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("CustomControls/*.properties", path -> new FileResource(path, "gC~4K2", null, p -> p.getFileName().toString())) //$NON-NLS-1$ //$NON-NLS-2$
 		);
+		this.directDxlFiles = DIRECT_DXL_FILE_GLOBS.stream()
+			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
+			.collect(Collectors.toList());
+		this.ignoredFileGlobs = IGNORED_FILE_GLOBS.stream()
+			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
+			.collect(Collectors.toList());
 	}
 	
 	public Path getBaseDirectory() {
@@ -132,15 +142,19 @@ public class OnDiskProject {
 		
 		Path jars = baseDir.resolve("Code").resolve("Jars"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.exists(jars) && Files.isDirectory(jars)) {
-			Files.find(jars, Integer.MAX_VALUE,
-					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
-				).forEach(result::add);
+			try(Stream<Path> fileStream = Files.find(jars, Integer.MAX_VALUE,
+				(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
+			)) {
+				fileStream.forEach(result::add);
+			}
 		}
 		Path lib = baseDir.resolve("WebContent").resolve("WEB-INF").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		if(Files.exists(lib) && Files.isDirectory(lib)) {
-			Files.find(lib, Integer.MAX_VALUE,
-					(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
-				).forEach(result::add);
+			try(Stream<Path> fileStream = Files.find(lib, Integer.MAX_VALUE,
+				(path, attr) -> attr.isRegularFile() && path.getFileName().toString().endsWith(".jar") //$NON-NLS-1$
+			)) {
+				fileStream.forEach(result::add);
+			}
 		}
 		result.addAll(this.findManualJars());
 		return result;
@@ -223,10 +237,13 @@ public class OnDiskProject {
 	public List<CustomControl> getCustomControls() throws IOException {
 		Path dir = baseDir.resolve("CustomControls"); //$NON-NLS-1$
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(dir, 1,
-					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			try(Stream<Path> fileStream = Files.find(dir, 1,
+				(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			) {
+				return fileStream
 					.map(path -> new CustomControl(path))
 					.collect(Collectors.toList());
+			}
 		} else {
 			return Collections.emptyList();
 		}
@@ -235,10 +252,13 @@ public class OnDiskProject {
 	public List<XPage> getXPages() throws IOException {
 		Path dir = baseDir.resolve("XPages"); //$NON-NLS-1$
 		if(Files.exists(dir) && Files.isDirectory(dir)) {
-			return Files.find(dir, 1,
-					(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			try(Stream<Path> fileStream = Files.find(dir, 1,
+				(path, attr) -> path.toString().endsWith(".xsp") && attr.isRegularFile()) //$NON-NLS-1$
+			) {
+				return fileStream
 					.map(path -> new XPage(path))
 					.collect(Collectors.toList());
+			}
 		} else {
 			return Collections.emptyList();
 		}
@@ -251,10 +271,12 @@ public class OnDiskProject {
 	 * @return a {@link Stream} of {@link Path}s containing DXL to import
 	 */
 	public Stream<Path> getDirectDXLElements() {
-		return DIRECT_DXL_FILES.stream()
+		return directDxlFiles.stream()
 			.map(glob -> {
 				try {
-					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> glob.matches(baseDir.relativize(path)) && attr.size() > 0);
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> {
+						return glob.matches(baseDir.relativize(path)) && attr.size() > 0;
+					});
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -263,17 +285,18 @@ public class OnDiskProject {
 	}
 	
 	public List<AbstractSplitDesignElement> getFileResources() {
+		FileSystem fs = baseDir.getFileSystem();
 		return FILE_RESOURCES.stream()
 			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,
 						(path, attr) -> {
-							for(PathMatcher ignoreMatcher : IGNORED_FILES) {
+							for(PathMatcher ignoreMatcher : this.ignoredFileGlobs) {
 								if(ignoreMatcher.matches(path)) {
 									return false;
 								}
 							}
-							return attr.isRegularFile() && matcher.getMatcher().matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
+							return attr.isRegularFile() && matcher.getMatcher(fs).matches(baseDir.relativize(path)) && !path.getFileName().toString().endsWith(".metadata"); //$NON-NLS-1$
 						}
 					).map(matcher::getElement);
 				} catch (IOException e) {
@@ -287,7 +310,7 @@ public class OnDiskProject {
 	}
 	
 	public List<LotusScriptLibrary> getLotusScriptLibraries() throws IOException {
-		PathMatcher glob = GlobMatcher.glob("Code/ScriptLibraries/*.lss"); //$NON-NLS-1$
+		PathMatcher glob = GlobMatcher.glob(baseDir.getFileSystem(), "Code/ScriptLibraries/*.lss"); //$NON-NLS-1$
 		return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && glob.matches(baseDir.relativize(path)))
 			.map(path -> new LotusScriptLibrary(path))
 			.collect(Collectors.toList());
@@ -303,23 +326,17 @@ public class OnDiskProject {
 	 */
 	public boolean hasXPagesElements() throws IOException, XMLException {
 		Path xpages = baseDir.resolve("XPages"); //$NON-NLS-1$
-		if(Files.exists(xpages) && Files.list(xpages).count() > 0) {
+		if(NSFODPUtil.isNonEmptyDirectory(xpages)) {
 			return true;
 		}
 		Path ccs = baseDir.resolve("CustomControls"); //$NON-NLS-1$
-		if(Files.exists(ccs) && Files.list(ccs).count() > 0) {
+		if(NSFODPUtil.isNonEmptyDirectory(ccs)) {
 			return true;
 		}
-		boolean hasJava = findSourceFolders().stream()
-				.map(t -> {
-					try {
-						return Files.list(t);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.map(Stream::count)
-				.anyMatch(i -> i > 0);
+		boolean hasJava;
+		try(Stream<Path> sourceStream = findSourceFolders().stream()) {
+			hasJava = sourceStream.anyMatch(NSFODPUtil::isNonEmptyDirectory);
+		}
 		if(hasJava) {
 			return true;
 		}

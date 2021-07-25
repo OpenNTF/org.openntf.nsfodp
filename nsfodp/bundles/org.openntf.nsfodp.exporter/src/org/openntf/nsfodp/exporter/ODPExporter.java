@@ -15,66 +15,65 @@
  */
 package org.openntf.nsfodp.exporter;
 
-import static com.darwino.domino.napi.DominoAPI.ASSIST_TYPE_ITEM;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAGEXT_WEBCONTENTFILE;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAGEXT_WEBSERVICELIB;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAGS;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAGS_EXTENDED;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_DATABASESCRIPT;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_HIDEFROMDESIGNLIST;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_JAVA_AGENT;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_JAVA_RESOURCE;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_LOTUSSCRIPT_AGENT;
-import static com.darwino.domino.napi.DominoAPI.DESIGN_FLAG_PROPFILE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_COMPAPP;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_COMPDEF;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_DATA_CONNECTION_RESOURCE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_DB2ACCESSVIEW;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_FILE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_FOLDER_DESIGN;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_FRAMESET;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_IMAGE_RESOURCE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_JAVAFILE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_JAVA_WEBSERVICE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_LS_WEBSERVICE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SACTIONS_DESIGN;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SCRIPTLIB_JAVA;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SCRIPTLIB_JS;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SCRIPTLIB_LS;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SCRIPTLIB_SERVER_JS;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SHARED_COLS;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SITEMAP;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_STYLEKIT;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_STYLE_SHEET_RESOURCE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_SUBFORM_DESIGN;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_VIEWMAP_DESIGN;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_WEBPAGE;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_WIDGET;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_XSPCC;
-import static com.darwino.domino.napi.DominoAPI.DFLAGPAT_XSPPAGE;
-import static com.darwino.domino.napi.DominoAPI.FIELD_TITLE;
-import static com.darwino.domino.napi.DominoAPI.ITEM_NAME_FILE_DATA;
-import static com.darwino.domino.napi.DominoAPI.ITEM_NAME_FILE_NAMES;
-import static com.darwino.domino.napi.DominoAPI.ITEM_NAME_FILE_SIZE;
-import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_ACL;
-import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_HELP;
-import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_ICON;
-import static com.darwino.domino.napi.DominoAPI.NOTE_CLASS_INFO;
-import static com.darwino.domino.napi.DominoAPI.NOTE_ID_SPECIAL;
-import static com.darwino.domino.napi.DominoAPI.SCRIPTLIB_OBJECT;
-import static com.darwino.domino.napi.DominoAPI.XSP_CLASS_INDEX;
+import static org.openntf.nsfodp.commons.h.StdNames.ASSIST_TYPE_ITEM;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGEXT_WEBCONTENTFILE;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGEXT_WEBSERVICELIB;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGS;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGS_EXTENDED;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_DATABASESCRIPT;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_HIDEFROMDESIGNLIST;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_JAVA_AGENT;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_JAVA_AGENT_WITH_SOURCE;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_JAVA_RESOURCE;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_LOTUSSCRIPT_AGENT;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_PROPFILE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_COMPAPP;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_COMPDEF;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_DATA_CONNECTION_RESOURCE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_DB2ACCESSVIEW;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_FILE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_FOLDER_DESIGN;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_FRAMESET;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_IMAGE_RESOURCE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_JAVAFILE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_JAVA_WEBSERVICE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_LS_WEBSERVICE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SACTIONS_DESIGN;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SCRIPTLIB_JAVA;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SCRIPTLIB_JS;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SCRIPTLIB_LS;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SCRIPTLIB_SERVER_JS;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SHARED_COLS;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SITEMAP;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_STYLEKIT;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_STYLE_SHEET_RESOURCE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SUBFORM_DESIGN;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_VIEWMAP_DESIGN;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_WEBPAGE;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_WIDGET;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_XSPCC;
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_XSPPAGE;
+import static org.openntf.nsfodp.commons.h.StdNames.FIELD_TITLE;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_DATA;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_NAMES;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_SIZE;
+import static org.openntf.nsfodp.commons.h.NsfNote.NOTE_CLASS_ACL;
+import static org.openntf.nsfodp.commons.h.NsfNote.NOTE_CLASS_HELP;
+import static org.openntf.nsfodp.commons.h.NsfNote.NOTE_CLASS_ICON;
+import static org.openntf.nsfodp.commons.h.NsfNote.NOTE_CLASS_INFO;
+import static org.openntf.nsfodp.commons.h.NsfNote.NOTE_ID_SPECIAL;
+import static org.openntf.nsfodp.commons.h.StdNames.SCRIPTLIB_OBJECT;
+import static org.openntf.nsfodp.commons.h.StdNames.XSP_CLASS_INDEX;
 import static org.openntf.nsfodp.commons.h.StdNames.ASSIST_TYPE_JAVA;
 import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAG_JARFILE;
 import static org.openntf.nsfodp.commons.h.StdNames.IMAGE_NEW_DBICON_NAME;
 import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_CONFIG_FILE_DATA;
 import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_CONFIG_FILE_SIZE;
 import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_JAVA_COMPILER_SOURCE;
-import static com.darwino.domino.napi.util.DominoNativeUtils.matchesFlagsPattern;
+import static org.openntf.nsfodp.commons.NSFODPUtil.matchesFlagsPattern;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,30 +90,26 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.h.NsfNote;
+import org.openntf.nsfodp.commons.h.StdNames;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
+import org.openntf.nsfodp.commons.odp.notesapi.NCompositeData;
+import org.openntf.nsfodp.commons.odp.notesapi.NDXLExporter;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
+import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.exporter.io.CommonsSwiperOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.darwino.domino.napi.DominoAPI;
-import com.darwino.domino.napi.DominoException;
-import com.darwino.domino.napi.c.C;
-import com.darwino.domino.napi.enums.DXL_EXPORT_CHARSET;
-import com.darwino.domino.napi.enums.DXL_RICHTEXT_OPTION;
-import com.darwino.domino.napi.proc.NSFSEARCHPROC;
-import com.darwino.domino.napi.struct.SEARCH_MATCH;
-import com.darwino.domino.napi.wrap.FormulaException;
-import com.darwino.domino.napi.wrap.NSFDXLExporter;
-import com.darwino.domino.napi.wrap.NSFDatabase;
-import com.darwino.domino.napi.wrap.NSFNote;
-import com.darwino.domino.napi.wrap.NSFNoteIDCollection;
-import com.darwino.domino.napi.wrap.item.NSFCompositeData;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.ByteStreamCache;
 import com.ibm.commons.xml.DOMUtil;
@@ -137,14 +132,14 @@ public class ODPExporter {
 	public static final String EXT_METADATA = ".metadata"; //$NON-NLS-1$
 	private static final Collection<NoteType> IGNORE_FILENAMES_TYPES = EnumSet.of(NoteType.FileResource, NoteType.StyleSheet, NoteType.ImageResource, NoteType.Theme);
 	
-	private final NSFDatabase database;
+	private final NDatabase database;
 	private boolean binaryDxl = false;
 	private boolean richTextAsItemData = false;
 	private boolean swiperFilter = false;
 	private String projectName;
 	private ODPType odpType = ODPType.DIRECTORY;
 
-	public ODPExporter(NSFDatabase database) {
+	public ODPExporter(NDatabase database) {
 		this.database = database;
 	}
 	
@@ -250,10 +245,8 @@ public class ODPExporter {
 	 * @return a {@link Path} to the on-disk project root, either a directory or a ZIP file
 	 * @throws IOException if there is a problem reading or writing filesystem data
 	 * @throws XMLException if there is a problem parsing DXL or other configuration information in the ODP
-	 * @throws DominoException if there is an underlying Notes API problem
-	 * @throws FormulaException if there is a problem with evaluating Notes formulas
 	 */
-	public Path export() throws IOException, XMLException, DominoException, FormulaException {
+	public Path export() throws IOException, XMLException {
 		Path target;
 		Path returnPath;
 		ODPType odpType = this.odpType == null ? ODPType.DIRECTORY : this.odpType;
@@ -268,83 +261,45 @@ public class ODPExporter {
 			break;
 		}
 		
-		NSFDXLExporter exporter = database.getParent().createDXLExporter();
-		exporter.setExportCharset(DXL_EXPORT_CHARSET.Utf8);
-		try {
-			exporter.setOutputDoctype(false);
-			
+		try(NDXLExporter exporter = database.getAPI().createDXLExporter()) {
+			// Output database.properties in encapsulated format
 			Path databaseProperties = target.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 			Files.createDirectories(databaseProperties.getParent());
-			NSFNoteIDCollection iconColl = database.getParent().createNoteIDCollection();
-			try {
-				iconColl.add(NOTE_ID_SPECIAL | NOTE_CLASS_ICON);
-				NSFNote acl = database.getNoteByID(NOTE_ID_SPECIAL | NOTE_CLASS_ACL);
-				try {
-					iconColl.add(acl.getNoteID());
-				} finally {
-					acl.free();
-				}
-				
-				try(OutputStream os = new CommonsSwiperOutputStream(databaseProperties, isSwiperFilter())) {
-					exporter.export(database, iconColl, os);
-				}
-			} finally {
-				iconColl.free();
+			Set<Integer> iconColl = new HashSet<>();
+			iconColl.add(NOTE_ID_SPECIAL | NOTE_CLASS_ICON);
+			try(NNote acl = database.getNoteByID(NOTE_ID_SPECIAL | NOTE_CLASS_ACL)) {
+				iconColl.add(acl.getNoteID());
 			}
 			
-			exporter.setForceNoteFormat(isBinaryDxl());
-			exporter.setRichTextOption(isRichTextAsItemData() ? DXL_RICHTEXT_OPTION.ItemData : DXL_RICHTEXT_OPTION.DXL);
+			try(OutputStream os = new CommonsSwiperOutputStream(databaseProperties, isSwiperFilter())) {
+				exporter.export(database, iconColl, os);
+			}
 			
-			NSFSEARCHPROC proc = new NSFSEARCHPROC() {
-				@Override public short callback(long searchMatchPtr, long summaryBufferPtr) throws DominoException {
-					SEARCH_MATCH searchMatch = new SEARCH_MATCH();
-					C.memcpy(searchMatch.getDataPtr(), 0, searchMatchPtr, 0, SEARCH_MATCH.sizeOf);
-
-					short noteClass = searchMatch.getNoteClass();
-					int noteId = searchMatch.getId().getNoteId();
-					byte retFlags = searchMatch.getSERetFlags();
-					
-					boolean deleted = (noteClass & DominoAPI.NOTE_CLASS_NOTIFYDELETION) != 0;
-					boolean isSearchMatch = (retFlags & DominoAPI.SE_FMATCH) != 0;  // The use of "since" means that non-matching notes will be returned; check this flag to make sure
-					
-					if(isSearchMatch && !deleted) {
-						NoteType type = null;
-						try {
-							NSFNote note = database.getNoteByID(noteId);
-							type = forNote(note);
-							try {
-								exportNote(note, exporter, target);
-							} finally {
-								note.free();
-							}
-						} catch(Throwable e) {
-							System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage(), type));
-							e.printStackTrace(System.out);
-						}
-					}
-					return DominoAPI.NOERROR;
+			// Output the rest according to the settings
+			exporter.setForceNoteFormat(isBinaryDxl());
+			exporter.setRichTextAsItemData(isRichTextAsItemData());
+			
+			database.eachDesignNote((noteId, note) -> {
+				NoteType type = null;
+				try {
+					type = forNote(note);
+					exportNote(note, exporter, target);
+				} catch(Throwable e) {
+					System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionNoteId, Integer.toString(noteId, 16), e.getMessage(), type));
+					e.printStackTrace(System.out);
 				}
-			};
-			database.search("@All", proc, (short)0, DominoAPI.NOTE_CLASS_ALLNONDATA, null, null); //$NON-NLS-1$
+			});
 			
 			// Export several notes specially
 			int[] specialIds = new int[] { NOTE_CLASS_ICON, NOTE_CLASS_HELP, NOTE_CLASS_INFO };
 			for(int id : specialIds) {
 				try {
-					NSFNote iconNote = database.getNoteByID(NOTE_ID_SPECIAL | id);
-					if(iconNote != null) {
-						try {
-							if(iconNote.isRefValid()) {
-								exportNote(iconNote, exporter, target);
-							}
-						} catch(Throwable e) {
-							e.printStackTrace();
-							System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
-						} finally {
-							iconNote.free();
+					try(NNote iconNote = database.getNoteByID(NOTE_ID_SPECIAL | id)) {
+						if(iconNote != null && iconNote.isRefValid()) {
+							exportNote(iconNote, exporter, target);
 						}
 					}
-				} catch(DominoException e) {
+				} catch(NDominoException e) {
 					switch(e.getStatus()) {
 					case 578:
 						// "Special database object cannot be located", which is fine
@@ -354,6 +309,9 @@ public class ODPExporter {
 						System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
 						break;
 					}
+				} catch(Throwable e) {
+					e.printStackTrace();
+					System.out.println(StringUtil.format(Messages.ODPExporter_nativeExceptionSpecialNote, id, e.getMessage()));
 				}
 			}
 			
@@ -361,8 +319,6 @@ public class ODPExporter {
 			generateEclipseProjectFile(target);
 			createClasspathDirectories(target);
 			createStubFiles(target);
-		} finally {
-			exporter.free();
 		}
 		
 		if(odpType == ODPType.ZIP) {
@@ -372,7 +328,7 @@ public class ODPExporter {
 		return returnPath;
 	}
 
-	private void exportNote(NSFNote note, NSFDXLExporter exporter, Path baseDir) throws IOException, XMLException, DominoException {
+	private void exportNote(NNote note, NDXLExporter exporter, Path baseDir) throws IOException, XMLException {
 		NoteType type = forNote(note);
 		if(type == NoteType.Unknown) {
 			String flags = note.hasItem(DESIGN_FLAGS) ? note.getAsString(DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
@@ -380,7 +336,7 @@ public class ODPExporter {
 			if(StringUtil.isEmpty(title)) {
 				title = Integer.toString(note.getNoteID(), 16);
 			}
-			System.out.println(StringUtil.format(Messages.ODPExporter_unknownNote, flags, title, (note.getNoteClassValue() & ~DominoAPI.NOTE_CLASS_DEFAULT)));
+			System.out.println(StringUtil.format(Messages.ODPExporter_unknownNote, flags, title, (note.getNoteClassValue() & ~NsfNote.NOTE_CLASS_DEFAULT)));
 			return;
 		}
 		if(!type.isInOdp()) {
@@ -422,9 +378,8 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @param type the NoteType enum for the note
 	 * @throws IOException 
-	 * @throws DominoException 
 	 */
-	private void exportNamedNote(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, DominoException {
+	private void exportNamedNote(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException {
 		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
@@ -445,9 +400,8 @@ public class ODPExporter {
 	 * @param note the note to get a title for
 	 * @param type the {@link NoteType} value corresponding to the note
 	 * @return an FS-friendly version of the title
-	 * @throws DominoException 
 	 */
-	private Path getCleanName(FileSystem contextFileSystem, NSFNote note, NoteType type) throws DominoException {
+	private Path getCleanName(FileSystem contextFileSystem, NNote note, NoteType type) {
 		if(!note.hasItem(FIELD_TITLE)) {
 			return contextFileSystem.getPath("(Untitled)"); //$NON-NLS-1$
 		}
@@ -456,7 +410,7 @@ public class ODPExporter {
 		String path = note.hasItem(ITEM_NAME_FILE_NAMES) ? note.get(ITEM_NAME_FILE_NAMES, String[].class)[0] : null;
 		if(StringUtil.isNotEmpty(path) && !IGNORE_FILENAMES_TYPES.contains(type)) {
 			// Then it's a "true" VFS path
-			return contextFileSystem.getPath(note.get(ITEM_NAME_FILE_NAMES, String[].class)[0].replace('/', File.separatorChar));
+			return contextFileSystem.getPath(note.get(ITEM_NAME_FILE_NAMES, String[].class)[0].replace("/", contextFileSystem.getSeparator())); //$NON-NLS-1$
 		} else {
 			title = getTitle(note);
 			
@@ -469,6 +423,7 @@ public class ODPExporter {
 				.replace("\\", "_5c") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("/", "_2f") //$NON-NLS-1$ //$NON-NLS-2$
 				.replace("*", "_2a") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace(":", "_3a") //$NON-NLS-1$ //$NON-NLS-2$
 			);
 		}
 	}
@@ -482,9 +437,8 @@ public class ODPExporter {
 	 * @param type the NoteType enum for the note
 	 * @throws IOException
 	 * @throws XMLException 
-	 * @throws DominoException 
 	 */
-	private void exportNamedData(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException, DominoException {
+	private void exportNamedData(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException {
 		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
@@ -514,9 +468,8 @@ public class ODPExporter {
 	 * @param type the NoteType enum for the note
 	 * @throws IOException
 	 * @throws XMLException 
-	 * @throws DominoException 
 	 */
-	private void exportNamedDataAndMetadata(NSFNote note, NSFDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException, DominoException {
+	private void exportNamedDataAndMetadata(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException {
 		exportNamedData(note, exporter, baseDir, type);
 		
 		Path name = getCleanName(baseDir.getFileSystem(), note, type);
@@ -569,9 +522,8 @@ public class ODPExporter {
 	 * @param type the NoteType enum for the note
 	 * @throws IOException
 	 * @throws XMLException 
-	 * @throws DominoException 
 	 */
-	private void exportFileData(NSFNote note, NSFDXLExporter exporter, Path baseDir, Path path, NoteType type) throws IOException, XMLException, DominoException {
+	private void exportFileData(NNote note, NDXLExporter exporter, Path baseDir, Path path, NoteType type) throws IOException, XMLException {
 		Path fullPath = baseDir.resolve(path.toString());
 		Files.createDirectories(fullPath.getParent());
 		
@@ -613,12 +565,9 @@ public class ODPExporter {
 				break;
 			case JavaScriptLibrary:
 			case ServerJavaScriptLibrary: {
-				NSFCompositeData cd = getFileItem(note, type);
-				if(cd != null) {
-					try {
+				try(NCompositeData cd = getFileItem(note, type)) {
+					if(cd != null) {
 						cd.writeJavaScriptLibraryData(os);
-					} finally {
-						cd.free();
 					}
 				}
 				break;
@@ -628,24 +577,18 @@ public class ODPExporter {
 				
 				Path configPath = fullPath.getParent().resolve(fullPath.getFileName()+"-config"); //$NON-NLS-1$
 				try(OutputStream configOut = Files.newOutputStream(configPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-					NSFCompositeData cd = note.getCompositeData(ITEM_NAME_CONFIG_FILE_DATA);
-					if(cd != null) {
-						try {
+					try(NCompositeData cd = note.getCompositeData(ITEM_NAME_CONFIG_FILE_DATA)) {
+						if(cd != null) {
 							cd.writeFileResourceData(configOut);
-						} finally {
-							cd.free();
 						}
 					}
 				}
 				// Fallthrough intentional
 			}
 			case XPage: {
-				NSFCompositeData cd = getFileItem(note, type);
-				if(cd != null) {
-					try {
+				try(NCompositeData cd = getFileItem(note, type)) {
+					if(cd != null) {
 						cd.writeFileResourceData(os);
-					} finally {
-						cd.free();
 					}
 				}
 				break;
@@ -654,49 +597,38 @@ public class ODPExporter {
 				if("plugin.xml".equals(fullPath.getFileName().toString()) && StringUtil.isNotEmpty(this.projectName)) { //$NON-NLS-1$
 					// Special handling here to set the plugin ID
 					ByteStreamCache bytes = new ByteStreamCache();
-					NSFCompositeData cd = getFileItem(note, type);
-					if(cd != null) {
-						try {
+					try(NCompositeData cd = getFileItem(note, type)) {
+						if(cd != null) {
 							cd.writeFileResourceData(bytes.getOutputStream());
-						} finally {
-							cd.free();
+							
+							Document pluginDom = DOMUtil.createDocument(bytes.getInputStream());
+							Element pluginElement = pluginDom.getDocumentElement();
+							pluginElement.setAttribute("id", this.projectName); //$NON-NLS-1$
+							
+							DOMUtil.serialize(os, pluginDom, Format.defaultFormat);
 						}
-						Document pluginDom = DOMUtil.createDocument(bytes.getInputStream());
-						Element pluginElement = pluginDom.getDocumentElement();
-						pluginElement.setAttribute("id", this.projectName); //$NON-NLS-1$
-						
-						DOMUtil.serialize(os, pluginDom, Format.defaultFormat);
 					}
 				} else {
-					NSFCompositeData cd = getFileItem(note, type);
-					if(cd != null) {
-						try {
+					try(NCompositeData cd = getFileItem(note, type)) {
+						if(cd != null) {
 							cd.writeFileResourceData(os);
-						} finally {
-							cd.free();
 						}
 					}
 				}
 				break;
 			}
 			case ImageResource: {
-				NSFCompositeData cd = getFileItem(note, type);
-				if(cd != null) {
-					try {
+				try(NCompositeData cd = getFileItem(note, type)) {
+					if(cd != null) {
 						cd.writeImageResourceData(os);
-					} finally {
-						cd.free();
 					}
 				}
 				break;
 			}
 			default: {
-				NSFCompositeData cd = getFileItem(note, type);
-				if(cd != null) {
-					try {
+				try(NCompositeData cd = getFileItem(note, type)) {
+					if(cd != null) {
 						cd.writeFileResourceData(os);
-					} finally {
-						cd.free();
 					}
 				}
 				break;
@@ -713,9 +645,8 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @param path the relative file path to export to within the base dir
 	 * @throws IOException 
-	 * @throws DominoException 
 	 */
-	private void exportExplicitNote(NSFNote note, NSFDXLExporter exporter, Path baseDir, Path path) throws IOException, DominoException {
+	private void exportExplicitNote(NNote note, NDXLExporter exporter, Path baseDir, Path path) throws IOException {
 		Path fullPath = baseDir.resolve(path.toString());
 		Files.createDirectories(fullPath.getParent());
 		
@@ -746,9 +677,8 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @throws IOException
 	 * @throws XMLException 
-	 * @throws DominoException 
 	 */
-	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException, DominoException {
+	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException {
 		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
 			Document xmlDoc = DOMUtil.createDocument();
@@ -808,8 +738,8 @@ public class ODPExporter {
 		}
 	}
 	
-	public static NoteType forNote(NSFNote note) throws DominoException {
-		String flags = note.hasItem(DominoAPI.DESIGN_FLAGS) ? note.getAsString(DominoAPI.DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
+	public static NoteType forNote(NNote note) {
+		String flags = note.hasItem(StdNames.DESIGN_FLAGS) ? note.getAsString(StdNames.DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
 		String title = getTitle(note);
 		String flagsExt = note.hasItem(DESIGN_FLAGS_EXTENDED) ? note.getAsString(DESIGN_FLAGS_EXTENDED, ' ') : StringUtil.EMPTY_STRING;
 		
@@ -818,14 +748,14 @@ public class ODPExporter {
 		}
 		
 		
-		switch(note.getNoteClassValue() & DominoAPI.NOTE_CLASS_NONPRIV) {
-		case DominoAPI.NOTE_CLASS_ACL:
+		switch(note.getNoteClassValue() & NsfNote.NOTE_CLASS_NONPRIV) {
+		case NOTE_CLASS_ACL:
 			return NoteType.ACL;
-		case DominoAPI.NOTE_CLASS_DESIGN:
+		case NsfNote.NOTE_CLASS_DESIGN:
 			return NoteType.DesignCollection;
-		case DominoAPI.NOTE_CLASS_ICON:
+		case NOTE_CLASS_ICON:
 			return NoteType.IconNote;
-		case DominoAPI.NOTE_CLASS_VIEW:
+		case NsfNote.NOTE_CLASS_VIEW:
 			if(matchesFlagsPattern(flags, DFLAGPAT_FOLDER_DESIGN)) {
 				return NoteType.Folder;
 			} else if(matchesFlagsPattern(flags, DFLAGPAT_VIEWMAP_DESIGN)) {
@@ -835,13 +765,13 @@ public class ODPExporter {
 			} else {
 				return NoteType.View;
 			}
-		case DominoAPI.NOTE_CLASS_FIELD:
+		case NsfNote.NOTE_CLASS_FIELD:
 			return NoteType.SharedField;
-		case DominoAPI.NOTE_CLASS_HELP:
+		case NsfNote.NOTE_CLASS_HELP:
 			return NoteType.UsingDocument;
-		case DominoAPI.NOTE_CLASS_INFO:
+		case NsfNote.NOTE_CLASS_INFO:
 			return NoteType.AboutDocument;
-		case DominoAPI.NOTE_CLASS_FILTER:
+		case NsfNote.NOTE_CLASS_FILTER:
 			// "filter" is a dumping ground for pre-XPages code elements
 			
 			if(flags.indexOf(DESIGN_FLAG_DATABASESCRIPT) > -1) {
@@ -892,7 +822,7 @@ public class ODPExporter {
 			} else {
 				return NoteType.FormulaAgent;
 			}
-		case DominoAPI.NOTE_CLASS_FORM:
+		case NsfNote.NOTE_CLASS_FORM:
 			// Pretty much everything is a form nowadays
 			if(flags.isEmpty()) {
 				// Definitely an actual form
@@ -938,7 +868,7 @@ public class ODPExporter {
 				return NoteType.DB2AccessView;
 			} else if(matchesFlagsPattern(flags, DFLAGPAT_FILE)) {
 				// xspdesign.properties needs special handling, but is distinguished only by file name
-				String filePath = note.hasItem(DominoAPI.ITEM_NAME_FILE_NAMES) ? note.get(DominoAPI.ITEM_NAME_FILE_NAMES, String[].class)[0] : null;
+				String filePath = note.hasItem(StdNames.ITEM_NAME_FILE_NAMES) ? note.get(StdNames.ITEM_NAME_FILE_NAMES, String[].class)[0] : null;
 				
 				if(flags.indexOf(DESIGN_FLAG_HIDEFROMDESIGNLIST) == -1) {
 					return NoteType.FileResource;
@@ -958,15 +888,15 @@ public class ODPExporter {
 			} else {
 				return NoteType.Form;
 			}
-		case DominoAPI.NOTE_CLASS_REPLFORMULA:
+		case NsfNote.NOTE_CLASS_REPLFORMULA:
 			return NoteType.ReplicationFormula;
 		}
 		
 		return NoteType.Unknown;
 	}
 	
-	private NSFCompositeData getFileItem(NSFNote note, NoteType type) throws DominoException {
-		NSFCompositeData cd = note.getCompositeData(type.getFileItem());
+	private NCompositeData getFileItem(NNote note, NoteType type) {
+		NCompositeData cd = note.getCompositeData(type.getFileItem());
 		if(cd == null) {
 			cd = note.getCompositeData(ITEM_NAME_FILE_DATA);
 		}
@@ -977,9 +907,9 @@ public class ODPExporter {
 		return null;
 	}
 	
-	private static String getTitle(NSFNote note) throws DominoException {
-		if(note.hasItem(DominoAPI.FIELD_TITLE)) {
-			String[] titles = note.get(DominoAPI.FIELD_TITLE, String[].class);
+	private static String getTitle(NNote note) {
+		if(note.hasItem(StdNames.FIELD_TITLE)) {
+			String[] titles = note.get(StdNames.FIELD_TITLE, String[].class);
 			if(titles != null && titles.length > 0) {
 				return StringUtil.toString(titles[0]);
 			}

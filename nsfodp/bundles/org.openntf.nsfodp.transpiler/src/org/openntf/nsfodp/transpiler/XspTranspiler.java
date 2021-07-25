@@ -15,7 +15,6 @@
  */
 package org.openntf.nsfodp.transpiler;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -47,9 +46,8 @@ import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.page.compiled.PageToClassNameUtil;
-import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
-import com.ibm.xsp.registry.LibraryFragmentImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
+import com.ibm.xsp.registry.FacesLibraryFragment;
+import com.ibm.xsp.registry.FacesSharableRegistry;
 import com.ibm.xsp.registry.parse.ConfigParser;
 import com.ibm.xsp.registry.parse.ConfigParserFactory;
 
@@ -129,7 +127,7 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 								
 								String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue()); //$NON-NLS-1$
 								Path fileName = ccSourceRoot.relativize(ccConfig);
-								LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
+								FacesLibraryFragment fragment = configParser.createFacesLibraryFragment(
 										facesProject,
 										facesClassLoader,
 										fileName.toString(),
@@ -138,13 +136,8 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 										iconUrlSource,
 										namespace
 								);
-								UpdatableLibrary library = getLibrary(namespace);
-								library.addLibraryFragment(fragment);
-								
-								// Load the definition to refresh its parent ref
-								String controlName = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/composite-component/composite-name/text()").getStringValue()); //$NON-NLS-1$
-								CompositeComponentDefinitionImpl def = (CompositeComponentDefinitionImpl)library.getDefinition(controlName);
-								def.refreshReferences();
+								facesProject.register(fragment);
+								facesProject.getRegistry().refreshReferences();
 							} catch (XMLException e) {
 								throw new RuntimeException(e);
 							}
@@ -167,9 +160,9 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 			Path relativeFile = rootDir.relativize(xspFile);
 			String className = PageToClassNameUtil.getClassNameForPage(relativeFile.toString());
 		
-			String javaSource = dynamicXPageBean.translate(className, relativeFile.toString(), xspSource, facesRegistry);
+			String javaSource = dynamicXPageBean.translate(className, relativeFile.toString(), xspSource, (FacesSharableRegistry)facesProject.getRegistry());
 			
-			String outputFileName = className.replace('.', File.separatorChar) + ".java"; //$NON-NLS-1$
+			String outputFileName = className.replace(".", rootDir.getFileSystem().getSeparator()) + ".java"; //$NON-NLS-1$ //$NON-NLS-2$
 			Path outputFile = outputDirectory.resolve(outputFileName);
 			Files.createDirectories(outputFile.getParent());
 			try(Writer w = Files.newBufferedWriter(outputFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {

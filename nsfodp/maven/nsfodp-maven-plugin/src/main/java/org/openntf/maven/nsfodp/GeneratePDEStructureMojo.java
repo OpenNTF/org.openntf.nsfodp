@@ -197,14 +197,14 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		if(Files.isDirectory(jars)) {
 			Files.walk(jars)
 				.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
-				.forEach(path -> jarPaths.add("odp/Code/Jars/" + jars.relativize(path).toString().replace('/', File.separatorChar))); //$NON-NLS-1$
+				.forEach(path -> jarPaths.add("odp/Code/Jars/" + jars.relativize(path).toString().replace("/", jars.getFileSystem().getSeparator()))); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		Path lib = odpDirectory.toPath().resolve("WebContent").resolve("WEB-INF").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		if(Files.isDirectory(lib)) {
 			Files.walk(lib)
 				.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
-				.forEach(path -> jarPaths.add("odp/WebContent/WEB-INF/lib/" + lib.relativize(path).toString().replace('/', File.separatorChar))); //$NON-NLS-1$
+				.forEach(path -> jarPaths.add("odp/WebContent/WEB-INF/lib/" + lib.relativize(path).toString().replace("/", jars.getFileSystem().getSeparator()))); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		if(!jarPaths.isEmpty()) {

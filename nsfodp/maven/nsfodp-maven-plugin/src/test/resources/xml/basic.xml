@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<foo>
+	<bar>hello</bar>
+	<bar alt="hey">there</bar>
+</foo>

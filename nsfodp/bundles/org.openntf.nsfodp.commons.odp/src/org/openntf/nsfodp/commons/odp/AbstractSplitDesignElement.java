@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
@@ -101,7 +102,7 @@ public class AbstractSplitDesignElement {
 			if(!Files.isRegularFile(file)) {
 				throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));
 			}
-			try(InputStream is = Files.newInputStream(file)) {
+			try(InputStream is = NSFODPUtil.newInputStream(file)) {
 				return DXLUtil.getFileResourceData(is, (int)Files.size(file));
 			}
 		}

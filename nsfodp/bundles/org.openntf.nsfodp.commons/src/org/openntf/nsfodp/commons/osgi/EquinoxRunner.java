@@ -37,6 +37,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 
@@ -46,9 +47,10 @@ public class EquinoxRunner {
 	private final List<Path> classpath = new ArrayList<>();
 	private final List<String> platform = new ArrayList<>();
 	private Path workingDirectory;
-	private final Map<String, String> systemProperties = new HashMap<>();
+	private final Map<String, String> environmentVars = new HashMap<>();
 	private String osgiBundle;
 	private Path logFile;
+	private String jvmArgs;
 	
 	public Path getJavaBin() {
 		return javaBin;
@@ -87,12 +89,20 @@ public class EquinoxRunner {
 		Files.deleteIfExists(logFile);
 	}
 	
-	public void addSystemProperty(String name, String value) {
-		this.systemProperties.put(name, value);
+	public void addEnvironmentVar(String name, String value) {
+		this.environmentVars.put(name, value);
 	}
 	
 	public Path getLogFile() {
 		return logFile;
+	}
+	
+	/**
+	 * @param jvmArgs an argument string to add to the JVM launch
+	 * @since 3.5.0
+	 */
+	public void setJvmArgs(String jvmArgs) {
+		this.jvmArgs = jvmArgs;
 	}
 	
 	public Process start(String applicationId) throws IOException {
@@ -141,6 +151,11 @@ public class EquinoxRunner {
 		
 		List<String> command = new ArrayList<>();
 		command.add(getJavaBin().toString());
+		if(this.jvmArgs != null) {
+			Stream.of(this.jvmArgs.split("\\s+")) //$NON-NLS-1$
+				.filter(s -> s != null && !s.isEmpty())
+				.forEach(command::add);
+		}
 		command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
 		command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
 		command.add("-framwork"); //$NON-NLS-1$
@@ -171,7 +186,7 @@ public class EquinoxRunner {
 				.map(Path::toString)
 				.collect(Collectors.joining(File.pathSeparator))
 		);
-		env.putAll(systemProperties);
+		env.putAll(environmentVars);
 		
 		return builder.start();
 	}
@@ -196,6 +211,10 @@ public class EquinoxRunner {
     
     public static void addIBMJars(Path notesProgram, Collection<Path> classpath) {
     	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(!Files.isDirectory(lib) && "MacOS".equals(notesProgram.getFileName().toString())) { //$NON-NLS-1$
+    		// Shared Java libs moved in V12
+    		lib = notesProgram.getParent().resolve("Resources").resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    	}
     	
     	// Add ibmpkcs.jar if available, though it's gone in V11
     	Path ibmPkcs = lib.resolve("ibmpkcs.jar"); //$NON-NLS-1$
@@ -225,8 +244,8 @@ public class EquinoxRunner {
     	// Look for ndext and add all those to match the Domino classpath
     	Path ndext = notesProgram.resolve("ndext"); //$NON-NLS-1$
     	if(Files.isDirectory(ndext)) {
-    		try {
-				Files.list(ndext)
+    		try(Stream<Path> filesStream = Files.list(ndext)) {
+				filesStream
 					.filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
 					.forEach(classpath::add);
 			} catch (IOException e) {
@@ -309,7 +328,7 @@ public class EquinoxRunner {
     private static Collection<String> getPackages(Path jar) {
     	try {
     		Collection<String> packages = new HashSet<String>();
-			try(InputStream is = Files.newInputStream(jar)) {
+			try(InputStream is = NSFODPUtil.newInputStream(jar)) {
 				try(JarInputStream jis = new JarInputStream(is)) {
 					JarEntry jarEntry = jis.getNextJarEntry();
 					while(jarEntry != null) {

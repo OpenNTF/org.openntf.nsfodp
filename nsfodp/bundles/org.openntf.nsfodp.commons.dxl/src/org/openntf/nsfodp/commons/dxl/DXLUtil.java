@@ -31,7 +31,6 @@ import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDIMAGEHEADER;
 import static org.openntf.nsfodp.commons.h.Ods.SIZE_CDIMAGESEGMENT;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -50,6 +49,7 @@ import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.h.Ods;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -220,7 +220,6 @@ public enum DXLUtil {
 	public static byte[] getImageResourceData(Path file, Document dxlDoc) throws IOException, XMLException {
 		int fileLength = (int)Files.size(file);
 		// Load image info
-		File imageFile = file.toFile();
 		int height = 0; // true value not actually stored
 		int width = 0; // true value not actually stored
 		String mimeType;
@@ -241,7 +240,7 @@ public enum DXLUtil {
 		}
 		// Finally, try to guess it
 		if(StringUtil.isEmpty(mimeType)) {
-			mimeType = new MimetypesFileTypeMap().getContentType(imageFile);
+			mimeType = new MimetypesFileTypeMap().getContentType(file.getFileName().toString());
 		}
 		if(mimeType == null) {
 			throw new RuntimeException(MessageFormat.format(Messages.getString("DXLUtil.noMimeType"), file)); //$NON-NLS-1$
@@ -304,7 +303,7 @@ public enum DXLUtil {
 			buf.putInt(0);                  // Flags
 			buf.putInt(0);                  // Reserved
 		}
-		try(InputStream is = Files.newInputStream(file)) {
+		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			for(int i = 0; i < segCount; i++) {
 				// Each chunk begins with a CDIMAGESEGMENT
 	
@@ -336,7 +335,7 @@ public enum DXLUtil {
 		if(!Files.isRegularFile(file)) {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.getString("DXLUtil.cannotReadFile"), file)); //$NON-NLS-1$
 		}
-		try(InputStream is = Files.newInputStream(file)) {
+		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			writeItemFileData(dxlDoc, itemName, is, (int)Files.size(file));
 		}
 	}

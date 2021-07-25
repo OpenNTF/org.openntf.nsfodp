@@ -42,14 +42,6 @@ public enum NSFODPConstants {
 	public static final String PROP_NOTESINI = "org.openntf.nsfodp.notesini"; //$NON-NLS-1$
 	
 	// *******************************************************************************
-	// * Notes constants
-	// *******************************************************************************
-	
-	public static final String ITEM_NAME_FILE_DATA = "$FileData"; //$NON-NLS-1$
-	public static final String ITEM_NAME_IMAGE_DATA = "$ImageData"; //$NON-NLS-1$
-	public static final String ITEM_NAME_STYLE_SHEET_DATA = "$StyleSheetData"; //$NON-NLS-1$
-	
-	// *******************************************************************************
 	// * Compiler constants
 	// *******************************************************************************
 

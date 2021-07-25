@@ -25,10 +25,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -70,6 +72,7 @@ public class NSFDeploymentServlet extends HttpServlet {
 		
 		ServletOutputStream os = resp.getOutputStream();
 		
+		Set<Path> cleanup = new HashSet<>();
 		try {
 			if("Anonymous".equalsIgnoreCase(user.getName())) { //$NON-NLS-1$
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -116,21 +119,21 @@ public class NSFDeploymentServlet extends HttpServlet {
 				throw new IllegalArgumentException(MessageFormat.format("{0} part must be a file", PARAM_FILE));
 			}
 			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".data"); //$NON-NLS-1$ //$NON-NLS-2$
-			nsf.toFile().deleteOnExit();
+			cleanup.add(nsf);
 			try(InputStream reqInputStream = fileItem.getInputStream()) {
 				Files.copy(reqInputStream, nsf, StandardCopyOption.REPLACE_EXISTING);
 			}
 			if(String.valueOf(fileItem.getContentType()).startsWith("application/zip")) { //$NON-NLS-1$
 				// If it's a ZIP, expand it - otherwise, use the file content as-is
-				Path expanded = Files.createTempFile("nsfdeployment", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
-				try(ZipFile zf = new ZipFile(nsf.toFile(), StandardCharsets.UTF_8)) {
-					ZipEntry firstEntry = zf.entries().nextElement();
-					if(firstEntry == null) {
-						throw new IllegalArgumentException("ZIP file must contain an entry");
-					}
-					try(InputStream is = zf.getInputStream(firstEntry)) {
+				Path expanded = Files.createTempFile(NSFODPUtil.getTempDirectory(), "nsfdeployment", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
+				cleanup.add(expanded);
+				try(InputStream is = NSFODPUtil.newInputStream(nsf)) {
+					try(ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8)) {
+						ZipEntry firstEntry = zis.getNextEntry();
+						if(firstEntry == null) {
+							throw new IllegalArgumentException("ZIP file must contain an entry");
+						}
 						Files.copy(is, expanded, StandardCopyOption.REPLACE_EXISTING);
-						expanded.toFile().deleteOnExit();
 						nsf = expanded;
 					}
 				}
@@ -144,14 +147,16 @@ public class NSFDeploymentServlet extends HttpServlet {
 			mon.done();
 		} catch(Throwable e) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintWriter out = new PrintWriter(baos);
-			e.printStackTrace(out);
-			out.flush();
+			try(PrintWriter out = new PrintWriter(baos)) {
+				e.printStackTrace(out);
+			}
 			os.println(LineDelimitedJsonProgressMonitor.message(
 				"type", "error", //$NON-NLS-1$ //$NON-NLS-2$
 				"stackTrace", baos.toString() //$NON-NLS-1$
 				)
 			);
+		} finally {
+			NSFODPUtil.deltree(cleanup);
 		}
 	}
 }

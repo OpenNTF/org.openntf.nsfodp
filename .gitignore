@@ -15,3 +15,5 @@ dependency-reduced-pom.xml
 classes/
 .idea/
 *.iml
+
+.DS_Store

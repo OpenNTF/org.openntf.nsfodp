@@ -18,7 +18,10 @@ package org.openntf.maven.nsfodp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -39,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -284,13 +288,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 						Document props;
 						if(Files.exists(databaseProperties)) {
-							try(InputStream is = Files.newInputStream(databaseProperties)) {
-								props = DOMUtil.createDocument(is);
+							try(Reader r = Files.newBufferedReader(databaseProperties, StandardCharsets.UTF_8)) {
+								props = DOMUtil.createDocument(r);
 							}
 						} else {
 							Files.createDirectories(databaseProperties.getParent());
 							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
-								props = DOMUtil.createDocument(is);
+								try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+									props = DOMUtil.createDocument(r);
+								}
 							}
 						}
 						
@@ -312,8 +318,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
 						}
 						
-						try(OutputStream os = Files.newOutputStream(databaseProperties)) {
-							DOMUtil.serialize(os, props, Format.defaultFormat);
+						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
+							DOMUtil.serialize(w, props, Format.defaultFormat);
 						}
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
@@ -374,6 +380,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path outputFile) throws IOException {
 		Path notesIni = this.notesIni == null ? null : this.notesIni.toPath();
 		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform, notesIni);
+		compiler.setJvmArgs(this.equinoxJvmArgs);
 		List<Path> jars = new ArrayList<>();
 		if(this.classpathJars != null) {
 			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);
@@ -441,12 +448,13 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslBuilder.build(), null, null, NoopHostnameVerifier.INSTANCE);
 			httpBuilder.setSSLSocketFactory(sslsf);
 		}
+
+		URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
+		if(log.isInfoEnabled()) {
+			log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
+		}
 		
 		try(CloseableHttpClient client = httpBuilder.build()) {
-			URI servlet = compilerServerUrl.toURI().resolve(SERVLET_PATH);
-			if(log.isInfoEnabled()) {
-				log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
-			}
 			HttpPost post = new HttpPost(servlet);
 			post.addHeader("Content-Type", "application/zip"); //$NON-NLS-1$ //$NON-NLS-2$
 			
@@ -519,8 +527,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				}
 				
 				// Check if any ODP files changed
-				if(Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0).count() > 0) {
-					return true;
+				try(Stream<Path> changeStream = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0)) {
+					if(changeStream.findAny().isPresent()) {
+						return true;
+					}
 				}
 				
 				// Check if any dependent update sites changed

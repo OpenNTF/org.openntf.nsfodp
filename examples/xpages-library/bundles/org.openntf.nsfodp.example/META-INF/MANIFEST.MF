@@ -9,4 +9,7 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  com.ibm.xsp.core
 Bundle-Activator: org.openntf.nsfodp.example.Activator
-Export-Package: org.openntf.nsfodp.example
+Export-Package: com.example.bundleembed,
+ org.openntf.nsfodp.example
+Bundle-ClassPath: lib/bundleembed.jar,
+ .

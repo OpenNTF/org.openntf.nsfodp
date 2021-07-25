@@ -21,12 +21,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.odp.notesapi.NDXLImporter;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.darwino.domino.napi.DominoException;
-import com.darwino.domino.napi.wrap.NSFDXLImporter;
-import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
@@ -43,7 +42,7 @@ public enum CompilerUtil {
 	/**
 	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
 	 */
-	public static void importFileResource(NSFDXLImporter importer, byte[] data, NSFDatabase database, String name, String flags, String flagsExt) throws XMLException, IOException, DominoException {
+	public static void importFileResource(NDXLImporter importer, byte[] data, NDatabase database, String name, String flags, String flagsExt) throws XMLException, IOException {
 		Document dxlDoc = DOMUtil.createDocument();
 		Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
 		note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$

@@ -3,12 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.deployment;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment
-Bundle-Version: 3.4.0.qualifier
+Bundle-Version: 3.5.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
-Import-Package: org.osgi.framework
+Import-Package: org.openntf.nsfodp.commons.odp.util;version="3.5.0",
+ org.osgi.framework
 Require-Bundle: org.eclipse.core.runtime,
  com.ibm.notes.java.api,
- com.ibm.commons;bundle-version="9.0.1",
- org.openntf.nsfodp.commons.odp;bundle-version="3.0.0"
+ com.ibm.commons;bundle-version="9.0.1"
 Export-Package: org.openntf.nsfodp.deployment
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

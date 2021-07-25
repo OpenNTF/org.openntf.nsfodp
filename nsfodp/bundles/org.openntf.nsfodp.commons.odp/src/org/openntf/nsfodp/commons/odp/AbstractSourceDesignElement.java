@@ -15,8 +15,11 @@
  */
 package org.openntf.nsfodp.commons.odp;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 
 /**
@@ -33,5 +36,14 @@ public class AbstractSourceDesignElement extends AbstractSplitDesignElement {
 
 	public String getSource() {
 		return ODPUtil.readFile(this.getDataFile());
+	}
+	
+	/**
+	 * @return the source of the design element as an {@link InputStream}
+	 * @throws IOException if there is a problem opening the underlying file
+	 * @since 3.5.0
+	 */
+	public InputStream getSourceAsStream() throws IOException {
+		return NSFODPUtil.newInputStream(this.getDataFile());
 	}
 }

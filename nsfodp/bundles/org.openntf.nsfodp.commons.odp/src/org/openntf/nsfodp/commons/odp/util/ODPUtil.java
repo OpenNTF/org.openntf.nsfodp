@@ -15,12 +15,14 @@
  */
 package org.openntf.nsfodp.commons.odp.util;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +32,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.tools.JavaFileObject;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.JavaSource;
 import org.openntf.nsfodp.commons.odp.Messages;
 import org.osgi.framework.Bundle;
@@ -41,28 +47,24 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
 import com.ibm.commons.xml.XMLException;
-
-import lotus.domino.Database;
-import lotus.domino.NotesException;
-import lotus.domino.Session;
 
 public enum ODPUtil {
 	;
 	
 	public static String readFile(Path path) {
-		try(Reader r = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-			return StreamUtil.readString(r);
+		try {
+			return String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)); //$NON-NLS-1$
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	public static Document readXml(Path file) {
-		try(Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-			return DOMUtil.createDocument(r);
+		// Let the XML parser handle reading, since XML has charset hints in the prolog
+		try(InputStream is = NSFODPUtil.newInputStream(file)) {
+			return DOMUtil.createDocument(is);
 		} catch(IOException | XMLException e) {
 			throw new RuntimeException(e);
 		}
@@ -71,9 +73,11 @@ public enum ODPUtil {
 	public static String toJavaClassName(Path path) {
 		String name = path.toString();
 		if(name.endsWith(JavaFileObject.Kind.SOURCE.extension)) {
-			return name.substring(0, name.length()-JavaFileObject.Kind.SOURCE.extension.length()).replace(File.separatorChar, '.');
+			return name.substring(0, name.length()-JavaFileObject.Kind.SOURCE.extension.length())
+				.replace(path.getFileSystem().getSeparator(), "."); //$NON-NLS-1$
 		} else if(name.endsWith(JavaFileObject.Kind.CLASS.extension)) {
-			return name.substring(0, name.length()-JavaFileObject.Kind.CLASS.extension.length()).replace(File.separatorChar, '.');
+			return name.substring(0, name.length()-JavaFileObject.Kind.CLASS.extension.length())
+				.replace(path.getFileSystem().getSeparator(), "."); //$NON-NLS-1$
 		} else {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.ODPUtil_cannotInferClassName, path));
 		}
@@ -85,12 +89,15 @@ public enum ODPUtil {
 	
 	public static List<JavaSource> listJavaFiles(Path baseDir) {
 		try {
-			return Files.find(baseDir, Integer.MAX_VALUE,
-					(path, attr) -> path.toString().endsWith(JavaFileObject.Kind.SOURCE.extension) && attr.isRegularFile())
+			try(Stream<Path> findStream = Files.find(baseDir, Integer.MAX_VALUE,
+				(path, attr) -> path.toString().endsWith(JavaFileObject.Kind.SOURCE.extension) && attr.isRegularFile())
+			) {
+				return findStream
 					.map(path -> new JavaSource(path))
 					.collect(Collectors.toList());
+			}
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 	
@@ -158,20 +165,20 @@ public enum ODPUtil {
 	}
 
 	public static String toBasicFilePath(Path baseDir, Path file) {
-		return baseDir.relativize(file).toString().replace(File.separatorChar, '/');
+		return baseDir.relativize(file).toString().replace(baseDir.getFileSystem().getSeparator(), "/"); //$NON-NLS-1$
 	}
 	
-	public static Database getDatabase(Session session, String databasePath) throws NotesException {
-		if(StringUtil.isEmpty(databasePath)) {
-			return session.getDatabase(StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING);
-		}
-		int bangIndex = databasePath.indexOf("!!"); //$NON-NLS-1$
-		if(bangIndex > -1) {
-			String server = databasePath.substring(0, bangIndex);
-			String filePath = databasePath.substring(bangIndex+2);
-			return session.getDatabase(server, filePath);
-		} else {
-			return session.getDatabase(StringUtil.EMPTY_STRING, databasePath);
-		}
+	/**
+	 * Finds extension objects for the provided service class.
+	 *
+	 * @param <T> the expected type of extension objects
+	 * @param serviceClass the class representing the desired extension point
+	 * @return a {@link Stream} of available implementation objects
+	 * @since 3.5.0
+	 */
+	public static <T> Stream<T> findServices(final Class<T> serviceClass) {
+		return AccessController.doPrivileged((PrivilegedAction<Stream<T>>)() ->
+			StreamSupport.stream(ServiceLoader.load(serviceClass).spliterator(), false)
+		);
 	}
 }

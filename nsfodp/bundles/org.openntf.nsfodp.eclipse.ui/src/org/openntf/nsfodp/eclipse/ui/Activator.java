@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.ResourceLocator;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class Activator extends AbstractUIPlugin {
@@ -48,9 +47,6 @@ public class Activator extends AbstractUIPlugin {
 		}
 	}
 	
-	public static Image getIcon(ODPIcon icon) {
-		return getDefault().getImageRegistry().get(icon.name());
-	}
 	public static ImageDescriptor getIconDescriptor(ODPIcon icon) {
 		return getDefault().getImageRegistry().getDescriptor(icon.name());
 	}

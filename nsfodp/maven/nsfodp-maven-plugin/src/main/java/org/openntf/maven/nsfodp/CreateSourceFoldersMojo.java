@@ -105,7 +105,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		sourceFolders.add("Code/Java"); //$NON-NLS-1$
 		
 		sourceFolders.stream()
-			.map(path -> odpDirectory.toPath().resolve(path.replace('/', File.separatorChar)))
+			.map(path -> odpDirectory.toPath().resolve(path.replace("/", odpDirectory.toPath().getFileSystem().getSeparator()))) //$NON-NLS-1$
 			.filter(path -> !Files.exists(path))
 			.forEach(path -> {
 				if(log.isInfoEnabled()) {

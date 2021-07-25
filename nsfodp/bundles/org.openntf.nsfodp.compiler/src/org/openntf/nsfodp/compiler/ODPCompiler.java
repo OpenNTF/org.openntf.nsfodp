@@ -61,6 +61,12 @@ import org.openntf.nsfodp.commons.odp.LotusScriptLibrary;
 import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.openntf.nsfodp.commons.odp.XPage;
 import org.openntf.nsfodp.commons.odp.XSPCompilationResult;
+import org.openntf.nsfodp.commons.odp.notesapi.NDXLImporter;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
+import org.openntf.nsfodp.commons.odp.notesapi.NLotusScriptCompilationException;
+import org.openntf.nsfodp.commons.odp.notesapi.NNote;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
@@ -71,17 +77,6 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.darwino.domino.napi.DominoAPI;
-import com.darwino.domino.napi.DominoException;
-import com.darwino.domino.napi.LotusScriptCompilationException;
-import com.darwino.domino.napi.enums.DBClass;
-import com.darwino.domino.napi.enums.DXLIMPORTOPTION;
-import com.darwino.domino.napi.wrap.NSFBase;
-import com.darwino.domino.napi.wrap.NSFDXLImporter;
-import com.darwino.domino.napi.wrap.NSFDatabase;
-import com.darwino.domino.napi.wrap.NSFNote;
-import com.darwino.domino.napi.wrap.NSFNoteIDCollection;
-import com.darwino.domino.napi.wrap.NSFSession;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.commons.xml.DOMUtil;
@@ -93,6 +88,7 @@ import com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
 import com.ibm.xsp.registry.LibraryFragmentImpl;
 import com.ibm.xsp.registry.UpdatableLibrary;
 import com.ibm.xsp.registry.parse.ConfigParser;
@@ -303,7 +299,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @since 1.0.0
 	 */
 	public synchronized Path compile() throws Exception {
-		return compile(ClassLoader.getSystemClassLoader());
+		return compile(getClass().getClassLoader());
 	}
 	
 	/**
@@ -323,7 +319,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @since 1.0.0
 	 */
 	public synchronized Path compile(ClassLoader cl) throws Exception {
-		NSFBase.setTraceCreation(true);
 		Collection<Bundle> bundles = installBundles();
 		JavaSourceClassLoader classLoader = null;
 		Set<Path> cleanup = new HashSet<>();
@@ -354,6 +349,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						Stream.of("-source", compilerLevel, "-target", compilerLevel) //$NON-NLS-1$ //$NON-NLS-2$
 					).collect(Collectors.toList());
 				classLoader = new JavaSourceClassLoader(cl, options, classPath);
+				// Bar loading of different-version SSJS classes from ndext
+				classLoader.getJavaFileManager().setNonDelegatingPackages(Arrays.asList("com.ibm.jscript")); //$NON-NLS-1$
 
 				// Compile Java classes
 				compileJavaSources(classLoader);
@@ -361,65 +358,56 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				compileXPages(classLoader);
 			}
 			
-			NSFSession session = new NSFSession(DominoAPI.get());
-			try {
+			try(NotesAPI session = NotesAPI.get()) {
 				Path file = createDatabase(session);
-				NSFDatabase database = session.getDatabase("", file.toAbsolutePath().toString()); //$NON-NLS-1$
-				try {
-					NSFDXLImporter importer = session.createDXLImporter();
-					importer.setDesignImportOption(DXLIMPORTOPTION.REPLACE_ELSE_CREATE);
-					importer.setACLImportOption(DXLIMPORTOPTION.REPLACE_ELSE_IGNORE);
-					importer.setReplaceDBProperties(true);
-					importer.setReplicaRequiredForReplaceOrUpdate(false);
-					
-					importDbProperties(importer, database);
-					importBasicElements(importer, database);
-					importFileResources(importer, database);
-					importLotusScriptLibraries(importer, database);
-					importDbScript(importer, database);
-					
-					if(hasXPages) {
-						Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
-						importCustomControls(importer, database, classLoader, compiledClassNames);
-						importXPages(importer, database, classLoader, compiledClassNames);
-						importJavaElements(importer, database, classLoader, compiledClassNames);
-					}
-	
-					// Append a timestamp if requested
-					if(this.isAppendTimestampToTitle()) {
-						database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
-					}
-					
-					// Set the template info if requested
-					String templateName = this.getTemplateName();
-					if(StringUtil.isNotEmpty(templateName)) {
-						int noteId = database.getDesign().findDesignNote(DominoAPI.NOTE_CLASS_FIELD, DominoAPI.DFLAGPAT_FIELD, "$TemplateBuild", false); //$NON-NLS-1$
-						NSFNote doc;
-						if(noteId != 0) {
-							doc = database.getNoteByID(noteId);
-						} else {
-							// Import an empty one
-							try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-								String dxl = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
-								List<Integer> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
-								doc = database.getNoteByID(ids.get(0));
+				try(NDatabase database = session.openDatabase("", file.toAbsolutePath().toString())) { //$NON-NLS-1$
+					try(NDXLImporter importer = session.createDXLImporter()) {
+						
+						importDbProperties(importer, database);
+						importLotusScriptLibraries(importer, database);
+						importBasicElements(importer, database);
+						importFileResources(importer, database);
+						importDbScript(importer, database);
+						
+						if(hasXPages) {
+							Set<String> compiledClassNames = new HashSet<>(classLoader.getCompiledClassNames());
+							importCustomControls(importer, database, classLoader, compiledClassNames);
+							importXPages(importer, database, classLoader, compiledClassNames);
+							importJavaElements(importer, database, classLoader, compiledClassNames);
+						}
+		
+						// Append a timestamp if requested
+						if(this.isAppendTimestampToTitle()) {
+							database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
+						}
+						
+						// Set the template info if requested
+						String templateName = this.getTemplateName();
+						if(StringUtil.isNotEmpty(templateName)) {
+							int noteId = database.getSharedFieldNoteID("$TemplateBuild"); //$NON-NLS-1$
+							NNote doc;
+							if(noteId != 0) {
+								doc = database.getNoteByID(noteId);
+							} else {
+								// Import an empty one
+								try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+									String dxl = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
+									List<Integer> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
+									doc = database.getNoteByID(ids.get(0));
+								}
 							}
+							String version = this.getTemplateVersion();
+							if(StringUtil.isNotEmpty(version)) {
+								doc.set("$TemplateBuild", version); //$NON-NLS-1$
+							}
+							doc.set("$TemplateBuildName", templateName); //$NON-NLS-1$
+							doc.set("$TemplateBuildDate", new Date()); //$NON-NLS-1$
+							doc.save();
 						}
-						String version = this.getTemplateVersion();
-						if(StringUtil.isNotEmpty(version)) {
-							doc.set("$TemplateBuild", version); //$NON-NLS-1$
-						}
-						doc.set("$TemplateBuildName", templateName); //$NON-NLS-1$
-						doc.set("$TemplateBuildDate", new Date()); //$NON-NLS-1$
-						doc.save();
 					}
-				} finally {
-					database.free();
 				}
 				
 				return file;
-			} finally {
-				session.free();
 			}
 		} catch(JavaCompilerException e) {
 			StringWriter o = new StringWriter();
@@ -540,7 +528,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @throws Exception 
 	 * @throws DominoException if there is an API-level problem creating the copy
 	 */
-	private Path createDatabase(NSFSession session) throws IOException, DominoException {
+	private Path createDatabase(NotesAPI session) throws IOException {
 		subTask(Messages.ODPCompiler_creatingNSF);
 		
 		String ext;
@@ -555,12 +543,12 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		Files.deleteIfExists(temp);
 		String filePath = temp.toAbsolutePath().toString();
 		
-		session.createDatabase("", filePath, DBClass.BY_EXTENSION, true); //$NON-NLS-1$
+		session.createDatabase(filePath);
 		
 		return temp;
 	}
 	
-	private void importDbProperties(NSFDXLImporter importer, NSFDatabase database) throws Exception {
+	private void importDbProperties(NDXLImporter importer, NDatabase database) throws Exception {
 		// DB properties gets special handling
 		subTask(Messages.ODPCompiler_importingDbProperties);
 		Path properties = odp.getDbPropertiesFile();
@@ -576,28 +564,32 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}
 	
-	private void importBasicElements(NSFDXLImporter importer, NSFDatabase database) throws Exception {
+	private void importBasicElements(NDXLImporter importer, NDatabase database) throws Exception {
 		subTask(Messages.ODPCompiler_importingDesignElements);
-		odp.getDirectDXLElements()
-			.filter(p -> {
-				try {
-					return Files.size(p) > 0;
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			})
-			.forEach(p -> {
-				try {
-					try(InputStream is = Files.newInputStream(p)) {
-						importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+		List<Integer> noteIds = new ArrayList<>();
+		try(Stream<Path> dxlElements = odp.getDirectDXLElements()) {
+			dxlElements
+				.filter(p -> {
+					try {
+						return Files.size(p) > 0;
+					} catch (IOException e) {
+						throw new RuntimeException(e);
 					}
-				} catch(Exception e) {
-					throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
-				}
-			});
+				})
+				.forEach(p -> {
+					try {
+						try(InputStream is = NSFODPUtil.newInputStream(p)) {
+							noteIds.addAll(importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p))));
+						}
+					} catch(Exception e) {
+						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
+					}
+				});
+		}
+		compileLotusScript(database, noteIds, false);
 	}
 	
-	private void importFileResources(NSFDXLImporter importer, NSFDatabase database) throws Exception {
+	private void importFileResources(NDXLImporter importer, NDatabase database) throws Exception {
 		subTask(Messages.ODPCompiler_importingFileResources);
 		
 		Map<AbstractSplitDesignElement, Document> elements = odp.getFileResources().stream()
@@ -619,7 +611,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				case "WebContent/WEB-INF/xsp.properties": { //$NON-NLS-1$
 					// Special handling of xsp.properties to set production options
 					if(this.isSetProductionXspOptions()) {
-						try(InputStream is = Files.newInputStream(res.getDataFile())) {
+						try(InputStream is = NSFODPUtil.newInputStream(res.getDataFile())) {
 							Properties props = new Properties();
 							props.load(is);
 							props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -673,7 +665,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		}
 	}
 	
-	private void importCustomControls(NSFDXLImporter importer, NSFDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
+	private void importCustomControls(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		subTask(Messages.ODPCompiler_importingCustomControls);
 		
 		List<CustomControl> ccs = odp.getCustomControls();
@@ -689,7 +681,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		}
 	}
 	
-	private void importXPages(NSFDXLImporter importer, NSFDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
+	private void importXPages(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		subTask(Messages.ODPCompiler_importingXPages);
 		
 		List<XPage> xpages = odp.getXPages();
@@ -699,7 +691,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		}
 	}
 	
-	private Document importXSP(NSFDXLImporter importer, NSFDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws XMLException, IOException {
+	private Document importXSP(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws XMLException, IOException {
 		String className = xpage.getJavaClassName();
 		byte[] byteCode = classLoader.getClassByteCode(className);
 		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page"; //$NON-NLS-1$
@@ -722,7 +714,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		return dxlDoc;
 	}
 	
-	private void importJavaElements(NSFDXLImporter importer, NSFDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
+	private void importJavaElements(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames) throws Exception {
 		subTask(Messages.ODPCompiler_importingJava);
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
@@ -767,7 +759,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		}
 	}
 	
-	private void importLotusScriptLibraries(NSFDXLImporter importer, NSFDatabase database) throws Exception {
+	private void importLotusScriptLibraries(NDXLImporter importer, NDatabase database) throws Exception {
 		subTask(Messages.ODPCompiler_importingLotusScript);
 		
 		List<Integer> noteIds = new ArrayList<>();
@@ -785,7 +777,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
 		}
 		
-		compileLotusScript(database, noteIds);
+		compileLotusScript(database, noteIds, true);
 	}
 	
 	/**
@@ -796,17 +788,17 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @throws Exception 
 	 * @since 2.5.0
 	 */
-	private void importDbScript(NSFDXLImporter importer, NSFDatabase database) throws Exception {
+	private void importDbScript(NDXLImporter importer, NDatabase database) throws Exception {
 		Path dbScript = odp.getDbScriptFile();
 		if(dbScript != null) {
 			try {
 				List<Integer> noteIds;
-				try(InputStream is = Files.newInputStream(dbScript)) {
+				try(InputStream is = NSFODPUtil.newInputStream(dbScript)) {
 					noteIds = importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(dbScript)));
 				}
-				compileLotusScript(database, noteIds);
-			} catch(DominoException ne) {
-				throw new DominoException(ne, ne.getStatus(), "Exception while importing element " + odp.getBaseDirectory().relativize(dbScript)); //$NON-NLS-1$
+				compileLotusScript(database, noteIds, true);
+			} catch(Exception ne) {
+				throw new Exception("Exception while importing element " + odp.getBaseDirectory().relativize(dbScript), ne); //$NON-NLS-1$
 			}
 		}
 	}
@@ -817,8 +809,10 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	
 	private XSPCompilationResult compileXSP(XPage xpage, JavaSourceClassLoader classLoader) throws Exception {
 		try {
-			String xspSource = xpage.getSource();
-			String javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, facesRegistry);
+			String javaSource;
+			try(InputStream xspSource = xpage.getSourceAsStream()) {
+				javaSource = dynamicXPageBean.translate(xpage.getJavaClassName(), xpage.getPageName(), xspSource, (FacesSharableRegistry)facesProject.getRegistry());
+			}
 			Class<?> compiled = classLoader.addClass(xpage.getJavaClassName(), javaSource);
 			return new XSPCompilationResult(javaSource, compiled);
 		} catch(Throwable e) {
@@ -833,7 +827,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @param name a human-readable name of the element, for logging
 	 * @return a {@link List} of imported note IDs
 	 */
-	private List<Integer> importDxl(NSFDXLImporter importer, String dxl, NSFDatabase database, String name) throws Exception {
+	private List<Integer> importDxl(NDXLImporter importer, String dxl, NDatabase database, String name) throws Exception {
 		if(DEBUG_DXL) {
 			Path dxlFile = Files.createTempFile(NSFODPUtil.getTempDirectory(), name.replace('/', '-').replace('\\', '-'), ".xml"); //$NON-NLS-1$
 			try(OutputStream os = Files.newOutputStream(dxlFile)) {
@@ -852,23 +846,23 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @return a {@link List} of imported note IDs
 	 * @since 3.4.0
 	 */
-	private List<Integer> importDxl(NSFDXLImporter importer, InputStream dxl, NSFDatabase database, String name) throws Exception {
+	private List<Integer> importDxl(NDXLImporter importer, InputStream dxl, NDatabase database, String name) throws Exception {
 		try {
-			NSFNoteIDCollection imported;
-			imported = importer.importDxl(database, dxl);
-			String logXml = importer.getResultLog();
+			Collection<Integer> imported = new HashSet<>();
+			imported.addAll(importer.importDxl(database, dxl));
+			String logXml = importer.getResultLogXML();
 			if(StringUtil.isNotEmpty(logXml)) {
 				DxlImporterLog log = DxlImporterLog.forXml(logXml);
 				if(log.getErrors() != null && !log.getErrors().isEmpty()) {
 					String msg = log.getErrors().stream()
 						.map(e -> StringUtil.format("{2} (line={0}, column={1})", e.getLine(), e.getColumn(), e.getText()))
 						.collect(Collectors.joining(", ")); //$NON-NLS-1$
-					throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
+					throw new Exception(MessageFormat.format("Exception importing {0}: {1}", name, msg));
 				} else if(log.getFatalErrors() != null && !log.getFatalErrors().isEmpty()) {
 					String msg = log.getErrors().stream()
 						.map(DXLError::getText)
 						.collect(Collectors.joining(", ")); //$NON-NLS-1$
-					throw new DominoException(null, "Exception importing {0}: {1}", name, msg);
+					throw new Exception(MessageFormat.format("Exception importing {0}: {1}", name, msg));
 				}
 			}
 
@@ -876,25 +870,22 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			for(Integer noteId : imported) {
 				importedIds.add(noteId);
 				
-				NSFNote note = database.getNoteByID(noteId);
-				try {
+				try(NNote note = database.getNoteByID(noteId)) {
 					note.sign();
 					note.save();
-				} finally {
-					note.free();
 				}
 			}
 			
 			return importedIds;
-		} catch(DominoException ne) {
+		} catch(Exception ne) {
 			if(ne.getMessage().contains("DXL importer operation failed")) { //$NON-NLS-1$
-				throw new RuntimeException(MessageFormat.format(Messages.ODPCompiler_dxlImportFailed, name, importer.getResultLog()), ne);
+				throw new RuntimeException(MessageFormat.format(Messages.ODPCompiler_dxlImportFailed, name, importer.getResultLogXML()), ne);
 			}
 			throw ne;
 		}
 	}
 	
-	private void compileLotusScript(NSFDatabase database, List<Integer> noteIds) throws DominoException {
+	private void compileLotusScript(NDatabase database, List<Integer> noteIds, boolean retry) {
 		if(!noteIds.isEmpty()) {
 			try {
 				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
@@ -913,26 +904,25 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				
 				Integer noteId;
 				while((noteId = remaining.poll()) != null) {
-					NSFNote note = database.getNoteByID(noteId);
 					String title = null;
-					try {
+					try(NNote note = database.getNoteByID(noteId)) {
 						title = note.get("$TITLE", String.class); //$NON-NLS-1$
 						titles.put(noteId, title);
 						note.compileLotusScript();
 						note.sign();
 						note.save();
-					} catch(LotusScriptCompilationException err) {
+					} catch(NLotusScriptCompilationException err) {
 						nextPass.add(noteId);
 						titles.put(noteId, title + " - " + err); //$NON-NLS-1$
-					} catch(DominoException err) {
+					} catch(NDominoException err) {
 						if(err.getStatus() == 12051) { // Same as above, but not encapsulated
 							titles.put(noteId, title + " - " + err); //$NON-NLS-1$
 							nextPass.add(noteId);
+						} else if(err.getStatus() == 0x222) {
+							// Note item not found - occurs for non-LS elements
 						} else {
 							throw err;
 						}
-					} finally {
-						note.free();
 					}
 				}
 				
@@ -941,7 +931,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					break;
 				}
 			}
-			if(!remaining.isEmpty()) {
+			if(!retry && !remaining.isEmpty()) {
 				String notes = remaining.stream()
 					.map(noteId -> "Note ID " + noteId + ": " + titles.get(noteId)) //$NON-NLS-1$ //$NON-NLS-2$
 					.collect(Collectors.joining("\n")); //$NON-NLS-1$

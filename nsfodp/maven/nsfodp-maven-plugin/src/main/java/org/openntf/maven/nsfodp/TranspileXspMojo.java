@@ -132,6 +132,7 @@ public class TranspileXspMojo extends AbstractCompilerMojo {
 	private void transpileXspLocal(Path xspSourceRoot, Path ccSourceRoot, List<Path> updateSites, Path outputDirectory) throws IOException {
 		Path notesIni = this.notesIni == null ? null : this.notesIni.toPath();
 		EquinoxTranspiler transpiler = new EquinoxTranspiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform, notesIni);
+		transpiler.setJvmArgs(this.equinoxJvmArgs);
 		List<Path> jars = new ArrayList<>();
 		if(this.classpathJars != null) {
 			Arrays.stream(this.classpathJars).map(File::toPath).forEach(jars::add);

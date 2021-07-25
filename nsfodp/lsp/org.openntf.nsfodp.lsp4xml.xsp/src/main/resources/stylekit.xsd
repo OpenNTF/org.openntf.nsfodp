@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+
+    <xsd:element name="theme">
+    	<xsd:complexType>
+    		
+            <xsd:choice maxOccurs="unbounded" minOccurs="0">
+    			<xsd:element name="description" type="xsd:string" minOccurs="0" />
+    			<xsd:element name="resources">
+	    			<xsd:complexType>
+                        <xsd:choice minOccurs="0"
+                        	maxOccurs="unbounded">
+                        	<xsd:element name="script" minOccurs="0"
+                        		maxOccurs="unbounded">
+                        		<xsd:complexType mixed="true">
+                        			<xsd:complexContent>
+                        				<xsd:extension
+                        					base="baseResource">
+                        					<xsd:attribute name="src"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute
+                        						name="clientSide" type="xsd:boolean">
+                        					</xsd:attribute>
+
+                        				</xsd:extension>
+                        			</xsd:complexContent>
+                        		</xsd:complexType>
+                        	</xsd:element>
+                        	<xsd:element name="linkResource"
+                        		minOccurs="0" maxOccurs="unbounded">
+                        		<xsd:complexType mixed="true">
+                        			<xsd:complexContent>
+                        				<xsd:extension
+                        					base="baseResource">
+                        					<xsd:attribute name="rel"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute name="type"
+                        						type="xsd:string" use="optional">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute name="href"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute name="title"
+                        						type="xsd:string" use="optional">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute
+                        						name="charset" type="xsd:string"
+                        						use="optional">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute name="dir"
+                        						use="optional">
+                        						<xsd:simpleType>
+                        							<xsd:restriction
+                        								base="xsd:string">
+                        								<xsd:enumeration
+                        									value="ltr" />
+                        								<xsd:enumeration
+                        									value="rtl" />
+                        							</xsd:restriction>
+                        						</xsd:simpleType>
+                        					</xsd:attribute>
+
+                        					<xsd:attribute
+                        						name="hreflang" type="xsd:language"
+                        						use="optional">
+                        					</xsd:attribute>
+
+
+
+                        					<xsd:attribute name="rev"
+                        						type="xsd:string" use="optional">
+                        					</xsd:attribute>
+
+                        					<xsd:attribute name="target"
+                        						type="xsd:string" use="optional">
+                        					</xsd:attribute>
+
+                        				</xsd:extension>
+                        			</xsd:complexContent>
+                        		</xsd:complexType>
+                        	</xsd:element>
+                        	<xsd:element name="bundle" minOccurs="0"
+                        		maxOccurs="unbounded">
+                        		<xsd:complexType mixed="true">
+                        			<xsd:complexContent>
+                        				<xsd:extension
+                        					base="baseResource">
+                        					<xsd:attribute name="src"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+
+
+
+
+                        					<xsd:attribute name="var"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+                        				</xsd:extension>
+                        			</xsd:complexContent>
+                        		</xsd:complexType>
+                        	</xsd:element>
+                        	<xsd:element name="dojoModule" minOccurs="0"
+                        		maxOccurs="unbounded">
+                        		<xsd:complexType>
+                        			<xsd:complexContent>
+                        				<xsd:extension
+                        					base="baseResource">
+                        					<xsd:attribute name="name"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+                        					<xsd:attribute
+                        						name="condition" type="xsd:string"
+                        						use="optional">
+                        					</xsd:attribute>
+                        				</xsd:extension>
+                        			</xsd:complexContent>
+                        		</xsd:complexType>
+                        	</xsd:element>
+                        	<xsd:element name="dojoModulePath"
+                        		minOccurs="0" maxOccurs="unbounded">
+                        		<xsd:complexType>
+                        			<xsd:complexContent>
+                        				<xsd:extension
+                        					base="baseResource">
+                        					<xsd:attribute name="prefix"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+                        					<xsd:attribute name="url"
+                        						type="xsd:string">
+                        					</xsd:attribute>
+                        				</xsd:extension>
+                        			</xsd:complexContent>
+                        		</xsd:complexType>
+                        	</xsd:element>
+                        	<xsd:element name="headTag"
+                        		minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                	<xsd:complexContent>
+                                		<xsd:extension
+                                			base="baseResource">
+                                			<xsd:attribute
+                                				name="tagName" type="xsd:string">
+                                			</xsd:attribute>
+                                		</xsd:extension>
+                                	</xsd:complexContent>
+                                </xsd:complexType>
+                        	</xsd:element>
+                        </xsd:choice>
+	    			</xsd:complexType>
+	    		</xsd:element>
+	    		<xsd:element name="control">
+	    			<xsd:complexType>
+	    				<xsd:sequence>
+	    					<xsd:element name="description" type="xsd:string" minOccurs="0"/>
+	    					<xsd:element name="name" type="xsd:string"/>
+	    					<xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+	    						<xsd:complexType>
+	    							<xsd:sequence>
+                                        <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="name" type="xsd:string"/>
+                                        <xsd:element name="value" type="xsd:string"/>
+	    							</xsd:sequence>
+		    						<xsd:attribute name="mode" use="optional">
+		    							<xsd:simpleType>
+		    								<xsd:restriction base="xsd:string">
+		    									<xsd:enumeration value="concat"/>
+		    									<xsd:enumeration value="override"/>
+		    								</xsd:restriction>
+		    							</xsd:simpleType>
+		    						</xsd:attribute>
+                                    <xsd:attribute name="type" use="optional">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:enumeration value="char"/>
+                                                <xsd:enumeration value="byte"/>
+                                                <xsd:enumeration value="short"/>
+                                                <xsd:enumeration value="int"/>
+                                                <xsd:enumeration value="long"/>
+                                                <xsd:enumeration value="float"/>
+                                                <xsd:enumeration value="double"/>
+                                                <xsd:enumeration value="boolean"/>
+                                                <xsd:enumeration value="string"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:attribute>
+                                    <xsd:attribute name="target" use="optional">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:enumeration value="xsp"/>
+                                                <xsd:enumeration value="dwe"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:attribute>
+	    						</xsd:complexType>
+	    					</xsd:element>
+	    				</xsd:sequence>
+                        <xsd:attribute name="target" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="override" type="xsd:string" use="optional"/>
+	    			</xsd:complexType>
+	    		</xsd:element>
+    		</xsd:choice>
+    		<xsd:attribute name="extends" type="xsd:string" use="optional"/>
+    	</xsd:complexType>
+    </xsd:element>
+
+    
+
+    <xsd:complexType name="baseResource">
+    	<xsd:attribute name="loaded" type="xsd:string" use="optional"></xsd:attribute>
+    	<xsd:attribute name="rendered" type="xsd:string" use="optional"></xsd:attribute>
+    </xsd:complexType>
+</xsd:schema>

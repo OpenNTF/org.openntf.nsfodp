@@ -16,11 +16,8 @@
 package org.openntf.nsfodp.lsp4xml.xsp.schema;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,11 +31,11 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 	private static final Logger log = XspPlugin.log;
 	private final String namespace;
 	private final String schemaName;
-	private URI tempSchemas;
+	private URI schemaLoc;
 	
 	public AbstractSchemaResolver(String namespace, String schemaName) {
 		if(log.isLoggable(Level.INFO)) {
-			log.info(getClass().getName() + " initialize");
+			log.info(MessageFormat.format("{0} initialize", getClass().getName()));
 		}
 		this.namespace = namespace;
 		this.schemaName = schemaName;
@@ -47,11 +44,11 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 	@Override
 	public String resolve(String baseLocation, String publicId, String systemId) {
 		if(log.isLoggable(Level.FINE)) {
-			log.fine("resolve for publicId=" + publicId + ", systemId=" + systemId + ", baseLocation=" + baseLocation);
+			log.fine(MessageFormat.format("resolve for publicId={0}, systemId={1}, baseLocation={2}", publicId, systemId, baseLocation));
 		}
 		if(namespace.equals(systemId) || namespace.equals(publicId)) {
 			if(log.isLoggable(Level.FINE)) {
-				log.fine("got for " + namespace);
+				log.fine(MessageFormat.format("got for {0}", namespace));
 			}
 			return getSchemaUri().toString();
 		}
@@ -61,7 +58,7 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 	@Override
 	public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier) throws XNIException, IOException {
 		if(log.isLoggable(Level.FINE)) {
-			log.fine("resolveEntity for " + resourceIdentifier);
+			log.fine(MessageFormat.format("resolveEntity for {0}", resourceIdentifier));
 		}
 		if(namespace.equals(resourceIdentifier.getNamespace())) {
 			return new XMLInputSource(namespace, getSchemaUri().toString(), getSchemaUri().toString());
@@ -70,24 +67,18 @@ public abstract class AbstractSchemaResolver implements URIResolverExtension {
 	}
 
 	private synchronized URI getSchemaUri() {
-		if(this.tempSchemas == null) {
+		if(this.schemaLoc == null) {
 			try {
-				Path tempFile = Files.createTempFile(schemaName, ".xsd"); //$NON-NLS-1$
-				tempFile.toFile().deleteOnExit();
-				try(InputStream is = getClass().getResourceAsStream("/components/10.0.1/" + schemaName + ".xsd")) { //$NON-NLS-1$
-					Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-				}
-				if(log.isLoggable(Level.FINE)) {
-					log.fine("deployed schema to " + tempFile);
-				}
-				this.tempSchemas = tempFile.toUri();
+				// TODO resolve from xsp.properties if set
+				String version = "10.0.1"; //$NON-NLS-1$
+				this.schemaLoc = getClass().getResource(MessageFormat.format("/components/{0}/{1}.xsd", version, schemaName)).toURI(); //$NON-NLS-1$
 			} catch (Exception e) {
 				if(log.isLoggable(Level.SEVERE)) {
-					log.log(Level.SEVERE, "Exception when deploying temp file", e);
+					log.log(Level.SEVERE, "Exception when reading schema file", e);
 				}
 				throw new RuntimeException(e);
 			}
 		}
-		return tempSchemas;
+		return schemaLoc;
 	}
 }

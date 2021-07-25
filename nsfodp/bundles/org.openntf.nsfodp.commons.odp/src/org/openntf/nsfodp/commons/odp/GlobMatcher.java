@@ -15,8 +15,7 @@
  */
 package org.openntf.nsfodp.commons.odp;
 
-import java.io.File;
-import java.nio.file.FileSystems;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.function.Function;
@@ -29,10 +28,7 @@ import java.util.function.Function;
  * @since 2.0.0
  */
 class GlobMatcher {
-	/** Platform-specific PathMatcher separator, escaped in the case of Windows */
-	public static final String MATCH_SEP = File.separatorChar == '\\' ? "\\\\" : File.separator; //$NON-NLS-1$
-	
-	private final PathMatcher matcher;
+	private final String unixGlob;
 	private final Function<Path, ? extends AbstractSplitDesignElement> elementProvider;
 
 	/**
@@ -40,12 +36,12 @@ class GlobMatcher {
 	 * @param elementProvider a function that provides an element object for a given path
 	 */
 	public GlobMatcher(String glob, Function<Path, ? extends AbstractSplitDesignElement> elementProvider) {
-		this.matcher = glob(glob);
+		this.unixGlob = glob;
 		this.elementProvider = elementProvider;
 	}
 
-	public PathMatcher getMatcher() {
-		return matcher;
+	public PathMatcher getMatcher(FileSystem fileSystem) {
+		return glob(fileSystem, unixGlob);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,7 +49,7 @@ class GlobMatcher {
 		return (T)elementProvider.apply(path);
 	}
 	
-	public static final PathMatcher glob(String unixGlob) {
-		return FileSystems.getDefault().getPathMatcher("glob:" + unixGlob.replace("/", MATCH_SEP)); //$NON-NLS-1$ //$NON-NLS-2$
+	public static PathMatcher glob(FileSystem fileSystem, String unixGlob) {
+		return fileSystem.getPathMatcher("glob:" + unixGlob.replace("/", fileSystem.getSeparator())); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
