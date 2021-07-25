@@ -2,6 +2,7 @@ package org.openntf.maven.nsfodp.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class TestDomUtil {
 	@Test
 	public void testParseBasic() throws IOException {
 		Document doc;
-		try(InputStream is = getClass().getResourceAsStream("/basic.xml")) {
+		try(InputStream is = getClass().getResourceAsStream("/xml/basic.xml")) {
 			doc = NSFODPDomUtil.parseXml(is);
 		}
 		assertNotNull(doc);
@@ -30,7 +31,7 @@ public class TestDomUtil {
 	@Test
 	public void testBasicXPath() throws IOException {
 		Document doc;
-		try(InputStream is = getClass().getResourceAsStream("/basic.xml")) {
+		try(InputStream is = getClass().getResourceAsStream("/xml/basic.xml")) {
 			doc = NSFODPDomUtil.parseXml(is);
 		}
 		assertNotNull(doc);
@@ -45,7 +46,7 @@ public class TestDomUtil {
 		String xml;
 		{
 			Document doc;
-			try(InputStream is = getClass().getResourceAsStream("/basic.xml")) {
+			try(InputStream is = getClass().getResourceAsStream("/xml/basic.xml")) {
 				doc = NSFODPDomUtil.parseXml(is);
 			}
 			assertNotNull(doc);
@@ -58,5 +59,19 @@ public class TestDomUtil {
 			assertEquals("hey", NSFODPDomUtil.selectSingleNode(doc, "/foo/bar[@alt]/@alt").getNodeValue());
 			assertEquals("there", NSFODPDomUtil.selectSingleNode(doc, "/foo/bar[@alt]/text()").getNodeValue());
 		}
+	}
+	
+	@Test
+	public void testParseLarger() throws IOException {
+		String xml;
+		{
+			Document doc;
+			try(InputStream is = getClass().getResourceAsStream("/xml/dbprops.xml")) {
+				doc = NSFODPDomUtil.parseXml(is);
+			}
+			assertNotNull(doc);
+			xml = NSFODPDomUtil.getXmlString(doc, null);
+		}
+		assertTrue(xml.contains("<text>NSF ODP Tooling Example</text>"));
 	}
 }

@@ -111,7 +111,9 @@ public enum NSFODPDomUtil {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputSource source = new InputSource(r);
-			return builder.parse(source);
+			Document doc = builder.parse(source);
+			doc.setXmlStandalone(true);
+			return doc;
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		} catch (ParserConfigurationException | SAXException e) {
