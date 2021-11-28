@@ -17,3 +17,8 @@ classes/
 *.iml
 
 .DS_Store
+
+# Java dumps
+javacore.*
+jitdump.*.dmp
+Snap.*.trc

@@ -5,7 +5,7 @@
 
 	<groupId>org.openntf.maven</groupId>
 	<artifactId>nsfodp-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.6.0</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>NSF ODP Maven Plugin</name>
@@ -42,7 +42,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compiler>1.8</compiler>
-		<bazaar-version>2.0.7</bazaar-version>
+		<bazaar-version>2.0.8</bazaar-version>
 		<nsfodp-version>${project.version}</nsfodp-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->

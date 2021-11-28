@@ -60,6 +60,7 @@ public class OnDiskProject {
 		"Code/Agents/*.lsa", //$NON-NLS-1$
 		"Code/Agents/*.aa", //$NON-NLS-1$
 		"Code/ScriptLibraries/*.javalib", //$NON-NLS-1$
+		"Folders/*", //$NON-NLS-1$
 		"Forms/*", //$NON-NLS-1$
 		"Framesets/*", //$NON-NLS-1$
 		"Pages/*", //$NON-NLS-1$
