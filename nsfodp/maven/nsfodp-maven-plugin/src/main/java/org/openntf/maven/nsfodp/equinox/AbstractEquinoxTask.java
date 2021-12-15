@@ -206,6 +206,7 @@ public abstract class AbstractEquinoxTask {
 				
 				Process proc = runner.start(applicationId);
 				watchOutput(proc.getInputStream(), proc);
+				watchOutput(proc.getErrorStream(), proc);
 				proc.waitFor();
 				int exitValue = proc.exitValue();
 				switch(exitValue) {

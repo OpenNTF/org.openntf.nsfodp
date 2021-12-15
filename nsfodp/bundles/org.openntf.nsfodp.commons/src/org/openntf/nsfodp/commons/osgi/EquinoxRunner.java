@@ -167,6 +167,7 @@ public class EquinoxRunner {
 		ProcessBuilder builder = new ProcessBuilder()
 				.command(command)
 				.redirectOutput(Redirect.PIPE)
+				.redirectError(Redirect.PIPE)
 				.redirectInput(Redirect.INHERIT);
 		Map<String, String> env = builder.environment();
 		env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
