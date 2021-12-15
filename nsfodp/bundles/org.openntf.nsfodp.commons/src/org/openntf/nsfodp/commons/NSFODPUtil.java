@@ -389,7 +389,7 @@ public enum NSFODPUtil {
 			// In practice, Files.copy in ZIP FS copies the file properly, while Files.newInputStream adds nulls
 			Path tempFile = Files.createTempFile(NSFODPUtil.class.getSimpleName(), ".bin"); //$NON-NLS-1$
 			Files.copy(path, tempFile, StandardCopyOption.REPLACE_EXISTING);
-			return Files.newInputStream(tempFile, options);
+			return new TempFileInputStream(tempFile, options);
 		} else {
 			// Otherwise, just use the normal method
 			return Files.newInputStream(path, options);
