@@ -23,6 +23,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,11 +44,13 @@ import org.openntf.nsfodp.commons.NSFODPUtil;
 
 public class EquinoxRunner {
 	private Path javaBin;
+	private Path javaHome;
 	private Path notesProgram;
 	private final List<Path> classpath = new ArrayList<>();
 	private final List<String> platform = new ArrayList<>();
 	private Path workingDirectory;
 	private final Map<String, String> environmentVars = new HashMap<>();
+	private final Map<String, String> jvmProps = new HashMap<>();
 	private String osgiBundle;
 	private Path logFile;
 	private String jvmArgs;
@@ -57,6 +60,12 @@ public class EquinoxRunner {
 	}
 	public void setJavaBin(Path javaBin) {
 		this.javaBin = javaBin;
+	}
+	public Path getJavaHome() {
+		return javaHome;
+	}
+	public void setJavaHome(Path javaHome) {
+		this.javaHome = javaHome;
 	}
 	public Path getNotesProgram() {
 		return notesProgram;
@@ -93,6 +102,18 @@ public class EquinoxRunner {
 		this.environmentVars.put(name, value);
 	}
 	
+	/**
+	 * Adds a property value to be specified in the Java launch command. These
+	 * arguments are passed as {@code -Dname=value}.
+	 * 
+	 * @param name the name of the property to set
+	 * @param value the value of the property
+	 * @since 3.7.0
+	 */
+	public void addJvmLaunchProperty(String name, String value) {
+		this.jvmProps.put(name, value);
+	}
+	
 	public Path getLogFile() {
 		return logFile;
 	}
@@ -105,8 +126,20 @@ public class EquinoxRunner {
 		this.jvmArgs = jvmArgs;
 	}
 	
-	public Process start(String applicationId) throws IOException {
+	/**
+	 * Builds the command string used to launch the Equinox process, as used by
+	 * {@link #start(String)}.
+	 * 
+	 * <p>As a side effect, this creates the Equinox launch configuration file.</p>
+	 * 
+	 * @param applicationId the Equinox application ID to launch
+	 * @return a {@link List} of the exec command and arguments
+	 * @throws IOException if there is a problem building the command
+	 * @since 3.7.0
+	 */
+	public List<String> getCommand(String applicationId) throws IOException {
 		Objects.requireNonNull(javaBin, "javaBin must be set");
+		Objects.requireNonNull(javaHome, "javaHome must be set");
 		Objects.requireNonNull(notesProgram, "notesProgram must be set");
 		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
 		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
@@ -152,10 +185,15 @@ public class EquinoxRunner {
 		List<String> command = new ArrayList<>();
 		command.add(getJavaBin().toString());
 		if(this.jvmArgs != null) {
+			// TODO account for spaces
 			Stream.of(this.jvmArgs.split("\\s+")) //$NON-NLS-1$
 				.filter(s -> s != null && !s.isEmpty())
 				.forEach(command::add);
 		}
+		this.jvmProps.forEach((name, value) -> {
+			// TODO better escaping
+			command.add(MessageFormat.format("-D{0}={1}", name, value)); //$NON-NLS-1$
+		});
 		command.add("-Dosgi.frameworkParentClassloader=boot"); //$NON-NLS-1$
 		command.add("org.eclipse.core.launcher.Main"); //$NON-NLS-1$
 		command.add("-framwork"); //$NON-NLS-1$
@@ -164,12 +202,18 @@ public class EquinoxRunner {
 		command.add(configuration.toAbsolutePath().toString());
 		command.add("-consoleLog"); //$NON-NLS-1$
 		
-		ProcessBuilder builder = new ProcessBuilder()
-				.command(command)
-				.redirectOutput(Redirect.PIPE)
-				.redirectError(Redirect.PIPE)
-				.redirectInput(Redirect.INHERIT);
-		Map<String, String> env = builder.environment();
+		return command;
+	}
+	
+	/**
+	 * Retrieves the environment variables to be send to the exec process,
+	 * as used by {@link #start(String)}.
+	 * 
+	 * @return a {@link Map} of environment variables
+	 * @since 3.7.0
+	 */
+	public Map<String, String> getExecEnvironmentVariables() {
+		Map<String, String> env = new HashMap<>();
 		env.put("Notes_ExecDirectory", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		StringBuilder path = new StringBuilder();
 		path.append(notesProgram.toAbsolutePath().toString());
@@ -181,13 +225,32 @@ public class EquinoxRunner {
 		env.put("PATH", path.toString()); //$NON-NLS-1$
 		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-		env.put("JAVA_HOME", javaBin.getParent().getParent().toString()); //$NON-NLS-1$
+		env.put("JAVA_HOME", javaHome.toString()); //$NON-NLS-1$
 		env.put("CLASSPATH", //$NON-NLS-1$
 			classpath.stream()
 				.map(Path::toString)
 				.collect(Collectors.joining(File.pathSeparator))
 		);
 		env.putAll(environmentVars);
+		return env;
+	}
+	
+	public Process start(String applicationId) throws IOException {
+		Objects.requireNonNull(javaBin, "javaBin must be set");
+		Objects.requireNonNull(javaHome, "javaHome must be set");
+		Objects.requireNonNull(notesProgram, "notesProgram must be set");
+		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
+		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
+		
+		List<String> command = getCommand(applicationId);
+		
+		ProcessBuilder builder = new ProcessBuilder()
+				.command(command)
+				.redirectOutput(Redirect.PIPE)
+				.redirectError(Redirect.PIPE)
+				.redirectInput(Redirect.INHERIT);
+		Map<String, String> env = builder.environment();
+		env.putAll(getExecEnvironmentVariables());
 		
 		return builder.start();
 	}

@@ -50,6 +50,10 @@ public class CompilerApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
+		System.out.println("path: " + System.getProperty("java.library.path"));
+		System.out.println("PATH: " + System.getenv("PATH"));
+		System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH"));
+		System.out.println("DYLD_LIBRARY_PATH: " + System.getenv("DYLD_LIBRARY_PATH"));
 		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
 		if(notesIni != null && !notesIni.isEmpty()) {
 			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$

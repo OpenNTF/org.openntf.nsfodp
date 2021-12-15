@@ -118,6 +118,16 @@
 			<artifactId>com.ibm.commons.xml</artifactId>
 			<version>9.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-exec</artifactId>
+			<version>1.3</version>
+		</dependency>
 		
 		<!--
 			Server communication

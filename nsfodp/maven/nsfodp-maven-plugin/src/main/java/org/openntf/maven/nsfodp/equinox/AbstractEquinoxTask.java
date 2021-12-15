@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -34,6 +35,11 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.ShutdownHookProcessDestroyer;
+import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -45,6 +51,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
+import org.openntf.maven.nsfodp.jvm.MacOSJVMProvider;
 import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 public abstract class AbstractEquinoxTask {
@@ -114,7 +121,13 @@ public abstract class AbstractEquinoxTask {
 			
 			EquinoxRunner runner = new EquinoxRunner();
 			runner.setJavaBin(getJavaBinary(notesProgram));
+			runner.setJavaHome(getJavaHome(notesProgram));
 			runner.setNotesProgram(notesProgram);
+			
+			if(SystemUtils.IS_OS_MAC) {
+				String escapedPath = notesProgram.toString();
+				runner.addJvmLaunchProperty("java.library.path", escapedPath); //$NON-NLS-1$
+			}
 			runner.setJvmArgs(this.jvmArgs);
 			
 			if(classpathJars != null) {
@@ -204,11 +217,48 @@ public abstract class AbstractEquinoxTask {
 			try {
 				Path logFile = runner.getLogFile();
 				
+				DefaultExecutor exec = new DefaultExecutor();
+				exec.setWorkingDirectory(framework.toFile());
+				exec.setStreamHandler(new ExecuteStreamHandler() {
+
+					@Override
+					public void setProcessInputStream(OutputStream os) throws IOException {
+						
+					}
+
+					@Override
+					public void setProcessErrorStream(InputStream is) throws IOException {
+						watchOutput(is, null);
+					}
+
+					@Override
+					public void setProcessOutputStream(InputStream is) throws IOException {
+						watchOutput(is, null);
+					}
+
+					@Override
+					public void start() throws IOException {
+						
+					}
+
+					@Override
+					public void stop() throws IOException {
+						
+					}
+					
+				});
 				Process proc = runner.start(applicationId);
 				watchOutput(proc.getInputStream(), proc);
 				watchOutput(proc.getErrorStream(), proc);
 				proc.waitFor();
 				int exitValue = proc.exitValue();
+//				List<String> command = runner.getCommand(applicationId);
+//				CommandLine cli = new CommandLine(command.get(0));
+//				cli.addArguments(command.subList(1, command.size()).toArray(new String[0]), false);
+//				exec.setProcessDestroyer(new ShutdownHookProcessDestroyer());
+//				Map<String, String> env = EnvironmentUtils.getProcEnvironment();
+//				env.putAll(runner.getExecEnvironmentVariables());
+//				int exitValue = exec.execute(cli, env);
 				switch(exitValue) {
 				case 0: // Success
 				case 137: // teminated by watchOutput
@@ -230,7 +280,7 @@ public abstract class AbstractEquinoxTask {
 			} finally {
 				teardownJreJars(jars);
 			}
-		} catch (InterruptedException e) {
+//		} catch (InterruptedException e) {
 			// No problem here
 		} catch(Throwable e) {
 			throw new RuntimeException(Messages.getString("EquinoxMojo.exceptionLaunching"), e); //$NON-NLS-1$
@@ -278,32 +328,40 @@ public abstract class AbstractEquinoxTask {
 		}
 	}
 	
-	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
+	private Path getJavaHome(Path notesProgram) {
 		// Look to see if we can find a Notes JVM
-		Path jvmBin = notesProgram.resolve("jvm").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$
-		if(!Files.isDirectory(jvmBin) && SystemUtils.IS_OS_MAC) {
-			// macOS 10.0.1+ embedded JVM
-			Path notesApp = getMacNotesAppDir(notesProgram);
-			if(notesApp != null) {
-				jvmBin = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}
+		Path jvmHome = notesProgram.resolve("jvm"); //$NON-NLS-1$
+		if(SystemUtils.IS_OS_MAC) {
+			jvmHome = MacOSJVMProvider.getJavaHome();
 		}
-		if(!Files.isDirectory(jvmBin)) {
-			throw new RuntimeException("Could not find JVM at " + jvmBin);
+		if(!Files.isDirectory(jvmHome)) {
+			throw new RuntimeException("Could not find JVM at " + jvmHome);
 		}
-			
 		
-		String javaBinName;
-		if(SystemUtils.IS_OS_WINDOWS) {
-			javaBinName = "java.exe"; //$NON-NLS-1$
+		return jvmHome;
+	}
+	
+	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
+		if(SystemUtils.IS_OS_MAC) {
+			//return Paths.get("/usr/bin/java"); //$NON-NLS-1$
+			//return MacOSJVMProvider.getJavaHome().resolve("bin").resolve("java"); //$NON-NLS-1$ //$NON-NLS-2$
+			return Paths.get("/Applications/HCL Notes.app/Contents/jre/Contents/Home/bin/java");
 		} else {
-			javaBinName = "java"; //$NON-NLS-1$
+			// Look to see if we can find a Notes JVM
+			Path jvmBin = getJavaHome(notesProgram).resolve("bin"); //$NON-NLS-1$
+			
+			String javaBinName;
+			if(SystemUtils.IS_OS_WINDOWS) {
+				javaBinName = "java.exe"; //$NON-NLS-1$
+			} else {
+				javaBinName = "java"; //$NON-NLS-1$
+			}
+			Path javaBin = jvmBin.resolve(javaBinName);
+			if(!Files.exists(javaBin)) {
+				throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
+			}
+			return javaBin;
 		}
-		Path javaBin = jvmBin.resolve(javaBinName);
-		if(!Files.exists(javaBin)) {
-			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
-		}
-		return javaBin;
 	}
     
     /**
@@ -323,17 +381,6 @@ public abstract class AbstractEquinoxTask {
     		if(log.isDebugEnabled()) {
     			log.debug("Linking environment Jars in macOS Notes JRE");
     		}
-    		
-    		Path tools = SystemUtils.getJavaHome().toPath().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    		if(!Files.exists(tools)) {
-    			// Java Home might be a JRE dir - try a level up
-    			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    		}
-    		if(!Files.exists(tools)) {
-    			if(log.isWarnEnabled()) {
-    				log.warn("Unable to locate tools.jar in running JVM - if there are downstream problems, this may be the cause (expected " + tools + ")");
-    			}
-    		}
 
     		Collection<Path> toLink = new LinkedHashSet<>();
     		EquinoxRunner.addIBMJars(notesProgram, toLink);
@@ -341,13 +388,8 @@ public abstract class AbstractEquinoxTask {
     		Collection<Path> result = new LinkedHashSet<>();
     		Path notesApp = getMacNotesAppDir(notesProgram);
     		if(notesApp != null) {
-	    		Path destBase = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-	    		if(!Files.isDirectory(destBase)) {
-	    			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
-	    		}
-	    		if(!Files.isWritable(destBase)) {
-	    			throw new IllegalStateException("Unable to write to embedded Notes JRE ext directory at " + destBase);
-	    		}
+	    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$
+	    		Files.createDirectories(destBase);
 	    		
 	    		for(Path jar : toLink) {
 	    			Path destJar = destBase.resolve(jar.getFileName());
@@ -355,14 +397,6 @@ public abstract class AbstractEquinoxTask {
 	    				Files.copy(jar, destJar);
 	    				result.add(destJar);
 	    			}
-	    		}
-	    		
-	    		if(Files.exists(tools)) {
-		    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
-		    		if(!Files.exists(toolsDest)) {
-		    			Files.copy(tools, toolsDest);
-		    			result.add(toolsDest);
-		    		}
 	    		}
     		}
     		
@@ -424,7 +458,9 @@ public abstract class AbstractEquinoxTask {
 	    				
 	    				addChar(lastFour, (char)ch);
 	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
-	    					proc.destroyForcibly();
+	    					if(proc != null) {
+	    						proc.destroyForcibly();
+	    					}
 	    					successFlag = true;
 	    					return;
 	    				}
