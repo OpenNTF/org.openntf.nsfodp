@@ -425,18 +425,4 @@ public abstract class AbstractEquinoxTask {
     	}
     	lastFour[lastFour.length-1] = ch;
     }
-    
-    /**
-     * @since 3.0.0
-     */
-    private static Path getMacNotesAppDir(Path notesProgram) {
-    	if(notesProgram == null) {
-    		return null;
-    	}
-    	Path notesApp = notesProgram.getParent();
-    	if(notesApp.getParent() == null) {
-    		return null;
-    	}
-    	return notesApp.getParent();
-    }
 }

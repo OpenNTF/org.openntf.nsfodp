@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" maintenanceversion="1.0" replicaid="852587AD0062BA4B" version="12.0">
+<noteinfo noteid="16a" sequence="1" unid="F0BBE21C906DA136852587AD0062CEBB">
+<created><datetime>20211216T125914,51-05</datetime></created>
+<modified><datetime>20211216T125914,56-05</datetime></modified>
+<revised><datetime>20211216T125914,55-05</datetime></revised>
+<lastaccessed><datetime>20211216T125914,55-05</datetime></lastaccessed>
+<addedtofile><datetime>20211216T125914,55-05</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
+<wassignedby><name>CN=Jesse Gallagher/O=IKSG</name></wassignedby>
+<item name="$TITLE" sign="true"><text>LSConstants</text></item>
+<item name="$Flags"><text>s34Q</text></item>
+<item name="$PublicAccess" sign="true"><text>1</text></item>
+<item name="$DesignerVersion"><text>8.5.3</text></item></note>

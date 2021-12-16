@@ -19,9 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -132,7 +134,8 @@ public class EquinoxRunner {
 	 * Builds the command string used to launch the Equinox process, as used by
 	 * {@link #start(String)}.
 	 * 
-	 * <p>As a side effect, this creates the Equinox launch configuration file.</p>
+	 * <p>As a side effect, this creates the Equinox launch configuration file
+	 * and working directory.</p>
 	 * 
 	 * @param applicationId the Equinox application ID to launch
 	 * @return a {@link List} of the exec command and arguments
@@ -174,8 +177,7 @@ public class EquinoxRunner {
 		config.put("osgi.framework", osgiBundle); //$NON-NLS-1$
 		config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
 		config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
-		config.put("org.osgi.framework.bootdelegation", "lotus.*,lotus.domino.*,lotus.notes.*,lotus.domino.websvc.client.*"); //$NON-NLS-1$ //$NON-NLS-2$
-//		config.put("org.osgi.framework.system.packages.extra", "lotus.domino,lotus.notes");
+		config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		// Logger configuration
 		config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -204,6 +206,23 @@ public class EquinoxRunner {
 		command.add("-configuration"); //$NON-NLS-1$
 		command.add(configuration.toAbsolutePath().toString());
 		command.add("-consoleLog"); //$NON-NLS-1$
+		
+		if (NSFODPUtil.isOsMac()) {
+			// Copy all *.lss files from the ../Resources directory in V12
+			Path resources = notesProgram.getParent().resolve("Resources"); //$NON-NLS-1$
+			if (Files.isDirectory(resources)) {
+				Files.list(resources).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".lss")) //$NON-NLS-1$
+						.forEach(lss -> {
+							Path dest = workingDirectory.resolve(lss.getFileName());
+							try {
+								Files.copy(lss, dest, StandardCopyOption.REPLACE_EXISTING);
+							} catch (IOException e) {
+								e.printStackTrace();
+								throw new UncheckedIOException(e);
+							}
+						});
+			}
+		}
 		
 		return command;
 	}
@@ -249,6 +268,7 @@ public class EquinoxRunner {
 		
 		ProcessBuilder builder = new ProcessBuilder()
 				.command(command)
+				.directory(workingDirectory.toFile())
 				.redirectOutput(Redirect.PIPE)
 				.redirectError(Redirect.PIPE)
 				.redirectInput(Redirect.INHERIT);
@@ -278,7 +298,7 @@ public class EquinoxRunner {
     
     public static void addIBMJars(Path notesProgram, Collection<Path> classpath) {
     	Path lib = notesProgram.resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$
-    	if(!Files.isDirectory(lib) && "MacOS".equals(notesProgram.getFileName().toString())) { //$NON-NLS-1$
+    	if(!Files.isDirectory(lib) && NSFODPUtil.isOsMac()) {
     		// Shared Java libs moved in V12
     		lib = notesProgram.getParent().resolve("Resources").resolve("jvm").resolve("lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     	}
