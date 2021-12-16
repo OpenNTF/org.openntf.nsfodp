@@ -887,14 +887,13 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	
 	private void compileLotusScript(NDatabase database, List<Integer> noteIds, boolean retry) {
 		if(!noteIds.isEmpty()) {
-			// TODO see if this can be brought back in a way that's compatible with the macOS builder
-//			try {
-//				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
-//			} catch(ClassNotFoundException e) {
-//				subTask(Messages.ODPCompiler_webServiceNotFound1);
-//				subTask(Messages.ODPCompiler_webServiceNotFound2);
-//				return;
-//			}
+			try {
+				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
+			} catch(ClassNotFoundException e) {
+				subTask(Messages.ODPCompiler_webServiceNotFound1);
+				subTask(Messages.ODPCompiler_webServiceNotFound2);
+				return;
+			}
 			
 			subTask(Messages.ODPCompiler_compilingLotusScript);
 			// In lieu of a dependency graph, just keep bashing at the list until it's done

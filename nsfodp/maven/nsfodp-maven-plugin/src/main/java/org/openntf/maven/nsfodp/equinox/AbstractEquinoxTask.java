@@ -335,7 +335,7 @@ public abstract class AbstractEquinoxTask {
     		EquinoxRunner.addIBMJars(notesProgram, toLink);
 
     		Collection<Path> result = new LinkedHashSet<>();
-    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$
+    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("jre").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     		Files.createDirectories(destBase);
     		
     		for(Path jar : toLink) {
