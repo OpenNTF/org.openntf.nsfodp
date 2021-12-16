@@ -19,13 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,11 +35,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteStreamHandler;
-import org.apache.commons.exec.ShutdownHookProcessDestroyer;
-import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -213,74 +208,34 @@ public abstract class AbstractEquinoxTask {
 				equinoxEnvironmentVars.forEach(runner::addEnvironmentVar);
 			}
 			
-			Collection<Path> jars = initJreJars(notesProgram);
-			try {
-				Path logFile = runner.getLogFile();
-				
-				DefaultExecutor exec = new DefaultExecutor();
-				exec.setWorkingDirectory(framework.toFile());
-				exec.setStreamHandler(new ExecuteStreamHandler() {
-
-					@Override
-					public void setProcessInputStream(OutputStream os) throws IOException {
-						
-					}
-
-					@Override
-					public void setProcessErrorStream(InputStream is) throws IOException {
-						watchOutput(is, null);
-					}
-
-					@Override
-					public void setProcessOutputStream(InputStream is) throws IOException {
-						watchOutput(is, null);
-					}
-
-					@Override
-					public void start() throws IOException {
-						
-					}
-
-					@Override
-					public void stop() throws IOException {
-						
-					}
-					
-				});
-				Process proc = runner.start(applicationId);
-				watchOutput(proc.getInputStream(), proc);
-				watchOutput(proc.getErrorStream(), proc);
-				proc.waitFor();
-				int exitValue = proc.exitValue();
-//				List<String> command = runner.getCommand(applicationId);
-//				CommandLine cli = new CommandLine(command.get(0));
-//				cli.addArguments(command.subList(1, command.size()).toArray(new String[0]), false);
-//				exec.setProcessDestroyer(new ShutdownHookProcessDestroyer());
-//				Map<String, String> env = EnvironmentUtils.getProcEnvironment();
-//				env.putAll(runner.getExecEnvironmentVariables());
-//				int exitValue = exec.execute(cli, env);
-				switch(exitValue) {
-				case 0: // Success
-				case 137: // teminated by watchOutput
+			Collection<Path> macJars = initJreJars(notesProgram);
+			macJars.forEach(runner::addClasspathJar);
+			Path logFile = runner.getLogFile();
+			
+			Process proc = runner.start(applicationId);
+			watchOutput(proc.getInputStream(), proc);
+			watchOutput(proc.getErrorStream(), proc);
+			proc.waitFor();
+			int exitValue = proc.exitValue();
+			switch(exitValue) {
+			case 0: // Success
+			case 137: // teminated by watchOutput
+				break;
+			case 1: // also likely terminated - check successFlag
+				if(successFlag) {
 					break;
-				case 1: // also likely terminated - check successFlag
-					if(successFlag) {
-						break;
-					} else {
-						throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
-					}
-				case 13: // Equinox launch failure - look for log file
-					if(Files.isReadable(logFile)) {
-						Files.lines(logFile).forEach(log::error);
-					}
-					// Passthrough intentional
-				default:
+				} else {
 					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 				}
-			} finally {
-				teardownJreJars(jars);
+			case 13: // Equinox launch failure - look for log file
+				if(Files.isReadable(logFile)) {
+					Files.lines(logFile).forEach(log::error);
+				}
+				// Passthrough intentional
+			default:
+				throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 			}
-//		} catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			// No problem here
 		} catch(Throwable e) {
 			throw new RuntimeException(Messages.getString("EquinoxMojo.exceptionLaunching"), e); //$NON-NLS-1$
@@ -342,26 +297,20 @@ public abstract class AbstractEquinoxTask {
 	}
 	
 	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
-		if(SystemUtils.IS_OS_MAC) {
-			//return Paths.get("/usr/bin/java"); //$NON-NLS-1$
-			//return MacOSJVMProvider.getJavaHome().resolve("bin").resolve("java"); //$NON-NLS-1$ //$NON-NLS-2$
-			return Paths.get("/Applications/HCL Notes.app/Contents/jre/Contents/Home/bin/java");
+		// Look to see if we can find a Notes JVM
+		Path jvmBin = getJavaHome(notesProgram).resolve("bin"); //$NON-NLS-1$
+		
+		String javaBinName;
+		if(SystemUtils.IS_OS_WINDOWS) {
+			javaBinName = "java.exe"; //$NON-NLS-1$
 		} else {
-			// Look to see if we can find a Notes JVM
-			Path jvmBin = getJavaHome(notesProgram).resolve("bin"); //$NON-NLS-1$
-			
-			String javaBinName;
-			if(SystemUtils.IS_OS_WINDOWS) {
-				javaBinName = "java.exe"; //$NON-NLS-1$
-			} else {
-				javaBinName = "java"; //$NON-NLS-1$
-			}
-			Path javaBin = jvmBin.resolve(javaBinName);
-			if(!Files.exists(javaBin)) {
-				throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
-			}
-			return javaBin;
+			javaBinName = "java"; //$NON-NLS-1$
 		}
+		Path javaBin = jvmBin.resolve(javaBinName);
+		if(!Files.exists(javaBin)) {
+			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
+		}
+		return javaBin;
 	}
     
     /**
@@ -386,34 +335,18 @@ public abstract class AbstractEquinoxTask {
     		EquinoxRunner.addIBMJars(notesProgram, toLink);
 
     		Collection<Path> result = new LinkedHashSet<>();
-    		Path notesApp = getMacNotesAppDir(notesProgram);
-    		if(notesApp != null) {
-	    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$
-	    		Files.createDirectories(destBase);
-	    		
-	    		for(Path jar : toLink) {
-	    			Path destJar = destBase.resolve(jar.getFileName());
-	    			if(!Files.exists(destJar)) {
-	    				Files.copy(jar, destJar);
-	    				result.add(destJar);
-	    			}
-	    		}
+    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$
+    		Files.createDirectories(destBase);
+    		
+    		for(Path jar : toLink) {
+    			Path destJar = destBase.resolve(jar.getFileName());
+				Files.copy(jar, destJar, StandardCopyOption.REPLACE_EXISTING);
+				result.add(destJar);
     		}
     		
     		return result;
     	} else {
     		return Collections.emptyList();
-    	}
-    }
-    private void teardownJreJars(Collection<Path> result) throws MojoExecutionException, IOException {
-    	if(SystemUtils.IS_OS_MAC) {
-    		if(log.isDebugEnabled()) {
-    			log.debug("Unlinking environment Jars in macOS Notes JRE");
-    		}
-    		
-    		for(Path jar : result) {
-    			Files.deleteIfExists(jar);
-    		}
     	}
     }
     

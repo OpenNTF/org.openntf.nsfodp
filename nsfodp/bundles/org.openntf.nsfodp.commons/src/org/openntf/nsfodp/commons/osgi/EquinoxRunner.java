@@ -72,7 +72,9 @@ public class EquinoxRunner {
 	}
 	public void setNotesProgram(Path notesProgram) {
 		this.notesProgram = notesProgram;
-		addIBMJars(notesProgram, classpath);
+//		if(!"MacOS".equals(notesProgram.getFileName().toString())) { //$NON-NLS-1$
+//			addIBMJars(notesProgram, classpath);
+//		}
 		String shim = createJempowerShim(notesProgram);
 		if(shim != null) {
 			addPlatformEntry(shim);
@@ -172,7 +174,8 @@ public class EquinoxRunner {
 		config.put("osgi.framework", osgiBundle); //$NON-NLS-1$
 		config.put("osgi.parentClassloader", "ext"); //$NON-NLS-1$ //$NON-NLS-2$
 		config.put("osgi.classloader.define.packages", "noattributes"); //$NON-NLS-1$ //$NON-NLS-2$
-		config.put("org.osgi.framework.bootdelegation", "lotus.*"); //$NON-NLS-1$ //$NON-NLS-2$
+		config.put("org.osgi.framework.bootdelegation", "lotus.*,lotus.domino.*,lotus.notes.*,lotus.domino.websvc.client.*"); //$NON-NLS-1$ //$NON-NLS-2$
+//		config.put("org.osgi.framework.system.packages.extra", "lotus.domino,lotus.notes");
 		
 		// Logger configuration
 		config.put("eclipse.log.level", "ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -321,6 +324,10 @@ public class EquinoxRunner {
     public static String createJempowerShim(Path notesBin) {
     	try {
 			Path njempcl = notesBin.resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			if(!Files.isRegularFile(njempcl) && "MacOS".equals(notesBin.getFileName().toString())) { //$NON-NLS-1$
+	    		// Shared Java libs moved in V12
+				njempcl = notesBin.getParent().resolve("Resources").resolve("jvm").resolve("lib").resolve("ext").resolve("njempcl.jar"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	    	}
 			if(Files.isRegularFile(njempcl)) {
 				Path tempBundle = Files.createTempFile("njempcl", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 				try(OutputStream os = Files.newOutputStream(tempBundle)) {
@@ -337,7 +344,7 @@ public class EquinoxRunner {
 				}
 				return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
 			} else {
-				return null;
+				throw new IllegalStateException("Unable to locate JEmpower JAR njempcl.jar");
 			}
     	} catch(IOException e) {
     		throw new RuntimeException(e);
@@ -374,10 +381,13 @@ public class EquinoxRunner {
 					String exportPackage = classpathJars.stream()
 						.map(EquinoxRunner::getPackages)
 						.flatMap(Collection::stream)
+						.filter(p -> !p.startsWith("lotus.")) //$NON-NLS-1$
 						.collect(Collectors.joining(",")); //$NON-NLS-1$
 					attrs.putValue("Export-Package", exportPackage); //$NON-NLS-1$
 					
 					attrs.putValue("Bundle-ClassPath", classpathJars.stream() //$NON-NLS-1$
+						.filter(j -> !j.getFileName().toString().equals("Notes.jar")) //$NON-NLS-1$
+						.filter(j -> !j.getFileName().toString().equals("websvc.jar")) //$NON-NLS-1$
 						.map(j -> "external:" + j.toAbsolutePath()) //$NON-NLS-1$
 						.collect(Collectors.joining(",")) //$NON-NLS-1$
 					);

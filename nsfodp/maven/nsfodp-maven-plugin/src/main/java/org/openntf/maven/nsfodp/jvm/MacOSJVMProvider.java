@@ -66,7 +66,7 @@ public class MacOSJVMProvider {
 				.filter(asset -> !StringUtil.toString(asset.get("name")).contains("-testimage")) //$NON-NLS-1$ //$NON-NLS-2$
 				.filter(asset -> !StringUtil.toString(asset.get("name")).contains("-debugimage")) //$NON-NLS-1$ //$NON-NLS-2$
 				.filter(asset -> StringUtil.toString(asset.get("name")).contains("-" + qualifier + "_")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				.filter(asset -> "application/x-compressed-tar".equals(asset.get("content_type")) || "application/zip".equals(asset.get("content_type"))) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				.filter(asset -> isValidContentType(asset.get("content_type"))) //$NON-NLS-1$
 				.findFirst()
 				.orElseThrow(() -> new IllegalStateException(format("Unable to find {0} build for {1}", PROVIDER_NAME, qualifier))); //$NON-NLS-1$
 			if(log.isLoggable(Level.INFO)) {
@@ -79,6 +79,17 @@ public class MacOSJVMProvider {
 			markExecutables(jvmDir);
 		}
 		return jvmDir.resolve("Contents").resolve("Home"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	private static boolean isValidContentType(Object contentType) {
+		switch(StringUtil.toString(contentType)) {
+		case "application/x-compressed-tar": //$NON-NLS-1$
+		case "application/gzip": //$NON-NLS-1$
+		case "application/zip": //$NON-NLS-1$
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -100,17 +111,20 @@ public class MacOSJVMProvider {
 		// TODO consider replacing with NIO filesystem operations, though they don't inherently support .tar.gz
 		try {
 			download(new URL(url), is -> {
-				if("application/zip".equals(contentType)) { //$NON-NLS-1$
+				switch(StringUtil.toString(contentType)) {
+				case "application/zip": //$NON-NLS-1$
 					try(ZipInputStream zis = new ZipInputStream(is)) {
 						extract(zis, jvmDir);
 					}
-				} else if("application/x-compressed-tar".equals(contentType)) { //$NON-NLS-1$
+					break;
+				case "application/x-compressed-tar": //$NON-NLS-1$
+				case "application/gzip": //$NON-NLS-1$
 					try(GZIPInputStream gzis = new GZIPInputStream(is)) {
 						try(TarArchiveInputStream tis = new TarArchiveInputStream(gzis)) {
 							extract(tis, jvmDir);
 						}
 					}
-				} else {
+				default:
 					throw new IllegalStateException(format("Unsupported content type: {0}", contentType));
 				}
 				return null;
