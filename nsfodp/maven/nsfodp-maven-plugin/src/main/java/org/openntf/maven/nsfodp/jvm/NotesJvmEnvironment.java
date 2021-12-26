@@ -16,7 +16,7 @@ import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 public class NotesJvmEnvironment extends AbstractJvmEnvironment {
 
 	@Override
-	public boolean isActive() {
+	public boolean isActive(Path notesProgram) {
 		return !SystemUtils.IS_OS_MAC;
 	}
 

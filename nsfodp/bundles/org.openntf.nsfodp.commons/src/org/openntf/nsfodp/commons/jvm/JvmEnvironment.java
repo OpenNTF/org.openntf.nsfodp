@@ -16,9 +16,9 @@ import java.util.stream.StreamSupport;
  * @since 3.7.0
  */
 public interface JvmEnvironment {
-	static JvmEnvironment get() {
+	static JvmEnvironment get(Path notesProgram) {
 		return StreamSupport.stream(ServiceLoader.load(JvmEnvironment.class).spliterator(), false)
-			.filter(JvmEnvironment::isActive)
+			.filter(t -> t.isActive(notesProgram))
 			.findFirst()
 			.orElseThrow(() -> new IllegalStateException("Unable to locate JvmEnvironment service"));
 	}
@@ -26,10 +26,11 @@ public interface JvmEnvironment {
 	/**
 	 * Determines whether the provider is active for the current environment.
 	 * 
+	 * @param notesProgram the directory for a Notes or Domino installation
 	 * @return {@code true} if the JVM applies to this environment;
 	 *         {@code false} otherwise
 	 */
-	boolean isActive();
+	boolean isActive(Path notesProgram);
 	
 	/**
 	 * Determines the path to the Java home directory.

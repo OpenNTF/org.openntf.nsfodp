@@ -111,7 +111,7 @@ public abstract class AbstractEquinoxTask {
 			}
 			
 			EquinoxRunner runner = new EquinoxRunner();
-			JvmEnvironment jvm = JvmEnvironment.get();
+			JvmEnvironment jvm = JvmEnvironment.get(notesProgram);
 			runner.setJvmEnvironment(jvm);
 			runner.setNotesProgram(notesProgram);
 			
