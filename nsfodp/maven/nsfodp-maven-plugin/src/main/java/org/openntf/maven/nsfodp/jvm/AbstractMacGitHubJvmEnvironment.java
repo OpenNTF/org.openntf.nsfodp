@@ -14,7 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,26 +30,45 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.SystemUtils;
+import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
+import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.json.JsonException;
 import com.ibm.commons.util.io.json.JsonJavaFactory;
 import com.ibm.commons.util.io.json.JsonParser;
 
-public class MacOSJVMProvider {
-	public static final String API_RELEASES = "https://api.github.com/repos/ibmruntimes/semeru{0}-binaries/releases?per_page=100"; //$NON-NLS-1$
-	public static final String PROVIDER_NAME = "IBM Semeru"; //$NON-NLS-1$
+/**
+ * This {@link JvmEnvironment} abstract class contains common behavior for macOS-based environments
+ * that download runtimes automatically.
+ * 
+ * @author Jesse Gallagher
+ * @since 3.7.0
+ */
+public abstract class AbstractMacGitHubJvmEnvironment extends AbstractJvmEnvironment {
+	private static final Logger log = Logger.getLogger(AbstractMacGitHubJvmEnvironment.class.getName());
+
 	public static final String JAVA_VERSION = "8"; //$NON-NLS-1$
 	
-	private static final Logger log = Logger.getLogger(MacOSJVMProvider.class.getName());
+	protected abstract String getReleasesApi();
 	
+	protected String getJavaVersion() {
+		return JAVA_VERSION;
+	}
+	
+	protected abstract String getProviderName();
+	
+	protected abstract String getShortName();
+
 	@SuppressWarnings("unchecked")
-	public static Path getJavaHome() {
+	@Override
+	public Path getJavaHome(Path notesProgram) {
 		Path userHome = SystemUtils.getUserHome().toPath();
-		Path jvmDir = userHome.resolve(".nsfodp").resolve("jvm"); //$NON-NLS-1$ //$NON-NLS-2$
+		Path jvmDir = userHome.resolve(".nsfodp").resolve("jvm").resolve(getShortName()); //$NON-NLS-1$ //$NON-NLS-2$
 		if(!Files.isDirectory(jvmDir)) {
-			String releasesUrl = format(API_RELEASES, JAVA_VERSION);
-			List<Map<String, Object>> releases = fetchGitHubReleasesList(PROVIDER_NAME, releasesUrl);
+			String releasesUrl = format(getReleasesApi(), JAVA_VERSION);
+			String providerName = getProviderName();
+			List<Map<String, Object>> releases = fetchGitHubReleasesList(providerName, releasesUrl);
 			
 			// Find any applicable releases, in order, as some releases may contain only certain platforms
 			List<Map<String, Object>> validReleases = releases.stream()
@@ -56,7 +77,7 @@ public class MacOSJVMProvider {
 				.filter(release -> release.containsKey("assets")) //$NON-NLS-1$
 				.collect(Collectors.toList());
 			if(validReleases.isEmpty()) {
-				throw new IllegalStateException(format("Unable to locate JDK build for {0}, releases URL {1}", PROVIDER_NAME, releasesUrl)); //$NON-NLS-1$
+				throw new IllegalStateException(format("Unable to locate JDK build for {0}, releases URL {1}", providerName, releasesUrl)); //$NON-NLS-1$
 			}
 			
 			String qualifier = format("jdk_{0}_{1}", getOsArch(), getOsName()); //$NON-NLS-1$
@@ -68,9 +89,9 @@ public class MacOSJVMProvider {
 				.filter(asset -> StringUtil.toString(asset.get("name")).contains("-" + qualifier + "_")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				.filter(asset -> isValidContentType(asset.get("content_type"))) //$NON-NLS-1$
 				.findFirst()
-				.orElseThrow(() -> new IllegalStateException(format("Unable to find {0} build for {1}", PROVIDER_NAME, qualifier))); //$NON-NLS-1$
+				.orElseThrow(() -> new IllegalStateException(format("Unable to find {0} build for {1}", providerName, qualifier))); //$NON-NLS-1$
 			if(log.isLoggable(Level.INFO)) {
-				log.info(format("Downloading {0} JDK from {1}", PROVIDER_NAME, download.get("browser_download_url")));  //$NON-NLS-1$//$NON-NLS-2$
+				log.info(format("Downloading {0} JDK from {1}", providerName, download.get("browser_download_url")));  //$NON-NLS-1$//$NON-NLS-2$
 			}
 			
 			String contentType = (String)download.get("content_type"); //$NON-NLS-1$
@@ -80,6 +101,34 @@ public class MacOSJVMProvider {
 		}
 		return jvmDir.resolve("Contents").resolve("Home"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
+	
+	@Override
+	public Collection<Path> initNotesJars(Path notesProgram) throws IOException {
+		Collection<Path> toLink = new LinkedHashSet<>();
+		EquinoxRunner.addIBMJars(notesProgram, toLink);
+
+		Collection<Path> result = new LinkedHashSet<>();
+		Path destBase = getJavaHome(notesProgram).resolve("jre").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		Files.createDirectories(destBase);
+		
+		for(Path jar : toLink) {
+			Path destJar = destBase.resolve(jar.getFileName());
+			Files.copy(jar, destJar, StandardCopyOption.REPLACE_EXISTING);
+			result.add(destJar);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public Map<String, String> getJvmProperties(Path notesProgram) {
+		String escapedPath = notesProgram.toString();
+		return Collections.singletonMap("java.library.path", escapedPath); //$NON-NLS-1$
+	}
+
+	// *******************************************************************************
+	// * Utility methods
+	// *******************************************************************************
 	
 	private static boolean isValidContentType(Object contentType) {
 		switch(StringUtil.toString(contentType)) {
@@ -124,6 +173,7 @@ public class MacOSJVMProvider {
 							extract(tis, jvmDir);
 						}
 					}
+					break;
 				default:
 					throw new IllegalStateException(format("Unsupported content type: {0}", contentType));
 				}
@@ -142,6 +192,10 @@ public class MacOSJVMProvider {
 		Path jreBin = jvmDir.resolve("jre").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.isDirectory(jreBin)) {
 			markExecutablesInBinDir(jreBin);
+		}
+		Path contentsBin = jvmDir.resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if(Files.isDirectory(contentsBin)) {
+			markExecutablesInBinDir(contentsBin);
 		}
 	}
 	
