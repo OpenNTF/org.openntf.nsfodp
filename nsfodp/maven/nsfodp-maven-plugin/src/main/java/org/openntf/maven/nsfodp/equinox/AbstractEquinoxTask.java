@@ -47,6 +47,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
 import org.openntf.maven.nsfodp.jvm.MacOSJVMProvider;
+import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 public abstract class AbstractEquinoxTask {
@@ -115,8 +116,7 @@ public abstract class AbstractEquinoxTask {
 			}
 			
 			EquinoxRunner runner = new EquinoxRunner();
-			runner.setJavaBin(getJavaBinary(notesProgram));
-			runner.setJavaHome(getJavaHome(notesProgram));
+			runner.setJvmEnvironment(getJvmEnvironment(notesProgram));
 			runner.setNotesProgram(notesProgram);
 			
 			if(SystemUtils.IS_OS_MAC) {
@@ -283,7 +283,7 @@ public abstract class AbstractEquinoxTask {
 		}
 	}
 	
-	private Path getJavaHome(Path notesProgram) {
+	private JvmEnvironment getJvmEnvironment(Path notesProgrem) throws MojoExecutionException {
 		// Look to see if we can find a Notes JVM
 		Path jvmHome = notesProgram.resolve("jvm"); //$NON-NLS-1$
 		if(SystemUtils.IS_OS_MAC) {
@@ -293,12 +293,7 @@ public abstract class AbstractEquinoxTask {
 			throw new RuntimeException("Could not find JVM at " + jvmHome);
 		}
 		
-		return jvmHome;
-	}
-	
-	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
-		// Look to see if we can find a Notes JVM
-		Path jvmBin = getJavaHome(notesProgram).resolve("bin"); //$NON-NLS-1$
+		Path jvmBin = jvmHome.resolve("bin"); //$NON-NLS-1$
 		
 		String javaBinName;
 		if(SystemUtils.IS_OS_WINDOWS) {
@@ -310,7 +305,20 @@ public abstract class AbstractEquinoxTask {
 		if(!Files.exists(javaBin)) {
 			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
 		}
-		return javaBin;
+		
+		Path fJvmHome = jvmHome;
+		return new JvmEnvironment() {
+			
+			@Override
+			public Path getJavaHome() {
+				return fJvmHome;
+			}
+			
+			@Override
+			public Path getJavaBin() {
+				return javaBin;
+			}
+		};
 	}
     
     /**

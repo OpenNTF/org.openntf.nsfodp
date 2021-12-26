@@ -43,10 +43,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 
 public class EquinoxRunner {
-	private Path javaBin;
-	private Path javaHome;
+	private JvmEnvironment jvm;
 	private Path notesProgram;
 	private final List<Path> classpath = new ArrayList<>();
 	private final List<String> platform = new ArrayList<>();
@@ -57,18 +57,13 @@ public class EquinoxRunner {
 	private Path logFile;
 	private String jvmArgs;
 	
-	public Path getJavaBin() {
-		return javaBin;
+	public JvmEnvironment getJvmEnvironment() {
+		return this.jvm;
 	}
-	public void setJavaBin(Path javaBin) {
-		this.javaBin = javaBin;
+	public void setJvmEnvironment(JvmEnvironment jvm) {
+		this.jvm = jvm;
 	}
-	public Path getJavaHome() {
-		return javaHome;
-	}
-	public void setJavaHome(Path javaHome) {
-		this.javaHome = javaHome;
-	}
+	
 	public Path getNotesProgram() {
 		return notesProgram;
 	}
@@ -143,8 +138,7 @@ public class EquinoxRunner {
 	 * @since 3.7.0
 	 */
 	public List<String> getCommand(String applicationId) throws IOException {
-		Objects.requireNonNull(javaBin, "javaBin must be set");
-		Objects.requireNonNull(javaHome, "javaHome must be set");
+		Objects.requireNonNull(jvm, "jvmEnvironment must be set");
 		Objects.requireNonNull(notesProgram, "notesProgram must be set");
 		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
 		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
@@ -188,7 +182,7 @@ public class EquinoxRunner {
 		}
 		
 		List<String> command = new ArrayList<>();
-		command.add(getJavaBin().toString());
+		command.add(getJvmEnvironment().getJavaBin().toString());
 		if(this.jvmArgs != null) {
 			// TODO account for spaces
 			Stream.of(this.jvmArgs.split("\\s+")) //$NON-NLS-1$
@@ -247,7 +241,7 @@ public class EquinoxRunner {
 		env.put("PATH", path.toString()); //$NON-NLS-1$
 		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-		env.put("JAVA_HOME", javaHome.toString()); //$NON-NLS-1$
+		env.put("JAVA_HOME", getJvmEnvironment().getJavaHome().toString()); //$NON-NLS-1$
 		env.put("CLASSPATH", //$NON-NLS-1$
 			classpath.stream()
 				.map(Path::toString)
@@ -258,8 +252,6 @@ public class EquinoxRunner {
 	}
 	
 	public Process start(String applicationId) throws IOException {
-		Objects.requireNonNull(javaBin, "javaBin must be set");
-		Objects.requireNonNull(javaHome, "javaHome must be set");
 		Objects.requireNonNull(notesProgram, "notesProgram must be set");
 		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
 		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
