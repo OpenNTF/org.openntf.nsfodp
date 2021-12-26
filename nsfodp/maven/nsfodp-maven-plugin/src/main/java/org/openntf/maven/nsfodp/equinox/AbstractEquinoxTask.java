@@ -27,14 +27,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -45,6 +42,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
+import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 public abstract class AbstractEquinoxTask {
@@ -113,8 +111,11 @@ public abstract class AbstractEquinoxTask {
 			}
 			
 			EquinoxRunner runner = new EquinoxRunner();
-			runner.setJavaBin(getJavaBinary(notesProgram));
+			JvmEnvironment jvm = JvmEnvironment.get(notesProgram);
+			runner.setJvmEnvironment(jvm);
 			runner.setNotesProgram(notesProgram);
+			
+			jvm.getJvmProperties(notesProgram).forEach(runner::addJvmLaunchProperty);
 			runner.setJvmArgs(this.jvmArgs);
 			
 			if(classpathJars != null) {
@@ -200,35 +201,32 @@ public abstract class AbstractEquinoxTask {
 				equinoxEnvironmentVars.forEach(runner::addEnvironmentVar);
 			}
 			
-			Collection<Path> jars = initJreJars(notesProgram);
-			try {
-				Path logFile = runner.getLogFile();
-				
-				Process proc = runner.start(applicationId);
-				watchOutput(proc.getInputStream(), proc);
-				watchOutput(proc.getErrorStream(), proc);
-				proc.waitFor();
-				int exitValue = proc.exitValue();
-				switch(exitValue) {
-				case 0: // Success
-				case 137: // teminated by watchOutput
+			Collection<Path> addedJars = jvm.initNotesJars(notesProgram);
+			addedJars.forEach(runner::addClasspathJar);
+			Path logFile = runner.getLogFile();
+			
+			Process proc = runner.start(applicationId);
+			watchOutput(proc.getInputStream(), proc);
+			watchOutput(proc.getErrorStream(), proc);
+			proc.waitFor();
+			int exitValue = proc.exitValue();
+			switch(exitValue) {
+			case 0: // Success
+			case 137: // teminated by watchOutput
+				break;
+			case 1: // also likely terminated - check successFlag
+				if(successFlag) {
 					break;
-				case 1: // also likely terminated - check successFlag
-					if(successFlag) {
-						break;
-					} else {
-						throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
-					}
-				case 13: // Equinox launch failure - look for log file
-					if(Files.isReadable(logFile)) {
-						Files.lines(logFile).forEach(log::error);
-					}
-					// Passthrough intentional
-				default:
+				} else {
 					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 				}
-			} finally {
-				teardownJreJars(jars);
+			case 13: // Equinox launch failure - look for log file
+				if(Files.isReadable(logFile)) {
+					Files.lines(logFile).forEach(log::error);
+				}
+				// Passthrough intentional
+			default:
+				throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
 			}
 		} catch (InterruptedException e) {
 			// No problem here
@@ -278,35 +276,7 @@ public abstract class AbstractEquinoxTask {
 		}
 	}
 	
-	private Path getJavaBinary(Path notesProgram) throws MojoExecutionException {
-		// Look to see if we can find a Notes JVM
-		Path jvmBin = notesProgram.resolve("jvm").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$
-		if(!Files.isDirectory(jvmBin) && SystemUtils.IS_OS_MAC) {
-			// macOS 10.0.1+ embedded JVM
-			Path notesApp = getMacNotesAppDir(notesProgram);
-			if(notesApp != null) {
-				jvmBin = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("bin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}
-		}
-		if(!Files.isDirectory(jvmBin)) {
-			throw new RuntimeException("Could not find JVM at " + jvmBin);
-		}
-			
-		
-		String javaBinName;
-		if(SystemUtils.IS_OS_WINDOWS) {
-			javaBinName = "java.exe"; //$NON-NLS-1$
-		} else {
-			javaBinName = "java"; //$NON-NLS-1$
-		}
-		Path javaBin = jvmBin.resolve(javaBinName);
-		if(!Files.exists(javaBin)) {
-			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
-		}
-		return javaBin;
-	}
-    
-    /**
+	/**
      * Adds JARs that are provided in the "ndext" directory of Domino but aren't IBM/HCL-specific.
      * 
      * @param classpath the classpath collection to add to
@@ -316,72 +286,6 @@ public abstract class AbstractEquinoxTask {
 	private void addNdextJars(EquinoxRunner runner) throws MojoExecutionException {
 		runner.addClasspathJar(getDependencyJar("guava")); //$NON-NLS-1$
 	}
-    
-	private Collection<Path> initJreJars(Path notesProgram) throws MojoExecutionException, IOException {
-    	// On macOS, we'll need to create some symlinks in our active JRE due to the way the ext folder works
-    	if(SystemUtils.IS_OS_MAC) {
-    		if(log.isDebugEnabled()) {
-    			log.debug("Linking environment Jars in macOS Notes JRE");
-    		}
-    		
-    		Path tools = SystemUtils.getJavaHome().toPath().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    		if(!Files.exists(tools)) {
-    			// Java Home might be a JRE dir - try a level up
-    			tools = SystemUtils.getJavaHome().toPath().getParent().resolve("lib").resolve("tools.jar"); //$NON-NLS-1$ //$NON-NLS-2$
-    		}
-    		if(!Files.exists(tools)) {
-    			if(log.isWarnEnabled()) {
-    				log.warn("Unable to locate tools.jar in running JVM - if there are downstream problems, this may be the cause (expected " + tools + ")");
-    			}
-    		}
-
-    		Collection<Path> toLink = new LinkedHashSet<>();
-    		EquinoxRunner.addIBMJars(notesProgram, toLink);
-
-    		Collection<Path> result = new LinkedHashSet<>();
-    		Path notesApp = getMacNotesAppDir(notesProgram);
-    		if(notesApp != null) {
-	    		Path destBase = notesApp.resolve("jre").resolve("Contents").resolve("Home").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-	    		if(!Files.isDirectory(destBase)) {
-	    			throw new IllegalStateException("Unable to locate embedded Notes JRE ext directory at " + destBase);
-	    		}
-	    		if(!Files.isWritable(destBase)) {
-	    			throw new IllegalStateException("Unable to write to embedded Notes JRE ext directory at " + destBase);
-	    		}
-	    		
-	    		for(Path jar : toLink) {
-	    			Path destJar = destBase.resolve(jar.getFileName());
-	    			if(!Files.exists(destJar)) {
-	    				Files.copy(jar, destJar);
-	    				result.add(destJar);
-	    			}
-	    		}
-	    		
-	    		if(Files.exists(tools)) {
-		    		Path toolsDest = destBase.getParent().resolve("tools.jar"); //$NON-NLS-1$
-		    		if(!Files.exists(toolsDest)) {
-		    			Files.copy(tools, toolsDest);
-		    			result.add(toolsDest);
-		    		}
-	    		}
-    		}
-    		
-    		return result;
-    	} else {
-    		return Collections.emptyList();
-    	}
-    }
-    private void teardownJreJars(Collection<Path> result) throws MojoExecutionException, IOException {
-    	if(SystemUtils.IS_OS_MAC) {
-    		if(log.isDebugEnabled()) {
-    			log.debug("Unlinking environment Jars in macOS Notes JRE");
-    		}
-    		
-    		for(Path jar : result) {
-    			Files.deleteIfExists(jar);
-    		}
-    	}
-    }
     
     private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };
     
@@ -424,7 +328,9 @@ public abstract class AbstractEquinoxTask {
 	    				
 	    				addChar(lastFour, (char)ch);
 	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
-	    					proc.destroyForcibly();
+	    					if(proc != null) {
+	    						proc.destroyForcibly();
+	    					}
 	    					successFlag = true;
 	    					return;
 	    				}
@@ -455,19 +361,5 @@ public abstract class AbstractEquinoxTask {
     		lastFour[i] = lastFour[i+1];
     	}
     	lastFour[lastFour.length-1] = ch;
-    }
-    
-    /**
-     * @since 3.0.0
-     */
-    private static Path getMacNotesAppDir(Path notesProgram) {
-    	if(notesProgram == null) {
-    		return null;
-    	}
-    	Path notesApp = notesProgram.getParent();
-    	if(notesApp.getParent() == null) {
-    		return null;
-    	}
-    	return notesApp.getParent();
     }
 }
