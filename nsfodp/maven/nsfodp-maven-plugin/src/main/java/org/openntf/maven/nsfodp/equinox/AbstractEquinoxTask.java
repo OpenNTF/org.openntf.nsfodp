@@ -25,17 +25,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -46,7 +42,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.repository.ComponentDependency;
 import org.openntf.maven.nsfodp.Messages;
-import org.openntf.maven.nsfodp.jvm.MacOSJVMProvider;
 import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
@@ -116,13 +111,11 @@ public abstract class AbstractEquinoxTask {
 			}
 			
 			EquinoxRunner runner = new EquinoxRunner();
-			runner.setJvmEnvironment(getJvmEnvironment(notesProgram));
+			JvmEnvironment jvm = JvmEnvironment.get();
+			runner.setJvmEnvironment(jvm);
 			runner.setNotesProgram(notesProgram);
 			
-			if(SystemUtils.IS_OS_MAC) {
-				String escapedPath = notesProgram.toString();
-				runner.addJvmLaunchProperty("java.library.path", escapedPath); //$NON-NLS-1$
-			}
+			jvm.getJvmProperties(notesProgram).forEach(runner::addJvmLaunchProperty);
 			runner.setJvmArgs(this.jvmArgs);
 			
 			if(classpathJars != null) {
@@ -208,8 +201,8 @@ public abstract class AbstractEquinoxTask {
 				equinoxEnvironmentVars.forEach(runner::addEnvironmentVar);
 			}
 			
-			Collection<Path> macJars = initJreJars(notesProgram);
-			macJars.forEach(runner::addClasspathJar);
+			Collection<Path> addedJars = jvm.initNotesJars(notesProgram);
+			addedJars.forEach(runner::addClasspathJar);
 			Path logFile = runner.getLogFile();
 			
 			Process proc = runner.start(applicationId);
@@ -283,45 +276,7 @@ public abstract class AbstractEquinoxTask {
 		}
 	}
 	
-	private JvmEnvironment getJvmEnvironment(Path notesProgrem) throws MojoExecutionException {
-		// Look to see if we can find a Notes JVM
-		Path jvmHome = notesProgram.resolve("jvm"); //$NON-NLS-1$
-		if(SystemUtils.IS_OS_MAC) {
-			jvmHome = MacOSJVMProvider.getJavaHome();
-		}
-		if(!Files.isDirectory(jvmHome)) {
-			throw new RuntimeException("Could not find JVM at " + jvmHome);
-		}
-		
-		Path jvmBin = jvmHome.resolve("bin"); //$NON-NLS-1$
-		
-		String javaBinName;
-		if(SystemUtils.IS_OS_WINDOWS) {
-			javaBinName = "java.exe"; //$NON-NLS-1$
-		} else {
-			javaBinName = "java"; //$NON-NLS-1$
-		}
-		Path javaBin = jvmBin.resolve(javaBinName);
-		if(!Files.exists(javaBin)) {
-			throw new MojoExecutionException(Messages.getString("EquinoxMojo.unableToLocateJava", javaBin)); //$NON-NLS-1$
-		}
-		
-		Path fJvmHome = jvmHome;
-		return new JvmEnvironment() {
-			
-			@Override
-			public Path getJavaHome() {
-				return fJvmHome;
-			}
-			
-			@Override
-			public Path getJavaBin() {
-				return javaBin;
-			}
-		};
-	}
-    
-    /**
+	/**
      * Adds JARs that are provided in the "ndext" directory of Domino but aren't IBM/HCL-specific.
      * 
      * @param classpath the classpath collection to add to
@@ -331,32 +286,6 @@ public abstract class AbstractEquinoxTask {
 	private void addNdextJars(EquinoxRunner runner) throws MojoExecutionException {
 		runner.addClasspathJar(getDependencyJar("guava")); //$NON-NLS-1$
 	}
-    
-	private Collection<Path> initJreJars(Path notesProgram) throws MojoExecutionException, IOException {
-    	// On macOS, we'll need to create some symlinks in our active JRE due to the way the ext folder works
-    	if(SystemUtils.IS_OS_MAC) {
-    		if(log.isDebugEnabled()) {
-    			log.debug("Linking environment Jars in macOS Notes JRE");
-    		}
-
-    		Collection<Path> toLink = new LinkedHashSet<>();
-    		EquinoxRunner.addIBMJars(notesProgram, toLink);
-
-    		Collection<Path> result = new LinkedHashSet<>();
-    		Path destBase = MacOSJVMProvider.getJavaHome().resolve("jre").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    		Files.createDirectories(destBase);
-    		
-    		for(Path jar : toLink) {
-    			Path destJar = destBase.resolve(jar.getFileName());
-				Files.copy(jar, destJar, StandardCopyOption.REPLACE_EXISTING);
-				result.add(destJar);
-    		}
-    		
-    		return result;
-    	} else {
-    		return Collections.emptyList();
-    	}
-    }
     
     private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };
     

@@ -69,9 +69,6 @@ public class EquinoxRunner {
 	}
 	public void setNotesProgram(Path notesProgram) {
 		this.notesProgram = notesProgram;
-//		if(!"MacOS".equals(notesProgram.getFileName().toString())) { //$NON-NLS-1$
-//			addIBMJars(notesProgram, classpath);
-//		}
 		String shim = createJempowerShim(notesProgram);
 		if(shim != null) {
 			addPlatformEntry(shim);
@@ -182,7 +179,7 @@ public class EquinoxRunner {
 		}
 		
 		List<String> command = new ArrayList<>();
-		command.add(getJvmEnvironment().getJavaBin().toString());
+		command.add(getJvmEnvironment().getJavaBin(notesProgram).toString());
 		if(this.jvmArgs != null) {
 			// TODO account for spaces
 			Stream.of(this.jvmArgs.split("\\s+")) //$NON-NLS-1$
@@ -241,7 +238,7 @@ public class EquinoxRunner {
 		env.put("PATH", path.toString()); //$NON-NLS-1$
 		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
-		env.put("JAVA_HOME", getJvmEnvironment().getJavaHome().toString()); //$NON-NLS-1$
+		env.put("JAVA_HOME", getJvmEnvironment().getJavaHome(notesProgram).toString()); //$NON-NLS-1$
 		env.put("CLASSPATH", //$NON-NLS-1$
 			classpath.stream()
 				.map(Path::toString)
