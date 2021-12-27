@@ -333,6 +333,7 @@
                         <exclude>**/res/SwiperDXLClean.xsl</exclude>
                         <exclude>**/dominoschemas/*</exclude>
                         <exclude>**/nsfodp-maven-plugin/**</exclude>
+                        <exclude>**/org/apache/**</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
