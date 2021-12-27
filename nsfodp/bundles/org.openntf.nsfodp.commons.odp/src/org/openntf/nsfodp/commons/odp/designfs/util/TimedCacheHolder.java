@@ -22,7 +22,7 @@ import java.util.Map;
  * Utility class to hold a cache map that expires based on a last-modification date.
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class TimedCacheHolder {
 	private long lastModified = -1;

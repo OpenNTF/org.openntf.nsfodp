@@ -36,7 +36,7 @@ import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
 /**
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class DesignFileChannel extends FileChannel {
 	

@@ -33,9 +33,6 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
-import java.nio.file.attribute.FileOwnerAttributeView;
-import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,10 +52,10 @@ import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
 
 /**
- * Java NIO Filesystem implementation for NSF file storage.
+ * Java NIO Filesystem implementation for an NSF's design store.
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class DesignFileSystemProvider extends FileSystemProvider {
 	public static final String SCHEME = "nsfdesignfs"; //$NON-NLS-1$
@@ -88,7 +85,7 @@ public class DesignFileSystemProvider extends FileSystemProvider {
 		String mapKey = uri.getUserInfo() + nsfPath;
 		FileSystem fs = fileSystems.get(mapKey);
 		if(fs == null || !fs.isOpen()) {
-			fileSystems.put(mapKey,new DesignFileSystem(this, uri.getUserInfo(), nsfPath));
+			fileSystems.put(mapKey, new DesignFileSystem(this, uri.getUserInfo(), nsfPath));
 		}
 		return fileSystems.get(mapKey);
 	}
@@ -203,8 +200,8 @@ public class DesignFileSystemProvider extends FileSystemProvider {
 		if("/".equals(path.toAbsolutePath().toString())) { //$NON-NLS-1$
 			return type.cast(new RootFileAttributes());
 		}
-		if (type.isAssignableFrom(PosixFileAttributes.class)) {
-			PosixFileAttributeView view = getFileAttributeView(path, PosixFileAttributeView.class, options);
+		if (type.isAssignableFrom(BasicFileAttributeView.class)) {
+			BasicFileAttributeView view = getFileAttributeView(path, BasicFileAttributeView.class, options);
 			if(view == null) {
 				throw new IOException("File does not exist: " + path); //$NON-NLS-1$
 			}
@@ -262,16 +259,16 @@ public class DesignFileSystemProvider extends FileSystemProvider {
 					"readAttributes(" + path + ")[" + view + ":" + attrs + "] view not supported: " + views); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
-		if ("basic".equalsIgnoreCase(view) || "posix".equalsIgnoreCase(view) || "owner".equalsIgnoreCase(view)) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			return readPosixViewAttributes(p, view, attrs, options);
+		if ("basic".equalsIgnoreCase(view)) { //$NON-NLS-1$
+			return readFileAttributes(p, view, attrs, options);
 		} else {
 			return Collections.emptyMap();
 		}
 	}
 	
-	protected NavigableMap<String, Object> readPosixViewAttributes(DesignPath path, String view, String attrs,
+	protected NavigableMap<String, Object> readFileAttributes(DesignPath path, String view, String attrs,
 			LinkOption... options) throws IOException {
-		PosixFileAttributes v = readAttributes(path, PosixFileAttributes.class, options);
+		BasicFileAttributes v = readAttributes(path, BasicFileAttributes.class, options);
 		if(v == null) {
 			throw new IOException("File does not exist: " + path); //$NON-NLS-1$
 		}
@@ -311,15 +308,6 @@ public class DesignFileSystemProvider extends FileSystemProvider {
 			case "fileKey": //$NON-NLS-1$
 				map.put(attr, v.fileKey());
 				break;
-			case "owner": //$NON-NLS-1$
-				map.put(attr, v.owner());
-				break;
-			case "permissions": //$NON-NLS-1$
-				map.put(attr, v.permissions());
-				break;
-			case "group": //$NON-NLS-1$
-				map.put(attr, v.group());
-				break;
 			default:
 				if (traceEnabled) {
 					log.fine(StringUtil.format("readPosixViewAttributes({0})[{1}:{2}] ignored for {3}", path, view, attr, attrs)); //$NON-NLS-1$
@@ -337,13 +325,6 @@ public class DesignFileSystemProvider extends FileSystemProvider {
         Collection<String> views = fs.supportedFileAttributeViews();
         if ((type == null) || GenericUtils.isEmpty(views)) {
             return false;
-        } else if (PosixFileAttributeView.class.isAssignableFrom(type)) {
-            return views.contains("posix"); //$NON-NLS-1$
-            // TODO support ACLs
-//        } else if (AclFileAttributeView.class.isAssignableFrom(type)) {
-//            return views.contains("acl");   // must come before owner view //$NON-NLS-1$
-        } else if (FileOwnerAttributeView.class.isAssignableFrom(type)) {
-            return views.contains("owner"); //$NON-NLS-1$
         } else if (BasicFileAttributeView.class.isAssignableFrom(type)) {
             return views.contains("basic"); // must be last //$NON-NLS-1$
         } else {

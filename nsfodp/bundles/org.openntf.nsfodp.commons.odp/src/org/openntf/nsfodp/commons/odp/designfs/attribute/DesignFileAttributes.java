@@ -17,58 +17,30 @@ package org.openntf.nsfodp.commons.odp.designfs.attribute;
 
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.GroupPrincipal;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.UserPrincipal;
-import java.util.Set;
 
 /**
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
-public class DesignFileAttributes implements BasicFileAttributes, PosixFileAttributes {
+public class DesignFileAttributes implements BasicFileAttributes {
 	public enum Type {
 		File, Folder
 	}
-	
-	private UserPrincipal owner;
 
-	private GroupPrincipal group;
 	private Type type;
 	private FileTime lastModified;
 	private FileTime lastAccessed;
 	private FileTime created;
 	private long size;
-	private Set<PosixFilePermission> permissions;
 
-	public DesignFileAttributes(UserPrincipal owner, GroupPrincipal group, Type type, FileTime lastModified,
-			FileTime lastAccessed, FileTime created, long size, Set<PosixFilePermission> permissions) {
+	public DesignFileAttributes(Type type, FileTime lastModified, FileTime lastAccessed, FileTime created, long size) {
 		super();
-		this.owner = owner;
-		this.group = group;
 		this.type = type;
 		this.lastModified = lastModified;
 		this.lastAccessed = lastAccessed;
 		this.created = created;
 		this.size = size;
-		this.permissions = permissions;
-	}
-
-	@Override
-	public UserPrincipal owner() {
-		return owner;
-	}
-
-	@Override
-	public GroupPrincipal group() {
-		return group;
-	}
-
-	@Override
-	public Set<PosixFilePermission> permissions() {
-		return permissions;
 	}
 
 	@Override

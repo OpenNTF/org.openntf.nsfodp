@@ -15,6 +15,8 @@
  */
 package org.openntf.nsfodp.notesapi.darwinonapi;
 
+import java.time.Instant;
+
 import org.openntf.nsfodp.commons.odp.notesapi.NCompositeData;
 import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
 import org.openntf.nsfodp.commons.odp.notesapi.NLotusScriptCompilationException;
@@ -137,6 +139,24 @@ public class DarwinoNNote implements NNote {
 	@Override
 	public boolean isRefValid() {
 		return this.note.isRefValid();
+	}
+	
+	@Override
+	public Instant getCreated() {
+		try {
+			return note.getCreated().toInstant();
+		} catch (DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public Instant getLastModified() {
+		try {
+			return note.getSequenceModified().toDate().toInstant();
+		} catch (DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
 	}
 
 	@Override

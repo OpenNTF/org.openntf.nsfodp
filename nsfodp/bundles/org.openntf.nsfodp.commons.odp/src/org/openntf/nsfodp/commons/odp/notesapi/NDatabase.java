@@ -15,6 +15,7 @@
  */
 package org.openntf.nsfodp.commons.odp.notesapi;
 
+import java.time.Instant;
 import java.util.function.BiConsumer;
 
 public interface NDatabase extends AutoCloseable {
@@ -36,10 +37,10 @@ public interface NDatabase extends AutoCloseable {
 	/**
 	 * Determines the last-modification time of the database.
 	 * 
-	 * @return the last-modified time, as a Unix timestamp
+	 * @return the last-modified time, as an {@link Instant}
 	 * @since 4.0.0
 	 */
-	long getLastModified();
+	Instant getLastModified();
 	
 	@Override void close();
 }

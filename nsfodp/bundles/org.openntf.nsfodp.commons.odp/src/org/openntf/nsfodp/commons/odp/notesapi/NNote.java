@@ -15,6 +15,8 @@
  */
 package org.openntf.nsfodp.commons.odp.notesapi;
 
+import java.time.Instant;
+
 public interface NNote extends AutoCloseable {
 	void save();
 	void sign();
@@ -35,6 +37,34 @@ public interface NNote extends AutoCloseable {
 	int getNoteID();
 	
 	boolean isRefValid();
+	
+	/**
+	 * Determines whether the note is in-memory only and not yet saved
+	 * to the database.
+	 * 
+	 * @return {@code true} if the note has not yet been stored;
+	 *         {@code false} otherwise
+	 * @since 4.0.0
+	 */
+	default boolean isNewNote() {
+		return getNoteID() == 0;
+	}
+	
+	/**
+	 * Determines the last-modification time of the note.
+	 * 
+	 * @return an {@link Instant} representing the note's modification time
+	 * @since 4.0.0
+	 */
+	Instant getLastModified();
+	
+	/**
+	 * Determines the creation time of the note.
+	 * 
+	 * @return the creation time, as an {@link Instant}
+	 * @since 4.0.0
+	 */
+	Instant getCreated();
 	
 	@Override void close();
 }

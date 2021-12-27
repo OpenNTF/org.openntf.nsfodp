@@ -15,6 +15,7 @@
  */
 package org.openntf.nsfodp.notesapi.darwinonapi;
 
+import java.time.Instant;
 import java.util.function.BiConsumer;
 
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
@@ -132,9 +133,9 @@ public class DarwinoNDatabase implements NDatabase {
 	}
 	
 	@Override
-	public long getLastModified() {
+	public Instant getLastModified() {
 		try {
-			return database.getLastModified().getNonDataModified().toDate().getTime();
+			return database.getLastModified().getNonDataModified().toDate().toInstant();
 		} catch (DominoException e) {
 			throw new NDominoException(e.getStatus(), e);
 		}

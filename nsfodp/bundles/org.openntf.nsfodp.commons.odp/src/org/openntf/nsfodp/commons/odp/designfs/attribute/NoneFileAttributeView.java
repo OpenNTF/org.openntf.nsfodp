@@ -34,7 +34,7 @@ import java.util.Set;
 /**
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class NoneFileAttributeView implements PosixFileAttributeView, BasicFileAttributeView, FileOwnerAttributeView, UserDefinedFileAttributeView {
 	

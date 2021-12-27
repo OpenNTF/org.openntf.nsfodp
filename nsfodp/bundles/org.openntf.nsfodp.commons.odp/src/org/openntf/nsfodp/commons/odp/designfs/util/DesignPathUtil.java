@@ -263,7 +263,7 @@ public enum DesignPathUtil {
 			if(StringUtil.isEmpty(cacheId)) {
 				return func.apply(database);
 			} else {
-				long modTime = database.getLastModified();
+				long modTime = database.getLastModified().toEpochMilli();
 				String dbKey = database.getFilePath() + "//" + session.getEffectiveUserName(); //$NON-NLS-1$
 				TimedCacheHolder cacheHolder = PER_DATABASE_CACHE.computeIfAbsent(dbKey, key -> new TimedCacheHolder());
 				return (T)cacheHolder.get(modTime).computeIfAbsent(cacheId, key -> {

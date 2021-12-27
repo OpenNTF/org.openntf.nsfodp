@@ -28,7 +28,7 @@ import com.ibm.designer.domino.napi.NotesSession;
 
 /**
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class NotesThreadFactory implements ThreadFactory {
 	public static final NotesThreadFactory instance = new NotesThreadFactory();
