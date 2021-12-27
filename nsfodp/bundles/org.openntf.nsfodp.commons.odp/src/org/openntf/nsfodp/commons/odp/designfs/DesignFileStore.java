@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -23,11 +23,11 @@ import java.util.Collection;
 
 import org.apache.sshd.common.util.GenericUtils;
 
-public class NSFFileStore extends FileStore {
+public class DesignFileStore extends FileStore {
 	
-	private final NSFFileSystem fileSystem;
+	private final DesignFileSystem fileSystem;
 	
-	public NSFFileStore(NSFFileSystem fileSystem) {
+	public DesignFileStore(DesignFileSystem fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 
@@ -38,7 +38,7 @@ public class NSFFileStore extends FileStore {
 
 	@Override
 	public String type() {
-		return NSFFileSystemProvider.SCHEME;
+		return DesignFileSystemProvider.SCHEME;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class NSFFileStore extends FileStore {
 
 	@Override
 	public boolean supportsFileAttributeView(Class<? extends FileAttributeView> type) {
-        NSFFileSystemProvider provider = (NSFFileSystemProvider)fileSystem.provider();
+        DesignFileSystemProvider provider = (DesignFileSystemProvider)fileSystem.provider();
         return provider.isSupportedFileAttributeView(fileSystem, type);
 	}
 

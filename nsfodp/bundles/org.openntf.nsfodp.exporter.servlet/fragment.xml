@@ -21,4 +21,7 @@
 	<extension id="org.openntf.nsfodp.exporter.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
 		<servlet alias="/org.openntf.nsfodp/exporter" class="org.openntf.nsfodp.exporter.servlet.ODPExporterServlet"/>
 	</extension>
+	<extension id="org.openntf.nsfodp.exporter.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
+		<servlet alias="/org.openntf.nsfodp/filesystem" class="org.openntf.nsfodp.exporter.servlet.FileSystemServlet"/>
+	</extension>
 </plugin>

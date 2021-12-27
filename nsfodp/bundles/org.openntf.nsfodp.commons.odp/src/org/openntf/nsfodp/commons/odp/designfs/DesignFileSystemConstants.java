@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
-
-import org.openntf.nsfdesign.fs.attribute.NSFUserDefinedFileAttributeView;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 /**
  * Common constants used in the filesystem implementation
@@ -23,7 +21,7 @@ import org.openntf.nsfdesign.fs.attribute.NSFUserDefinedFileAttributeView;
  * @author Jesse Gallagher
  * @since 1.0.0
  */
-public enum NSFFileSystemConstants {
+public enum DesignFileSystemConstants {
 	;
 	
 	/** The form name used for file documents */
@@ -56,6 +54,4 @@ public enum NSFFileSystemConstants {
 	
 	/** The prefix used for user-defined items created this way */
 	public static final String PREFIX_USERITEM = "user."; //$NON-NLS-1$
-	/** The name of the custom data type used to store custom attributes */
-	public static final String DATATYPE_NAME = NSFUserDefinedFileAttributeView.class.getSimpleName();
 }

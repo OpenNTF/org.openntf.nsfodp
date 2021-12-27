@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.util;
+package org.openntf.nsfodp.commons.odp.designfs.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.openntf.nsfdesign.fs.NSFFileSystem;
-import org.openntf.nsfdesign.fs.NSFFileSystemProvider;
-import org.openntf.nsfdesign.fs.NSFPath;
-import org.openntf.nsfdesign.fs.db.NSFAccessor;
+import org.openntf.nsfodp.commons.odp.designfs.DesignFileSystem;
+import org.openntf.nsfodp.commons.odp.designfs.DesignFileSystemProvider;
+import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
+import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
 
 //import com.ibm.commons.util.PathUtil;
 //import com.ibm.commons.util.StringUtil;
@@ -46,7 +46,7 @@ import org.openntf.nsfdesign.fs.db.NSFAccessor;
  * @since 1.0.0
  */
 @SuppressWarnings("nls")
-public enum NSFPathUtil {
+public enum DesignPathUtil {
 	;
 	
 	public static final String LOCAL_SERVER = "LOCALSERVER"; //$NON-NLS-1$
@@ -152,7 +152,7 @@ public enum NSFPathUtil {
 		}
 		host = encoder.apply(host);
 		nsfPath = "/" + encoder.apply(nsfPath); //$NON-NLS-1$
-		return new URI(NSFFileSystemProvider.SCHEME, userName, host, -1, nsfPath, null, null);
+		return new URI(DesignFileSystemProvider.SCHEME, userName, host, -1, nsfPath, null, null);
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public enum NSFPathUtil {
 			}
 		}
 		
-		return new URI(NSFFileSystemProvider.SCHEME, userName, base.getHost(), -1, pathInfo, null, null);
+		return new URI(DesignFileSystemProvider.SCHEME, userName, base.getHost(), -1, pathInfo, null, null);
 	}
 	
 	public static String concat(final char delim, final String... parts) {

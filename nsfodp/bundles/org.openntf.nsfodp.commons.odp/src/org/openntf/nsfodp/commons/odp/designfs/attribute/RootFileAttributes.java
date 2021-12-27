@@ -13,38 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.attribute;
+package org.openntf.nsfodp.commons.odp.designfs.attribute;
 
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.GroupPrincipal;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.UserPrincipal;
 import java.time.Instant;
-import java.util.EnumSet;
-import java.util.Set;
 
-import org.openntf.nsfdesign.fs.acl.NotesPrincipal;
-
-public class RootFileAttributes implements BasicFileAttributes, PosixFileAttributes {
+public class RootFileAttributes implements BasicFileAttributes {
 	
 	// TODO read from DB
-
-	@Override
-	public UserPrincipal owner() {
-		return new NotesPrincipal("CN=root"); //$NON-NLS-1$
-	}
-
-	@Override
-	public GroupPrincipal group() {
-		return new NotesPrincipal("CN=wheel"); //$NON-NLS-1$
-	}
-
-	@Override
-	public Set<PosixFilePermission> permissions() {
-		return EnumSet.allOf(PosixFilePermission.class);
-	}
 
 	@Override
 	public FileTime lastModifiedTime() {

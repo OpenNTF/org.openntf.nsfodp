@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.attribute;
+package org.openntf.nsfodp.commons.odp.designfs.attribute;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

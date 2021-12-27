@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.attribute;
+package org.openntf.nsfodp.commons.odp.designfs.attribute;
 
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -28,7 +28,7 @@ import java.util.Set;
  * @author Jesse Gallagher
  * @since 1.0.0
  */
-public class NSFFileAttributes implements BasicFileAttributes, PosixFileAttributes {
+public class DesignFileAttributes implements BasicFileAttributes, PosixFileAttributes {
 	public enum Type {
 		File, Folder
 	}
@@ -43,7 +43,7 @@ public class NSFFileAttributes implements BasicFileAttributes, PosixFileAttribut
 	private long size;
 	private Set<PosixFilePermission> permissions;
 
-	public NSFFileAttributes(UserPrincipal owner, GroupPrincipal group, Type type, FileTime lastModified,
+	public DesignFileAttributes(UserPrincipal owner, GroupPrincipal group, Type type, FileTime lastModified,
 			FileTime lastAccessed, FileTime created, long size, Set<PosixFilePermission> permissions) {
 		super();
 		this.owner = owner;

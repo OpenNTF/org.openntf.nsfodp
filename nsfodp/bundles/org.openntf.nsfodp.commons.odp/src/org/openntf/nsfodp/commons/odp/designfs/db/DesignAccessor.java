@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.db;
+package org.openntf.nsfodp.commons.odp.designfs.db;
 
-import static org.openntf.nsfdesign.fs.NSFFileSystemConstants.*;
+import static org.openntf.nsfodp.commons.odp.designfs.DesignFileSystemConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,12 +42,11 @@ import java.util.stream.Collectors;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 
-import org.openntf.nsfdesign.fs.NSFPath;
-import org.openntf.nsfdesign.fs.acl.NotesPrincipal;
-import org.openntf.nsfdesign.fs.attribute.NSFFileAttributes;
-import org.openntf.nsfdesign.fs.attribute.NSFFileAttributes.Type;
-import org.openntf.nsfdesign.fs.util.NSFPathUtil;
-import org.openntf.nsfdesign.fs.util.NotesThreadFactory;
+import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes.Type;
+import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
+import org.openntf.nsfodp.commons.odp.designfs.util.NotesThreadFactory;
 
 //import com.ibm.commons.util.StringUtil;
 //import com.ibm.designer.domino.napi.NotesConstants;
@@ -71,7 +70,7 @@ import org.openntf.nsfdesign.fs.util.NotesThreadFactory;
  * @author Jesse Gallagher
  * @since 1.0.0
  */
-public enum NSFAccessor {
+public enum DesignAccessor {
 	;
 	
 	/**
@@ -80,7 +79,7 @@ public enum NSFAccessor {
 	 * @param dir the directory to list
 	 * @return a {@link List} of individual file names, in alphabetical order
 	 */
-	public static List<String> getDirectoryEntries(NSFPath dir) {
+	public static List<String> getDirectoryEntries(DesignPath dir) {
 //		String cacheId = "entries-" + dir; //$NON-NLS-1$
 //		return NSFPathUtil.callWithDatabase(dir, cacheId, database -> {
 //			View filesByParent = database.getView(VIEW_FILESBYPARENT);
@@ -127,7 +126,7 @@ public enum NSFAccessor {
 	 * @param path the path of the file to extract
 	 * @return a {@link Path} to a temporary file holding the attachment contents
 	 */
-	public static Path extractAttachment(NSFPath path) {
+	public static Path extractAttachment(DesignPath path) {
 //		return NSFPathUtil.callWithDocument(path, null, doc -> {
 //			Path resultParent = Files.createTempDirectory(path.getFileName().toString());
 //			Path result = resultParent.resolve(path.getFileName().toString());
@@ -160,7 +159,7 @@ public enum NSFAccessor {
 	 * @param attachmentData the path to the attachment data stored on disk
 	 * @throws IOException if there is a problem attaching the data
 	 */
-	public static void storeAttachment(NSFPath path, Path attachmentData) throws IOException {
+	public static void storeAttachment(DesignPath path, Path attachmentData) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				if(doc.isNewNote()) {
@@ -192,7 +191,7 @@ public enum NSFAccessor {
 	 * @param attrs the attributes of the directory to create
 	 * @throws IOException if there is a problem creating the directory document
 	 */
-	public static void createDirectory(NSFPath dir, FileAttribute<?>... attrs) throws IOException {
+	public static void createDirectory(DesignPath dir, FileAttribute<?>... attrs) throws IOException {
 		// TODO support attrs
 //		try {
 //			NSFPathUtil.runWithDocument(dir, doc -> {
@@ -215,7 +214,7 @@ public enum NSFAccessor {
 	 * @param path the path of the file to delete
 	 * @throws IOException if there is a problem deleting the file
 	 */
-	public static void delete(NSFPath path) throws IOException {
+	public static void delete(DesignPath path) throws IOException {
 		// TODO throw exception if it is a non-empty directory
 //		try {
 //			NSFPathUtil.runWithDocument((NSFPath)path, doc -> {
@@ -242,7 +241,7 @@ public enum NSFAccessor {
 	 * @param options Java NIO copy options
 	 * @throws IOException if there is a database problem copying the file
 	 */
-	public static void copy(NSFPath source, NSFPath target, CopyOption... options) throws IOException {
+	public static void copy(DesignPath source, DesignPath target, CopyOption... options) throws IOException {
 		// TODO respect options
 //		try {
 //			NSFPathUtil.runWithDatabase(source, database -> {
@@ -285,7 +284,7 @@ public enum NSFAccessor {
 	 * @param options Java NIO copy options
 	 * @throws IOException if there is a database problem moving the file
 	 */
-	public static void move(NSFPath source, NSFPath target, CopyOption... options) throws IOException {
+	public static void move(DesignPath source, DesignPath target, CopyOption... options) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDatabase(source, database -> {
 //				Document targetDoc = NSFAccessor.getDocument(target, database);
@@ -320,7 +319,7 @@ public enum NSFAccessor {
 	 * @param path the path of the file or folder to check
 	 * @return whether the file currently exists in the database
 	 */
-	public static boolean exists(NSFPath path) {
+	public static boolean exists(DesignPath path) {
 //		if("/".equals(path.toString())) { //$NON-NLS-1$
 //			return true;
 //		}
@@ -446,7 +445,7 @@ public enum NSFAccessor {
 	  return null;
 	}
 	
-	public static NSFFileAttributes readAttributes(NSFPath path) {
+	public static DesignFileAttributes readAttributes(DesignPath path) {
 //		String cacheId = "attrs-" + path; //$NON-NLS-1$
 //		return NSFPathUtil.callWithDocument(path, cacheId, doc -> {
 //			NotesPrincipal owner;
@@ -546,7 +545,7 @@ public enum NSFAccessor {
 	 * @param owner the new owner name
 	 * @throws IOException if there is a database problem setting the owner
 	 */
-	public static void setOwner(NSFPath path, UserPrincipal owner) throws IOException {
+	public static void setOwner(DesignPath path, UserPrincipal owner) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				doc.replaceItemValue(ITEM_OWNER, owner.getName());
@@ -566,7 +565,7 @@ public enum NSFAccessor {
 	 * @param group the new group name
 	 * @throws IOException if there is a database problem setting the group
 	 */
-	public static void setGroup(NSFPath path, UserPrincipal group) throws IOException {
+	public static void setGroup(DesignPath path, UserPrincipal group) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				doc.replaceItemValue(ITEM_GROUP, group.getName());
@@ -586,7 +585,7 @@ public enum NSFAccessor {
 	 * @param perms the new permissions
 	 * @throws IOException if there is a database problem setting the permissions
 	 */
-	public static void setPermissions(NSFPath path, Set<PosixFilePermission> perms) throws IOException {
+	public static void setPermissions(DesignPath path, Set<PosixFilePermission> perms) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				doc.replaceItemValue(ITEM_PERMISSIONS, PosixFilePermissions.toString(perms));
@@ -607,7 +606,7 @@ public enum NSFAccessor {
 	 * @param createTime the creation time, if desired
 	 * @throws IOException if there is a database problem setting the metadata
 	 */
-	public static void setTimes(NSFPath path, FileTime lastModifiedTime, FileTime createTime) throws IOException {
+	public static void setTimes(DesignPath path, FileTime lastModifiedTime, FileTime createTime) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				Session session = doc.getParentDatabase().getParent();
@@ -645,7 +644,7 @@ public enum NSFAccessor {
 	 * @throws IOException if there is a DB problem reading the names
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> listUserDefinedAttributes(NSFPath path) throws IOException {
+	public static List<String> listUserDefinedAttributes(DesignPath path) throws IOException {
 //		try {
 //			String cacheId = "userAttrs-" + path; //$NON-NLS-1$
 //			return NSFPathUtil.callWithDocument(path, cacheId, doc ->
@@ -677,7 +676,7 @@ public enum NSFAccessor {
 	 * @return the number of bytes written
 	 * @throws IOException if there is a DB problem writing the data
 	 */
-	public static int writeUserDefinedAttribute(NSFPath path, String name, ByteBuffer src) throws IOException {
+	public static int writeUserDefinedAttribute(DesignPath path, String name, ByteBuffer src) throws IOException {
 //		try {
 //			return NSFPathUtil.callWithDocument(path, null, doc -> {
 //				String itemName = PREFIX_USERITEM + name;
@@ -701,7 +700,7 @@ public enum NSFAccessor {
 	 * @param name the name of the user-defined attribute
 	 * @throws IOException if there is a DB problem deleting the data
 	 */
-	public static void deleteUserDefinedAttribute(NSFPath path, String name) throws IOException {
+	public static void deleteUserDefinedAttribute(DesignPath path, String name) throws IOException {
 //		try {
 //			NSFPathUtil.runWithDocument(path, doc -> {
 //				String itemName = PREFIX_USERITEM + name;
@@ -726,7 +725,7 @@ public enum NSFAccessor {
 	 * @return the attribute data as a byte array
 	 * @throws IOException if there is a DB problem reading the data
 	 */
-	public static byte[] getUserDefinedAttribute(NSFPath path, String name) throws IOException {
+	public static byte[] getUserDefinedAttribute(DesignPath path, String name) throws IOException {
 //		try {
 //			String cacheId = "userAttrVal-" + path + name; //$NON-NLS-1$
 //			return NSFPathUtil.callWithDocument(path, cacheId, doc -> {

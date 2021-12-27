@@ -7,7 +7,12 @@ Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: javax.servlet;version="2.5.0",
  javax.servlet.http;version="2.5.0",
+ lotus.domino,
  org.eclipse.core.runtime,
+ org.openntf.nsfodp.commons.odp.designfs;version="4.0.0",
+ org.openntf.nsfodp.commons.odp.designfs.attribute;version="4.0.0",
+ org.openntf.nsfodp.commons.odp.designfs.db;version="4.0.0",
+ org.openntf.nsfodp.commons.odp.designfs.util;version="4.0.0",
  org.openntf.nsfodp.commons.odp.util;version="3.5.0",
  org.osgi.framework
 Fragment-Host: org.openntf.nsfodp.exporter

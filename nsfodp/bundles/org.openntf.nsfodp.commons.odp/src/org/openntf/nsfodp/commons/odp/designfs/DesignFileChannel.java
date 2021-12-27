@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,14 +31,14 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.openntf.nsfdesign.fs.db.NSFAccessor;
+import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
 
 /**
  * 
  * @author Jesse Gallagher
  * @since 1.0.0
  */
-public class NSFFileChannel extends FileChannel {
+public class DesignFileChannel extends FileChannel {
 	
 	private static final Set<? extends OpenOption> WRITE_OPTIONS = EnumSet.of(
 		StandardOpenOption.APPEND,
@@ -48,17 +48,17 @@ public class NSFFileChannel extends FileChannel {
 		StandardOpenOption.WRITE
 	);
 	
-	private final NSFPath path;
+	private final DesignPath path;
 	private final Path tempFile;
 	private Set<? extends OpenOption> options;
 	private final boolean openForWrite;
 	
-	public NSFFileChannel(NSFPath path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) {
+	public DesignFileChannel(DesignPath path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) {
 		this.path = path;
 		this.options = options;
 		
 		// TODO implement TRUNCATE_EXISTING
-		this.tempFile = NSFAccessor.extractAttachment(path);
+		this.tempFile = DesignAccessor.extractAttachment(path);
 		
 		this.openForWrite = !Collections.disjoint(WRITE_OPTIONS, options);
 	}
@@ -156,7 +156,7 @@ public class NSFFileChannel extends FileChannel {
 		this.tempFileChannel = null;
 		
 		if(openForWrite) {
-			NSFAccessor.storeAttachment(path, this.tempFile);
+			DesignAccessor.storeAttachment(path, this.tempFile);
 		}
 		
 		Files.deleteIfExists(this.tempFile);

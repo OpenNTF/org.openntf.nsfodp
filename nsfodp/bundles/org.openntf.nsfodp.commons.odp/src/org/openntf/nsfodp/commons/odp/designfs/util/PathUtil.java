@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.util;
+package org.openntf.nsfodp.commons.odp.designfs.util;
 
-import java.text.MessageFormat;
-
-public enum StringUtil {
+public enum PathUtil {
   ;
   
-  public static final String EMPTY_STRING = ""; //$NON-NLS-1$
-  
-  public static boolean isEmpty(String value) {
-    return value == null || value.isEmpty();
-  }
-  
-  public static boolean isNotEmpty(String value) {
-    return !isEmpty(value);
-  }
-  
-  public static String toString(Object value) {
-    if(value == null) {
-      return EMPTY_STRING;
+  public static String concat(String part1, String part2, char delim) {
+    String p1 = StringUtil.toString(part1);
+    String p2 = StringUtil.toString(part2);
+    
+    if((!p1.isEmpty() && p1.lastIndexOf(delim) == p1.length()-1) || p2.indexOf(delim) == 0) {
+      return p1 + p2;
     } else {
-      return value.toString();
+      return p1 + delim + p2;
     }
-  }
-  
-  public static String format(String format, Object... params) {
-    return MessageFormat.format(format, params);
   }
 }

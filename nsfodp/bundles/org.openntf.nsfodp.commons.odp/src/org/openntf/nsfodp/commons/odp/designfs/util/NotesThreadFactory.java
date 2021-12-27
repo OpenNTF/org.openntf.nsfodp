@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs.util;
+package org.openntf.nsfodp.commons.odp.designfs.util;
 
 import java.util.HashMap;
 import java.util.HashSet;

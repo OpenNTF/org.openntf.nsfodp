@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -22,15 +22,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.openntf.nsfdesign.fs.db.NSFAccessor;
+import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
 
-public class NSFDirectoryStream implements DirectoryStream<Path> {
+public class DesignDirectoryStream implements DirectoryStream<Path> {
 	
 	private final List<Path> paths;
 
-	public NSFDirectoryStream(NSFFileSystemProvider provider, NSFPath dir) {
+	public DesignDirectoryStream(DesignFileSystemProvider provider, DesignPath dir) {
 		try {
-			this.paths = NSFAccessor.getDirectoryEntries(dir).parallelStream()
+			this.paths = DesignAccessor.getDirectoryEntries(dir).parallelStream()
 				.map(name -> dir.resolve(name))
 				.collect(Collectors.toList());
 		} catch(Exception e) {

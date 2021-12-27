@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -26,24 +26,24 @@ import java.util.Set;
 
 import org.apache.sshd.common.file.util.BaseFileSystem;
 
-public class NSFFileSystem extends BaseFileSystem<NSFPath> {
+public class DesignFileSystem extends BaseFileSystem<DesignPath> {
 	
 	private final String userName;
 	private final String nsfPath;
 	private final List<FileStore> fileStores;
 	
-	public NSFFileSystem(NSFFileSystemProvider provider, String userName, String nsfPath) {
+	public DesignFileSystem(DesignFileSystemProvider provider, String userName, String nsfPath) {
 		super(provider);
 		
 		this.userName = userName;
 		this.nsfPath = nsfPath;
-		this.fileStores = Arrays.asList(new NSFFileStore(this));
+		this.fileStores = Arrays.asList(new DesignFileStore(this));
 	}
 
 	@Override
-	protected NSFPath create(String root, List<String> names) {
+	protected DesignPath create(String root, List<String> names) {
 		List<String> bits = names == null || names.isEmpty() ? Arrays.asList("") : names; //$NON-NLS-1$
-		return new NSFPath(this, root, bits);
+		return new DesignPath(this, root, bits);
 	}
 
 	@Override
@@ -77,10 +77,10 @@ public class NSFFileSystem extends BaseFileSystem<NSFPath> {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof NSFFileSystem)) {
+		if(!(obj instanceof DesignFileSystem)) {
 			return false;
 		}
-		NSFFileSystem o = (NSFFileSystem)obj;
+		DesignFileSystem o = (DesignFileSystem)obj;
 		return userName.equals(o.userName) && nsfPath.equals(o.nsfPath);
 	}
 	

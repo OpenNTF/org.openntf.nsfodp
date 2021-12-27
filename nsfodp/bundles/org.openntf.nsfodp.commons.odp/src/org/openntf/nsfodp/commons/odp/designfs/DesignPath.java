@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.nsfdesign.fs;
+package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -23,15 +23,15 @@ import java.util.List;
 
 import org.apache.sshd.common.file.util.BasePath;
 
-public class NSFPath extends BasePath<NSFPath, NSFFileSystem> {
-	public NSFPath(NSFFileSystem fileSystem, String root, List<String> names) {
+public class DesignPath extends BasePath<DesignPath, DesignFileSystem> {
+	public DesignPath(DesignFileSystem fileSystem, String root, List<String> names) {
 		super(fileSystem, root, names);
 	}
 
     @Override
-    public NSFPath toRealPath(LinkOption... options) throws IOException {
+    public DesignPath toRealPath(LinkOption... options) throws IOException {
         // TODO: handle links
-    	NSFPath absolute = toAbsolutePath();
+    	DesignPath absolute = toAbsolutePath();
         FileSystem fs = getFileSystem();
         FileSystemProvider provider = fs.provider();
         provider.checkAccess(absolute);
