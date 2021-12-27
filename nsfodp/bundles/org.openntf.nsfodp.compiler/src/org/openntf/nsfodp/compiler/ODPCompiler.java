@@ -15,6 +15,8 @@
  */
 package org.openntf.nsfodp.compiler;
 
+import static org.openntf.nsfodp.commons.h.StdNames.DFLAGPAT_SACTIONS_DESIGN;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -53,6 +55,8 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.h.NsfNote;
+import org.openntf.nsfodp.commons.h.StdNames;
 import org.openntf.nsfodp.commons.odp.AbstractSplitDesignElement;
 import org.openntf.nsfodp.commons.odp.CustomControl;
 import org.openntf.nsfodp.commons.odp.FileResource;
@@ -906,6 +910,14 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				while((noteId = remaining.poll()) != null) {
 					String title = null;
 					try(NNote note = database.getNoteByID(noteId)) {
+						// Check to see if this is the Shared Actions note, which we should skip to avoid trouble
+						if((note.getNoteClassValue() & NsfNote.NOTE_CLASS_NONPRIV) == NsfNote.NOTE_CLASS_FORM) {
+							String flags = note.getAsString(StdNames.DESIGN_FLAGS, ' ');
+							if(NSFODPUtil.matchesFlagsPattern(flags, DFLAGPAT_SACTIONS_DESIGN)) {
+								continue;
+							}
+						}
+						
 						title = note.get("$TITLE", String.class); //$NON-NLS-1$
 						titles.put(noteId, title);
 						note.compileLotusScript();
