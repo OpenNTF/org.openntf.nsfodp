@@ -89,12 +89,24 @@ public class DeployNSFMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.deploy.signDatabase", required=false, defaultValue="true")
 	private boolean signDatabase;
+	
+	/**
+	 * Skips execution of this mojo.
+	 * 
+	 * @since 3.7.0
+	 */
+	@Parameter(required=false, defaultValue = "false")
+	private boolean skip;
 
 	private Log log;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		log = getLog();
+		
+		if(skip) {
+			return;
+		}
 		
 		MavenProject project = Objects.requireNonNull(this.project, "project cannot be null"); //$NON-NLS-1$
 		Artifact artifact = project.getArtifact();

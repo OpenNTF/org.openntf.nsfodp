@@ -84,6 +84,14 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.equinoxJvmArgs", required=false)
 	protected String equinoxJvmArgs;
+	
+	/**
+	 * Skips execution of this mojo.
+	 * 
+	 * @since 3.7.0
+	 */
+	@Parameter(required=false, defaultValue = "false")
+	protected boolean skip;
 
 	protected boolean isRunLocally() {
 		return notesProgram != null && notesPlatform != null && !requireServerExecution;
