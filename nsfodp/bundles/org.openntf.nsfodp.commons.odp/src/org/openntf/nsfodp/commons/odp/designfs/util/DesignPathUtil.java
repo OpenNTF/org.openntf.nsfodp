@@ -29,21 +29,14 @@ import org.openntf.nsfodp.commons.odp.designfs.DesignFileSystem;
 import org.openntf.nsfodp.commons.odp.designfs.DesignFileSystemProvider;
 import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
 import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
-
-//import com.ibm.commons.util.PathUtil;
-//import com.ibm.commons.util.StringUtil;
-//
-//import lotus.domino.Database;
-//import lotus.domino.Document;
-//import lotus.domino.Name;
-//import lotus.domino.NotesException;
-//import lotus.domino.Session;
-//import lotus.domino.DateTime;
+import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.odp.notesapi.NNote;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 
 /**
  * 
  * @author Jesse Gallagher
- * @since 1.0.0
+ * @since 4.0.0
  */
 @SuppressWarnings("nls")
 public enum DesignPathUtil {
@@ -67,7 +60,6 @@ public enum DesignPathUtil {
 	 * @param uri the URI from which to extract the NSF path
 	 * @return the NSF path in API format
 	 * @throws IllegalArgumentException if {@code uri} is {@code null} or does not contain an NSF name
-	 * @since 1.0.0
 	 */
 	public static String extractApiPath(URI uri) {
 		Objects.requireNonNull(uri, "uri cannot be null"); //$NON-NLS-1$
@@ -106,7 +98,6 @@ public enum DesignPathUtil {
 	 * @param uri the URI from which to extract the file path
 	 * @return the relative file path
 	 * @throws IllegalArgumentException if {@code uri} is {@code null} or does not contain an NSF name
-	 * @since 1.0.0
 	 */
 	public static String extractPathInfo(URI uri) {
 		Objects.requireNonNull(uri, "uri cannot be null");
@@ -126,13 +117,12 @@ public enum DesignPathUtil {
 	}
 	
 	/**
-	 * Converts a provided NSF API path to a {@link URI} object referencing the {@code "nsffilestore"}
-	 * filesystem.
+	 * Converts a provided NSF API path to a {@link URI} object referencing the
+	 * {@value DesignFileSystemProvider#SCHEME} filesystem.
 	 * 
 	 * @param apiPath the API path to convert
 	 * @return the URI version of the API path
 	 * @throws URISyntaxException if there is a problem building the URI
-	 * @since 1.0.0
 	 * @throws IllegalArgumentException if {@code apiPath} is empty
 	 */
 	public static URI toFileSystemURI(String userName, String apiPath) throws URISyntaxException {
@@ -156,13 +146,12 @@ public enum DesignPathUtil {
 	}
 	
 	/**
-	 * Converts a provided NSF API path to a {@link URI} object referencing the {@code "nsffilestore"}
-	 * filesystem.
+	 * Converts a provided NSF API path to a {@link URI} object referencing the
+	 * {@value DesignFileSystemProvider#SCHEME} filesystem.
 	 * 
 	 * @param apiPath the API path to convert
 	 * @return the URI version of the API path
 	 * @throws URISyntaxException if there is a problem building the URI
-	 * @since 1.0.0
 	 * @throws IllegalArgumentException if {@code apiPath} is empty
 	 */
 	public static URI toFileSystemURI(String userName, String apiPath, String pathBit, String... morePathBits) throws URISyntaxException {
@@ -200,184 +189,163 @@ public enum DesignPathUtil {
 		return concat('/', parts);
 	}
 	
-//	@FunctionalInterface
-//	public static interface NotesDocumentFunction<T> {
-//		T apply(Document doc) throws Exception;
-//	}
-//	
-//	@FunctionalInterface
-//	public static interface NotesDocumentConsumer {
-//		void accept(Document doc) throws Exception;
-//	}
-//	
-//	@FunctionalInterface
-//	public static interface NotesDatabaseFunction<T> {
-//		T apply(Database doc) throws Exception;
-//	}
-//	
-//	@FunctionalInterface
-//	public static interface NotesDatabaseConsumer {
-//		void accept(Database doc) throws Exception;
-//	}
+	@FunctionalInterface
+	public static interface NotesDocumentFunction<T> {
+		T apply(NNote doc) throws Exception;
+	}
 	
-//	/**
-//	 * Executes the provided function with a document for the provided path.
-//	 * 
-//	 * @param <T> the type returned by {@code func}
-//	 * @param path the context {@link NSFPath}
-//	 * @param cacheId an identifier used to cache the result based on the database modification
-//	 * 			time. Pass {@code null} to skip cache
-//	 * @param func the function to call
-//	 * @return the return value of {@code func}
-//	 * @throws RuntimeException wrapping any exception thrown by the main body
-//	 */
-//	public static <T> T callWithDocument(NSFPath path, String cacheId, NotesDocumentFunction<T> func) {
-//		return callWithDatabase(path, cacheId, database-> {
-//			Document doc = NSFAccessor.getDocument(path, database);
-//			try {
-//				return func.apply(doc);
-//			} finally {
-//				doc.recycle();
-//			}
-//		});
-//	}
+	@FunctionalInterface
+	public static interface NotesDocumentConsumer {
+		void accept(NNote doc) throws Exception;
+	}
 	
-//	/**
-//	 * Executes the provided function with a document for the provided path.
-//	 * 
-//	 * @param path the context {@link NSFPath}
-//	 * @param consumer the consumer to call
-//	 * @throws RuntimeException wrapping any exception thrown by the main body
-//	 */
-//	public static void runWithDocument(NSFPath path, NotesDocumentConsumer consumer) {
-//		runWithDatabase(path, database -> {
-//			Document doc = NSFAccessor.getDocument(path, database);
-//			try {
-//				consumer.accept(doc);
-//			} finally {
-//				doc.recycle();
-//			}
-//		});
-//	}
+	@FunctionalInterface
+	public static interface NotesDatabaseFunction<T> {
+		T apply(NDatabase doc) throws Exception;
+	}
+	
+	@FunctionalInterface
+	public static interface NotesDatabaseConsumer {
+		void accept(NDatabase doc) throws Exception;
+	}
+	
+	/**
+	 * Executes the provided function with a document for the provided path.
+	 * 
+	 * @param <T> the type returned by {@code func}
+	 * @param path the context {@link DesignPath}
+	 * @param cacheId an identifier used to cache the result based on the database modification
+	 * 			time. Pass {@code null} to skip cache
+	 * @param func the function to call
+	 * @return the return value of {@code func}
+	 * @throws RuntimeException wrapping any exception thrown by the main body
+	 */
+	public static <T> T callWithDocument(DesignPath path, String cacheId, NotesDocumentFunction<T> func) {
+		return callWithDatabase(path, cacheId, database-> {
+			try(NNote doc = DesignAccessor.getDocument(path, database)) {
+				return func.apply(doc);
+			}
+		});
+	}
+	
+	/**
+	 * Executes the provided function with a document for the provided path.
+	 * 
+	 * @param path the context {@link DesignPath}
+	 * @param consumer the consumer to call
+	 * @throws RuntimeException wrapping any exception thrown by the main body
+	 */
+	public static void runWithDocument(DesignPath path, NotesDocumentConsumer consumer) {
+		runWithDatabase(path, database -> {
+			try(NNote doc = DesignAccessor.getDocument(path, database)) {
+				consumer.accept(doc);
+			}
+		});
+	}
 	
 	private static final Map<String, TimedCacheHolder> PER_DATABASE_CACHE = Collections.synchronizedMap(new HashMap<>());
 
-//	/**
-//	 * Executes the provided function with the database for the provided path.
-//	 * 
-//	 * @param <T> the type returned by {@code func}
-//	 * @param path the context {@link NSFPath}
-//	 * @param cacheId an identifier used to cache the result based on the database modification
-//	 * 			time. Pass {@code null} to skip cache
-//	 * @param func the function to call
-//	 * @return the return value of {@code func}
-//	 * @throws RuntimeException wrapping any exception thrown by the main body
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public static <T> T callWithDatabase(NSFPath path, String cacheId, NotesDatabaseFunction<T> func) {
-//		return NotesThreadFactory.callAs(dn(path.getFileSystem().getUserName()), session -> {
-//			Database database = getDatabase(session, path.getFileSystem());
-//			if(StringUtil.isEmpty(cacheId)) {
-//				return func.apply(database);
-//			} else {
-//				long modTime;
-//				DateTime mod = database.getLastModified();
-//				try {
-//					modTime = mod.toJavaDate().getTime();
-//				} finally {
-//					mod.recycle();
-//				}
-//				String dbKey = database.getFilePath() + "//" + session.getEffectiveUserName(); //$NON-NLS-1$
-//				TimedCacheHolder cacheHolder = PER_DATABASE_CACHE.computeIfAbsent(dbKey, key -> new TimedCacheHolder());
-//				return (T)cacheHolder.get(modTime).computeIfAbsent(cacheId, key -> {
-//					try {
-//						return func.apply(database);
-//					} catch (Exception e) {
-//						throw new RuntimeException(e);
-//					}
-//				});
-//			}
-//		});
-//	}
+	/**
+	 * Executes the provided function with the database for the provided path.
+	 * 
+	 * @param <T> the type returned by {@code func}
+	 * @param path the context {@link DesignPath}
+	 * @param cacheId an identifier used to cache the result based on the database modification
+	 * 			time. Pass {@code null} to skip cache
+	 * @param func the function to call
+	 * @return the return value of {@code func}
+	 * @throws RuntimeException wrapping any exception thrown by the main body
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T callWithDatabase(DesignPath path, String cacheId, NotesDatabaseFunction<T> func) {
+		return NotesThreadFactory.callAs(dn(path.getFileSystem().getUserName()), session -> {
+			NDatabase database = getDatabase(session, path.getFileSystem());
+			if(StringUtil.isEmpty(cacheId)) {
+				return func.apply(database);
+			} else {
+				long modTime = database.getLastModified();
+				String dbKey = database.getFilePath() + "//" + session.getEffectiveUserName(); //$NON-NLS-1$
+				TimedCacheHolder cacheHolder = PER_DATABASE_CACHE.computeIfAbsent(dbKey, key -> new TimedCacheHolder());
+				return (T)cacheHolder.get(modTime).computeIfAbsent(cacheId, key -> {
+					try {
+						return func.apply(database);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			}
+		});
+	}
 	
-//	/**
-//	 * Invalidates any in-memory cache for the provided database.
-//	 * 
-//	 * @param database 
-//	 */
-//	public static synchronized void invalidateDatabaseCache(Database database) throws NotesException {
-//		String dbKeyPrefix = database.getFilePath();
-//		Iterator<String> iter = PER_DATABASE_CACHE.keySet().iterator();
-//		while(iter.hasNext()) {
-//			String key = iter.next();
-//			if(key.startsWith(dbKeyPrefix+"//")) { //$NON-NLS-1$
-//				iter.remove();
-//			}
-//		}
-//	}
+	/**
+	 * Invalidates any in-memory cache for the provided database.
+	 * 
+	 * @param database 
+	 */
+	public static synchronized void invalidateDatabaseCache(NDatabase database) {
+		String dbKeyPrefix = database.getFilePath();
+		Iterator<String> iter = PER_DATABASE_CACHE.keySet().iterator();
+		while(iter.hasNext()) {
+			String key = iter.next();
+			if(key.startsWith(dbKeyPrefix+"//")) { //$NON-NLS-1$
+				iter.remove();
+			}
+		}
+	}
 	
-//	private static final ThreadLocal<Map<String, Database>> THREAD_DATABASES = ThreadLocal.withInitial(HashMap::new);
+	private static final ThreadLocal<Map<String, NDatabase>> THREAD_DATABASES = ThreadLocal.withInitial(HashMap::new);
 
-//	/**
-//	 * Executes the provided function with the database for the provided path.
-//	 * 
-//	 * @param path the context {@link NSFPath}
-//	 * @param consumer the function to call
-//	 * @throws RuntimeException wrapping any exception thrown by the main body
-//	 */
-//	public static void runWithDatabase(NSFPath path, NotesDatabaseConsumer consumer) {
-//		NotesThreadFactory.runAs(dn(path.getFileSystem().getUserName()), session -> {
-//			Database database = getDatabase(session, path.getFileSystem());
-//			consumer.accept(database);
-//		});
-//	}
+	/**
+	 * Executes the provided function with the database for the provided path.
+	 * 
+	 * @param path the context {@link DesignPath}
+	 * @param consumer the function to call
+	 * @throws RuntimeException wrapping any exception thrown by the main body
+	 */
+	public static void runWithDatabase(DesignPath path, NotesDatabaseConsumer consumer) {
+		NotesThreadFactory.runAs(dn(path.getFileSystem().getUserName()), session -> {
+			NDatabase database = getDatabase(session, path.getFileSystem());
+			consumer.accept(database);
+		});
+	}
 	
-//	public static String shortCn(String name) {
-//		return NotesThreadFactory.call(session -> {
-//			Name n = session.createName(name);
-//			try {
-//				return n.getCommon().replaceAll("\\s+", ""); //$NON-NLS-1$ //$NON-NLS-2$
-//			} finally {
-//				n.recycle();
-//			}
-//		});
-//	}
+	public static String shortCn(String name) {
+		try(NotesAPI session = NotesAPI.get()) {
+			return session.toCn(name).replaceAll("\\s+", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
 	
 	// *******************************************************************************
 	// * Internal utilities
 	// *******************************************************************************
 	
-//	private static String dn(String name) {
-//		return NotesThreadFactory.call(session -> session.createName(name).getCanonical());
-//	}
+	private static String dn(String name) {
+		try(NotesAPI session = NotesAPI.get()) {
+			return session.toDn(name);
+		}
+	}
 	
-//	private static Database getDatabase(Session session, NSFFileSystem fileSystem) throws NotesException {
-//		String nsfPath = fileSystem.getNsfPath();
-//		String key = session.getEffectiveUserName() + nsfPath;
-//		return THREAD_DATABASES.get().computeIfAbsent(key, k -> {
-//			try {
-//				int bangIndex = nsfPath.indexOf("!!"); //$NON-NLS-1$
-//				String server;
-//				String dbPath;
-//				if(bangIndex < 0) {
-//					server = ""; //$NON-NLS-1$
-//					dbPath = nsfPath;
-//				} else {
-//					server = nsfPath.substring(0, bangIndex);
-//					dbPath = nsfPath.substring(bangIndex+2);
-//				}
-//				if(isReplicaID(dbPath)) {
-//					Database database = session.getDatabase(null, null);
-//					database.openByReplicaID(server, normalizeReplicaID(dbPath));
-//					return database;
-//				} else {
-//					return session.getDatabase(server, dbPath);
-//				}
-//			} catch(NotesException e) {
-//				throw new RuntimeException(e);
-//			}
-//		});
-//	}
+	private static NDatabase getDatabase(NotesAPI session, DesignFileSystem fileSystem) {
+		String nsfPath = fileSystem.getNsfPath();
+		String key = session.getEffectiveUserName() + nsfPath;
+		return THREAD_DATABASES.get().computeIfAbsent(key, k -> {
+			int bangIndex = nsfPath.indexOf("!!"); //$NON-NLS-1$
+			String server;
+			String dbPath;
+			if(bangIndex < 0) {
+				server = ""; //$NON-NLS-1$
+				dbPath = nsfPath;
+			} else {
+				server = nsfPath.substring(0, bangIndex);
+				dbPath = nsfPath.substring(bangIndex+2);
+			}
+			if(isReplicaID(dbPath)) {
+				throw new UnsupportedOperationException("Opening by replica ID not implemented");
+			} else {
+				return session.openDatabase(server, dbPath);
+			}
+		});
+	}
 	
 	private static boolean isReplicaID(String dbPath) {
 		String id = normalizeReplicaID(dbPath);

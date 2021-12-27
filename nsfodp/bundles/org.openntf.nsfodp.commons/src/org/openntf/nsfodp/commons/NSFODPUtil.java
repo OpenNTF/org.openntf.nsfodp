@@ -41,11 +41,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 
 public enum NSFODPUtil {
 	;
@@ -394,5 +398,101 @@ public enum NSFODPUtil {
 			// Otherwise, just use the normal method
 			return Files.newInputStream(path, options);
 		}
+	}
+	
+	/**
+	 * <p>Takes an LDAP-format distinguished name and converts it to Domino format.</p>
+	 * 
+	 * <p>If the provided value is not a valid LDAP name, the original value is returned.</p>
+	 * 
+	 * @since 4.0.0
+	 */
+	public static String ldapNameToDomino(String value) {
+		if (value == null || value.isEmpty()) {
+			return ""; //$NON-NLS-1$
+		} else {
+			// Make sure it's actually an LDAP name. We'll assume that an un-escaped slash
+			// is indicative of a Domino name
+			int slashIndex = value.indexOf('/');
+			while (slashIndex > -1) {
+				if (slashIndex == 0 || value.charAt(slashIndex - 1) != '\\') {
+					// Then it's probably a Domino name
+					return value;
+				}
+				slashIndex = value.indexOf('/', slashIndex + 1);
+			}
+
+			try {
+				LdapName dn = new LdapName(value);
+				StringBuilder result = new StringBuilder();
+				// LdapName lists components in increasing-specificity order
+				for (int i = dn.size() - 1; i >= 0; i--) {
+					if (result.length() > 0) {
+						result.append("/"); //$NON-NLS-1$
+					}
+
+					String component = dn.get(i);
+					// Domino likes the component name capitalized - probably not REQUIRED, but it
+					// shouldn't hurt
+					int indexEq = component == null ? -1 : component.indexOf('=');
+					if (component != null && indexEq > -1) {
+						result.append(component.substring(0, indexEq).toUpperCase());
+						result.append('=');
+						result.append(component.substring(indexEq + 1));
+					} else {
+						result.append(component);
+					}
+				}
+				return result.toString();
+			} catch (InvalidNameException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	/**
+	 * <p>Takes an Domino-format name and converts it to LDAP format.</p>
+	 * 
+	 * <p>If the provided value is not a valid Domino name, the original value is returned.</p>
+	 * 
+	 * <p>This is a fairly-naive implementation, just replacing Domino-style slashes with
+	 * commas and lower-casing the component names.</p>
+	 * 
+	 * @since 4.0.0
+	 */
+	public static String dominoNameToLdap(String value) {
+		try {
+			if (value == null || value.isEmpty()) {
+				return value;
+			} else if (!value.contains("/")) { //$NON-NLS-1$
+				if (!value.contains("=")) { //$NON-NLS-1$
+					return "cn=" + value; //$NON-NLS-1$
+				} else {
+					// Then it should be an LDAP-type name already
+					return value;
+				}
+			}
+			
+			StringBuilder result = new StringBuilder();
+			StringTokenizer tokens = new StringTokenizer(value, "/"); //$NON-NLS-1$
+			while(tokens.hasMoreElements()) {
+				if(result.length() != 0) {
+					result.append(',');
+				}
+				String token = tokens.nextToken();
+				int eqIndex = token.indexOf('=');
+				if(eqIndex > 0) {
+					result.append(token.substring(0, eqIndex).toUpperCase());
+					result.append(token.substring(eqIndex));
+				} else {
+					result.append(token);
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		return null;
 	}
 }

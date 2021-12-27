@@ -61,7 +61,7 @@ import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
  * @since 1.0.0
  */
 public class DesignFileSystemProvider extends FileSystemProvider {
-	public static final String SCHEME = "nsffilestore"; //$NON-NLS-1$
+	public static final String SCHEME = "nsfdesignfs"; //$NON-NLS-1$
 	public static final Logger log = Logger.getLogger(DesignFileSystemProvider.class.getPackage().getName());
 	
 	public static final DesignFileSystemProvider instance = new DesignFileSystemProvider();

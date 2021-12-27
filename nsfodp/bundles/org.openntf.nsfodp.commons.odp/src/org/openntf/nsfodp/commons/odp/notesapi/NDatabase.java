@@ -33,5 +33,13 @@ public interface NDatabase extends AutoCloseable {
 	
 	short getCurrentAccessLevel();
 	
+	/**
+	 * Determines the last-modification time of the database.
+	 * 
+	 * @return the last-modified time, as a Unix timestamp
+	 * @since 4.0.0
+	 */
+	long getLastModified();
+	
 	@Override void close();
 }

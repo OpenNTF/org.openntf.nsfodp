@@ -17,6 +17,10 @@ package org.openntf.nsfodp.notesapi.darwinonapi;
 
 import java.util.concurrent.ThreadFactory;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDXLExporter;
 import org.openntf.nsfodp.commons.odp.notesapi.NDXLImporter;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
@@ -123,6 +127,44 @@ public class DarwinoNotesAPI implements NotesAPI {
 			DominoAPI.get().NSFDbDelete(filePath);
 		} catch (DominoException e) {
 			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public String getEffectiveUserName() {
+		try {
+			return session.getEffectiveUserName();
+		} catch (DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public String toCn(String name) {
+		if(name == null || name.isEmpty()) {
+			return name;
+		}
+		try {
+			LdapName dn = new LdapName(NSFODPUtil.ldapNameToDomino(name));
+			for (int i = dn.size() - 1; i >= 0; i--) {
+				String component = dn.get(i);
+				if(component.startsWith("cn=")) { //$NON-NLS-1$
+					return component.substring(3);
+				}
+			}
+			return name;
+		} catch (InvalidNameException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
+	public String toDn(String name) {
+		if(name == null || name.isEmpty()) {
+			return name;
+		}
+		try(NotesAPI session = NotesAPI.get(name, false, false)) {
+			return session.getEffectiveUserName();
 		}
 	}
 	

@@ -130,6 +130,15 @@ public class DarwinoNDatabase implements NDatabase {
 	public short getCurrentAccessLevel() {
 		return database.getCurrentAccessLevel().getValue();
 	}
+	
+	@Override
+	public long getLastModified() {
+		try {
+			return database.getLastModified().getNonDataModified().toDate().getTime();
+		} catch (DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
+	}
 
 	@Override
 	public void close() {

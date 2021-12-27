@@ -79,5 +79,31 @@ public interface NotesAPI extends AutoCloseable {
 	 */
 	NDXLExporter createDXLExporter();
 	
+	/**
+	 * Converts the provided Notes-format name into just its CN component.
+	 * 
+	 * @param name the name to convert
+	 * @return the CN component of the name
+	 * @since 4.0.0
+	 */
+	String toCn(String name);
+	
+	/**
+	 * Converts the provided Notes-format name to its DN form.
+	 * 
+	 * @param name the name to convert
+	 * @return the DN form of the name
+	 * @since 4.0.0
+	 */
+	String toDn(String name);
+	
+	/**
+	 * Retrieves the effective user name of the API session.
+	 * 
+	 * @return the name the session is running as
+	 * @since 4.0.0
+	 */
+	String getEffectiveUserName();
+	
 	@Override void close();
 }
