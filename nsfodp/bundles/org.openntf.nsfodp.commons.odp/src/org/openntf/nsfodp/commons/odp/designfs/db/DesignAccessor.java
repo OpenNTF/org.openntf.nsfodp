@@ -15,6 +15,9 @@
  */
 package org.openntf.nsfodp.commons.odp.designfs.db;
 
+import static org.openntf.nsfodp.commons.odp.designfs.FSDirectory.*;
+import static org.openntf.nsfodp.commons.odp.designfs.util.PathUtil.concat;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -22,6 +25,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermission;
@@ -32,19 +36,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 
 import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
+import org.openntf.nsfodp.commons.odp.designfs.FSDirectory;
 import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DirectoryFileAttributes;
 import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes.Type;
 import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.NotesThreadFactory;
+import org.openntf.nsfodp.commons.odp.designfs.util.PathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
@@ -65,6 +75,35 @@ public enum DesignAccessor {
 	 * @return a {@link List} of individual file names, in alphabetical order
 	 */
 	public static List<String> getDirectoryEntries(DesignPath dir) {
+		String path = PathUtil.toPathString(dir);
+		
+		if("/".equals(path)) { //$NON-NLS-1$
+			// Root directory: just the design
+			return Collections.singletonList(FSDirectory.design.toString());
+		}
+		
+		FSDirectory fsdir = FSDirectory.forPath(path);
+		if(fsdir == null) {
+			return Collections.emptyList();
+		} else {
+			return fsdir.getChildren()
+				.map(String::valueOf)
+				.collect(Collectors.toList());
+		}
+		
+		// Base design directory: static folders and named files
+//		if(grandparent == null) {
+//			
+//			// TODO add named files
+//			
+//			return result;
+//		}
+		
+		// Two layers in: static folders, design elements, and named files
+		
+		
+		// Further: named files
+		
 //		String cacheId = "entries-" + dir; //$NON-NLS-1$
 //		return NSFPathUtil.callWithDatabase(dir, cacheId, database -> {
 //			View filesByParent = database.getView(VIEW_FILESBYPARENT);
@@ -98,7 +137,6 @@ public enum DesignAccessor {
 //				}
 //			}
 //		});
-	  return Collections.emptyList();
 	}
 	
 	/**
@@ -307,6 +345,8 @@ public enum DesignAccessor {
 	public static boolean exists(DesignPath path) {
 		if("/".equals(path.toString())) { //$NON-NLS-1$
 			return true;
+		} else if(FSDirectory.forPath(path) != null) {
+			return true;
 		}
 		String cacheId = "exists-" + path; //$NON-NLS-1$
 		return DesignPathUtil.callWithDatabase(path, cacheId, database -> {
@@ -314,7 +354,14 @@ public enum DesignAccessor {
 		});
 	}
 	
-	public static DesignFileAttributes readAttributes(DesignPath path) {
+	public static BasicFileAttributes readAttributes(DesignPath path) {
+		String pathString = PathUtil.toPathString(path);
+		FSDirectory fsdir = FSDirectory.forPath(pathString);
+		if(fsdir != null) {
+			return DirectoryFileAttributes.instance;
+		}
+		
+		System.out.println("reading attrs for " + path);
 		String cacheId = "attrs-" + path; //$NON-NLS-1$
 		return DesignPathUtil.callWithDocument(path, cacheId, doc -> {
 			Type type = Type.File;

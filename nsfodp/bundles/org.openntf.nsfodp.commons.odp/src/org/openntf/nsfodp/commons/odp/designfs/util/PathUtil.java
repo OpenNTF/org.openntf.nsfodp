@@ -15,6 +15,10 @@
  */
 package org.openntf.nsfodp.commons.odp.designfs.util;
 
+import java.nio.file.Path;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 public enum PathUtil {
   ;
   
@@ -27,5 +31,21 @@ public enum PathUtil {
     } else {
       return p1 + delim + p2;
     }
+  }
+  
+  public static String concat(String part1, String... parts) {
+	  StringBuilder result = new StringBuilder();
+	  result.append(StringUtil.toString(part1));
+	  for(String part : parts) {
+		  result.append('/');
+		  result.append(StringUtil.toString(part));
+	  }
+	  return result.toString();
+  }
+  
+  public static String toPathString(Path path) {
+	  return "/" + StreamSupport.stream(path.spliterator(), false) //$NON-NLS-1$
+		.map(Path::toString)
+		.collect(Collectors.joining("/")); //$NON-NLS-1$
   }
 }

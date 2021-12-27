@@ -3,12 +3,17 @@ package org.openntf.nsfodp.exporter.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openntf.nsfodp.commons.odp.designfs.DesignFileSystemProvider;
 import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
 
 import lotus.domino.NotesFactory;
@@ -28,6 +33,12 @@ public class FileSystemServlet extends HttpServlet {
 			try {
 				URI uri = DesignPathUtil.toFileSystemURI(session.getEffectiveUserName(), "dev/design.nsf");
 				w.println(uri);
+				
+				try(FileSystem fs = DesignFileSystemProvider.instance.getOrCreateFileSystem(uri, Collections.emptyMap())) {
+					Path root = fs.getPath("/");
+					
+					Files.walk(root).forEach(p -> w.println(p));
+				}
 			} finally {
 				session.recycle();
 			}

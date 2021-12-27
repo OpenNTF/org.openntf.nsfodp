@@ -19,7 +19,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
-public class RootFileAttributes implements BasicFileAttributes {
+public class DirectoryFileAttributes implements BasicFileAttributes {
+	public static final DirectoryFileAttributes instance = new DirectoryFileAttributes();
 	
 	// TODO read from DB
 

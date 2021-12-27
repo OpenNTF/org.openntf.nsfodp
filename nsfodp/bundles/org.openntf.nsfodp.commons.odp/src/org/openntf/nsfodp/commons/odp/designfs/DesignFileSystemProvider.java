@@ -45,8 +45,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.sshd.common.util.GenericUtils;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributeView;
 import org.openntf.nsfodp.commons.odp.designfs.attribute.NoneFileAttributeView;
-import org.openntf.nsfodp.commons.odp.designfs.attribute.RootFileAttributes;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DirectoryFileAttributes;
 import org.openntf.nsfodp.commons.odp.designfs.db.DesignAccessor;
 import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
@@ -190,17 +191,18 @@ public class DesignFileSystemProvider extends FileSystemProvider {
 		// TODO cache these?
 		if(!DesignAccessor.exists((DesignPath)path)) {
 			return type.cast(new NoneFileAttributeView(path));
+		} else {
+			return type.cast(new DesignFileAttributeView((DesignPath)path, options));
 		}
-		return null;
 	}
 
 	@Override
 	public <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options)
 			throws IOException {
 		if("/".equals(path.toAbsolutePath().toString())) { //$NON-NLS-1$
-			return type.cast(new RootFileAttributes());
+			return type.cast(new DirectoryFileAttributes());
 		}
-		if (type.isAssignableFrom(BasicFileAttributeView.class)) {
+		if (type.isAssignableFrom(BasicFileAttributes.class)) {
 			BasicFileAttributeView view = getFileAttributeView(path, BasicFileAttributeView.class, options);
 			if(view == null) {
 				throw new IOException("File does not exist: " + path); //$NON-NLS-1$

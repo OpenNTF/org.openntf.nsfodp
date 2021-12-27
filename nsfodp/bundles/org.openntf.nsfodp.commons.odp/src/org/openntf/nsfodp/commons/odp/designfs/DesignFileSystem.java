@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +43,7 @@ public class DesignFileSystem extends BaseFileSystem<DesignPath> {
 
 	@Override
 	protected DesignPath create(String root, List<String> names) {
-		List<String> bits = names == null || names.isEmpty() ? Arrays.asList("") : names; //$NON-NLS-1$
+		List<String> bits = names == null || names.isEmpty() ? Collections.singletonList("") : names; //$NON-NLS-1$
 		return new DesignPath(this, root, bits);
 	}
 
@@ -57,7 +58,7 @@ public class DesignFileSystem extends BaseFileSystem<DesignPath> {
 
 	@Override
 	public Set<String> supportedFileAttributeViews() {
-		return new HashSet<>(Arrays.asList("basic", "posix", "owner", "user")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		return new HashSet<>(Arrays.asList("basic")); //$NON-NLS-1$
 	}
 
 	@Override
