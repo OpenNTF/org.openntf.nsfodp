@@ -353,7 +353,8 @@ public class EquinoxRunner {
 				}
 				return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
 			} else {
-				throw new IllegalStateException("Unable to locate JEmpower JAR njempcl.jar");
+				// That's find - may be on a server
+				return null;
 			}
     	} catch(IOException e) {
     		throw new RuntimeException(e);
