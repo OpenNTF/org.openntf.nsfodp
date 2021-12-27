@@ -182,6 +182,10 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		log = getLog();
 		
+		if(skip) {
+			return;
+		}
+		
 		Path odpDir;
 		if(odpDirectory.isAbsolute()) {
 			odpDir = odpDirectory.toPath();

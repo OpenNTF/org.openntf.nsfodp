@@ -210,6 +210,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	public void execute() throws MojoExecutionException {
 		log = getLog();
 		
+		if(skip) {
+			return;
+		}
+		
 		if(notesProgram == null && compilerServerUrl == null) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.programAndUrlEmpty")); //$NON-NLS-1$
 		}
