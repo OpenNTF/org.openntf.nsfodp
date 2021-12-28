@@ -31,6 +31,7 @@ public interface StdNames {
 	String XSP_CLASS_INDEX = "$ClassIndexItem"; //$NON-NLS-1$
 	
 	char DESIGN_FLAG_JARFILE = ','; // Not actually documented
+	String DFLAGPAT_JARFILE = "+,"; //$NON-NLS-1$
 	
 	// These types are not actually documented, and possibly not true
 	int ASSIST_TYPE_JAVA = 0xFF93;
@@ -80,6 +81,7 @@ public interface StdNames {
 	String DFLAGPAT_JAVA_WEBSERVICE = "(+Jj-*{"; //$NON-NLS-1$
 	String DFLAGPAT_LS_WEBSERVICE = "*{L"; //$NON-NLS-1$
 	String DFLAGPAT_SACTIONS_DESIGN = "+y"; //$NON-NLS-1$
+	String DFLAGPAT_SCRIPTLIB = "+sh."; //$NON-NLS-1$
 	String DFLAGPAT_SCRIPTLIB_JAVA = "*sj"; //$NON-NLS-1$
 	String DFLAGPAT_SCRIPTLIB_JS = "+h"; //$NON-NLS-1$
 	String DFLAGPAT_SCRIPTLIB_SERVER_JS = "+."; //$NON-NLS-1$

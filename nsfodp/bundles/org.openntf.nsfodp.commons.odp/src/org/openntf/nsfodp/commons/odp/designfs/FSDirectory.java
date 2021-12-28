@@ -3,12 +3,17 @@ package org.openntf.nsfodp.commons.odp.designfs;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.h.NsfNote;
 import org.openntf.nsfodp.commons.h.StdNames;
 import org.openntf.nsfodp.commons.odp.designfs.util.PathUtil;
+import org.openntf.nsfodp.commons.odp.notesapi.NViewEntry;
+
+import com.ibm.commons.util.StringUtil;
 
 /**
  * Defines folder names used for the Design FileSystem implementation.
@@ -26,8 +31,17 @@ public enum FSDirectory {
 			NoteType.FormulaAgent, NoteType.ImportedJavaAgent, NoteType.JavaAgent,
 			NoteType.LotusScriptAgent, NoteType.SimpleActionAgent
 		),
-		Jars(Code),
-		ScriptLibraries(Code),
+		Jars(Code, NsfNote.NOTE_CLASS_FORM, StdNames.DFLAGPAT_JARFILE, NoteType.Jar),
+		ScriptLibraries(
+			Code, NsfNote.NOTE_CLASS_FILTER, StdNames.DFLAGPAT_SCRIPTLIB,
+			entry -> {
+				// We also have to check FlagsExt
+				String flagsExt = StringUtil.toString(entry.getColumnValues()[17]);
+				return flagsExt.indexOf(StdNames.DESIGN_FLAGEXT_WEBSERVICELIB) == -1;
+			},
+			NoteType.JavaLibrary, NoteType.JavaScriptLibrary,
+			NoteType.LotusScriptLibrary, NoteType.ServerJavaScriptLibrary
+		),
 		WebServiceConsumer(Code),
 		WebServices(Code),
 		actions(Code),
@@ -90,18 +104,27 @@ public enum FSDirectory {
 	private final FSDirectory parent;
 	private final int noteClass;
 	private final String pattern;
+	private final Predicate<NViewEntry> predicate;
 	private final NoteType[] noteTypes;
 	
 	private FSDirectory() {
-		this(null, 0, null, new NoteType[0]);
+		this(null, 0, (String)null, new NoteType[0]);
 	}
 	private FSDirectory(FSDirectory parent) {
-		this(parent, 0, null, new NoteType[0]);
+		this(parent, 0, (String)null, new NoteType[0]);
 	}
 	private FSDirectory(FSDirectory parent, int noteClass, String pattern, NoteType... noteTypes) {
 		this.parent = parent;
 		this.noteClass = noteClass;
 		this.pattern = pattern;
+		this.predicate = null;
+		this.noteTypes = noteTypes;
+	}
+	private FSDirectory(FSDirectory parent, int noteClass, String pattern, Predicate<NViewEntry> predicate, NoteType... noteTypes) {
+		this.parent = parent;
+		this.noteClass = noteClass;
+		this.pattern = pattern;
+		this.predicate = predicate;
 		this.noteTypes = noteTypes;
 	}
 	
@@ -115,6 +138,10 @@ public enum FSDirectory {
 	
 	public String getPattern() {
 		return pattern;
+	}
+	
+	public Predicate<NViewEntry> getPredicate() {
+		return predicate;
 	}
 	
 	public NoteType[] getNoteTypes() {

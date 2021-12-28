@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
@@ -36,7 +37,6 @@ import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.PathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
-import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.notesapi.NViewEntry;
 
 /**
@@ -73,12 +73,15 @@ public enum DesignAccessor {
 					.map(String::valueOf)
 					.forEach(result::add);
 				
-				// If the entry has a note pattern, add such notes
+				// If the entry has a note pattern or predicate, add such notes
+				// TODO handle the case of multiple design notes with the same title
 				String pattern = fsdir.getPattern();
+				Predicate<NViewEntry> predicate = fsdir.getPredicate();
 				if(StringUtil.isNotEmpty(pattern)) {
 					database.eachDesignEntry(fsdir.getNoteClass(), pattern, entry -> {
-						// TODO handle the case of multiple design notes with the same title
-						result.add(encodeDesignTitle(entry));
+						if(predicate == null || predicate.test(entry)) {
+							result.add(encodeDesignTitle(entry));
+						}
 					});
 				}
 			}
@@ -302,7 +305,7 @@ public enum DesignAccessor {
 		}
 		String cacheId = "exists-" + path; //$NON-NLS-1$
 		return DesignPathUtil.callWithDatabase(path, cacheId, database -> {
-			return getDocument(path, database) != null;
+			return getEntry(path, database) != null;
 		});
 	}
 	
@@ -333,15 +336,37 @@ public enum DesignAccessor {
 	 * @param database the database housing the document
 	 * @return a document representing the note
 	 */
-	public static NNote getDocument(DesignPath path, NDatabase database) {
+	public static NViewEntry getEntry(DesignPath path, NDatabase database) {
 		// TODO handle the case of full-named files
 		
 		FSDirectory fsdir = FSDirectory.forPath(path.getParent());
 		String pattern = fsdir.getPattern();
+		Predicate<NViewEntry> predicate = fsdir.getPredicate();
 		if(StringUtil.isNotEmpty(pattern)) {
-			String title = decodeDesignTitle(fsdir, path.getFileName().toString());
+			List<NViewEntry> entries = database.getDesignEntries(fsdir.getNoteClass(), pattern);
 			
-			return database.findDesignNote(fsdir.getNoteClass(), pattern, title);
+			// Build a list of potential titles based on known permutations
+			List<String> titles = new ArrayList<>();
+			titles.add(decodeDesignTitle(fsdir, path.getFileName().toString()));
+			for(NoteType type : fsdir.getNoteTypes()) {
+				String ext = type.getExtension();
+				if(StringUtil.isNotEmpty(ext) && !titles.get(0).endsWith('.' + ext)) {
+					titles.add(titles.get(0) + '.' + ext);
+				}
+			}
+			
+			for(NViewEntry entry : entries) {
+				if(predicate != null && !predicate.test(entry)) {
+					continue;
+				}
+				
+				// Check against potential titles
+				String title = (String)entry.getColumnValues()[0];
+				title = DesignPathUtil.extractTitleValue(title);
+				if(titles.contains(title)) {
+					return entry;
+				}
+			}
 		}
 		return null;
 	}

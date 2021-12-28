@@ -16,6 +16,7 @@
 package org.openntf.nsfodp.commons.odp.notesapi;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -54,6 +55,16 @@ public interface NDatabase extends AutoCloseable {
 	 * @return the design note, or {@code null} if not found
 	 */
 	NNote findDesignNote(int noteClass, String pattern, String title);
+	
+	/**
+	 * Queries the design collection to find notes of a given class and matching
+	 * a given pattern
+	 * 
+	 * @param noteClass the note class mask to search
+	 * @param pattern the pattern to query by
+	 * @return a {@link List} of {@link NViewEntry} instances
+	 */
+	List<NViewEntry> getDesignEntries(int noteClass, String pattern);
 	
 	short getCurrentAccessLevel();
 	

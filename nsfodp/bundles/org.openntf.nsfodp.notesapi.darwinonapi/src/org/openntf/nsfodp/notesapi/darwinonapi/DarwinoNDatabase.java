@@ -16,6 +16,8 @@
 package org.openntf.nsfodp.notesapi.darwinonapi;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -186,6 +188,47 @@ public class DarwinoNDatabase implements NDatabase {
 				} catch(Exception e) {
 					throw new DominoException(e, "Exception while finding dsign elements of class {0}, pattern '{1}'", noteClass, pattern);
 				}
+			} finally {
+				if(designCollection != null) {
+					designCollection.free();
+				}
+			}
+		} catch(DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public List<NViewEntry> getDesignEntries(int noteClass, String pattern) {
+		try {
+			NSFView designCollection = database.getView(DominoAPI.NOTE_CLASS_DESIGN | DominoAPI.NOTE_ID_SPECIAL);
+			try {
+				NSFViewEntryCollection entries = designCollection.getAllEntries();
+				
+				final boolean hasPattern = StringUtil.isNotEmpty(pattern);
+				short readMask = DominoAPI.READ_MASK_NOTECLASS | DominoAPI.READ_MASK_NOTEID | DominoAPI.READ_MASK_SUMMARYVALUES;
+				
+				List<NViewEntry> result = new ArrayList<>();
+				entries.setReadMask(readMask);
+				try {
+					entries.eachEntry(entry -> {
+						if((entry.getNoteClass() & noteClass) != 0) {
+							if(hasPattern) {
+								String flags = (String)entry.getColumnValues()[4];
+								if(DominoNativeUtils.matchesFlagsPattern(flags, pattern)) {
+									result.add(new DarwinoNViewEntry(entry));
+								}
+							} else {
+								// Then add as-is
+								result.add(new DarwinoNViewEntry(entry));
+							}
+						}
+					});
+				} catch(Exception e) {
+					throw new DominoException(e, "Exception while finding dsign elements of class {0}, pattern '{1}'", noteClass, pattern);
+				}
+				
+				return result;
 			} finally {
 				if(designCollection != null) {
 					designCollection.free();

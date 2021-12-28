@@ -79,8 +79,6 @@ import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.notesapi.NViewEntry;
 import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 
-import com.ibm.commons.util.StringUtil;
-
 /**
  * 
  * @author Jesse Gallagher
@@ -270,8 +268,8 @@ public enum DesignPathUtil {
 	 */
 	public static <T> T callWithDocument(DesignPath path, String cacheId, NotesDocumentFunction<T> func) {
 		return callWithDatabase(path, cacheId, database-> {
-			try(NNote doc = DesignAccessor.getDocument(path, database)) {
-				return func.apply(doc);
+			try(NViewEntry entry = DesignAccessor.getEntry(path, database)) {
+				return func.apply(database.getNoteByID(entry.getNoteID()));
 			}
 		});
 	}
@@ -285,8 +283,8 @@ public enum DesignPathUtil {
 	 */
 	public static void runWithDocument(DesignPath path, NotesDocumentConsumer consumer) {
 		runWithDatabase(path, database -> {
-			try(NNote doc = DesignAccessor.getDocument(path, database)) {
-				consumer.accept(doc);
+			try(NViewEntry entry = DesignAccessor.getEntry(path, database)) {
+				consumer.accept(database.getNoteByID(entry.getNoteID()));
 			}
 		});
 	}
@@ -399,7 +397,7 @@ public enum DesignPathUtil {
 		Object[] columnValues = entry.getColumnValues();
 		String flags = (String)columnValues[4];
 		String title = extractTitleValue((String)columnValues[0]);
-		String flagsExt = (String)columnValues[17];
+		String flagsExt = StringUtil.toString(columnValues[17]);
 		int noteClass = entry.getNoteClass();
 		
 		if(flags.indexOf('X') > -1) {
