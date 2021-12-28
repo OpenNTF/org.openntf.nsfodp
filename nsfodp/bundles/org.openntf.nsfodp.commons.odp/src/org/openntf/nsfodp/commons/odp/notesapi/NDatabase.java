@@ -17,6 +17,7 @@ package org.openntf.nsfodp.commons.odp.notesapi;
 
 import java.time.Instant;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public interface NDatabase extends AutoCloseable {
 	NotesAPI getAPI();
@@ -31,6 +32,28 @@ public interface NDatabase extends AutoCloseable {
 	int getSharedFieldNoteID(String fieldName);
 	
 	void eachDesignNote(BiConsumer<Integer, NNote> consumer);
+	
+	/**
+	 * Queries the design collection for notes matching the provided flags
+	 * pattern and executes the provided {@code consumer} for each entry.
+	 * 
+	 * @param noteClass the note class mask to search
+	 * @param pattern the pattern to query by
+	 * @param consumer the {@link Consumer} to evaluate per entry
+	 * @since 4.0.0
+	 */
+	void eachDesignEntry(int noteClass, String pattern, Consumer<NViewEntry> consumer);
+	
+	/**
+	 * Queries the design collection to find a note of the given class, flags pattern,
+	 * and title.
+	 * 
+	 * @param noteClass the note class mask to search
+	 * @param pattern the pattern to query by
+	 * @param title the $TITLE value of the note
+	 * @return the design note, or {@code null} if not found
+	 */
+	NNote findDesignNote(int noteClass, String pattern, String title);
 	
 	short getCurrentAccessLevel();
 	

@@ -67,6 +67,7 @@ public interface StdNames {
 	char DESIGN_FLAG_LOTUSSCRIPT_AGENT = 'L';
 	char DESIGN_FLAG_PROPFILE = '2';
 	
+	String DFLAGPAT_AGENTSLIST = "-QXstmz{"; //$NON-NLS-1$
 	String DFLAGPAT_COMPDEF = "+:"; //$NON-NLS-1$
 	String DFLAGPAT_COMPAPP = "+|"; //$NON-NLS-1$
 	String DFLAGPAT_DATA_CONNECTION_RESOURCE = "+k"; //$NON-NLS-1$

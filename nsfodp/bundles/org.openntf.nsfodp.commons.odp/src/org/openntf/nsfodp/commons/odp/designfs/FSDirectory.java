@@ -1,9 +1,13 @@
 package org.openntf.nsfodp.commons.odp.designfs;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
+import org.openntf.nsfodp.commons.NoteType;
+import org.openntf.nsfodp.commons.h.NsfNote;
+import org.openntf.nsfodp.commons.h.StdNames;
 import org.openntf.nsfodp.commons.odp.designfs.util.PathUtil;
 
 /**
@@ -17,7 +21,11 @@ public enum FSDirectory {
 	
 	AppProperties(design),
 	Code(design),
-		Agents(Code),
+		Agents(
+			Code, NsfNote.NOTE_CLASS_FILTER, StdNames.DFLAGPAT_AGENTSLIST,
+			NoteType.FormulaAgent, NoteType.ImportedJavaAgent, NoteType.JavaAgent,
+			NoteType.LotusScriptAgent, NoteType.SimpleActionAgent
+		),
 		Jars(Code),
 		ScriptLibraries(Code),
 		WebServiceConsumer(Code),
@@ -80,16 +88,37 @@ public enum FSDirectory {
 	}
 	
 	private final FSDirectory parent;
+	private final int noteClass;
+	private final String pattern;
+	private final NoteType[] noteTypes;
 	
 	private FSDirectory() {
-		this.parent = null;
+		this(null, 0, null, new NoteType[0]);
 	}
 	private FSDirectory(FSDirectory parent) {
+		this(parent, 0, null, new NoteType[0]);
+	}
+	private FSDirectory(FSDirectory parent, int noteClass, String pattern, NoteType... noteTypes) {
 		this.parent = parent;
+		this.noteClass = noteClass;
+		this.pattern = pattern;
+		this.noteTypes = noteTypes;
 	}
 	
 	public FSDirectory getParent() {
 		return parent;
+	}
+	
+	public int getNoteClass() {
+		return noteClass;
+	}
+	
+	public String getPattern() {
+		return pattern;
+	}
+	
+	public NoteType[] getNoteTypes() {
+		return Arrays.copyOf(noteTypes, noteTypes.length);
 	}
 	
 	public Stream<FSDirectory> getChildren() {

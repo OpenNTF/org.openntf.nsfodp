@@ -24,18 +24,17 @@ public class FileSystemServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("text/plain");
+		resp.setContentType("text/plain"); //$NON-NLS-1$
 		
 		PrintWriter w = resp.getWriter();
 		try {
 			// TODO use the current user
 			Session session = NotesFactory.createSession();
 			try {
-				URI uri = DesignPathUtil.toFileSystemURI(session.getEffectiveUserName(), "dev/design.nsf");
-				w.println(uri);
+				URI uri = DesignPathUtil.toFileSystemURI(session.getEffectiveUserName(), "dev/design.nsf"); //$NON-NLS-1$
 				
 				try(FileSystem fs = DesignFileSystemProvider.instance.getOrCreateFileSystem(uri, Collections.emptyMap())) {
-					Path root = fs.getPath("/");
+					Path root = fs.getPath("/"); //$NON-NLS-1$
 					
 					Files.walk(root).forEach(p -> w.println(p));
 				}

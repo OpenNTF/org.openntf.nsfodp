@@ -17,10 +17,13 @@ package org.openntf.nsfodp.notesapi.darwinonapi;
 
 import java.time.Instant;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
+import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
+import org.openntf.nsfodp.commons.odp.notesapi.NViewEntry;
 import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 
 import com.darwino.domino.napi.DominoAPI;
@@ -28,9 +31,12 @@ import com.darwino.domino.napi.DominoException;
 import com.darwino.domino.napi.c.C;
 import com.darwino.domino.napi.proc.NSFSEARCHPROC;
 import com.darwino.domino.napi.struct.SEARCH_MATCH;
+import com.darwino.domino.napi.util.DominoNativeUtils;
 import com.darwino.domino.napi.wrap.FormulaException;
 import com.darwino.domino.napi.wrap.NSFDatabase;
 import com.darwino.domino.napi.wrap.NSFNote;
+import com.darwino.domino.napi.wrap.NSFView;
+import com.darwino.domino.napi.wrap.NSFViewEntryCollection;
 
 public class DarwinoNDatabase implements NDatabase {
 	private final DarwinoNotesAPI notesApi;
@@ -125,6 +131,81 @@ public class DarwinoNDatabase implements NDatabase {
 		} catch (FormulaException e) {
 			throw new NDominoException(0, e);
 		}
+	}
+	
+	@Override
+	public void eachDesignEntry(int noteClass, String pattern, Consumer<NViewEntry> consumer) {
+		/*
+		 * Design collection columns:
+		 * 	- $TITLE (string)
+		 * 	- $FormPrivs
+		 * 	- $FormUsers
+		 * 	- $Body
+		 * 	- $Flags (string)
+		 * 	- $Class
+		 * 	- $Modified (TIMEDATE)
+		 * 	- $Comment (string)
+		 * 	- $AssistTrigger
+		 * 	- $AssistType
+		 * 	- $AssistFlags
+		 * 	- $AssistFlags2
+		 * 	- $UpdatedBy (string)
+		 * 	- $$FormScript_0
+		 * 	- $LANGUAGE
+		 * 	- $Writers
+		 *	- $PWriters
+		 *	- $FlagsExt
+		 *	- $FileSize (number)
+		 *	- $MimeType
+		 *	- $DesinerVersion (string)
+		 */
+		
+		try {
+			NSFView designCollection = database.getView(DominoAPI.NOTE_CLASS_DESIGN | DominoAPI.NOTE_ID_SPECIAL);
+			try {
+				NSFViewEntryCollection entries = designCollection.getAllEntries();
+				
+				final boolean hasPattern = StringUtil.isNotEmpty(pattern);
+				short readMask = DominoAPI.READ_MASK_NOTECLASS | DominoAPI.READ_MASK_NOTEID | DominoAPI.READ_MASK_SUMMARYVALUES;
+				
+				entries.setReadMask(readMask);
+				try {
+					entries.eachEntry(entry -> {
+						if((entry.getNoteClass() & noteClass) != 0) {
+							if(hasPattern) {
+								String flags = (String)entry.getColumnValues()[4];
+								if(DominoNativeUtils.matchesFlagsPattern(flags, pattern)) {
+									consumer.accept(new DarwinoNViewEntry(entry));
+								}
+							} else {
+								// Then add as-is
+								consumer.accept(new DarwinoNViewEntry(entry));
+							}
+						}
+					});
+				} catch(Exception e) {
+					throw new DominoException(e, "Exception while finding dsign elements of class {0}, pattern '{1}'", noteClass, pattern);
+				}
+			} finally {
+				if(designCollection != null) {
+					designCollection.free();
+				}
+			}
+		} catch(DominoException e) {
+			throw new NDominoException(e.getStatus(), e);
+		}
+	}
+	
+	@Override
+	public NNote findDesignNote(int noteClass, String pattern, String title) {
+		NNote[] result = new NNote[1];
+		eachDesignEntry(noteClass, pattern, entry -> {
+			String entryTitle = (String)entry.getColumnValues()[0];
+			if(title.equals(entryTitle) || entryTitle.endsWith('|' + title)) {
+				result[0] = getNoteByID(entry.getNoteID());
+			}
+		});
+		return result[0];
 	}
 	
 	@Override

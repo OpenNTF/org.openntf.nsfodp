@@ -15,49 +15,29 @@
  */
 package org.openntf.nsfodp.commons.odp.designfs.db;
 
-import static org.openntf.nsfodp.commons.odp.designfs.FSDirectory.*;
-import static org.openntf.nsfodp.commons.odp.designfs.util.PathUtil.concat;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.CopyOption;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.nio.file.attribute.UserPrincipal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-
+import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.odp.designfs.DesignPath;
 import org.openntf.nsfodp.commons.odp.designfs.FSDirectory;
 import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes;
-import org.openntf.nsfodp.commons.odp.designfs.attribute.DirectoryFileAttributes;
 import org.openntf.nsfodp.commons.odp.designfs.attribute.DesignFileAttributes.Type;
+import org.openntf.nsfodp.commons.odp.designfs.attribute.DirectoryFileAttributes;
 import org.openntf.nsfodp.commons.odp.designfs.util.DesignPathUtil;
-import org.openntf.nsfodp.commons.odp.designfs.util.NotesThreadFactory;
 import org.openntf.nsfodp.commons.odp.designfs.util.PathUtil;
 import org.openntf.nsfodp.commons.odp.designfs.util.StringUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
+import org.openntf.nsfodp.commons.odp.notesapi.NViewEntry;
 
 /**
  * Central class for NSF access methods.
@@ -82,61 +62,33 @@ public enum DesignAccessor {
 			return Collections.singletonList(FSDirectory.design.toString());
 		}
 		
-		FSDirectory fsdir = FSDirectory.forPath(path);
-		if(fsdir == null) {
-			return Collections.emptyList();
-		} else {
-			return fsdir.getChildren()
-				.map(String::valueOf)
-				.collect(Collectors.toList());
-		}
+		List<String> result = new ArrayList<>();
+
+		String cacheId = "entries-" + dir; //$NON-NLS-1$
+		DesignPathUtil.callWithDatabase(dir, cacheId, database -> {
+			FSDirectory fsdir = FSDirectory.forPath(path);
+			if(fsdir != null) {
+				// Add any static design folders
+				fsdir.getChildren()
+					.map(String::valueOf)
+					.forEach(result::add);
+				
+				// If the entry has a note pattern, add such notes
+				String pattern = fsdir.getPattern();
+				if(StringUtil.isNotEmpty(pattern)) {
+					database.eachDesignEntry(fsdir.getNoteClass(), pattern, entry -> {
+						// TODO handle the case of multiple design notes with the same title
+						result.add(encodeDesignTitle(entry));
+					});
+				}
+			}
+
+			// TODO add named files
+			
+			return null;
+		});
 		
-		// Base design directory: static folders and named files
-//		if(grandparent == null) {
-//			
-//			// TODO add named files
-//			
-//			return result;
-//		}
-		
-		// Two layers in: static folders, design elements, and named files
-		
-		
-		// Further: named files
-		
-//		String cacheId = "entries-" + dir; //$NON-NLS-1$
-//		return NSFPathUtil.callWithDatabase(dir, cacheId, database -> {
-//			View filesByParent = database.getView(VIEW_FILESBYPARENT);
-//			try {
-//				filesByParent.setAutoUpdate(false);
-//				filesByParent.refresh();
-//				
-//				String category = dir.toAbsolutePath().toString();
-//				ViewNavigator nav = filesByParent.createViewNavFromCategory(category);
-//				try {
-//					nav.setBufferMaxEntries(400);
-//					List<String> result = new ArrayList<>(nav.getCount());
-//					ViewEntry entry = nav.getFirst();
-//					while(entry != null) {
-//						entry.setPreferJavaDates(true);
-//						String name = String.valueOf(entry.getColumnValues().get(VIEW_FILESBYPARENT_INDEX_NAME));
-//						result.add(name);
-//						
-//						ViewEntry tempEntry = entry;
-//						entry = nav.getNext();
-//						tempEntry.recycle();
-//					}
-//					
-//					return result;
-//				} finally {
-//					nav.recycle();
-//				}
-//			} finally {
-//				if(filesByParent != null) {
-//					filesByParent.recycle();
-//				}
-//			}
-//		});
+		return result;
 	}
 	
 	/**
@@ -361,7 +313,6 @@ public enum DesignAccessor {
 			return DirectoryFileAttributes.instance;
 		}
 		
-		System.out.println("reading attrs for " + path);
 		String cacheId = "attrs-" + path; //$NON-NLS-1$
 		return DesignPathUtil.callWithDocument(path, cacheId, doc -> {
 			Type type = Type.File;
@@ -383,22 +334,55 @@ public enum DesignAccessor {
 	 * @return a document representing the note
 	 */
 	public static NNote getDocument(DesignPath path, NDatabase database) {
-//		View view = database.getView(VIEW_FILESBYPATH);
-//		try {
-//			view.setAutoUpdate(false);
-//			view.refresh();
-//			Document doc = view.getDocumentByKey(path.toAbsolutePath().toString(), true);
-//			if(doc == null) {
-//				doc = database.createDocument();
-//				doc.replaceItemValue(ITEM_PARENT, path.getParent().toAbsolutePath().toString());
-//				doc.replaceItemValue(NotesConstants.ITEM_META_TITLE, path.getFileName().toString());
-//			}
-//			return doc;
-//		} finally {
-//			if(view != null) {
-//				view.recycle();
-//			}
-//		}
+		// TODO handle the case of full-named files
+		
+		FSDirectory fsdir = FSDirectory.forPath(path.getParent());
+		String pattern = fsdir.getPattern();
+		if(StringUtil.isNotEmpty(pattern)) {
+			String title = decodeDesignTitle(fsdir, path.getFileName().toString());
+			
+			return database.findDesignNote(fsdir.getNoteClass(), pattern, title);
+		}
 		return null;
+	}
+	
+	/**
+	 * Encodes the provided note title for use inside a filesystem path.
+	 * 
+	 * @param title a $TITLE value to encode
+	 * @return a filesystem-safe encoded value
+	 */
+	public static String encodeDesignTitle(NViewEntry entry) {
+		// TODO actually encode this
+		String title = DesignPathUtil.extractTitleValue((String)entry.getColumnValues()[0]);
+		NoteType noteType = DesignPathUtil.noteTypeForEntry(entry);
+		String ext = noteType.getExtension();
+		if(ext != null && !title.endsWith('.' + ext)) {
+			title += '.' + ext;
+		}
+		
+		return title;
+	}
+	
+	/**
+	 * Decodes a note title value that had previously been encoded with
+	 * {@link #encodeDesignTitle(String)}.
+	 * 
+	 * @parent parent the parent {@link FSDirectory}, if known
+	 * @param title an encoded title value
+	 * @return the original $TITLE value
+	 */
+	public static String decodeDesignTitle(FSDirectory parent, String title) {
+		// TODO actually decode this
+		if(parent != null) {
+			for(NoteType noteType : parent.getNoteTypes()) {
+				String ext = noteType.getExtension();
+				// TODO don't chop off .xsp, etc.
+				if(ext != null && title.endsWith('.' + ext)) {
+					title = title.substring(0, title.length()-ext.length()-1);
+				}
+			}
+		}
+		return title;
 	}
 }

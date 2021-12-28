@@ -15,6 +15,9 @@
  */
 package org.openntf.nsfodp.commons.odp.designfs.util;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,6 +48,8 @@ public class NotesThreadFactory implements ThreadFactory {
 		void accept(NotesAPI session) throws Exception;
 	}
 	
+	private static final Map<String, NotesAPI> THREAD_APIS = Collections.synchronizedMap(new HashMap<>());
+	
 	/**
 	 * Evaluates the provided function in a separate {@link NotesThread} with
 	 * a {@link Session} for the active Notes ID.
@@ -57,9 +62,8 @@ public class NotesThreadFactory implements ThreadFactory {
 	public static <T> T call(NotesFunction<T> func) {
 		try {
 			return NotesThreadFactory.executor.submit(() -> {
-				try(NotesAPI session = NotesAPI.get()) {
-					return func.apply(session);
-				}
+				NotesAPI session = THREAD_APIS.computeIfAbsent(null, key -> NotesAPI.get());
+				return func.apply(session);
 			}).get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
@@ -93,9 +97,8 @@ public class NotesThreadFactory implements ThreadFactory {
 	public static <T> T callAs(String userName, NotesFunction<T> func) {
 		try {
 			return NotesThreadFactory.executor.submit(() -> {
-				try(NotesAPI session = NotesAPI.get(userName, false, false)) {
-					return func.apply(session);
-				}
+				NotesAPI session = THREAD_APIS.computeIfAbsent(userName, key -> NotesAPI.get(key, false, false));
+				return func.apply(session);
 			}).get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
@@ -120,7 +123,15 @@ public class NotesThreadFactory implements ThreadFactory {
 	@Override
 	public Thread newThread(Runnable r) {
 		ThreadFactory fac = NotesAPI.get().createThreadFactory();
-		return fac.newThread(r);
+		Runnable wrapped = () -> {
+			try {
+				r.run();
+			} finally {
+				THREAD_APIS.forEach((key, session) -> session.close());
+				THREAD_APIS.clear();
+			}
+		};
+		return fac.newThread(wrapped);
 	}
 
 	public static void term() {
