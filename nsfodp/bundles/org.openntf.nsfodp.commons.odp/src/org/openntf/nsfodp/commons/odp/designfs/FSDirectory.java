@@ -42,9 +42,17 @@ public enum FSDirectory {
 			NoteType.JavaLibrary, NoteType.JavaScriptLibrary,
 			NoteType.LotusScriptLibrary, NoteType.ServerJavaScriptLibrary
 		),
-		WebServiceConsumer(Code),
-		WebServices(Code),
-		actions(Code),
+		WebServiceConsumer(Code, NsfNote.NOTE_CLASS_FILTER, StdNames.DFLAGPAT_SCRIPTLIB,
+			entry -> {
+				// We also have to check FlagsExt
+				String flagsExt = StringUtil.toString(entry.getColumnValues()[17]);
+				return flagsExt.indexOf(StdNames.DESIGN_FLAGEXT_WEBSERVICELIB) > -1;
+			}, NoteType.JavaWebServiceConsumer, NoteType.LotusScriptWebServiceConsumer),
+		WebServices(
+			Code, NsfNote.NOTE_CLASS_FILTER, StdNames.DFLAGPAT_WEBSERVICE,
+			NoteType.JavaWebService, NoteType.LotusScriptWebService
+		),
+		actions(Code, NsfNote.NOTE_CLASS_FILTER, StdNames.DFLAGPAT_SACTIONS_DESIGN, NoteType.SharedActions),
 	CompositeApplications(design),
 		Applications(CompositeApplications),
 		Components(CompositeApplications),

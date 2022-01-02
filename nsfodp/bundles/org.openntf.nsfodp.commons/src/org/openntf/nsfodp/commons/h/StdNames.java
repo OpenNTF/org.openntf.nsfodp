@@ -78,6 +78,7 @@ public interface StdNames {
 	String DFLAGPAT_FRAMESET = "(+-*#"; //$NON-NLS-1$
 	String DFLAGPAT_IMAGE_RESOURCE = "+i"; //$NON-NLS-1$
 	String DFLAGPAT_JAVAFILE = "(+-*g["; //$NON-NLS-1$
+	String DFLAGPAT_WEBSERVICE = "+{"; //$NON-NLS-1$
 	String DFLAGPAT_JAVA_WEBSERVICE = "(+Jj-*{"; //$NON-NLS-1$
 	String DFLAGPAT_LS_WEBSERVICE = "*{L"; //$NON-NLS-1$
 	String DFLAGPAT_SACTIONS_DESIGN = "+y"; //$NON-NLS-1$
