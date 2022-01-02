@@ -72,7 +72,7 @@ import org.openntf.nsfodp.commons.odp.notesapi.NLotusScriptCompilationException;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
 import org.openntf.nsfodp.compiler.util.CompilerUtil;
@@ -478,7 +478,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		for(CustomControl cc : ccs) {
 			Document xspConfig = cc.getXspConfig().get();
 			
-			String namespace = StringUtil.trim(DOMUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
+			String namespace = StringUtil.trim(NSFODPDomUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
 			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
 			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
 					facesProject,
@@ -558,12 +558,12 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		Document dxlDoc = ODPUtil.readXml(properties);
 		
 		// Strip out any FT search settings, since these cause an exception on import
-		Element fulltextsettings = (Element)DOMUtil.node(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").get(); //$NON-NLS-1$
+		Element fulltextsettings = (Element)NSFODPDomUtil.node(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").get(); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}
 		
-		String dxl = DOMUtil.getXMLString(dxlDoc);
+		String dxl = NSFODPDomUtil.getXmlString(dxlDoc, null);
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}
 	
@@ -649,7 +649,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			AbstractSplitDesignElement res = entry.getKey();
 			Document dxlDoc = entry.getValue();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath); //$NON-NLS-1$
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, res.getClass().getSimpleName() + " " + filePath); //$NON-NLS-1$
 			
 			if(res instanceof FileResource) {
 				FileResource fileRes = (FileResource)res;
@@ -658,7 +658,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					Files.copy(fileRes.getDataFile(), baos);
 					// Use expanded syntax due to the presence of the xmlns
-					String title = DOMUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
+					String title = NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
 					if(StringUtil.isEmpty(title)) {
 						throw new IllegalStateException(MessageFormat.format(Messages.ODPCompiler_couldNotIdentifyTitle, filePath));
 					}
@@ -680,7 +680,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData); //$NON-NLS-1$
 			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length); //$NON-NLS-1$
 			
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_customControlLabel, cc.getPageName()));
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_customControlLabel, cc.getPageName()));
 		}
 	}
 	
@@ -690,7 +690,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		List<XPage> xpages = odp.getXPages();
 		for(XPage xpage : xpages) {
 			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, xpage);
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_XPageLabel, xpage.getPageName()));
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_XPageLabel, xpage.getPageName()));
 		}
 	}
 	
@@ -750,7 +750,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				}
 				DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndexItem.toArray(new CharSequence[classIndexItem.size()])); //$NON-NLS-1$
 				
-				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_javaClassLabel, className));
+				importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_javaClassLabel, className));
 			}
 		}
 		
@@ -777,7 +777,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				el.setAttribute("sign", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 				el.setAttribute("summary", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
+			noteIds.addAll(importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
 		}
 		
 		compileLotusScript(database, noteIds, true);

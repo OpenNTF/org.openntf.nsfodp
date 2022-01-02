@@ -27,7 +27,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.openntf.nsfodp.commons.io.SwiperOutputStream;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 
 /**
  * This subclass of {@link SwiperOutputStream} serializes via {@link DOMUtil} instead
@@ -49,7 +49,7 @@ public class CommonsSwiperOutputStream extends SwiperOutputStream {
 		DOMResult result = new DOMResult();
 		transformer.transform(new StreamSource(r), result);
 		try(Writer w = Files.newBufferedWriter(destination, StandardCharsets.UTF_8)) {
-			DOMUtil.serialize(w, result.getNode());
+			NSFODPDomUtil.serialize(w, result.getNode(), null);
 		}
 	}
 }

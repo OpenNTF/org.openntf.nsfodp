@@ -37,10 +37,9 @@ import java.util.stream.Stream;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Represents an On-Disk Project version of an NSF.
@@ -210,7 +209,7 @@ public class OnDiskProject {
 	public List<String> getRequiredBundles() {
 		// TODO adapt to FP10 MANIFEST.MF style?
 		Document pluginXml = ODPUtil.readXml(getPluginFile());
-		return DOMUtil.nodes(pluginXml, "/plugin/requires/import").stream() //$NON-NLS-1$
+		return NSFODPDomUtil.streamNodes(pluginXml, "/plugin/requires/import") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("plugin")) //$NON-NLS-1$
 			.collect(Collectors.toList());
@@ -351,10 +350,9 @@ public class OnDiskProject {
 		
 		Document domDoc;
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
-			domDoc = DOMUtil.createDocument(r);
+			domDoc = NSFODPDomUtil.createDocument(r);
 		}
-		List<Node> xresult = DOMUtil.nodes(domDoc, "/classpath/classpathentry[kind=src]"); //$NON-NLS-1$
-		List<String> paths = xresult.stream()
+		List<String> paths = NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[kind=src]") //$NON-NLS-1$
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
@@ -373,10 +371,9 @@ public class OnDiskProject {
 		}
 		Document domDoc;
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
-			domDoc = DOMUtil.createDocument(r);
+			domDoc = NSFODPDomUtil.createDocument(r);
 		}
-		List<Node> xresult = DOMUtil.nodes(domDoc, "/classpath/classpathentry[kind=lib]"); //$NON-NLS-1$
-		return xresult.stream()
+		return NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[kind=lib]") //$NON-NLS-1$
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.map(path -> getBaseDirectory().resolve(path))

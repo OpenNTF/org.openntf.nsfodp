@@ -41,7 +41,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -112,9 +112,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		
 		Document classpathXml;
 		try(InputStream is = Files.newInputStream(classpath)) {
-			classpathXml = DOMUtil.createDocument(is);
+			classpathXml = NSFODPDomUtil.createDocument((InputStream) is);
 		}
-		Collection<String> sourceFolders = Stream.of(DOMUtil.nodes(classpathXml, "/classpath/classpathentry[kind=src]")) //$NON-NLS-1$
+		Collection<String> sourceFolders = NSFODPDomUtil.streamNodes(classpathXml, "/classpath/classpathentry[kind=src]") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
@@ -177,10 +177,10 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		if(Files.isReadable(pluginXmlFile) && Files.isRegularFile(pluginXmlFile)) {
 			Document pluginXml;
 			try(InputStream is = Files.newInputStream(pluginXmlFile)) {
-				pluginXml = DOMUtil.createDocument(is);
+				pluginXml = NSFODPDomUtil.createDocument((InputStream) is);
 			}
 			
-			List<Node> nodes = DOMUtil.nodes(pluginXml, "/plugin/requires/import"); //$NON-NLS-1$
+			List<Node> nodes = NSFODPDomUtil.nodes(pluginXml, "/plugin/requires/import"); //$NON-NLS-1$
 			if(!nodes.isEmpty()) {
 				attrs.putValue("Require-Bundle", nodes.stream() //$NON-NLS-1$
 					.map(Element.class::cast)

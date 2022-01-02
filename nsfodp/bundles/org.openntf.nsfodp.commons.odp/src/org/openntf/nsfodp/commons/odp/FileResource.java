@@ -22,7 +22,7 @@ import java.text.MessageFormat;
 import java.util.function.Function;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -77,8 +77,8 @@ public class FileResource extends AbstractSplitDesignElement {
 				throw new IllegalStateException(MessageFormat.format(Messages.FileResource_noNameProvider, getDataFile()));
 			}
 			
-			Document dxlDoc = DOMUtil.createDocument();
-			Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
+			Document dxlDoc = NSFODPDomUtil.createDocument();
+			Element note = NSFODPDomUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
 			note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$
 			note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
 			if(StringUtil.isNotEmpty(flags)) {

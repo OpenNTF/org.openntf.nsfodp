@@ -53,10 +53,11 @@ import org.apache.maven.project.MavenProject;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.io.SwiperOutputStream;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.ibm.commons.util.StringUtil;
 
@@ -317,7 +318,7 @@ public class GenerateMetadataMojo extends AbstractMojo {
 			transformer.transform(source, result);
 			
 			try(OutputStream os = buildContext.newFileOutputStream(metaFile.toFile())) {
-				DOMUtil.serialize(os, result.getNode());
+				NSFODPDomUtil.serialize((OutputStream) os, (Node) result.getNode(), null);
 			}
 		} catch(TransformerException | IOException e) {
 			throw new RuntimeException(e);
@@ -325,8 +326,8 @@ public class GenerateMetadataMojo extends AbstractMojo {
 	}
 	
 	private Document createBaseDxl() {
-		Document doc = DOMUtil.createDocument();
-		Element note = DOMUtil.createElement(doc, "note"); //$NON-NLS-1$
+		Document doc = NSFODPDomUtil.createDocument();
+		Element note = NSFODPDomUtil.createElement((Document) doc, (String) "note"); //$NON-NLS-1$
 		note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
 		return doc;
 	}

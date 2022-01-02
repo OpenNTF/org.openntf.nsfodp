@@ -80,7 +80,7 @@ import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -292,18 +292,18 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Document props;
 						if(Files.exists(databaseProperties)) {
 							try(Reader r = Files.newBufferedReader(databaseProperties, StandardCharsets.UTF_8)) {
-								props = DOMUtil.createDocument(r);
+								props = NSFODPDomUtil.createDocument((Reader) r);
 							}
 						} else {
 							Files.createDirectories(databaseProperties.getParent());
 							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
 								try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-									props = DOMUtil.createDocument(r);
+									props = NSFODPDomUtil.createDocument((Reader) r);
 								}
 							}
 						}
 						
-						for(Node nodeObj : DOMUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+						for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
 							nodeObj.getParentNode().removeChild(nodeObj);
 						}
 						
@@ -314,15 +314,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Element aclElement = (Element)props.getDocumentElement().getLastChild();
 						
 						// Make sure that this appears either immediately after a databaseinfo element or as the first child
-						Element databaseinfo = (Element)DOMUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
+						Element databaseinfo = (Element)NSFODPDomUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
 						if(databaseinfo != null) {
-							DOMUtil.insertAfter(props.getDocumentElement(), aclElement, databaseinfo);
+							NSFODPDomUtil.insertAfter((Node) props.getDocumentElement(), (Node) aclElement, (Node) databaseinfo);
 						} else {
 							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
 						}
 						
 						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
-							DOMUtil.serialize(w, props);
+							NSFODPDomUtil.serialize((Writer) w, (Node) props, null);
 						}
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);

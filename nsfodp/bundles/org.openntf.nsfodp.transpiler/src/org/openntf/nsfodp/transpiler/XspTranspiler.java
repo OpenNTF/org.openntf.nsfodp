@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.compiler.AbstractCompilationEnvironment;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.osgi.framework.Bundle;
@@ -123,7 +123,7 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 						ccConfigs.forEach(ccConfig -> {
 							Document xspConfig = ODPUtil.readXml(ccConfig);
 							
-							String namespace = StringUtil.trim(DOMUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
+							String namespace = StringUtil.trim(NSFODPDomUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
 							Path fileName = ccSourceRoot.relativize(ccConfig);
 							FacesLibraryFragment fragment = configParser.createFacesLibraryFragment(
 									facesProject,

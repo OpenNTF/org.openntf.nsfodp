@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
-import org.openntf.nsfodp.commons.NSFODPDomUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

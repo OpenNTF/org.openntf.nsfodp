@@ -51,7 +51,7 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.h.Ods;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -71,7 +71,7 @@ public enum DXLUtil {
 		// Force the side effect of checking for the note root
 		getRootNoteElement(dxlDoc);
 		
-		List<Node> existingNodes = DOMUtil.nodes(dxlDoc, "/note/item[@name='" + escapeXPathValue(itemName) + "']"); //$NON-NLS-1$ //$NON-NLS-2$
+		List<Node> existingNodes = NSFODPDomUtil.nodes(dxlDoc, "/note/item[@name='" + escapeXPathValue(itemName) + "']"); //$NON-NLS-1$ //$NON-NLS-2$
 		for(Node node : existingNodes) {
 			node.getParentNode().removeChild(node);
 		}
@@ -83,7 +83,7 @@ public enum DXLUtil {
 		// Force the side effect of checking for the note root
 		getRootNoteElement(dxlDoc);
 		
-		List<Node> nodes = DOMUtil.nodes(dxlDoc, "/*[name()='note']/*[name()='item'][@name='" + escapeXPathValue(itemName) + "']/*[name()='text']"); //$NON-NLS-1$ //$NON-NLS-2$
+		List<Node> nodes = NSFODPDomUtil.nodes(dxlDoc, "/*[name()='note']/*[name()='item'][@name='" + escapeXPathValue(itemName) + "']/*[name()='text']"); //$NON-NLS-1$ //$NON-NLS-2$
 		for(Node node : nodes) {
 			result.add(node.getTextContent());
 		}
@@ -98,13 +98,13 @@ public enum DXLUtil {
 		
 		if(value != null) {
 			Element note = getRootNoteElement(dxlDoc);
-			Element item = DOMUtil.createElement(note, "item"); //$NON-NLS-1$
+			Element item = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			if(value.length > 1) {
-				item = DOMUtil.createElement(item, "textlist"); //$NON-NLS-1$
+				item = NSFODPDomUtil.createElement(item, "textlist"); //$NON-NLS-1$
 			}
 			for(CharSequence val : value) {
-				Element text = DOMUtil.createElement(item, "text"); //$NON-NLS-1$
+				Element text = NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
 				text.setTextContent(StringUtil.toString(val));
 			}
 			return item;
@@ -118,10 +118,10 @@ public enum DXLUtil {
 		
 		if(value != null) {
 			Element note = getRootNoteElement(dxlDoc);
-			Element item = DOMUtil.createElement(note, "item"); //$NON-NLS-1$
+			Element item = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
 			for(Number val : value) {
-				Element number = DOMUtil.createElement(item, "number"); //$NON-NLS-1$
+				Element number = NSFODPDomUtil.createElement(item, "number"); //$NON-NLS-1$
 				number.setTextContent(StringUtil.toString(val));
 			}
 		}
@@ -142,9 +142,9 @@ public enum DXLUtil {
 			int chunkSize = Math.min(data.length-offset, itemCap + (i==0 ? headerSize : 0));
 			String chunkData = base64.encodeToString(Arrays.copyOfRange(data, offset, offset + chunkSize));
 	
-			Element itemNode = DOMUtil.createElement(note, "item"); //$NON-NLS-1$
+			Element itemNode = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
 			itemNode.setAttribute("name", itemName); //$NON-NLS-1$
-			Element fileDataNode = DOMUtil.createElement(itemNode, "rawitemdata"); //$NON-NLS-1$
+			Element fileDataNode = NSFODPDomUtil.createElement(itemNode, "rawitemdata"); //$NON-NLS-1$
 			fileDataNode.setAttribute("type", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 			// Write out the value with 72-column wrapping
 			StringBuilder wrapped = new StringBuilder("\n"); //$NON-NLS-1$
@@ -221,10 +221,10 @@ public enum DXLUtil {
 		int width = 0; // true value not actually stored
 		String mimeType;
 		// First, check the DXL file
-		mimeType = DOMUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$MimeType']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
+		mimeType = NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$MimeType']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
 		// Failing that, go by the ImageNames item
 		if(StringUtil.isEmpty(mimeType)) {
-			String imageNames = StringUtil.toString(DOMUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$ImageNames']/*[name()='text']/text()").get().getTextContent()).toLowerCase(); //$NON-NLS-1$
+			String imageNames = StringUtil.toString(NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$ImageNames']/*[name()='text']/text()").get().getTextContent()).toLowerCase(); //$NON-NLS-1$
 			if(imageNames.endsWith(".gif")) { //$NON-NLS-1$
 				mimeType = "image/gif"; //$NON-NLS-1$
 			} else if(imageNames.endsWith(".bmp")) { //$NON-NLS-1$
@@ -350,9 +350,9 @@ public enum DXLUtil {
 		
 		if(value != null) {
 			Element note = getRootNoteElement(dxlDoc);
-			Element item = DOMUtil.createElement(note, "item"); //$NON-NLS-1$
+			Element item = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
 			item.setAttribute("name", itemName); //$NON-NLS-1$
-			item = DOMUtil.createElement(item, "datetime"); //$NON-NLS-1$
+			item = NSFODPDomUtil.createElement(item, "datetime"); //$NON-NLS-1$
 			item.setTextContent(DXL_DATETIME_FORMAT.get().format(Date.from(value)));
 			return item;
 		} else {
@@ -368,7 +368,7 @@ public enum DXLUtil {
 	 * @since 2.5.0
 	 */
 	private static Element getRootNoteElement(Document dxlDoc) {
-		return DOMUtil.node(dxlDoc, "/note")
+		return NSFODPDomUtil.node(dxlDoc, "/note")
 			.map(Element.class::cast)
 			.orElseThrow(() -> new IllegalStateException("Root element <note> not found. This is most likely because the ODP is not using binary DXL, and this is currently unsupported"));
 	}

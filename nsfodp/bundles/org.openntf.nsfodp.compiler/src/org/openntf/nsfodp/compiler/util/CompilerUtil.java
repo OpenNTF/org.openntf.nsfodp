@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDXLImporter;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -42,8 +42,8 @@ public enum CompilerUtil {
 	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
 	 */
 	public static void importFileResource(NDXLImporter importer, byte[] data, NDatabase database, String name, String flags, String flagsExt) throws IOException {
-		Document dxlDoc = DOMUtil.createDocument();
-		Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
+		Document dxlDoc = NSFODPDomUtil.createDocument();
+		Element note = NSFODPDomUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
 		note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$
 		note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
 		DXLUtil.writeItemString(dxlDoc, "$Flags", false, flags); //$NON-NLS-1$
@@ -54,7 +54,7 @@ public enum CompilerUtil {
 		DXLUtil.writeItemNumber(dxlDoc, "$FileSize", data.length); //$NON-NLS-1$
 		DXLUtil.writeItemFileData(dxlDoc, "$FileData", data); //$NON-NLS-1$
 		DXLUtil.writeItemString(dxlDoc, "$FileNames", false, name); //$NON-NLS-1$
-		String dxl = DOMUtil.getXMLString(dxlDoc);
+		String dxl = NSFODPDomUtil.getXmlString(dxlDoc, null);
 		try(InputStream is = new ByteArrayInputStream(dxl.getBytes(StandardCharsets.UTF_8))) {
 			importer.importDxl(database, is);
 		}

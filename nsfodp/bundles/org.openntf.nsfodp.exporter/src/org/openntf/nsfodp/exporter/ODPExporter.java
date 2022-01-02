@@ -65,7 +65,7 @@ import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.util.NoteTypeUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.exporter.io.CommonsSwiperOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -508,7 +508,7 @@ public class ODPExporter {
 					}
 					
 					try(InputStream in = new ByteArrayInputStream(dxl)) {
-						Document doc = DOMUtil.createDocument(in);
+						Document doc = NSFODPDomUtil.createDocument(in);
 						for(String bit : DXLUtil.getItemValueStrings(doc, type.getFileItem())) {
 							writer.write(bit);
 						}
@@ -554,11 +554,11 @@ public class ODPExporter {
 						if(cd != null) {
 							cd.writeFileResourceData(bytes.getOutputStream());
 							
-							Document pluginDom = DOMUtil.createDocument(bytes.getInputStream());
+							Document pluginDom = NSFODPDomUtil.createDocument(bytes.getInputStream());
 							Element pluginElement = pluginDom.getDocumentElement();
 							pluginElement.setAttribute("id", this.projectName); //$NON-NLS-1$
 							
-							DOMUtil.serialize(os, pluginDom);
+							NSFODPDomUtil.serialize(os, pluginDom, null);
 						}
 					}
 				} else {
@@ -633,19 +633,19 @@ public class ODPExporter {
 	private void generateEclipseProjectFile(Path baseDir) throws IOException {
 		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
-			Document xmlDoc = DOMUtil.createDocument();
-			Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
+			Document xmlDoc = NSFODPDomUtil.createDocument();
+			Element projectDescription = NSFODPDomUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
 			{
-				Element name = DOMUtil.createElement(projectDescription, "name"); //$NON-NLS-1$
+				Element name = NSFODPDomUtil.createElement(projectDescription, "name"); //$NON-NLS-1$
 				String path = database.getFilePath().replace('\\', '/');
 				name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			DOMUtil.createElement(projectDescription, "comment"); //$NON-NLS-1$
-			DOMUtil.createElement(projectDescription, "projects"); //$NON-NLS-1$
-			DOMUtil.createElement(projectDescription, "buildSpec"); //$NON-NLS-1$
-			DOMUtil.createElement(projectDescription, "natures"); //$NON-NLS-1$
+			NSFODPDomUtil.createElement(projectDescription, "comment"); //$NON-NLS-1$
+			NSFODPDomUtil.createElement(projectDescription, "projects"); //$NON-NLS-1$
+			NSFODPDomUtil.createElement(projectDescription, "buildSpec"); //$NON-NLS-1$
+			NSFODPDomUtil.createElement(projectDescription, "natures"); //$NON-NLS-1$
 			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-				DOMUtil.serialize(os, xmlDoc);
+				NSFODPDomUtil.serialize(os, xmlDoc, null);
 			}
 		}
 	}

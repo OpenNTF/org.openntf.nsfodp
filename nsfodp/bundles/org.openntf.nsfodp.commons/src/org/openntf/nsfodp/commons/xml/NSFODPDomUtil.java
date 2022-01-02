@@ -1,4 +1,4 @@
-package org.openntf.nsfodp.commons;
+package org.openntf.nsfodp.commons.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +11,9 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -51,6 +54,7 @@ public enum NSFODPDomUtil {
 	;
 	
 	private static TransformerFactory tFactory = TransformerFactory.newInstance();
+	private static XPath xpath;
 	
 	/**
 	 * Creates a new, empty {@link Document}.
@@ -58,11 +62,29 @@ public enum NSFODPDomUtil {
 	 * @return the newly-created {@link Document}
 	 */
 	public static Document createDocument() {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		return getBuilder().newDocument();
+	}
+
+	/**
+	 * @since 3.7.1
+	 */
+	public static Document createDocument(Reader r) {
+		InputSource source = new InputSource(r);
 		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			return builder.newDocument();
-		} catch (ParserConfigurationException e) {
+			return getBuilder().parse(source);
+		} catch (SAXException | IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * @since 3.7.1
+	 */
+	public static Document createDocument(InputStream is) {
+		InputSource source = new InputSource(is);
+		try {
+			return getBuilder().parse(source);
+		} catch (SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -129,12 +151,23 @@ public enum NSFODPDomUtil {
 	 * @return a single node selected by the path
 	 */
 	public static Node selectSingleNode(Node node, String xpathString) {
-		XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
-			return (Node)xpath.evaluate(xpathString, node, XPathConstants.NODE);
+			return (Node)getXPath().evaluate(xpathString, node, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Selects a single node via XPath.
+	 * 
+	 * @param node the context node to search from
+	 * @param xpathString the XPath expression to evaluate
+	 * @return an {@link Optional} describing the selected node, or an empty one if no node
+	 *         is found
+	 */
+	public static Optional<Node> node(Node node, String xpathString) {
+		return Optional.ofNullable(selectSingleNode(node, xpathString));
 	}
 	
 	/**
@@ -145,12 +178,28 @@ public enum NSFODPDomUtil {
 	 * @return a list of nodes selected by the path
 	 */
 	public static NodeList selectNodes(Node node, String xpathString) {
-		XPath xpath = XPathFactory.newInstance().newXPath();
 		try {
-			return (NodeList)xpath.evaluate(xpathString, node, XPathConstants.NODESET);
+			return (NodeList)getXPath().evaluate(xpathString, node, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Selects a collection of nodes via XPath.
+	 * 
+	 * @param node the context node to search from
+	 * @param xpathString the XPath expression to evaluate
+	 * @return a {@link List} of nodes selected by the path
+	 * @since 3.7.1
+	 */
+	public static List<Node> nodes(Node node, String xpathString) {
+		NodeList nodes = selectNodes(node, xpathString);
+		List<Node> result = new ArrayList<>(nodes.getLength());
+		for(int i = 0; i < nodes.getLength(); i++) {
+			result.add(nodes.item(i));
+		}
+		return result;
 	}
 	
 	/**
@@ -177,6 +226,20 @@ public enum NSFODPDomUtil {
 		Element el = parent.getOwnerDocument().createElement(nodeName);
 		parent.appendChild(el);
 		return el;
+	}
+	
+	/**
+	 * Creates a new child element beneath the provided element.
+	 * 
+	 * @param parent the parent document to append to
+	 * @param nodeName the name of the new element
+	 * @return the created element
+	 * @since 3.7.1
+	 */
+	public static Element createElement(Document parent, String name) {
+		Element element = parent.createElement(name);
+		parent.appendChild(element);
+		return element;
 	}
 	
 	/**
@@ -230,6 +293,24 @@ public enum NSFODPDomUtil {
 		}
 	}
 	
+	/**
+     * Inserts the node newChild after the existing child node refChild.
+	 * Inserts the node newChild after the existing child node refChild. If refChild is null, 
+	 * insert newChild at the end of the list of children.
+	 * If newChild is a DocumentFragment object, all of its children are inserted, 
+	 * in the same order, after refChild. If the newChild is already in the tree, 
+	 * it is first removed.
+	 * @return The node being inserted
+	 * @since 3.7.1   
+     */
+    public static Node insertAfter(Node parent, Node newChild, Node refChild) {
+    	if(refChild!=null) {
+    		Node next = refChild.getNextSibling();
+    		return parent.insertBefore(newChild, next);
+    	}
+		return parent.insertBefore(newChild, refChild);
+    }
+	
 	public static Transformer createTransformer(final InputStream xsltStream) {
 		Transformer transformer = null;
 		try {
@@ -250,5 +331,26 @@ public enum NSFODPDomUtil {
 		}
 
 		return transformer;
+	}
+	
+	// *******************************************************************************
+	// * Internal implementation utilities
+	// *******************************************************************************
+	
+	private static DocumentBuilder getBuilder() {
+		DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+		fac.setValidating(false);
+		try {
+			return fac.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static XPath getXPath() {
+		if (xpath == null) {
+			xpath = XPathFactory.newInstance().newXPath();
+		}
+		return xpath;
 	}
 }

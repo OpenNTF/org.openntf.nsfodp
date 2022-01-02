@@ -40,7 +40,7 @@ import java.util.stream.StreamSupport;
 import javax.tools.JavaFileObject;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.xml.DOMUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.commons.odp.JavaSource;
 import org.openntf.nsfodp.commons.odp.Messages;
 import org.osgi.framework.Bundle;
@@ -63,7 +63,7 @@ public enum ODPUtil {
 	public static Document readXml(Path file) {
 		// Let the XML parser handle reading, since XML has charset hints in the prolog
 		try(InputStream is = NSFODPUtil.newInputStream(file)) {
-			return DOMUtil.createDocument(is);
+			return NSFODPDomUtil.createDocument(is);
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
