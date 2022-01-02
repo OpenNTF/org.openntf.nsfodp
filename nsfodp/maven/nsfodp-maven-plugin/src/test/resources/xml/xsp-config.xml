@@ -1,0 +1,6 @@
+<faces-config>
+  <faces-config-extension>
+    <namespace-uri>http://www.ibm.com/xsp/core</namespace-uri>
+    <default-prefix>xp</default-prefix>
+  </faces-config-extension>
+</faces-config>

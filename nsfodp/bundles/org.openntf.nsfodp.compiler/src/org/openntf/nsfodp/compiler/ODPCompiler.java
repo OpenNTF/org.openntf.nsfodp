@@ -558,7 +558,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		Document dxlDoc = ODPUtil.readXml(properties);
 		
 		// Strip out any FT search settings, since these cause an exception on import
-		Element fulltextsettings = (Element)NSFODPDomUtil.node(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").get(); //$NON-NLS-1$
+		Element fulltextsettings = (Element)NSFODPDomUtil.node(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").orElse(null); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}

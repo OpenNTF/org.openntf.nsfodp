@@ -367,8 +367,8 @@ public enum DXLUtil {
 	 * @throws IllegalStateException if the root {@code note} element is not present
 	 * @since 2.5.0
 	 */
-	private static Element getRootNoteElement(Document dxlDoc) {
-		return NSFODPDomUtil.node(dxlDoc, "/note")
+	public static Element getRootNoteElement(Document dxlDoc) {
+		return NSFODPDomUtil.node(dxlDoc, "/note") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.orElseThrow(() -> new IllegalStateException("Root element <note> not found. This is most likely because the ODP is not using binary DXL, and this is currently unsupported"));
 	}

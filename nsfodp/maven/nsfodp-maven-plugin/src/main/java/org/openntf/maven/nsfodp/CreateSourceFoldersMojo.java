@@ -94,7 +94,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		try(InputStream is = Files.newInputStream(classpath)) {
 			classpathXml = NSFODPDomUtil.createDocument((InputStream) is);
 		}
-		Collection<String> sourceFolders = NSFODPDomUtil.streamNodes(classpathXml, "/classpath/classpathentry[kind=src]") //$NON-NLS-1$
+		Collection<String> sourceFolders = NSFODPDomUtil.streamNodes(classpathXml, "/classpath/classpathentry[@kind='src']") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$

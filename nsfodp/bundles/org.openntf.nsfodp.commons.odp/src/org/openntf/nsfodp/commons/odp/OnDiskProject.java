@@ -352,7 +352,7 @@ public class OnDiskProject {
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
 			domDoc = NSFODPDomUtil.createDocument(r);
 		}
-		List<String> paths = NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[kind=src]") //$NON-NLS-1$
+		List<String> paths = NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[@kind='lib']") //$NON-NLS-1$
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
@@ -373,7 +373,7 @@ public class OnDiskProject {
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
 			domDoc = NSFODPDomUtil.createDocument(r);
 		}
-		return NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[kind=lib]") //$NON-NLS-1$
+		return NSFODPDomUtil.streamNodes(domDoc, "/classpath/classpathentry[@kind='lib']") //$NON-NLS-1$
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.map(path -> getBaseDirectory().resolve(path))
