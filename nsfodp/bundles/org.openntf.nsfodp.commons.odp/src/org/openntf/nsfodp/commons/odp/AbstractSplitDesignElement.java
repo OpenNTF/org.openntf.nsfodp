@@ -31,7 +31,6 @@ import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.xml.XMLException;
 
 /**
  * The base class for design elements that are broken up into multiple
@@ -67,7 +66,7 @@ public class AbstractSplitDesignElement {
 		return "$FileSize"; //$NON-NLS-1$
 	}
 	
-	public Document getDxl() throws XMLException, IOException {
+	public Document getDxl() throws IOException {
 		if(Files.isRegularFile(dxlFile)) {
 			return attachFileData(ODPUtil.readXml(dxlFile));
 		} else {
@@ -79,7 +78,7 @@ public class AbstractSplitDesignElement {
 		this.overrideData = overrideData;
 	}
 	
-	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
+	protected Document attachFileData(Document dxlDoc) throws IOException {
 		byte[] data = getCompositeData();
 		String itemName = getFileDataItem();
 		String sizeItemName = getFileSizeItem();
@@ -92,7 +91,7 @@ public class AbstractSplitDesignElement {
 		return dxlDoc;
 	}
 	
-	public byte[] getCompositeData() throws IOException, XMLException {
+	public byte[] getCompositeData() throws IOException {
 		if(this.overrideData != null) {
 			try(InputStream is = new ByteArrayInputStream(this.overrideData)) {
 				return DXLUtil.getFileResourceData(is, this.overrideData.length);

@@ -28,8 +28,6 @@ import org.openntf.nsfodp.commons.h.Ods;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.w3c.dom.Document;
 
-import com.ibm.commons.xml.XMLException;
-
 /**
  * Represents an image resource in the ODP.
  * 
@@ -53,7 +51,7 @@ public class ImageResource extends FileResource {
 	}
 	
 	@Override
-	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
+	protected Document attachFileData(Document dxlDoc) throws IOException {
 		byte[] data = getCompositeData();
 		String itemName = getFileDataItem();
 		
@@ -63,7 +61,7 @@ public class ImageResource extends FileResource {
 	}
 
 	@Override
-	public byte[] getCompositeData() throws IOException, XMLException {
+	public byte[] getCompositeData() throws IOException {
 		Path file = getDataFile();
 		if(!Files.isRegularFile(file)) {
 			throw new IllegalArgumentException(MessageFormat.format(Messages.AbstractSplitDesignElement_cannotReadFile, file));

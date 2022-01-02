@@ -9,6 +9,7 @@ Export-Package: org.openntf.com.eclipsesource.json;version="0.9.5",
  org.openntf.nsfodp.commons;version="4.0.0",
  org.openntf.nsfodp.commons.h;version="4.0.0",
  org.openntf.nsfodp.commons.io;version="4.0.0",
- org.openntf.nsfodp.commons.osgi;version="4.0.0"
+ org.openntf.nsfodp.commons.osgi;version="4.0.0",
+ org.openntf.nsfodp.commons.xml;version="3.7.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime

@@ -6,7 +6,6 @@ Automatic-Module-Name: org.openntf.nsfodp.exporter.servlet
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
- com.ibm.commons.xml;bundle-version="9.0.1",
  org.eclipse.osgi
 Import-Package: org.eclipse.core.runtime,
  org.openntf.nsfodp.commons;version="3.5.0",
@@ -16,6 +15,7 @@ Import-Package: org.eclipse.core.runtime,
  org.openntf.nsfodp.commons.odp;version="3.5.0",
  org.openntf.nsfodp.commons.odp.notesapi;version="3.5.0",
  org.openntf.nsfodp.commons.odp.util;version="3.5.0",
+ org.openntf.nsfodp.commons.xml;version="3.7.1",
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.openntf.nsfodp.exporter;version="4.0.0"

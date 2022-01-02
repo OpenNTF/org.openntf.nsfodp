@@ -16,16 +16,20 @@
 package org.openntf.maven.nsfodp.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.openntf.nsfodp.commons.NSFODPDomUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @SuppressWarnings("nls")
@@ -88,5 +92,106 @@ public class TestDomUtil {
 			xml = NSFODPDomUtil.getXmlString(doc, null);
 		}
 		assertTrue(xml.contains("<text>NSF ODP Tooling Example</text>"));
+	}
+	
+	@Test
+	public void testStreamNodes() throws IOException {
+		Document doc;
+		try(InputStream is = getClass().getResourceAsStream("/xml/classpath.xml")) {
+			doc = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(doc);
+		
+		String path = NSFODPDomUtil.streamNodes(doc, "/classpath/classpathentry[@kind='lib']") //$NON-NLS-1$
+			.map(node -> Element.class.cast(node))
+			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
+			.findFirst()
+			.get();
+		assertEquals("WebContent/WEB-INF/lib/CstClientTest.jar", path);
+	}
+	
+	@Test
+	public void testSelectText() throws IOException {
+		Document doc;
+		try(InputStream is = getClass().getResourceAsStream("/xml/classpath.xml")) {
+			doc = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(doc);
+		
+		Node node = NSFODPDomUtil.streamNodes(doc, "/classpath/classpathentry[@kind='lib']/@path")
+			.findFirst()
+			.get();
+		assertEquals("WebContent/WEB-INF/lib/CstClientTest.jar", node.getTextContent());
+	}
+	
+	@Test
+	public void testPluginXml() throws IOException {
+		Document doc;
+		try(InputStream is = getClass().getResourceAsStream("/xml/plugin.xml")) {
+			doc = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(doc);
+		
+		List<String> bundles = NSFODPDomUtil.streamNodes(doc, "/plugin/requires/import") //$NON-NLS-1$
+			.map(Element.class::cast)
+			.map(el -> el.getAttribute("plugin")) //$NON-NLS-1$
+			.collect(Collectors.toList());
+		assertTrue(bundles.contains("com.ibm.xsp.extsn"));
+	}
+	
+	@Test
+	public void testPluginXml2() throws IOException {
+		Document doc;
+		try(InputStream is = getClass().getResourceAsStream("/xml/plugin.xml")) {
+			doc = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(doc);
+		
+		List<String> bundles = NSFODPDomUtil.nodes(doc, "/plugin/requires/import").stream() //$NON-NLS-1$
+			.map(Element.class::cast)
+			.map(el -> el.getAttribute("plugin")) //$NON-NLS-1$
+			.collect(Collectors.toList());
+		assertTrue(bundles.contains("com.ibm.xsp.extsn"));
+	}
+	
+	@Test
+	public void testFindAndDelete() throws IOException {
+		Document props;
+		try(InputStream is = getClass().getResourceAsStream("/xml/dbprops.xml")) {
+			props = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(props);
+		
+		assertFalse(NSFODPDomUtil.nodes(props, "/database/acl").isEmpty());
+		
+		for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+			nodeObj.getParentNode().removeChild(nodeObj);
+		}
+
+		assertTrue(NSFODPDomUtil.nodes(props, "/database/acl").isEmpty());
+	}
+	
+	@Test
+	public void testFindFtSettings() throws IOException {
+		Document props;
+		try(InputStream is = getClass().getResourceAsStream("/xml/dbprops2.xml")) {
+			props = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(props);
+		
+		Element fulltextsettings = (Element)NSFODPDomUtil.node(props, "/*[name()='database']/*[name()='fulltextsettings']").orElse(null); //$NON-NLS-1$
+		assertNotNull(fulltextsettings);
+	}
+	
+	@Test
+	public void testNamespaceUri() throws IOException {
+		Document xspConfig;
+		try(InputStream is = getClass().getResourceAsStream("/xml/xsp-config.xml")) {
+			xspConfig = NSFODPDomUtil.parseXml(is);
+		}
+		assertNotNull(xspConfig);
+		
+		String uri = NSFODPDomUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent();
+		assertEquals("http://www.ibm.com/xsp/core", uri);
 	}
 }

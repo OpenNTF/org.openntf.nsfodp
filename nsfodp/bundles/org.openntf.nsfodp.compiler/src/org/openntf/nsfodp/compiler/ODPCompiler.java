@@ -72,6 +72,7 @@ import org.openntf.nsfodp.commons.odp.notesapi.NLotusScriptCompilationException;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
 import org.openntf.nsfodp.compiler.util.CompilerUtil;
@@ -83,8 +84,6 @@ import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 import com.ibm.domino.napi.NException;
 import com.ibm.domino.napi.c.Os;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
@@ -133,7 +132,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	public static final String INI_DEBUGDXL = "NSFODP_DebugDXL"; //$NON-NLS-1$
 	private static boolean DEBUG_DXL = false;
 	
-	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, IProgressMonitor mon) throws FileNotFoundException, XMLException, IOException {
+	public ODPCompiler(BundleContext bundleContext, OnDiskProject onDiskProject, IProgressMonitor mon) throws FileNotFoundException, IOException {
 		super(bundleContext, new MultiPathResourceBundleSource(Objects.requireNonNull(onDiskProject).getResourcePaths()), mon);
 		this.odp = onDiskProject;
 		
@@ -434,7 +433,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	// * Class compilation methods
 	// *******************************************************************************
 	
-	private Map<String, Class<?>> compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, XMLException, IOException, JavaCompilerException {
+	private Map<String, Class<?>> compileJavaSources(JavaSourceClassLoader classLoader) throws FileNotFoundException, IOException, JavaCompilerException {
 		subTask(Messages.ODPCompiler_compilingJava);
 		
 		Map<Path, List<JavaSource>> javaSourceFiles = odp.getJavaSourceFiles();
@@ -479,7 +478,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		for(CustomControl cc : ccs) {
 			Document xspConfig = cc.getXspConfig().get();
 			
-			String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue()); //$NON-NLS-1$
+			String namespace = StringUtil.trim(NSFODPDomUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
 			Path fileName = odp.getBaseDirectory().relativize(cc.getXspConfigFile());
 			LibraryFragmentImpl fragment = (LibraryFragmentImpl)configParser.createFacesLibraryFragment(
 					facesProject,
@@ -559,12 +558,12 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		Document dxlDoc = ODPUtil.readXml(properties);
 		
 		// Strip out any FT search settings, since these cause an exception on import
-		Element fulltextsettings = (Element)DOMUtil.evaluateXPath(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").getSingleNode(); //$NON-NLS-1$
+		Element fulltextsettings = (Element)NSFODPDomUtil.node(dxlDoc, "/*[name()='database']/*[name()='fulltextsettings']").orElse(null); //$NON-NLS-1$
 		if(fulltextsettings != null) {
 			fulltextsettings.getParentNode().removeChild(fulltextsettings);
 		}
 		
-		String dxl = DOMUtil.getXMLString(dxlDoc);
+		String dxl = NSFODPDomUtil.getXmlString(dxlDoc, null);
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
 	}
 	
@@ -640,7 +639,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				res -> {
 					try {
 						return res.getDxl();
-					} catch (XMLException | IOException e) {
+					} catch ( IOException e) {
 						throw new RuntimeException(e);
 					}
 				}
@@ -650,7 +649,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			AbstractSplitDesignElement res = entry.getKey();
 			Document dxlDoc = entry.getValue();
 			Path filePath = odp.getBaseDirectory().relativize(res.getDataFile());
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, res.getClass().getSimpleName() + " " + filePath); //$NON-NLS-1$
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, res.getClass().getSimpleName() + " " + filePath); //$NON-NLS-1$
 			
 			if(res instanceof FileResource) {
 				FileResource fileRes = (FileResource)res;
@@ -659,7 +658,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					Files.copy(fileRes.getDataFile(), baos);
 					// Use expanded syntax due to the presence of the xmlns
-					String title = DOMUtil.evaluateXPath(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").getStringValue(); //$NON-NLS-1$
+					String title = NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$TITLE']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
 					if(StringUtil.isEmpty(title)) {
 						throw new IllegalStateException(MessageFormat.format(Messages.ODPCompiler_couldNotIdentifyTitle, filePath));
 					}
@@ -681,7 +680,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			DXLUtil.writeItemFileData(dxlDoc, "$ConfigData", xspConfigData); //$NON-NLS-1$
 			DXLUtil.writeItemNumber(dxlDoc, "$ConfigSize", xspConfigData.length); //$NON-NLS-1$
 			
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_customControlLabel, cc.getPageName()));
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_customControlLabel, cc.getPageName()));
 		}
 	}
 	
@@ -691,11 +690,11 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		List<XPage> xpages = odp.getXPages();
 		for(XPage xpage : xpages) {
 			Document dxlDoc = importXSP(importer, database, classLoader, compiledClassNames, xpage);
-			importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_XPageLabel, xpage.getPageName()));
+			importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_XPageLabel, xpage.getPageName()));
 		}
 	}
 	
-	private Document importXSP(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws XMLException, IOException {
+	private Document importXSP(NDXLImporter importer, NDatabase database, JavaSourceClassLoader classLoader, Set<String> compiledClassNames, XPage xpage) throws IOException {
 		String className = xpage.getJavaClassName();
 		byte[] byteCode = classLoader.getClassByteCode(className);
 		String innerClassName = xpage.getJavaClassName() + '$' + xpage.getJavaClassSimpleName() + "Page"; //$NON-NLS-1$
@@ -751,7 +750,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				}
 				DXLUtil.writeItemString(dxlDoc, "$ClassIndexItem", true, classIndexItem.toArray(new CharSequence[classIndexItem.size()])); //$NON-NLS-1$
 				
-				importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_javaClassLabel, className));
+				importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_javaClassLabel, className));
 			}
 		}
 		
@@ -778,7 +777,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				el.setAttribute("sign", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 				el.setAttribute("summary", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			noteIds.addAll(importDxl(importer, DOMUtil.getXMLString(dxlDoc), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
+			noteIds.addAll(importDxl(importer, NSFODPDomUtil.getXmlString(dxlDoc, null), database, MessageFormat.format(Messages.ODPCompiler_lotusScriptLabel, odp.getBaseDirectory().relativize(lib.getDataFile()))));
 		}
 		
 		compileLotusScript(database, noteIds, true);

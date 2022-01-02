@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -40,12 +41,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
+import org.w3c.dom.Node;
 
 /**
  * Creates PDE structure files (MANIFEST.MF, build.properties) at the top level of
@@ -91,17 +91,17 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		
 		try {
 			generateBuildProperties();
-		} catch(IOException | XMLException e) {
+		} catch(IOException e) {
 			throw new MojoExecutionException("Exception while generating build.properties", e);
 		}
 		try {
 			generateManifestMf();
-		} catch(IOException | XMLException e) {
+		} catch(IOException e) {
 			throw new MojoExecutionException("Exception while generating META-INF/MANIFEST.MF", e);
 		}
 	}
 
-	private void generateBuildProperties() throws IOException, XMLException {
+	private void generateBuildProperties() throws IOException {
 		Path classpath = odpDirectory.toPath().resolve(".classpath"); //$NON-NLS-1$
 		if(!Files.isReadable(classpath) || !Files.isRegularFile(classpath)) {
 			if(log.isWarnEnabled()) {
@@ -112,9 +112,9 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		
 		Document classpathXml;
 		try(InputStream is = Files.newInputStream(classpath)) {
-			classpathXml = DOMUtil.createDocument(is);
+			classpathXml = NSFODPDomUtil.createDocument((InputStream) is);
 		}
-		Collection<String> sourceFolders = Stream.of(DOMUtil.nodes(classpathXml, "/classpath/classpathentry[kind=src]")) //$NON-NLS-1$
+		Collection<String> sourceFolders = NSFODPDomUtil.streamNodes(classpathXml, "/classpath/classpathentry[@kind='src']") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
@@ -155,7 +155,7 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		}
 	}
 	
-	private void generateManifestMf() throws IOException, XMLException {
+	private void generateManifestMf() throws IOException {
 		Path metaInf = project.getBasedir().toPath().resolve("META-INF"); //$NON-NLS-1$
 		Files.createDirectories(metaInf);
 		Path manifestMf = metaInf.resolve("MANIFEST.MF"); //$NON-NLS-1$
@@ -177,12 +177,12 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		if(Files.isReadable(pluginXmlFile) && Files.isRegularFile(pluginXmlFile)) {
 			Document pluginXml;
 			try(InputStream is = Files.newInputStream(pluginXmlFile)) {
-				pluginXml = DOMUtil.createDocument(is);
+				pluginXml = NSFODPDomUtil.createDocument((InputStream) is);
 			}
 			
-			Object[] nodes = DOMUtil.nodes(pluginXml, "/plugin/requires/import"); //$NON-NLS-1$
-			if(nodes.length > 0) {
-				attrs.putValue("Require-Bundle", Stream.of(nodes) //$NON-NLS-1$
+			List<Node> nodes = NSFODPDomUtil.nodes(pluginXml, "/plugin/requires/import"); //$NON-NLS-1$
+			if(!nodes.isEmpty()) {
+				attrs.putValue("Require-Bundle", nodes.stream() //$NON-NLS-1$
 					.map(Element.class::cast)
 					.map(e -> e.getAttribute("plugin") + (isOptionalImport(e) ? ";resolution:=optional" : "")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 					.collect(Collectors.joining(",")) //$NON-NLS-1$

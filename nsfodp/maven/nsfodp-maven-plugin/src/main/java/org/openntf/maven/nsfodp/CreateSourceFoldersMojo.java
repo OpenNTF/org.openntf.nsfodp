@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,12 +32,10 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 
 /**
  * Creates source folders on the filesystem that are referenced by the ODP
@@ -76,7 +73,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		
 		try {
 			generateSourceFolders();
-		} catch(IOException | XMLException e) {
+		} catch(IOException e) {
 			throw new MojoExecutionException("Exception while generating build.properties", e);
 		}
 
@@ -87,7 +84,7 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		}
 	}
 
-	private void generateSourceFolders() throws IOException, XMLException {
+	private void generateSourceFolders() throws IOException {
 		Path classpath = odpDirectory.toPath().resolve(".classpath"); //$NON-NLS-1$
 		if(!Files.isReadable(classpath) || !Files.isRegularFile(classpath)) {
 			return;
@@ -95,9 +92,9 @@ public class CreateSourceFoldersMojo extends AbstractMojo {
 		
 		Document classpathXml;
 		try(InputStream is = Files.newInputStream(classpath)) {
-			classpathXml = DOMUtil.createDocument(is);
+			classpathXml = NSFODPDomUtil.createDocument((InputStream) is);
 		}
-		Collection<String> sourceFolders = Stream.of(DOMUtil.nodes(classpathXml, "/classpath/classpathentry[kind=src]")) //$NON-NLS-1$
+		Collection<String> sourceFolders = NSFODPDomUtil.streamNodes(classpathXml, "/classpath/classpathentry[@kind='src']") //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
