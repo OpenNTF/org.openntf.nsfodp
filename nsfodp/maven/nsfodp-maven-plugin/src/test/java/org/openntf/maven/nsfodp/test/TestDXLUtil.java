@@ -21,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,7 @@ public class TestDXLUtil {
 			assertTrue(text.isEmpty());
 		}
 	}
+	
 	@Test
 	public void testRootNoteElement() throws IOException {
 		Document doc;
@@ -62,5 +66,49 @@ public class TestDXLUtil {
 		assertNotNull(doc);
 		
 		assertNotNull(DXLUtil.getRootNoteElement(doc));
+	}
+	
+	@Test
+	public void testImageResourceData() throws IOException {
+		Path tempRes = Files.createTempFile("imageres", ".gif");
+		try {
+			try(InputStream is = getClass().getResourceAsStream("/Untitled.gif")) {
+				Files.copy(is, tempRes, StandardCopyOption.REPLACE_EXISTING);
+			}
+			
+			Document doc;
+			try(InputStream is = getClass().getResourceAsStream("/xml/imageres.xml")) {
+				doc = NSFODPDomUtil.parseXml(is);
+			}
+			assertNotNull(doc);
+			
+			byte[] data = DXLUtil.getImageResourceData(tempRes, doc);
+			assertNotNull(data);
+			assertFalse(data.length == 0);
+		} finally {
+			Files.deleteIfExists(tempRes);
+		}
+	}
+	
+	@Test
+	public void testImageResourceDataNoMime() throws IOException {
+		Path tempRes = Files.createTempFile("imageres", ".gif");
+		try {
+			try(InputStream is = getClass().getResourceAsStream("/Untitled.gif")) {
+				Files.copy(is, tempRes, StandardCopyOption.REPLACE_EXISTING);
+			}
+			
+			Document doc;
+			try(InputStream is = getClass().getResourceAsStream("/xml/imageres-nomime.xml")) {
+				doc = NSFODPDomUtil.parseXml(is);
+			}
+			assertNotNull(doc);
+			
+			byte[] data = DXLUtil.getImageResourceData(tempRes, doc);
+			assertNotNull(data);
+			assertFalse(data.length == 0);
+		} finally {
+			Files.deleteIfExists(tempRes);
+		}
 	}
 }
