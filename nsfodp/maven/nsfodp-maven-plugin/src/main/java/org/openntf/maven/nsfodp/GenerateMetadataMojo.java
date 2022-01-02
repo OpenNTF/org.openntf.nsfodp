@@ -15,6 +15,19 @@
  */
 package org.openntf.maven.nsfodp;
 
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGS;
+import static org.openntf.nsfodp.commons.h.StdNames.DESIGN_FLAGS_EXTENDED;
+import static org.openntf.nsfodp.commons.h.StdNames.FIELD_TITLE;
+import static org.openntf.nsfodp.commons.h.StdNames.FILTER_COMMENT_ITEM;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_MIMECHARSET;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_MIMETYPE;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_MODINFO;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_FILE_NAMES;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_IMAGES_COLORIZE;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_IMAGES_HIGH;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_IMAGES_WIDE;
+import static org.openntf.nsfodp.commons.h.StdNames.ITEM_NAME_IMAGE_NAMES;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,16 +53,12 @@ import org.apache.maven.project.MavenProject;
 import org.openntf.nsfodp.commons.NoteType;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.io.SwiperOutputStream;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.Format;
-import com.ibm.commons.xml.XMLException;
-
-import static org.openntf.nsfodp.commons.h.StdNames.*;
 
 /**
  * Generates ".metadata" companion DXL files for raw-data type that should have them but do
@@ -308,19 +317,18 @@ public class GenerateMetadataMojo extends AbstractMojo {
 			transformer.transform(source, result);
 			
 			try(OutputStream os = buildContext.newFileOutputStream(metaFile.toFile())) {
-				DOMUtil.serialize(os, result.getNode(), Format.defaultFormat);
+				DOMUtil.serialize(os, result.getNode());
 			}
-		} catch(XMLException | TransformerException | IOException e) {
+		} catch(TransformerException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private Document createBaseDxl() throws XMLException {
+	private Document createBaseDxl() {
 		Document doc = DOMUtil.createDocument();
 		Element note = DOMUtil.createElement(doc, "note"); //$NON-NLS-1$
 		note.setAttribute("xmlns", "http://www.lotus.com/dxl"); //$NON-NLS-1$ //$NON-NLS-2$
 		return doc;
 	}
-	
 	
 }

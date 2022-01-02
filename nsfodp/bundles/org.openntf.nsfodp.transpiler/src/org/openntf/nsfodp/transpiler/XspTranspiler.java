@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.openntf.nsfodp.compiler.AbstractCompilationEnvironment;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.osgi.framework.Bundle;
@@ -40,8 +41,6 @@ import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
@@ -122,25 +121,21 @@ public class XspTranspiler extends AbstractCompilationEnvironment {
 					
 					try(Stream<Path> ccConfigs = Files.find(ccSourceRoot, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && path.toString().toLowerCase().endsWith(".xsp-config"), FileVisitOption.FOLLOW_LINKS)) { //$NON-NLS-1$
 						ccConfigs.forEach(ccConfig -> {
-							try {
-								Document xspConfig = ODPUtil.readXml(ccConfig);
-								
-								String namespace = StringUtil.trim(DOMUtil.evaluateXPath(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").getStringValue()); //$NON-NLS-1$
-								Path fileName = ccSourceRoot.relativize(ccConfig);
-								FacesLibraryFragment fragment = configParser.createFacesLibraryFragment(
-										facesProject,
-										facesClassLoader,
-										fileName.toString(),
-										xspConfig.getDocumentElement(),
-										resourceBundleSource,
-										iconUrlSource,
-										namespace
-								);
-								facesProject.register(fragment);
-								facesProject.getRegistry().refreshReferences();
-							} catch (XMLException e) {
-								throw new RuntimeException(e);
-							}
+							Document xspConfig = ODPUtil.readXml(ccConfig);
+							
+							String namespace = StringUtil.trim(DOMUtil.node(xspConfig, "/faces-config/faces-config-extension/namespace-uri/text()").get().getTextContent()); //$NON-NLS-1$
+							Path fileName = ccSourceRoot.relativize(ccConfig);
+							FacesLibraryFragment fragment = configParser.createFacesLibraryFragment(
+									facesProject,
+									facesClassLoader,
+									fileName.toString(),
+									xspConfig.getDocumentElement(),
+									resourceBundleSource,
+									iconUrlSource,
+									namespace
+							);
+							facesProject.register(fragment);
+							facesProject.getRegistry().refreshReferences();
 						});
 					}
 				}

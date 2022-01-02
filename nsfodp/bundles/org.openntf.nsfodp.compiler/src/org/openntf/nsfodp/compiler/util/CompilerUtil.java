@@ -23,12 +23,11 @@ import java.nio.charset.StandardCharsets;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.odp.notesapi.NDXLImporter;
 import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 
 /**
  * Utilities for manipulating "raw"-type DXL documents.
@@ -42,7 +41,7 @@ public enum CompilerUtil {
 	/**
 	 * Imports a generic file resource, such as an outer class file from a multi-class Java resource.
 	 */
-	public static void importFileResource(NDXLImporter importer, byte[] data, NDatabase database, String name, String flags, String flagsExt) throws XMLException, IOException {
+	public static void importFileResource(NDXLImporter importer, byte[] data, NDatabase database, String name, String flags, String flagsExt) throws IOException {
 		Document dxlDoc = DOMUtil.createDocument();
 		Element note = DOMUtil.createElement(dxlDoc, "note"); //$NON-NLS-1$
 		note.setAttribute("class", "form"); //$NON-NLS-1$ //$NON-NLS-2$

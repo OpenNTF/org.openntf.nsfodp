@@ -65,15 +65,13 @@ import org.openntf.nsfodp.commons.odp.notesapi.NDatabase;
 import org.openntf.nsfodp.commons.odp.notesapi.NDominoException;
 import org.openntf.nsfodp.commons.odp.notesapi.NNote;
 import org.openntf.nsfodp.commons.odp.util.NoteTypeUtil;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.openntf.nsfodp.exporter.io.CommonsSwiperOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.ByteStreamCache;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.Format;
-import com.ibm.commons.xml.XMLException;
 
 /**
  * Represents an on-disk project export environment.
@@ -203,9 +201,8 @@ public class ODPExporter {
 	 * 
 	 * @return a {@link Path} to the on-disk project root, either a directory or a ZIP file
 	 * @throws IOException if there is a problem reading or writing filesystem data
-	 * @throws XMLException if there is a problem parsing DXL or other configuration information in the ODP
 	 */
-	public Path export() throws IOException, XMLException {
+	public Path export() throws IOException {
 		Path target;
 		Path returnPath;
 		ODPType odpType = this.odpType == null ? ODPType.DIRECTORY : this.odpType;
@@ -287,7 +284,7 @@ public class ODPExporter {
 		return returnPath;
 	}
 
-	private void exportNote(NNote note, NDXLExporter exporter, Path baseDir) throws IOException, XMLException {
+	private void exportNote(NNote note, NDXLExporter exporter, Path baseDir) throws IOException {
 		NoteType type = NoteTypeUtil.forNote(note);
 		if(type == NoteType.Unknown) {
 			String flags = note.hasItem(DESIGN_FLAGS) ? note.getAsString(DESIGN_FLAGS, ' ') : StringUtil.EMPTY_STRING;
@@ -395,9 +392,8 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @param type the NoteType enum for the note
 	 * @throws IOException
-	 * @throws XMLException 
 	 */
-	private void exportNamedData(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException {
+	private void exportNamedData(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException {
 		Path name = getCleanName(baseDir.getFileSystem(), note, type);
 		if(StringUtil.isNotEmpty(type.getExtension()) && !name.getFileName().toString().endsWith(type.getExtension())) {
 			Path parent = name.getParent();
@@ -426,9 +422,8 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @param type the NoteType enum for the note
 	 * @throws IOException
-	 * @throws XMLException 
 	 */
-	private void exportNamedDataAndMetadata(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException, XMLException {
+	private void exportNamedDataAndMetadata(NNote note, NDXLExporter exporter, Path baseDir, NoteType type) throws IOException {
 		exportNamedData(note, exporter, baseDir, type);
 		
 		Path name = getCleanName(baseDir.getFileSystem(), note, type);
@@ -479,10 +474,9 @@ public class ODPExporter {
 	 * @param baseDir the base directory for export operations
 	 * @param path the relative file path to export to within the base dir
 	 * @param type the NoteType enum for the note
-	 * @throws IOException
-	 * @throws XMLException 
+	 * @throws IOException 
 	 */
-	private void exportFileData(NNote note, NDXLExporter exporter, Path baseDir, Path path, NoteType type) throws IOException, XMLException {
+	private void exportFileData(NNote note, NDXLExporter exporter, Path baseDir, Path path, NoteType type) throws IOException {
 		Path fullPath = baseDir.resolve(path.toString());
 		Files.createDirectories(fullPath.getParent());
 		
@@ -564,7 +558,7 @@ public class ODPExporter {
 							Element pluginElement = pluginDom.getDocumentElement();
 							pluginElement.setAttribute("id", this.projectName); //$NON-NLS-1$
 							
-							DOMUtil.serialize(os, pluginDom, Format.defaultFormat);
+							DOMUtil.serialize(os, pluginDom);
 						}
 					}
 				} else {
@@ -635,24 +629,23 @@ public class ODPExporter {
 	 * 
 	 * @param baseDir the base directory for export operations
 	 * @throws IOException
-	 * @throws XMLException 
 	 */
-	private void generateEclipseProjectFile(Path baseDir) throws IOException, XMLException {
+	private void generateEclipseProjectFile(Path baseDir) throws IOException {
 		Path manifest = baseDir.resolve(".project"); //$NON-NLS-1$
 		if(!Files.isRegularFile(manifest)) {
 			Document xmlDoc = DOMUtil.createDocument();
 			Element projectDescription = DOMUtil.createElement(xmlDoc, "projectDescription"); //$NON-NLS-1$
 			{
-				Element name = DOMUtil.createElement(xmlDoc, projectDescription, "name"); //$NON-NLS-1$
+				Element name = DOMUtil.createElement(projectDescription, "name"); //$NON-NLS-1$
 				String path = database.getFilePath().replace('\\', '/');
 				name.setTextContent(path.substring(path.lastIndexOf('/')+1).replaceAll("\\W", "_")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			DOMUtil.createElement(xmlDoc, projectDescription, "comment"); //$NON-NLS-1$
-			DOMUtil.createElement(xmlDoc, projectDescription, "projects"); //$NON-NLS-1$
-			DOMUtil.createElement(xmlDoc, projectDescription, "buildSpec"); //$NON-NLS-1$
-			DOMUtil.createElement(xmlDoc, projectDescription, "natures"); //$NON-NLS-1$
+			DOMUtil.createElement(projectDescription, "comment"); //$NON-NLS-1$
+			DOMUtil.createElement(projectDescription, "projects"); //$NON-NLS-1$
+			DOMUtil.createElement(projectDescription, "buildSpec"); //$NON-NLS-1$
+			DOMUtil.createElement(projectDescription, "natures"); //$NON-NLS-1$
 			try(OutputStream os = Files.newOutputStream(manifest, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-				DOMUtil.serialize(os, xmlDoc, Format.defaultFormat);
+				DOMUtil.serialize(os, xmlDoc);
 			}
 		}
 	}
@@ -663,11 +656,10 @@ public class ODPExporter {
 	 *  
 	 * @param baseDir the base directory for export operations
 	 * @throws IOException if there is a problem creating directories
-	 * @throws XMLException if there is a problem parsing the project configuration
 	 * @throws FileNotFoundException if there is a problem creating directories
 	 * @since 2.5.0
 	 */
-	private void createClasspathDirectories(Path baseDir) throws FileNotFoundException, XMLException, IOException {
+	private void createClasspathDirectories(Path baseDir) throws FileNotFoundException, IOException {
 		OnDiskProject odp = new OnDiskProject(baseDir);
 		for(Path path : odp.getResourcePaths()) {
 			Files.createDirectories(path);

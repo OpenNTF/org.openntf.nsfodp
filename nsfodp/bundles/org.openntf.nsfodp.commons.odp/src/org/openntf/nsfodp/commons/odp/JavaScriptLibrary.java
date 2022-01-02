@@ -24,8 +24,6 @@ import org.openntf.nsfodp.commons.h.Ods;
 import org.openntf.nsfodp.commons.odp.util.DXLNativeUtil;
 import org.w3c.dom.Document;
 
-import com.ibm.commons.xml.XMLException;
-
 public class JavaScriptLibrary extends AbstractSourceDesignElement {
 
 	public JavaScriptLibrary(Path dataFile) {
@@ -48,7 +46,7 @@ public class JavaScriptLibrary extends AbstractSourceDesignElement {
 	}
 	
 	@Override
-	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
+	protected Document attachFileData(Document dxlDoc) throws IOException {
 		byte[] data = getCompositeData();
 		String itemName = getFileDataItem();
 		

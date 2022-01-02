@@ -37,12 +37,10 @@ import java.util.stream.Stream;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
-import com.ibm.commons.xml.XResult;
+import org.w3c.dom.Node;
 
 /**
  * Represents an On-Disk Project version of an NSF.
@@ -138,7 +136,7 @@ public class OnDiskProject {
 	 * @throws IOException 
 	 * @throws XMLException 
 	 */
-	public Collection<Path> getJars() throws IOException, XMLException {
+	public Collection<Path> getJars() throws IOException {
 		List<Path> result = new ArrayList<>();
 		
 		Path jars = baseDir.resolve("Code").resolve("Jars"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -198,10 +196,9 @@ public class OnDiskProject {
 	 * 
 	 * @return a {@link List} of {@link Path}s
 	 * @throws IOException if there is a problem reading the filesystem
-	 * @throws XMLException if there is a problem parsing the class path configuration
 	 * @throws FileNotFoundException if one of the configured class paths doesn't exist
 	 */
-	public List<Path> getResourcePaths() throws FileNotFoundException, XMLException, IOException {
+	public List<Path> getResourcePaths() throws FileNotFoundException, IOException {
 		List<Path> result = new ArrayList<>(findSourceFolders());
 		Path files = getBaseDirectory().resolve("Resources").resolve("Files"); //$NON-NLS-1$ //$NON-NLS-2$
 		if(Files.exists(files) && Files.isDirectory(files)) {
@@ -210,10 +207,10 @@ public class OnDiskProject {
 		return result;
 	}
 	
-	public List<String> getRequiredBundles() throws XMLException {
+	public List<String> getRequiredBundles() {
 		// TODO adapt to FP10 MANIFEST.MF style?
 		Document pluginXml = ODPUtil.readXml(getPluginFile());
-		return Arrays.stream(DOMUtil.evaluateXPath(pluginXml, "/plugin/requires/import").getNodes()) //$NON-NLS-1$
+		return DOMUtil.nodes(pluginXml, "/plugin/requires/import").stream() //$NON-NLS-1$
 			.map(Element.class::cast)
 			.map(el -> el.getAttribute("plugin")) //$NON-NLS-1$
 			.collect(Collectors.toList());
@@ -224,10 +221,9 @@ public class OnDiskProject {
 	 * 
 	 * @return a {@link Map} of {@link Path}s to {@link List}s of {@code Path}s
 	 * @throws IOException if there is a problem reading the filesystem
-	 * @throws XMLException if there is a problem parsing the class path configuration
 	 * @throws FileNotFoundException if one of the configured class paths doesn't exist
 	 */
-	public Map<Path, List<JavaSource>> getJavaSourceFiles() throws FileNotFoundException, XMLException, IOException {
+	public Map<Path, List<JavaSource>> getJavaSourceFiles() throws FileNotFoundException, IOException {
 		return findSourceFolders().stream()
 				.collect(Collectors.toMap(
 					Function.identity(),
@@ -323,9 +319,8 @@ public class OnDiskProject {
 	 * 
 	 * @return whether the ODP has any XPages elements
 	 * @throws IOException 
-	 * @throws XMLException 
 	 */
-	public boolean hasXPagesElements() throws IOException, XMLException {
+	public boolean hasXPagesElements() throws IOException {
 		Path xpages = baseDir.resolve("XPages"); //$NON-NLS-1$
 		if(NSFODPUtil.isNonEmptyDirectory(xpages)) {
 			return true;
@@ -348,7 +343,7 @@ public class OnDiskProject {
 	// * Internal utility methods
 	// *******************************************************************************
 	
-	private List<Path> findSourceFolders() throws FileNotFoundException, IOException, XMLException {
+	private List<Path> findSourceFolders() throws FileNotFoundException, IOException {
 		Path classpath = getClasspathFile();
 		if(!Files.exists(classpath)) {
 			return Collections.emptyList();
@@ -358,8 +353,8 @@ public class OnDiskProject {
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
 			domDoc = DOMUtil.createDocument(r);
 		}
-		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=src]"); //$NON-NLS-1$
-		List<String> paths = Arrays.stream(xresult.getNodes())
+		List<Node> xresult = DOMUtil.nodes(domDoc, "/classpath/classpathentry[kind=src]"); //$NON-NLS-1$
+		List<String> paths = xresult.stream()
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.filter(path -> !"Local".equals(path)) //$NON-NLS-1$
@@ -371,7 +366,7 @@ public class OnDiskProject {
 			.filter(Files::isDirectory)
 			.collect(Collectors.toList());
 	}
-	private List<Path> findManualJars() throws IOException, XMLException {
+	private List<Path> findManualJars() throws IOException {
 		Path classpath = getClasspathFile();
 		if(!Files.exists(classpath)) {
 			return Collections.emptyList();
@@ -380,8 +375,8 @@ public class OnDiskProject {
 		try(Reader r = Files.newBufferedReader(classpath, StandardCharsets.UTF_8)) {
 			domDoc = DOMUtil.createDocument(r);
 		}
-		XResult xresult = DOMUtil.evaluateXPath(domDoc, "/classpath/classpathentry[kind=lib]"); //$NON-NLS-1$
-		return Arrays.stream(xresult.getNodes())
+		List<Node> xresult = DOMUtil.nodes(domDoc, "/classpath/classpathentry[kind=lib]"); //$NON-NLS-1$
+		return xresult.stream()
 			.map(node -> Element.class.cast(node))
 			.map(el -> el.getAttribute("path")) //$NON-NLS-1$
 			.map(path -> getBaseDirectory().resolve(path))

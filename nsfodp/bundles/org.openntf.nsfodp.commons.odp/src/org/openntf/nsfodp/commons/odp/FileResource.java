@@ -22,12 +22,11 @@ import java.text.MessageFormat;
 import java.util.function.Function;
 
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.XMLException;
 
 /**
  * Represents a "file resource"-type element in the ODP, which may be a file resource,
@@ -70,7 +69,7 @@ public class FileResource extends AbstractSplitDesignElement {
 	}
 	
 	@Override
-	public Document getDxl() throws XMLException, IOException {
+	public Document getDxl() throws IOException {
 		if(Files.isRegularFile(getDxlFile())) {
 			return super.getDxl();
 		} else {

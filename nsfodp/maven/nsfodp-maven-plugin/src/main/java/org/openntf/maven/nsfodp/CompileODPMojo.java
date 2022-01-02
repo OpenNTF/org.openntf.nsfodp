@@ -80,14 +80,13 @@ import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.xml.DOMUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.Format;
 
 /**
  * Goal which compiles an on-disk project.
@@ -304,8 +303,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							}
 						}
 						
-						for(Object nodeObj : DOMUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
-							((Node)nodeObj).getParentNode().removeChild((Node)nodeObj);
+						for(Node nodeObj : DOMUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+							nodeObj.getParentNode().removeChild(nodeObj);
 						}
 						
 						JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
@@ -315,7 +314,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Element aclElement = (Element)props.getDocumentElement().getLastChild();
 						
 						// Make sure that this appears either immediately after a databaseinfo element or as the first child
-						Element databaseinfo = (Element)DOMUtil.node(props.getDocumentElement(), "/database/databaseinfo"); //$NON-NLS-1$
+						Element databaseinfo = (Element)DOMUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
 						if(databaseinfo != null) {
 							DOMUtil.insertAfter(props.getDocumentElement(), aclElement, databaseinfo);
 						} else {
@@ -323,7 +322,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						}
 						
 						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
-							DOMUtil.serialize(w, props, Format.defaultFormat);
+							DOMUtil.serialize(w, props);
 						}
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
