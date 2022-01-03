@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2021 Jesse Gallagher
+ * Copyright © 2018-2022 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.openntf.nsfodp.commons.h.Ods;
 import org.openntf.nsfodp.commons.odp.util.DXLNativeUtil;
 import org.w3c.dom.Document;
 
-import com.ibm.commons.xml.XMLException;
-
 public class JavaScriptLibrary extends AbstractSourceDesignElement {
 
 	public JavaScriptLibrary(Path dataFile) {
@@ -48,7 +46,7 @@ public class JavaScriptLibrary extends AbstractSourceDesignElement {
 	}
 	
 	@Override
-	protected Document attachFileData(Document dxlDoc) throws IOException, XMLException {
+	protected Document attachFileData(Document dxlDoc) throws IOException {
 		byte[] data = getCompositeData();
 		String itemName = getFileDataItem();
 		

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2021 Jesse Gallagher
+ * Copyright © 2018-2022 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,10 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.openntf.nsfodp.commons.io.SwiperOutputStream;
-
-import com.ibm.commons.xml.DOMUtil;
-import com.ibm.commons.xml.Format;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 
 /**
- * This subclass of {@link SwiperOutputStream} serializes via IBM Commons {@link DOMUtil} instead
+ * This subclass of {@link SwiperOutputStream} serializes via {@link DOMUtil} instead
  * of the JRE's default serializer.
  * 
  * <p>This provides for more-consistent indentation than the varying implementations than can be
@@ -51,7 +49,7 @@ public class CommonsSwiperOutputStream extends SwiperOutputStream {
 		DOMResult result = new DOMResult();
 		transformer.transform(new StreamSource(r), result);
 		try(Writer w = Files.newBufferedWriter(destination, StandardCharsets.UTF_8)) {
-			DOMUtil.serialize(w, result.getNode(), Format.defaultFormat);
+			NSFODPDomUtil.serialize(w, result.getNode(), null);
 		}
 	}
 }

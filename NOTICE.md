@@ -1,6 +1,6 @@
 NSF ODP Tooling
 
-(c) Copyright 2018-2021 Jesse Gallagher
+(c) Copyright 2018-2022 Jesse Gallagher
 
 This product includes software contributed to
 OpenNTF Alliance (http://www.OpenNTF.org/)
@@ -29,3 +29,5 @@ The project contains snippets derived from the following 3rd-party projects:
 - https://wiki.eclipse.org/FAQ_How_do_I_write_to_the_console_from_a_plug-in%3F, which is licensed under the Eclipse Public License 1.0
 
 - m2eclipse-tycho, which is available from https://github.com/tesla/m2eclipse-tycho and is licensed under the Eclipse Public License 1.0
+
+- IBM Commons, which is available from https://github.com/OpenNTF/SocialSDK and is licensed under Apache 2.0

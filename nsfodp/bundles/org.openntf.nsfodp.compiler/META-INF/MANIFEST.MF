@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.compiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler
-Bundle-Version: 3.7.0.qualifier
+Bundle-Version: 3.7.1.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: com.ibm.xsp.extlib.javacompiler,
  javax.xml.bind;resolution:=optional,
@@ -14,18 +14,18 @@ Import-Package: com.ibm.xsp.extlib.javacompiler,
  org.openntf.nsfodp.commons.h;version="3.5.0",
  org.openntf.nsfodp.commons.odp;version="3.5.0",
  org.openntf.nsfodp.commons.odp.notesapi;version="3.5.0",
- org.openntf.nsfodp.commons.odp.util;version="3.5.0"
+ org.openntf.nsfodp.commons.odp.util;version="3.5.0",
+ org.openntf.nsfodp.commons.xml;version="3.7.1"
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,
  com.ibm.xsp.core,
  com.ibm.commons,
- com.ibm.commons.xml,
  com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.2",
  com.ibm.domino.napi;bundle-version="9.0.1"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.compiler.ODPCompilerActivator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.openntf.nsfodp.compiler;version="3.7.0";
+Export-Package: org.openntf.nsfodp.compiler;version="3.7.1";
   uses:="org.osgi.framework,
    org.eclipse.core.runtime,
    org.eclipse.osgi.util,
@@ -34,8 +34,8 @@ Export-Package: org.openntf.nsfodp.compiler;version="3.7.0";
    org.openntf.nsfodp.compiler.update,
    com.ibm.xsp.registry,
    com.ibm.xsp.registry.config",
- org.openntf.nsfodp.compiler.update;version="3.7.0",
- org.openntf.nsfodp.compiler.util;version="3.7.0";
+ org.openntf.nsfodp.compiler.update;version="3.7.1",
+ org.openntf.nsfodp.compiler.util;version="3.7.1";
   uses:="com.darwino.domino.napi.wrap,
    com.ibm.xsp.library,
    com.ibm.xsp.registry.config"
