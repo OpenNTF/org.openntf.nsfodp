@@ -221,7 +221,9 @@ public enum DXLUtil {
 		int width = 0; // true value not actually stored
 		String mimeType;
 		// First, check the DXL file
-		mimeType = NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$MimeType']/*[name()='text']/text()").get().getTextContent(); //$NON-NLS-1$
+		mimeType = NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$MimeType']/*[name()='text']/text()") //$NON-NLS-1$
+				.map(Node::getTextContent)
+				.orElse(null);
 		// Failing that, go by the ImageNames item
 		if(StringUtil.isEmpty(mimeType)) {
 			String imageNames = StringUtil.toString(NSFODPDomUtil.node(dxlDoc, "/*[name()='note']/*[name()='item'][@name='$ImageNames']/*[name()='text']/text()").get().getTextContent()).toLowerCase(); //$NON-NLS-1$
