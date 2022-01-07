@@ -101,6 +101,10 @@ public class CompilerApplication implements IApplication {
 			if(StringUtil.isNotEmpty(odsRelease)) {
 				compiler.setOdsRelease(odsRelease);
 			}
+			String compileBasicLs = System.getenv(NSFODPConstants.PROP_COMPILEBASICLS);
+			if("true".equals(compileBasicLs)) { //$NON-NLS-1$
+				compiler.setCompileBasicElementLotusScript(true);
+			}
 			
 			if(updateSites != null && !updateSites.isEmpty()) {
 				updateSites.stream()

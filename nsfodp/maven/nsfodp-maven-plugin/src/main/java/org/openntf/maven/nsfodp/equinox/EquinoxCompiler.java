@@ -52,7 +52,8 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			boolean appendTimestampToTitle,
 			String templateName,
 			boolean setProductionXspOptions,
-			String odsRelease
+			String odsRelease,
+			boolean compileBasicElementLotusScript
 		) {
 		setClasspathJars(classpathJars);
 		
@@ -70,6 +71,7 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		}
 		props.put(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, Boolean.toString(setProductionXspOptions));
 		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
+		props.put(NSFODPConstants.PROP_COMPILEBASICLS, Boolean.toString(compileBasicElementLotusScript));
 		
 		Path notesIni = getNotesIni();
 		if(notesIni != null) {

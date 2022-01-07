@@ -198,6 +198,19 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Parameter(required=false)
 	private ConfigAcl acl;
 	
+	/**
+	 * Sets whether LotusScript in "basic" design elements (Forms, Views, etc.) should be compiled.
+	 * This is <code>false</code> by default.
+	 * 
+	 * <p>This step has proven optional in practice, and so it can be useful to disable this
+	 * behavior to reduce compilation times or to work around oddities in older LotusScript that
+	 * functions but fails during compilation.</p>
+	 * 
+	 * @since 3.8.0
+	 */
+	@Parameter(required=false, defaultValue = "false")
+	private boolean compileBasicElementLotusScript = false;
+	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
     protected MavenResourcesFiltering mavenResourcesFiltering;
 	
@@ -393,7 +406,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
@@ -473,6 +486,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			}
 			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
+			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			
 			HttpEntity responseEntity;
 			try(InputStream fileIs = Files.newInputStream(packageZip)) {
