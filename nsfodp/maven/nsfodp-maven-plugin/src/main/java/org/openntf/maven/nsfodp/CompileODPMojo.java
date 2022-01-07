@@ -208,7 +208,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * 
 	 * @since 3.8.0
 	 */
-	@Parameter(required=false, defaultValue = "true")
+	@Parameter(required=false, defaultValue = "false")
 	private boolean compileBasicElementLotusScript = false;
 	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
