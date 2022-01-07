@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.compiler.servlet;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler.servlet
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 3.8.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: javax.servlet;version="2.5.0",
  javax.servlet.http;version="2.5.0",

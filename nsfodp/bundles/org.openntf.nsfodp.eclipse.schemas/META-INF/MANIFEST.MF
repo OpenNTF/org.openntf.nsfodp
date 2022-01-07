@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.eclipse.schemas;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.schemas
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 3.8.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: plugin
