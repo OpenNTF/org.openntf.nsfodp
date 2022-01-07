@@ -115,6 +115,10 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	private String templateVersion;
 	private boolean setProductionXspOptions = false;
 	private String odsRelease;
+	/**
+	 * @since 3.8.0
+	 */
+	private boolean compileBasicElementLotusScript = false;
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -284,6 +288,33 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 */
 	public String getOdsRelease() {
 		return odsRelease;
+	}
+	
+	/**
+	 * Sets whether LotusScript in "basic" design elements (Forms, Views, etc.) should be compiled.
+	 * This is {@code false} by default.
+	 * 
+	 * <p>This step has proven optional in practice, and so it can be useful to disable this
+	 * behavior to reduce compilation times or to work around oddities in older LotusScript that
+	 * functions but fails during compilation.</p>
+	 * 
+	 * @param compileBasicElementLotusScript whether LotusScript in basic design elements should be
+	 *                                       explicitly compiled
+	 * @since 3.8.0
+	 */
+	public void setCompileBasicElementLotusScript(boolean compileBasicElementLotusScript) {
+		this.compileBasicElementLotusScript = compileBasicElementLotusScript;
+	}
+	
+	/**
+	 * Determines whether LotusScript in "basic" design elements (Forms, Views, etc.) should be compiled.
+	 * This is {@code false} by default.
+	 * 
+	 * @return whether LotusScript in basic design elements should be explicitly compiled
+	 * @since 3.8.0
+	 */
+	public boolean isCompileBasicElementLotusScript() {
+		return compileBasicElementLotusScript;
 	}
 	
 	/**
@@ -589,7 +620,9 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					}
 				});
 		}
-		compileLotusScript(database, noteIds, false);
+		if(isCompileBasicElementLotusScript()) {
+			compileLotusScript(database, noteIds, false);
+		}
 	}
 	
 	private void importFileResources(NDXLImporter importer, NDatabase database) throws Exception {

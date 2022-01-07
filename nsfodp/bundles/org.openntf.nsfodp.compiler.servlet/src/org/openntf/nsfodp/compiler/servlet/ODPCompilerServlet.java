@@ -198,6 +198,10 @@ public class ODPCompilerServlet extends HttpServlet {
 				if(StringUtil.isNotEmpty(odsRelease)) {
 					compiler.setOdsRelease(odsRelease);
 				}
+				String compileBasicLs = req.getHeader(NSFODPConstants.HEADER_COMPILE_BASICLS);
+				if("true".equals(compileBasicLs)) { //$NON-NLS-1$
+					compiler.setCompileBasicElementLotusScript(true);
+				}
 				
 				if(siteZips != null && !siteZips.isEmpty()) {
 					for(Path siteZip : siteZips) {
