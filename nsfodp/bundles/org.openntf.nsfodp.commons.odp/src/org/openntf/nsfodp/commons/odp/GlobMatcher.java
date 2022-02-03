@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.function.Function;
 
+import org.openntf.nsfodp.commons.NSFODPUtil;
+
 /**
  * Represents a pairing of a design-element-matching glob to a provider
  * that creates a new design element object for each matched path.
@@ -50,6 +52,11 @@ class GlobMatcher {
 	}
 	
 	public static PathMatcher glob(FileSystem fileSystem, String unixGlob) {
-		return fileSystem.getPathMatcher("glob:" + unixGlob.replace("/", fileSystem.getSeparator())); //$NON-NLS-1$ //$NON-NLS-2$
+		String sep = fileSystem.getSeparator();
+		if("\\".equals(sep) && NSFODPUtil.isOsWindows()) { //$NON-NLS-1$
+			// On Windows filesystems specifically, globs must use double-escaped slashes
+			sep = "\\\\"; //$NON-NLS-1$
+		}
+		return fileSystem.getPathMatcher("glob:" + unixGlob.replace("/", sep)); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

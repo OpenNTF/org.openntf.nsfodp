@@ -212,6 +212,15 @@ public enum NSFODPUtil {
 		String osName = AccessController.doPrivileged((PrivilegedAction<String>)() -> System.getProperty("os.name")); //$NON-NLS-1$
 		return osName.toLowerCase().startsWith("mac"); //$NON-NLS-1$
 	}
+	
+	/**
+	 * @return {@code true} if the current OS is Windows; {@code false} otherwise
+	 * @sincd 3.8.1
+	 */
+	public static boolean isOsWindows() {
+		String osName = AccessController.doPrivileged((PrivilegedAction<String>)() -> System.getProperty("os.name")); //$NON-NLS-1$
+		return osName.toLowerCase().startsWith("windows"); //$NON-NLS-1$
+	}
 
 	/**
 	 * Expands the provided ZIP file to a temporary directory and returns that directory path.
