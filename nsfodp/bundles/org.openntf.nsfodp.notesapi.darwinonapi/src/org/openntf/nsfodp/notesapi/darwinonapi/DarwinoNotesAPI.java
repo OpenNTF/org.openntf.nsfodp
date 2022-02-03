@@ -90,7 +90,7 @@ public class DarwinoNotesAPI implements NotesAPI {
 	public NDXLImporter createDXLImporter() {
 		try {
 			NSFDXLImporter importer = session.createDXLImporter();
-			importer.setDesignImportOption(DXLIMPORTOPTION.REPLACE_ELSE_CREATE);
+			importer.setDesignImportOption(DXLIMPORTOPTION.CREATE);
 			importer.setACLImportOption(DXLIMPORTOPTION.REPLACE_ELSE_IGNORE);
 			importer.setReplaceDBProperties(true);
 			importer.setReplicaRequiredForReplaceOrUpdate(false);
