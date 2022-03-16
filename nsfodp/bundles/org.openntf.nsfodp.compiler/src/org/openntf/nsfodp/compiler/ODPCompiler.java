@@ -398,6 +398,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					try(NDXLImporter importer = session.createDXLImporter()) {
 						
 						importDbProperties(importer, database);
+						importEarlyBasicElements(importer, database);
 						importLotusScriptLibraries(importer, database);
 						importBasicElements(importer, database);
 						importFileResources(importer, database);
@@ -596,6 +597,30 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		
 		String dxl = NSFODPDomUtil.getXmlString(dxlDoc, null);
 		importDxl(importer, dxl, database, "database.properties"); //$NON-NLS-1$
+	}
+	
+	private void importEarlyBasicElements(NDXLImporter importer, NDatabase database) throws Exception {
+		subTask(Messages.ODPCompiler_importingEarlyDesignElements);
+		List<Integer> noteIds = new ArrayList<>();
+		try(Stream<Path> dxlElements = odp.getDirectEarlyDXLElements()) {
+			dxlElements
+				.filter(p -> {
+					try {
+						return Files.size(p) > 0;
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.forEach(p -> {
+					try {
+						try(InputStream is = NSFODPUtil.newInputStream(p)) {
+							noteIds.addAll(importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p))));
+						}
+					} catch(Exception e) {
+						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
+					}
+				});
+		}
 	}
 	
 	private void importBasicElements(NDXLImporter importer, NDatabase database) throws Exception {

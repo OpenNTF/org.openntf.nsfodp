@@ -32,6 +32,7 @@ public class Messages extends NLS {
 	public static String ODPCompiler_errorConvertingXSP;
 	public static String ODPCompiler_importingCustomControls;
 	public static String ODPCompiler_importingDbProperties;
+	public static String ODPCompiler_importingEarlyDesignElements;
 	public static String ODPCompiler_importingDesignElements;
 	public static String ODPCompiler_importingFileResources;
 	public static String ODPCompiler_importingJava;
