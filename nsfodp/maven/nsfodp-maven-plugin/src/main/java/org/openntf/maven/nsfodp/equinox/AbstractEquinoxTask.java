@@ -17,19 +17,13 @@ package org.openntf.maven.nsfodp.equinox;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import org.apache.maven.artifact.Artifact;
@@ -57,8 +51,6 @@ public abstract class AbstractEquinoxTask {
 	private Collection<Path> classpathJars;
 	private Map<String, String> equinoxEnvironmentVars;
 	private List<Path> updateSites;
-	
-	private boolean successFlag;
 	
 	private String jvmArgs;
 
@@ -103,7 +95,6 @@ public abstract class AbstractEquinoxTask {
 	}
 	
 	protected void run(String applicationId) {
-		successFlag = false;
 		try {
 			Path equinox = getDependencyJar("org.eclipse.equinox.launcher"); //$NON-NLS-1$
 			if(log.isDebugEnabled()) {
@@ -203,31 +194,19 @@ public abstract class AbstractEquinoxTask {
 			
 			Collection<Path> addedJars = jvm.initNotesJars(notesProgram);
 			addedJars.forEach(runner::addClasspathJar);
-			Path logFile = runner.getLogFile();
 			
-			Process proc = runner.start(applicationId);
-			watchOutput(proc.getInputStream(), proc);
-			watchOutput(proc.getErrorStream(), proc);
-			proc.waitFor();
-			int exitValue = proc.exitValue();
-			switch(exitValue) {
-			case 0: // Success
-			case 137: // teminated by watchOutput
-				break;
-			case 1: // also likely terminated - check successFlag
-				if(successFlag) {
-					break;
-				} else {
-					throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
+			runner.start(applicationId,
+				line -> {
+					if(log.isInfoEnabled()) {
+						log.info(line);
+					}
+				},
+				error -> {
+					if(log.isErrorEnabled()) {
+						log.error(error);
+					}
 				}
-			case 13: // Equinox launch failure - look for log file
-				if(Files.isReadable(logFile)) {
-					Files.lines(logFile).forEach(log::error);
-				}
-				// Passthrough intentional
-			default:
-				throw new RuntimeException(Messages.getString("EquinoxMojo.processExitedWithNonZero", exitValue)); //$NON-NLS-1$
-			}
+			);
 		} catch (InterruptedException e) {
 			// No problem here
 		} catch(Throwable e) {
@@ -286,80 +265,4 @@ public abstract class AbstractEquinoxTask {
 	private void addNdextJars(EquinoxRunner runner) throws MojoExecutionException {
 		runner.addClasspathJar(getDependencyJar("guava")); //$NON-NLS-1$
 	}
-    
-    private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };
-    
-    /**
-     * Monitors the given {@link InputStream} and performs two actions:
-     * 
-     * <ul>
-     *   <li>Redirects all output to {@link System#out}</li>
-     *   <li>Looks for the character sequence "#end" and ends execution if found</li>
-     * </ul>
-     * 
-     * @param is the {@link InputStream} to monitor
-     * @param proc the {@link Process} to kill when "#end" is found
-     * @since 3.0.0
-     */
-    // TODO figure out why this is needed.
-    //   The trouble is that the Equinox process sometimes will remain running indefinitely,
-    //   even when execution of the IApplication completes successfully.
-    private void watchOutput(InputStream is, Process proc) {
-    	Executors.newSingleThreadExecutor().submit(() -> {
-    		char[] lastFour = new char[4];
-    		StringBuilder buffer = new StringBuilder();
-    		
-    		try {
-	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) { //$NON-NLS-1$
-	    			int ch;
-	    			while((ch = r.read()) != -1) {
-	    				if(ch == '\n' || ch == '\r') {
-	    					// Flush the buffer
-	    					if(buffer.length() > 0) {
-		    					if(log.isInfoEnabled()) {
-		    						log.info(buffer.toString());
-		    					}
-		    					buffer.setLength(0);
-	    					}
-	    				} else {
-	    					// Otherwise, enqeue
-	    					buffer.append((char)ch);
-	    				}
-	    				
-	    				addChar(lastFour, (char)ch);
-	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
-	    					if(proc != null) {
-	    						proc.destroyForcibly();
-	    					}
-	    					successFlag = true;
-	    					return;
-	    				}
-	    			}
-	    		}
-    		} catch(Exception e) {
-    			e.printStackTrace();
-    		} finally {
-    	    	if(buffer.length() > 0) {
-    	    		if(log.isInfoEnabled()) {
-    	    			log.info(buffer.toString());
-    	    		}
-    	    	}
-    		}
-    	});
-    }
-    
-    /**
-     * Shifts all characters in the provided away one slot down and assigns
-     * the value of {@code ch} to the last slot.
-     * 
-     * @param lastFour the array to modify
-     * @param ch the character to assign to the end
-     * @since 3.0.0
-     */
-    private static void addChar(char[] lastFour, char ch) {
-    	for(int i = 0; i < lastFour.length-1; i++) {
-    		lastFour[i] = lastFour[i+1];
-    	}
-    	lastFour[lastFour.length-1] = ch;
-    }
 }

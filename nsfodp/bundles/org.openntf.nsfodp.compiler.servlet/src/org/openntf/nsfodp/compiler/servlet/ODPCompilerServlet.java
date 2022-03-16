@@ -16,16 +16,18 @@
 package org.openntf.nsfodp.compiler.servlet;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -45,18 +48,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.openntf.nsfodp.commons.LineDelimitedJsonProgressMonitor;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.odp.OnDiskProject;
+import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
-import org.openntf.nsfodp.compiler.ODPCompiler;
-import org.openntf.nsfodp.compiler.ODPCompilerActivator;
-import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
-import org.openntf.nsfodp.compiler.update.UpdateSite;
+import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
+import org.openntf.nsfodp.compiler.servlet.jvm.ServerJvmEnvironment;
+import org.osgi.framework.Bundle;
 
-import com.ibm.commons.util.StringUtil;
+import com.ibm.domino.napi.c.Os;
 
 import lotus.domino.NotesThread;
 
@@ -165,63 +169,127 @@ public class ODPCompilerServlet extends HttpServlet {
 			}
 			
 			IProgressMonitor mon = new LineDelimitedJsonProgressMonitor(os);
+			EquinoxRunner runner = new EquinoxRunner();
+			
+			Path odpDir = NSFODPUtil.expandZip(odpZip);
+			cleanup.add(odpDir);
 
-			Path nsf;
-			try(FileSystem fs = NSFODPUtil.openZipPath(odpZip)) {
-				Path odpFile = fs.getPath("/"); //$NON-NLS-1$
-				
-				OnDiskProject odp = new OnDiskProject(odpFile);
-				ODPCompiler compiler = new ODPCompiler(ODPCompilerActivator.instance.getBundle().getBundleContext(), odp, mon);
-				
-				// See if the client requested a specific compiler level
-				String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
-				if(StringUtil.isNotEmpty(compilerLevel)) {
-					compiler.setCompilerLevel(compilerLevel);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_ODPDIRECTORY, odpDir.toString());
+			Path nsf = Files.createTempFile(NSFODPUtil.getTempDirectory(), getClass().getName(), ".nsf"); //$NON-NLS-1$
+			Files.deleteIfExists(nsf);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_OUTPUTFILE, nsf.toString());
+			cleanup.add(nsf);
+
+			String notesDir = exec.submit(() -> {
+				return Os.OSGetExecutableDirectory();
+			}).get();
+			Path notesProgram = Paths.get(notesDir);
+			JvmEnvironment jvm = new ServerJvmEnvironment();
+			runner.setJvmEnvironment(jvm);
+			runner.setNotesProgram(notesProgram);
+			
+			jvm.getJvmProperties(notesProgram).forEach(runner::addJvmLaunchProperty);
+			
+			classPathJars.forEach(runner::addClasspathJar);
+			
+			Path framework = Files.createTempDirectory(NSFODPUtil.getTempDirectory(), getClass().getName());
+			runner.setWorkingDirectory(framework);
+			System.out.println("working dir is " + framework);
+			// TODO cleanup
+			
+			Stream.of(
+				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.notesapi.darwinonapi", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.commons.dxl", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.commons.odp", -1), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.compiler", 2), //$NON-NLS-1$
+				getDependencyRef("org.openntf.nsfodp.compiler.equinox", -1), //$NON-NLS-1$
+				getDependencyRef("com.ibm.xsp.extlibx.bazaar", -1), //$NON-NLS-1$
+				getDependencyRef("com.ibm.xsp.extlibx.bazaar.interpreter", -1) //$NON-NLS-1$
+			).forEach(runner::addPlatformEntry);
+			
+			// Read in the rcp OSGi directory
+			{
+				Path rcp = notesProgram.resolve("osgi").resolve("rcp").resolve("eclipse"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if(!Files.exists(rcp)) {
+					throw new IllegalStateException(MessageFormat.format("rcp directory not present at expected location: {0}", rcp)); //$NON-NLS-1$
 				}
-				String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
-				if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-					compiler.setAppendTimestampToTitle(true);
+				Path notesPlugins = rcp.resolve("plugins"); //$NON-NLS-1$
+				if(!Files.exists(notesPlugins)) {
+					throw new IllegalStateException(MessageFormat.format("rcp plugins directory not present at expected location: {0}", rcp)); //$NON-NLS-1$
 				}
-				String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
-				if(StringUtil.isNotEmpty(templateName)) {
-					compiler.setTemplateName(templateName);
-					String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
-					if(StringUtil.isNotEmpty(templateVersion)) {
-						compiler.setTemplateVersion(templateVersion);
-					}
+				String[] osgiBundle = new String[1];
+				try(Stream<Path> pluginsStream = Files.list(notesPlugins)) {
+					pluginsStream.filter(ODPCompilerServlet::isBundle)
+					.filter(p -> {
+						if(p.getFileName().toString().startsWith("org.eclipse.osgi_")) { //$NON-NLS-1$
+							osgiBundle[0] = p.toUri().toString();
+							return false;
+						}
+						return true;
+					})
+					.map(p -> getPathRef(p, -1))
+					.forEach(runner::addPlatformEntry);
 				}
-				String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
-				if("true".equals(setXspOptions)) { //$NON-NLS-1$
-					compiler.setSetProductionXspOptions(true);
+				if(osgiBundle[0] == null) {
+					throw new IllegalStateException("Unable to locate org.eclipse.osgi bundle");
 				}
-				String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
-				if(StringUtil.isNotEmpty(odsRelease)) {
-					compiler.setOdsRelease(odsRelease);
-				}
-				String compileBasicLs = req.getHeader(NSFODPConstants.HEADER_COMPILE_BASICLS);
-				if("true".equals(compileBasicLs)) { //$NON-NLS-1$
-					compiler.setCompileBasicElementLotusScript(true);
-				}
-				
-				if(siteZips != null && !siteZips.isEmpty()) {
-					for(Path siteZip : siteZips) {
-						Path siteFile = NSFODPUtil.expandZip(siteZip);
-						cleanup.add(siteFile);
-						UpdateSite updateSite = new FilesystemUpdateSite(siteFile);
-						compiler.addUpdateSite(updateSite);
-					}
-				}
-				classPathJars.forEach(compiler::addClassPathEntry);
-				
-				nsf = this.exec.submit(() -> {
-					Path result = compiler.compile();
-					mon.done();
-					return result;
-				}).get();
+				runner.setOsgiBundle(osgiBundle[0]);
 			}
 			
+			// Do similarly for shared
+			{
+				Path shared = notesProgram.resolve("osgi").resolve("shared").resolve("eclipse"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if(!Files.exists(shared)) {
+					throw new IllegalStateException(MessageFormat.format("shared directory not present at expected location: {0}", shared)); //$NON-NLS-1$
+				}
+				Path sharedPlugins = shared.resolve("plugins"); //$NON-NLS-1$
+				if(!Files.exists(sharedPlugins)) {
+					throw new IllegalStateException(MessageFormat.format("shared plugins directory not present at expected location: {0}", sharedPlugins)); //$NON-NLS-1$
+				}
+				try(Stream<Path> pluginsStream = Files.list(sharedPlugins)) {
+					pluginsStream.filter(ODPCompilerServlet::isBundle)
+					.map(p -> getPathRef(p, -1))
+					.forEach(runner::addPlatformEntry);
+				}
+			}
+			
+			if(siteZips != null && !siteZips.isEmpty()) {
+				for(Path siteZip : siteZips) {
+					Path siteFile = NSFODPUtil.expandZip(siteZip);
+					cleanup.add(siteFile);
+					Path sitePlugins = siteFile.resolve("plugins"); //$NON-NLS-1$
+					if(Files.isDirectory(sitePlugins)) {
+						try(Stream<Path> pluginsStream = Files.list(sitePlugins)) {
+							pluginsStream.filter(p -> p.getFileName().toString().endsWith(".jar")) //$NON-NLS-1$
+								.map(p -> getPathRef(p, -1))
+								.forEach(runner::addPlatformEntry);
+						}
+					}
+				}
+			}
+			
+			String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_COMPILERLEVEL, compilerLevel);
+			String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE, appendTimestamp);
+			String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_TEMPLATENAME, templateName);
+			String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_TEMPLATEVERSION, templateVersion);
+			String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, setXspOptions);
+			String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_ODSRELEASE, odsRelease);
+			String compileBasicLs = req.getHeader(NSFODPConstants.HEADER_COMPILE_BASICLS);
+			runner.addEnvironmentVar(NSFODPConstants.PROP_COMPILEBASICLS, compileBasicLs);
+			
+			runner.start("org.openntf.nsfodp.compiler.equinox.CompilerApplication", //$NON-NLS-1$
+				line -> mon.subTask(line),
+				err -> mon.subTask(err)
+			);
+			
 			// Now stream the NSF
-			cleanup.add(nsf);
 			try(OutputStream gzos = new GZIPOutputStream(os)) {
 				Files.copy(nsf, gzos);
 			}
@@ -245,5 +313,31 @@ public class ODPCompilerServlet extends HttpServlet {
 		} finally {
 			NSFODPUtil.deltree(cleanup);
 		}
+	}
+	
+	private static String getDependencyRef(String bundleName, int startLevel) throws IOException {
+		Bundle b = Platform.getBundle(bundleName);
+		if(b == null) {
+			throw new IllegalStateException("Unable to locate bundle: " + bundleName);
+		}
+		File bundleFile = FileLocator.getBundleFile(b);
+		if(bundleFile == null || !bundleFile.exists()) {
+			throw new IllegalStateException("Unable to locate path for bundle: " + b);
+		}
+		
+		return getPathRef(bundleFile.toPath(), startLevel);
+	}
+	
+	private static String getPathRef(Path path, int startLevel) {
+		if(startLevel < 1) {
+			return "reference:" + path.toUri(); //$NON-NLS-1$
+		} else {
+			return "reference:" + path.toUri() + "@" + startLevel + ":start"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+	}
+	
+	private static boolean isBundle(Path p) {
+		// TODO verify directory bundles further
+		return p.getFileName().toString().endsWith(".jar") || Files.isDirectory(p); //$NON-NLS-1$
 	}
 }

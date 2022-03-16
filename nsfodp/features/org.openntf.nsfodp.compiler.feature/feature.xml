@@ -38,42 +38,13 @@
       <import feature="com.ibm.xsp.extlibx.bazaar.feature"/>
    </requires>
 
-   <plugin
-         id="org.openntf.nsfodp.commons"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.nsfodp.commons.dxl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-         
-   <plugin
-         id="org.openntf.nsfodp.commons.odp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.nsfodp.notesapi.darwinonapi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="org.openntf.nsfodp.compiler"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.openntf.nsfodp.compiler.servlet"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+   <plugin id="org.openntf.nsfodp.commons" version="0.0.0"/>
+   <plugin id="org.openntf.nsfodp.commons.dxl" version="0.0.0"/>
+   <plugin id="org.openntf.nsfodp.commons.odp" version="0.0.0"/>
+   <plugin id="org.openntf.nsfodp.notesapi.darwinonapi" version="0.0.0" fragment="true"/>
+   
+   <plugin id="org.openntf.nsfodp.compiler" version="0.0.0"/>
+   <plugin id="org.openntf.nsfodp.compiler.equinox" version="0.0.0" fragment="true"/>
+   <plugin id="org.openntf.nsfodp.compiler.servlet" version="0.0.0" fragment="true"/>
 
 </feature>

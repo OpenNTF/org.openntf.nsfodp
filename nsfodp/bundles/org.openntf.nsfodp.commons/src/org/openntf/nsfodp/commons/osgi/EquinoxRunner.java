@@ -18,15 +18,19 @@ package org.openntf.nsfodp.commons.osgi;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -42,6 +48,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openntf.nsfodp.commons.Messages;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 
@@ -56,6 +63,8 @@ public class EquinoxRunner {
 	private String osgiBundle;
 	private Path logFile;
 	private String jvmArgs;
+	
+	private boolean successFlag;
 	
 	public JvmEnvironment getJvmEnvironment() {
 		return this.jvm;
@@ -248,7 +257,7 @@ public class EquinoxRunner {
 		return env;
 	}
 	
-	public Process start(String applicationId) throws IOException {
+	public void start(String applicationId, Consumer<String> logConsumer, Consumer<String> errorConsumer) throws IOException, InterruptedException {
 		Objects.requireNonNull(notesProgram, "notesProgram must be set");
 		Objects.requireNonNull(workingDirectory, "workingDirectory must be set");
 		Objects.requireNonNull(osgiBundle, "core OSGi bundle must be set");
@@ -264,7 +273,35 @@ public class EquinoxRunner {
 		Map<String, String> env = builder.environment();
 		env.putAll(getExecEnvironmentVariables());
 		
-		return builder.start();
+		Process proc = builder.start();
+		watchOutput(proc.getInputStream(), proc, logConsumer);
+		watchOutput(proc.getErrorStream(), proc, logConsumer);
+		
+		Path logFile = getLogFile();
+		proc.waitFor();
+		int exitValue = proc.exitValue();
+		switch(exitValue) {
+		case 0: // Success
+		case 137: // terminated by watchOutput
+			break;
+		case 1: // also likely terminated - check successFlag
+			if(isSuccess()) {
+				break;
+			} else {
+				throw new RuntimeException(MessageFormat.format(Messages.EquinoxRunner_processExitedWithNonZero, exitValue));
+			}
+		case 13: // Equinox launch failure - look for log file
+			if(Files.isReadable(logFile)) {
+				Files.lines(logFile).forEach(errorConsumer::accept);
+			}
+			// Passthrough intentional
+		default:
+			throw new RuntimeException(MessageFormat.format(Messages.EquinoxRunner_processExitedWithNonZero, exitValue));
+		}
+	}
+	
+	public boolean isSuccess() {
+		return successFlag;
 	}
 	
 	// *******************************************************************************
@@ -430,5 +467,78 @@ public class EquinoxRunner {
     	} catch(IOException e) {
     		throw new RuntimeException(e);
     	}
+    }
+    
+    private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };
+    
+    /**
+     * Monitors the given {@link InputStream} and performs two actions:
+     * 
+     * <ul>
+     *   <li>Redirects all output to {@link System#out}</li>
+     *   <li>Looks for the character sequence "#end" and ends execution if found</li>
+     * </ul>
+     * 
+     * @param is the {@link InputStream} to monitor
+     * @param proc the {@link Process} to kill when "#end" is found
+     * @param c a {@link Consumer} for each line as it is output
+     * @since 3.0.0
+     */
+    // TODO figure out why this is needed.
+    //   The trouble is that the Equinox process sometimes will remain running indefinitely,
+    //   even when execution of the IApplication completes successfully.
+    private void watchOutput(InputStream is, Process proc, Consumer<String> c) {
+    	Executors.newSingleThreadExecutor().submit(() -> {
+    		char[] lastFour = new char[4];
+    		StringBuilder buffer = new StringBuilder();
+    		
+    		try {
+	    		try(Reader r = new InputStreamReader(is, Charset.forName("UTF-8"))) { //$NON-NLS-1$
+	    			int ch;
+	    			while((ch = r.read()) != -1) {
+	    				if(ch == '\n' || ch == '\r') {
+	    					// Flush the buffer
+	    					if(buffer.length() > 0) {
+		    					c.accept(buffer.toString());
+		    					buffer.setLength(0);
+	    					}
+	    				} else {
+	    					// Otherwise, enqeue
+	    					buffer.append((char)ch);
+	    				}
+	    				
+	    				addChar(lastFour, (char)ch);
+	    				if(Arrays.equals(lastFour, STOP_SEQUENCE)) {
+	    					if(proc != null) {
+	    						proc.destroyForcibly();
+	    					}
+	    					successFlag = true;
+	    					return;
+	    				}
+	    			}
+	    		}
+    		} catch(Exception e) {
+    			e.printStackTrace();
+    		} finally {
+    	    	if(buffer.length() > 0) {
+    	    		c.accept(buffer.toString());
+    	    	}
+    		}
+    	});
+    }
+    
+    /**
+     * Shifts all characters in the provided away one slot down and assigns
+     * the value of {@code ch} to the last slot.
+     * 
+     * @param lastFour the array to modify
+     * @param ch the character to assign to the end
+     * @since 3.0.0
+     */
+    private static void addChar(char[] lastFour, char ch) {
+    	for(int i = 0; i < lastFour.length-1; i++) {
+    		lastFour[i] = lastFour[i+1];
+    	}
+    	lastFour[lastFour.length-1] = ch;
     }
 }
