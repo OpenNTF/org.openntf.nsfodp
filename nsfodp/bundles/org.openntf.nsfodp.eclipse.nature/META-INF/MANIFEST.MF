@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.openntf.nsfodp.eclipse.nature;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.nature
-Bundle-Version: 3.8.1.qualifier
+Bundle-Version: 3.8.2.qualifier
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ui,
