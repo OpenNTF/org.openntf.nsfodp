@@ -56,7 +56,6 @@ public class OnDiskProject {
 		"Code/Agents/*.ija", //$NON-NLS-1$
 		"Code/Agents/*.lsa", //$NON-NLS-1$
 		"Code/Agents/*.aa", //$NON-NLS-1$
-		"Code/ScriptLibraries/*.javalib", //$NON-NLS-1$
 		"Folders/*", //$NON-NLS-1$
 		"Forms/*", //$NON-NLS-1$
 		"Framesets/*", //$NON-NLS-1$
@@ -72,6 +71,12 @@ public class OnDiskProject {
 		"Views/*" //$NON-NLS-1$
 	).collect(Collectors.toList());
 	private final List<PathMatcher> directDxlFiles;
+	
+	public static final List<String> DIRECT_EARLY_DXL_FILE_GLOBS = Stream.of(
+			"Code/ScriptLibraries/*.javalib" //$NON-NLS-1$
+		).collect(Collectors.toList());
+	private final List<PathMatcher> directEarlyDxlFiles;
+	
 	
 	public static final List<String> IGNORED_FILE_GLOBS = Stream.of(
 		"**/.DS_Store", //$NON-NLS-1$
@@ -110,6 +115,9 @@ public class OnDiskProject {
 		this.directDxlFiles = DIRECT_DXL_FILE_GLOBS.stream()
 			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
 			.collect(Collectors.toList());
+		this.directEarlyDxlFiles = DIRECT_EARLY_DXL_FILE_GLOBS.stream()
+				.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
+				.collect(Collectors.toList());
 		this.ignoredFileGlobs = IGNORED_FILE_GLOBS.stream()
 			.map(glob -> GlobMatcher.glob(baseDir.getFileSystem(), glob))
 			.collect(Collectors.toList());
@@ -268,6 +276,20 @@ public class OnDiskProject {
 	 */
 	public Stream<Path> getDirectDXLElements() {
 		return directDxlFiles.stream()
+			.map(glob -> {
+				try {
+					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> {
+						return glob.matches(baseDir.relativize(path)) && attr.size() > 0;
+					});
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.flatMap(Function.identity());
+	}
+	
+	public Stream<Path> getDirectEarlyDXLElements() {
+		return directEarlyDxlFiles.stream()
 			.map(glob -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE, (path, attr) -> {
