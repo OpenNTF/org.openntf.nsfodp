@@ -212,15 +212,15 @@ public class EquinoxRunner {
 			Path resources = notesProgram.getParent().resolve("Resources"); //$NON-NLS-1$
 			if (Files.isDirectory(resources)) {
 				Files.list(resources).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".lss")) //$NON-NLS-1$
-						.forEach(lss -> {
-							Path dest = workingDirectory.resolve(lss.getFileName());
-							try {
-								Files.copy(lss, dest, StandardCopyOption.REPLACE_EXISTING);
-							} catch (IOException e) {
-								e.printStackTrace();
-								throw new UncheckedIOException(e);
-							}
-						});
+					.forEach(lss -> {
+						Path dest = workingDirectory.resolve(lss.getFileName());
+						try {
+							Files.copy(lss, dest, StandardCopyOption.REPLACE_EXISTING);
+						} catch (IOException e) {
+							e.printStackTrace();
+							throw new UncheckedIOException(e);
+						}
+					});
 			}
 		}
 		
