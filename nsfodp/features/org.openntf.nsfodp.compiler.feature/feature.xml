@@ -46,5 +46,6 @@
    <plugin id="org.openntf.nsfodp.compiler" version="0.0.0"/>
    <plugin id="org.openntf.nsfodp.compiler.equinox" version="0.0.0" fragment="true"/>
    <plugin id="org.openntf.nsfodp.compiler.servlet" version="0.0.0" fragment="true"/>
+   <plugin id="org.eclipse.equinox.launcher" version="0.0.0"/>
 
 </feature>

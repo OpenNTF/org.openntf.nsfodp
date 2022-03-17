@@ -197,6 +197,9 @@ public class ODPCompilerServlet extends HttpServlet {
 			System.out.println("working dir is " + framework);
 			// TODO cleanup
 			
+			Path equinox = getDependencyJar("org.eclipse.equinox.launcher"); //$NON-NLS-1$
+			runner.addClasspathJar(equinox);
+			
 			Stream.of(
 				getDependencyRef("org.openntf.nsfodp.commons", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.notesapi.darwinonapi", -1), //$NON-NLS-1$
@@ -212,11 +215,11 @@ public class ODPCompilerServlet extends HttpServlet {
 			{
 				Path rcp = notesProgram.resolve("osgi").resolve("rcp").resolve("eclipse"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if(!Files.exists(rcp)) {
-					throw new IllegalStateException(MessageFormat.format("rcp directory not present at expected location: {0}", rcp)); //$NON-NLS-1$
+					throw new IllegalStateException(MessageFormat.format("rcp directory not present at expected location: {0}", rcp));
 				}
 				Path notesPlugins = rcp.resolve("plugins"); //$NON-NLS-1$
 				if(!Files.exists(notesPlugins)) {
-					throw new IllegalStateException(MessageFormat.format("rcp plugins directory not present at expected location: {0}", rcp)); //$NON-NLS-1$
+					throw new IllegalStateException(MessageFormat.format("rcp plugins directory not present at expected location: {0}", rcp));
 				}
 				String[] osgiBundle = new String[1];
 				try(Stream<Path> pluginsStream = Files.list(notesPlugins)) {
@@ -313,6 +316,19 @@ public class ODPCompilerServlet extends HttpServlet {
 		} finally {
 			NSFODPUtil.deltree(cleanup);
 		}
+	}
+	
+	private static Path getDependencyJar(String bundleName) throws IOException {
+		Bundle b = Platform.getBundle(bundleName);
+		if(b == null) {
+			throw new IllegalStateException("Unable to locate bundle: " + bundleName);
+		}
+		File bundleFile = FileLocator.getBundleFile(b);
+		if(bundleFile == null || !bundleFile.exists()) {
+			throw new IllegalStateException("Unable to locate path for bundle: " + b);
+		}
+		
+		return bundleFile.toPath();
 	}
 	
 	private static String getDependencyRef(String bundleName, int startLevel) throws IOException {

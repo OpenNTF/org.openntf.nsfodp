@@ -58,6 +58,11 @@ public class DarwinoNotesAPI implements NotesAPI {
 	}
 	
 	@Override
+	public void NotesTerm() {
+		DominoAPI.get().NotesTerm();
+	}
+	
+	@Override
 	public NDatabase createDatabase(String filePath) {
 		try {
 			return new DarwinoNDatabase(this, session.createDatabase("", filePath, DBClass.BY_EXTENSION, true)); //$NON-NLS-1$

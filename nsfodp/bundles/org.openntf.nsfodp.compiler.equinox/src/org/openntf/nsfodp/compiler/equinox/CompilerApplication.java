@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,24 +49,23 @@ public class CompilerApplication implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
-		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
-		if(notesIni != null && !notesIni.isEmpty()) {
-			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
-			try(NotesAPI api = NotesAPI.get()) {
-				api.NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
-			}
-		}
-		
 		try {
-			NotesThread.sinitThread();
-		} catch(Exception e) {
-			// Known exception message during Notes initialization - error code 0x0102
-			if(String.valueOf(e.getMessage()).endsWith(" - err 258")) { //$NON-NLS-1$
-				throw new Exception("Encountered Notes exception ERR_PROTECTED (0x0102): Cannot write or create file (file or disk is read-only)");
+			String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
+			if(notesIni != null && !notesIni.isEmpty()) {
+				String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
+				try(NotesAPI api = NotesAPI.get()) {
+					api.NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+				}
 			}
-			throw e;
-		}
-		try {
+			try {
+				NotesThread.sinitThread();
+			} catch(Exception e) {
+				// Known exception message during Notes initialization - error code 0x0102
+				if(String.valueOf(e.getMessage()).endsWith(" - err 258")) { //$NON-NLS-1$
+					throw new Exception("Encountered Notes exception ERR_PROTECTED (0x0102): Cannot write or create file (file or disk is read-only)");
+				}
+			}
+
 			Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
 			List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
 			Path outputFile = toPath(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
@@ -111,11 +109,18 @@ public class CompilerApplication implements IApplication {
 					.map(FilesystemUpdateSite::new)
 					.forEach(compiler::addUpdateSite);
 			}
-			
+
 			exec.submit(() -> {
 				try {
 					Path nsf = compiler.compile();
-					Files.move(nsf, outputFile, StandardCopyOption.REPLACE_EXISTING);
+					Files.copy(nsf, outputFile, StandardCopyOption.REPLACE_EXISTING);
+					try(NotesAPI api = NotesAPI.get()) {
+						try {
+							api.deleteDatabase(nsf.toString());
+						} catch(Exception e) {
+							// Ignore
+						}
+					}
 					mon.done();
 				} catch(RuntimeException e) {
 					throw e;
@@ -123,14 +128,22 @@ public class CompilerApplication implements IApplication {
 					throw new RuntimeException(e);
 				}
 			}).get();
-			System.out.println(getClass().getName() + "#end"); //$NON-NLS-1$
-			
-			exec.shutdownNow();
-			exec.awaitTermination(30, TimeUnit.SECONDS);
 			
 			return EXIT_OK;
+		} catch(Throwable t) {
+			t.printStackTrace();
+			throw t;
 		} finally {
-			NotesThread.stermThread();
+			try {
+				NotesThread.stermThread();
+			} catch(NullPointerException e) {
+				// Happens when sInitThread failed
+			}
+			try(NotesAPI api = NotesAPI.get()) {
+				api.NotesTerm();
+			} finally {
+				System.out.println(getClass().getName() + "#end"); //$NON-NLS-1$
+			}
 		}
 	}
 	

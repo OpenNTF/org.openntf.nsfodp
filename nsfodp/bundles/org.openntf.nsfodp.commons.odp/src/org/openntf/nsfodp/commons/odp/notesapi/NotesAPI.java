@@ -44,6 +44,7 @@ public interface NotesAPI extends AutoCloseable {
 	}
 	
 	void NotesInitExtended(String... argv);
+	void NotesTerm();
 	
 	ThreadFactory createThreadFactory();
 	
