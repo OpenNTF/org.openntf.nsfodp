@@ -87,6 +87,7 @@
 		<module>bundles/org.openntf.nsfodp.eclipse.m2e</module>
 		<module>bundles/org.openntf.nsfodp.eclipse.schemas</module>
 		<module>bundles/org.openntf.nsfodp.eclipse.lsp</module>
+		<module>bundles/org.openntf.nsfodp.eclipse.xspprops</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
