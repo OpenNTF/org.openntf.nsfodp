@@ -75,6 +75,7 @@ import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
+import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLFatalError;
 import org.openntf.nsfodp.compiler.util.CompilerUtil;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
 import org.osgi.framework.Bundle;
@@ -920,8 +921,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						.collect(Collectors.joining(", ")); //$NON-NLS-1$
 					throw new Exception(MessageFormat.format("Exception importing {0}: {1}", name, msg));
 				} else if(log.getFatalErrors() != null && !log.getFatalErrors().isEmpty()) {
-					String msg = log.getErrors().stream()
-						.map(DXLError::getText)
+					String msg = log.getFatalErrors().stream()
+						.map(DXLFatalError::getText)
 						.collect(Collectors.joining(", ")); //$NON-NLS-1$
 					throw new Exception(MessageFormat.format("Exception importing {0}: {1}", name, msg));
 				}
