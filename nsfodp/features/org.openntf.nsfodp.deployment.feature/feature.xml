@@ -19,7 +19,7 @@
 <feature
       id="org.openntf.nsfodp.deployment.feature"
       label="%featureName"
-      version="3.9.0.qualifier"
+      version="3.10.0.qualifier"
       provider-name="%providerName">
 
    <description url="https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling">

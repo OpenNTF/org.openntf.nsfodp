@@ -5,7 +5,7 @@
 
 	<groupId>org.openntf.maven</groupId>
 	<artifactId>nsfodp-maven-plugin</artifactId>
-	<version>3.9.0</version>
+	<version>3.10.0</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>NSF ODP Maven Plugin</name>
@@ -341,7 +341,7 @@
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
-						<copyrightYear>2021</copyrightYear>
+						<copyrightYear>2022</copyrightYear>
 					</properties>
 				</configuration>
 			</plugin>

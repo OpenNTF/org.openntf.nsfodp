@@ -58,7 +58,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
+                <version>3.10.0</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -148,7 +148,7 @@ The ODP exporter is triggered manually, and does not require a Maven project in 
 To export an ODP from the command line, execute the mojo directly:
 
 ```shell
-mvn org.openntf.maven:nsfodp-maven-plugin:2.0.0:export-odp -DdatabasePath=names.nsf
+mvn org.openntf.maven:nsfodp-maven-plugin:3.10.0:export-odp -DdatabasePath=names.nsf
 ```
 
 This mojo will create or replace the `odp` directory in the current or project directory with the contents of the specified database. The directory path can be overridden by specifying the `nsfodp.exporter.odpDirectory` property in the execution.
@@ -176,7 +176,7 @@ To specify a deployment destination and path, expand your project's pom to inclu
     <plugin>
         <groupId>org.openntf.maven</groupId>
         <artifactId>nsfodp-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>3.10.0</version>
         <extensions>true</extensions>
         <configuration>
             <!-- This can be on the target Domino server a remote one -->

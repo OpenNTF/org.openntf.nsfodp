@@ -235,6 +235,12 @@ public class EquinoxRunner {
 			path.append(File.pathSeparatorChar);
 			path.append(resC.toString());
 		}
+		String existingPath = System.getenv("PATH"); //$NON-NLS-1$
+		if(!existingPath.isEmpty()) {
+			path.append(File.pathSeparatorChar);
+			path.append(existingPath);
+		}
+		
 		env.put("PATH", path.toString()); //$NON-NLS-1$
 		env.put("LD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
 		env.put("DYLD_LIBRARY_PATH", notesProgram.toAbsolutePath().toString()); //$NON-NLS-1$
