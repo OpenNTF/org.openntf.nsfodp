@@ -321,6 +321,12 @@ public abstract class AbstractMacGitHubJvmEnvironment extends AbstractJvmEnviron
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			int responseCode = conn.getResponseCode();
 			try {
+				if(responseCode >= 300 && responseCode < 400) {
+					// Passively handle the redirect
+					String location = conn.getHeaderField("Location"); //$NON-NLS-1$
+					return download(new URL(location), consumer);
+				}
+				
 				if(responseCode != HttpURLConnection.HTTP_OK) {
 					throw new IOException(format("Unexpected response code {0} from URL {1}", responseCode, url));
 				}
@@ -335,11 +341,34 @@ public abstract class AbstractMacGitHubJvmEnvironment extends AbstractJvmEnviron
 		}
 	}
 	
-	private static String getOsArch() {
-		return "x64";
+	protected static String getOsArch() {
+		return "x64"; //$NON-NLS-1$
 	}
 	
-	private static String getOsName() {
-		return "mac";
+	protected static String getOsName() {
+		return "mac"; //$NON-NLS-1$
+	}
+	
+	protected boolean isMac12(Path notesProgram) {
+		// For now, assume that the presence of a _CodeSignature directory two levels up means Notes >= 12
+		if(SystemUtils.IS_OS_MAC) {
+			Path appDir = notesProgram.getParent().getParent().resolve("Contents"); //$NON-NLS-1$
+			return Files.isDirectory(appDir.resolve("_CodeSignature")); //$NON-NLS-1$
+		} else {
+			return false;
+		}
+	}
+	
+	protected boolean isMac1202(Path notesProgram) {
+		// For now, assume that the presence of a _CodeSignature directory two levels up means Notes >= 12
+		if(isMac12(notesProgram)) {
+			Path appDir = notesProgram.getParent().getParent().resolve("Contents"); //$NON-NLS-1$
+			// Look for the filesystem NAPI to indicate if it's 12.0.2
+			Path libExt = appDir.resolve("Resources").resolve("jvm").resolve("lib").resolve("ext"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			System.out.println("checking for napi in " + libExt);
+			return Files.isRegularFile(libExt.resolve("lwpd.domino.napi.jar")); //$NON-NLS-1$
+		} else {
+			return false;
+		}
 	}
 }

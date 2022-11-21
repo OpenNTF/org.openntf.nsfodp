@@ -15,7 +15,6 @@
  */
 package org.openntf.maven.nsfodp.jvm;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -50,9 +49,9 @@ public class SemeruJvmEnvironment extends AbstractMacGitHubJvmEnvironment {
 
 	@Override
 	public boolean isActive(Path notesProgram) {
-		// For now, assume that the presence of a _CodeSignature directory two levels up means Notes < 12
+		// Semeru should be active on macOS with Notes 12.0.0 and 12.0.1, but not 12.0.2
 		if(SystemUtils.IS_OS_MAC) {
-			return Files.isDirectory(notesProgram.getParent().getParent().resolve("_CodeSignature")); //$NON-NLS-1$
+			return isMac12(notesProgram);
 		} else {
 			return false;
 		}
