@@ -287,7 +287,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						project,
 						StandardCharsets.UTF_8.name(),
 						Collections.emptyList(),
-						Arrays.asList("*"), //$NON-NLS-1$
+						Collections.singletonList("*"), //$NON-NLS-1$
 						mavenSession
 					);
 					exec.setInjectProjectBuildFilters(false);
