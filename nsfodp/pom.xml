@@ -113,7 +113,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<tycho-version>1.6.0</tycho-version>
+		<tycho-version>1.7.0</tycho-version>
 		<bazaar-version>2.0.9</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
@@ -273,6 +273,11 @@
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
+								<id>com.ibm.domino.napi.impl</id>
+								<versionRange>9.0.1</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
 								<id>javax.activation</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
@@ -357,7 +362,7 @@
 									<version>3.0.1</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>1.8.0</version>
+									<version>11</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>

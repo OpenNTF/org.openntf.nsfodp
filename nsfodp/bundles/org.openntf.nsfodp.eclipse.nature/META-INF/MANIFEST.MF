@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.openntf.nsfodp.eclipse.nature;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.odp.eclipse.nature
 Bundle-Version: 3.11.0.qualifier
 Bundle-Vendor: %providerName
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.core.runtime
