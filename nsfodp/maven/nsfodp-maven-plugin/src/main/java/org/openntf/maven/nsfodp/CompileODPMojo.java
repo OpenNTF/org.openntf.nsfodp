@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -226,7 +228,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			return;
 		}
 		
-		if(notesProgram == null && compilerServerUrl == null) {
+		if(notesProgram == null && compilerServerUrl == null && !this.container) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.programAndUrlEmpty")); //$NON-NLS-1$
 		}
 		if(compilerServerUrl == null && requireServerExecution) {
@@ -348,10 +350,12 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				if(isRunLocally()) {
 					compileOdpLocal(odpCopy, updateSites, outputFile);
 				} else {
+					Optional<AutoCloseable> spawnedContainer = initContainerIfNeeded(updateSites);
+					
 					Path odpZip = zipDirectory(odpCopy);
 					try {
 						List<Path> updateSiteZips = null;
-						if(updateSites != null && !updateSites.isEmpty()) {
+						if(!this.container && updateSites != null && !updateSites.isEmpty()) {
 							updateSiteZips = updateSites.stream()
 								.map(this::zipDirectory)
 								.collect(Collectors.toList());
@@ -367,6 +371,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						}
 					} finally {
 						Files.deleteIfExists(odpZip);
+						spawnedContainer.ifPresent(c -> {
+							try {
+								c.close();
+							} catch (Exception e) {
+								if(log.isWarnEnabled()) {
+									log.warn("Unable to terminate container", e);
+								}
+							}
+						});
 					}
 				}
 				
@@ -567,5 +580,11 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	protected void setServerUrl(URL serverUrl) {
+		this.compilerServer = UUID.randomUUID().toString();
+		this.compilerServerUrl = serverUrl;
 	}
 }

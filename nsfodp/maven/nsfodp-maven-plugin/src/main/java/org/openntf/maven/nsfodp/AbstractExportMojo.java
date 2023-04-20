@@ -30,6 +30,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -230,6 +232,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 					Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 				}
 			} else {
+				Optional<AutoCloseable> spawnedContainer = initContainerIfNeeded(Collections.emptyList());
 				URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl, "exportServerUrl cannot be null");
 				if(log.isDebugEnabled()) {
 					log.debug(Messages.getString("GenerateODPMojo.usingServerUrl", exporterServerUrl)); //$NON-NLS-1$
@@ -271,6 +274,15 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 					}
 				} finally {
 					Files.deleteIfExists(zip);
+					spawnedContainer.ifPresent(c -> {
+						try {
+							c.close();
+						} catch (Exception e) {
+							if(log.isWarnEnabled()) {
+								log.warn("Unable to terminate container", e);
+							}
+						}
+					});
 				}
 			}
 		} catch(Throwable t) {
@@ -289,5 +301,11 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 			eclipseProject = null;
 		}
 		return eclipseProject;
+	}
+	
+	@Override
+	protected void setServerUrl(URL serverUrl) {
+		this.exporterServer = UUID.randomUUID().toString();
+		this.exporterServerUrl = serverUrl;
 	}
 }
