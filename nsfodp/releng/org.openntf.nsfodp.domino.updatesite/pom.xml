@@ -41,4 +41,24 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>non-m2e</id>
+			<activation>
+				<property>
+					<name>!m2e.version</name>
+				</property>
+			</activation>
+			<dependencies>
+		
+				<dependency>
+					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
+					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
+					<version>${bazaar-version}</version>
+					<optional>true</optional>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

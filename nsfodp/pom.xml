@@ -601,12 +601,6 @@
 					<version>${bazaar-version}</version>
 					<classifier>sources</classifier>
 				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
-					<version>${bazaar-version}</version>
-					<optional>true</optional>
-				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>
