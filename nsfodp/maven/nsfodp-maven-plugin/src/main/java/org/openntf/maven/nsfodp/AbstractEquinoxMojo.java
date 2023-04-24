@@ -46,6 +46,12 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	
 	@Parameter(defaultValue="${session}", readonly=true)
 	protected MavenSession mavenSession;
+
+	/**
+	 * Location of the generated NSF.
+	 */
+	@Parameter(defaultValue="${project.build.directory}", property="outputDir", required=true)
+	protected File outputDirectory;
 	
 	/**
 	 * The path to a Notes or Domino executable directory to allow for local
@@ -116,7 +122,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 		return notesProgram != null && notesPlatform != null && !requireServerExecution;
 	}
 	
-	protected Optional<AutoCloseable> initContainerIfNeeded(List<Path> updateSites) {
+	protected Optional<NSFODPContainer> initContainerIfNeeded(List<Path> updateSites, Path packageZip) {
 		if(this.container) {
 			Log log = getLog();
 			
@@ -124,7 +130,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 			if(log.isInfoEnabled()) {
 				log.info("Initializing NSF ODP container");
 			}
-			NSFODPContainer container = new NSFODPContainer(updateSites, log);
+			NSFODPContainer container = new NSFODPContainer(updateSites, packageZip, log, outputDirectory.toPath());
 			
 			container.start();
 			if(log.isInfoEnabled()) {

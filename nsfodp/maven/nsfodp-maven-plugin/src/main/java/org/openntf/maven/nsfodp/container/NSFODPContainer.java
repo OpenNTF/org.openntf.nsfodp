@@ -23,61 +23,89 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.ibm.commons.util.PathUtil;
 import com.ibm.commons.util.StringUtil;
 
 public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 	private static class DominoImage extends ImageFromDockerfile {
 
-		public DominoImage(Collection<Path> updateSites, Collection<Path> cleanup, Log log) {
+		public DominoImage(Collection<Path> updateSites, Path packageZip, Collection<Path> cleanup, Log log) {
 			super("nsfodp-container:1.0.0", true); //$NON-NLS-1$
-			withFileFromClasspath("Dockerfile", "/container/Dockerfile"); //$NON-NLS-1$ //$NON-NLS-2$
-			withFileFromClasspath("domino-config.json", "/container/domino-config.json"); //$NON-NLS-1$ //$NON-NLS-2$
-			withFileFromClasspath("container.link", "/container/container.link"); //$NON-NLS-1$ //$NON-NLS-2$
-			withFileFromClasspath("JavaOptions.txt", "/container/JavaOptions.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 			
-			if(updateSites != null) {
-				updateSites.stream()
-					.map(p -> p.resolve("plugins")) //$NON-NLS-1$
-					.filter(p -> Files.isDirectory(p))
-					.flatMap(p -> {
+			// Copy resources to temp files to avoid an exception in a shutdown hook
+			try {
+				Path tempDir = Files.createTempDirectory(getClass().getName());
+				cleanup.add(tempDir);
+				
+				try(InputStream is = getClass().getResourceAsStream("/container/Dockerfile")) { //$NON-NLS-1$
+					Path temp = tempDir.resolve("Dockerfile"); //$NON-NLS-1$
+					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
+					withFileFromPath("Dockerfile", temp); //$NON-NLS-1$
+				}
+				try(InputStream is = getClass().getResourceAsStream("/container/domino-config.json")) { //$NON-NLS-1$
+					Path temp = tempDir.resolve("domino-config.json"); //$NON-NLS-1$
+					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
+					withFileFromPath("domino-config.json", temp); //$NON-NLS-1$
+				}
+				try(InputStream is = getClass().getResourceAsStream("/container/container.link")) { //$NON-NLS-1$
+					Path temp = tempDir.resolve("container.link"); //$NON-NLS-1$
+					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
+					withFileFromPath("container.link", temp); //$NON-NLS-1$
+				}
+				try(InputStream is = getClass().getResourceAsStream("/container/JavaOptions.txt")) { //$NON-NLS-1$
+					Path temp = tempDir.resolve("JavaOptions.txt"); //$NON-NLS-1$
+					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
+					withFileFromPath("JavaOptions.txt", temp); //$NON-NLS-1$
+				}
+				
+				if(packageZip != null) {
+					withFileFromPath("odp.zip", packageZip); //$NON-NLS-1$
+				}
+				
+				if(updateSites != null) {
+					updateSites.stream()
+						.map(p -> p.resolve("plugins")) //$NON-NLS-1$
+						.filter(p -> Files.isDirectory(p))
+						.flatMap(p -> {
+							try {
+								return Files.list(p);
+							} catch (IOException e) {
+								throw new UncheckedIOException(e);
+							}
+						})
+						.forEach(plugin -> {
+							if(log.isInfoEnabled()) {
+								log.info(MessageFormat.format("Adding custom plugin to container: {0}", plugin));
+							}
+							withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), plugin); //$NON-NLS-1$
+						});
+				}
+				
+				// Read the NSF ODP update site
+				String version = getMavenVersion();
+				Path updateSite = findLocalMavenArtifact("org.openntf.nsfodp", "org.openntf.nsfodp.domino.updatesite", version, "zip"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if(!(Files.isReadable(updateSite) && Files.isRegularFile(updateSite))) {
+					throw new IllegalStateException(MessageFormat.format("Unable to read update site: {0}", updateSite));
+				}
+				try(FileSystem us = NSFODPUtil.openZipPath(updateSite)) {
+					Path plugins = us.getPath("plugins"); //$NON-NLS-1$
+					Files.list(plugins).forEach(plugin -> {
+						// Copy to a temp directory, as Testcontainers assumes it's a local file
 						try {
-							return Files.list(p);
-						} catch (IOException e) {
+							Path temp = Files.createTempFile(getClass().getName(), ".jar"); //$NON-NLS-1$
+							cleanup.add(temp);
+							Files.copy(plugin, temp, StandardCopyOption.REPLACE_EXISTING);
+	
+							if(log.isInfoEnabled()) {
+								log.info(MessageFormat.format("Adding NSF ODP plugin to container: {0}", plugin));
+							}
+							withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), temp); //$NON-NLS-1$
+						} catch(IOException e) { 
 							throw new UncheckedIOException(e);
 						}
-					})
-					.forEach(plugin -> {
-						if(log.isDebugEnabled()) {
-							log.debug(MessageFormat.format("Adding custom plugin to container: {0}", plugin));
-						}
-						withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), plugin); //$NON-NLS-1$
 					});
-			}
-			
-			// Read the NSF ODP update site
-			String version = getMavenVersion();
-			Path updateSite = findLocalMavenArtifact("org.openntf.nsfodp", "org.openntf.nsfodp.domino.updatesite", version, "zip"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			if(!(Files.isReadable(updateSite) && Files.isRegularFile(updateSite))) {
-				throw new IllegalStateException(MessageFormat.format("Unable to read update site: {0}", updateSite));
-			}
-			try(FileSystem us = NSFODPUtil.openZipPath(updateSite)) {
-				Path plugins = us.getPath("plugins"); //$NON-NLS-1$
-				Files.list(plugins).forEach(plugin -> {
-					// Copy to a temp directory, as Testcontainers assumes it's a local file
-					try {
-						Path temp = Files.createTempFile(getClass().getName(), ".jar"); //$NON-NLS-1$
-						cleanup.add(temp);
-						Files.copy(plugin, temp, StandardCopyOption.REPLACE_EXISTING);
-
-						if(log.isDebugEnabled()) {
-							log.debug(MessageFormat.format("Adding NSF ODP plugin to container: {0}", plugin));
-						}
-						withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), temp); //$NON-NLS-1$
-					} catch(IOException e) { 
-						throw new UncheckedIOException(e);
-					}
-				});
+				}
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -86,16 +114,18 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 	
 	private static ThreadLocal<Collection<Path>> cleanup = ThreadLocal.withInitial(() -> new ArrayList<>());
 	private final Log log;
+	private final Path outputDirectory;
 
-	public NSFODPContainer(Collection<Path> updateSites, Log log) {
-		super(new DominoImage(updateSites, cleanup.get(), log));
+	public NSFODPContainer(Collection<Path> updateSites, Path packageZip, Log log, Path outputDirectory) {
+		super(new DominoImage(updateSites, packageZip, cleanup.get(), log));
 		this.log = log;
+		this.outputDirectory = outputDirectory;
 		
 		addEnv("LANG", "en_US.UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
 		addEnv("SetupAutoConfigure", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 		addEnv("SetupAutoConfigureParams", "/local/runner/domino-config.json"); //$NON-NLS-1$ //$NON-NLS-2$
 		addEnv("DOMINO_DOCKER_STDOUT", "yes"); //$NON-NLS-1$ //$NON-NLS-2$
-
+		
 		withImagePullPolicy(imageName -> false);
 		withExposedPorts(80);
 		withStartupTimeout(Duration.ofMinutes(4));
@@ -105,7 +135,7 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 					.withRegEx(".*HTTP Server: Started.*") //$NON-NLS-1$
 				)
 				.withStrategy(new HttpWaitStrategy()
-					.forPath("/") //$NON-NLS-1$
+					.forPath("/org.openntf.nsfodp/containerCompiler?mode=ping") //$NON-NLS-1$
 				)
 			.withStartupTimeout(Duration.ofMinutes(5))
 		);
@@ -156,5 +186,23 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 			throw new RuntimeException("Unable to determine artifact version from scm.properties");
 		}
 		return version;
+	}
+	
+	@Override
+	protected void containerIsStopping(InspectContainerResponse containerInfo) {
+		super.containerIsStopping(containerInfo);
+		
+		try {
+			// If we can see the target dir, copy log files
+			if(Files.isDirectory(this.outputDirectory)) {
+				this.execInContainer("tar", "-czvf", "/tmp/IBM_TECHNICAL_SUPPORT.tar.gz", "/local/notesdata/IBM_TECHNICAL_SUPPORT");
+				this.copyFileFromContainer("/tmp/IBM_TECHNICAL_SUPPORT.tar.gz", this.outputDirectory.resolve("IBM_TECHNICAL_SUPPORT.tar.gz").toString());
+					
+				this.execInContainer("tar", "-czvf", "/tmp/workspace-logs.tar.gz", "/local/notesdata/domino/workspace/logs");
+				this.copyFileFromContainer("/tmp/workspace-logs.tar.gz", this.outputDirectory.resolve("workspace-logs.tar.gz").toString());
+			}
+		} catch(IOException | UnsupportedOperationException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

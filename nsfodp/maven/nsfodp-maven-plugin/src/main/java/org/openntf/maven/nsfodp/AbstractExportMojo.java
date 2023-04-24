@@ -53,6 +53,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.openntf.maven.nsfodp.container.NSFODPContainer;
 import org.openntf.maven.nsfodp.equinox.EquinoxExporter;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
@@ -232,7 +233,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 					Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 				}
 			} else {
-				Optional<AutoCloseable> spawnedContainer = initContainerIfNeeded(Collections.emptyList());
+				Optional<NSFODPContainer> spawnedContainer = initContainerIfNeeded(Collections.emptyList(), null);
 				URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl, "exportServerUrl cannot be null");
 				if(log.isDebugEnabled()) {
 					log.debug(Messages.getString("GenerateODPMojo.usingServerUrl", exporterServerUrl)); //$NON-NLS-1$
