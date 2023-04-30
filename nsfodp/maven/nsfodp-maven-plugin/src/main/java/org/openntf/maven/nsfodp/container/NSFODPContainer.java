@@ -17,11 +17,13 @@ import java.util.Properties;
 
 import org.apache.maven.plugin.logging.Log;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.images.builder.Transferable;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.ibm.commons.util.PathUtil;
@@ -53,11 +55,18 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
 					withFileFromPath("container.link", temp); //$NON-NLS-1$
 				}
-				try(InputStream is = getClass().getResourceAsStream("/container/JavaOptions.txt")) { //$NON-NLS-1$
-					Path temp = tempDir.resolve("JavaOptions.txt"); //$NON-NLS-1$
-					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
-					withFileFromPath("JavaOptions.txt", temp); //$NON-NLS-1$
+				
+				StringBuilder javaOptions = new StringBuilder();
+				javaOptions.append("-Dorg.openntf.nsfodp.allowAnonymous=true\n"); //$NON-NLS-1$
+				javaOptions.append("-Dorg.openntf.nsfodp.allowContainerBuild=true\n"); //$NON-NLS-1$
+				
+				// For non-native architectures (e.g. ARM Macs with Docker), disable the JIT
+				//   to avoid common segfaults
+				String arch = DockerClientFactory.instance().getInfo().getArchitecture();
+				if(!"x86_64".equals(arch)) { //$NON-NLS-1$
+					javaOptions.append("-Djava.compiler=NONE\n"); //$NON-NLS-1$
 				}
+				withFileFromTransferable("JavaOptions.txt", Transferable.of(javaOptions.toString())); //$NON-NLS-1$
 				
 				if(packageZip != null) {
 					withFileFromPath("odp.zip", packageZip); //$NON-NLS-1$

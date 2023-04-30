@@ -1,2 +1,0 @@
--Dorg.openntf.nsfodp.allowAnonymous=true
--Dorg.openntf.nsfodp.allowContainerBuild=true
