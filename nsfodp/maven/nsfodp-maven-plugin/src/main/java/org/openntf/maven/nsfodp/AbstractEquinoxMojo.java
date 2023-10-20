@@ -112,7 +112,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	 * 
 	 * @since 3.11.0
 	 */
-	@Parameter(property="nsfodp.container", required=false)
+	@Parameter(property="nsfodp.useContainerExecution", required=false)
 	protected boolean container;
 
 	protected boolean isRunLocally() {
