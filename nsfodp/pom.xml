@@ -113,7 +113,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<tycho-version>1.7.0</tycho-version>
+		<tycho-version>2.7.5</tycho-version>
 		<bazaar-version>2.0.9</bazaar-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
@@ -220,31 +220,22 @@
 							<goal>plugin-source</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>feature-source</id>
+						<goals>
+							<goal>feature-source</goal>
+						</goals>
+						<configuration>
+							<includeBinaryFeature>false</includeBinaryFeature>
+							<excludes>
+								<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
+								<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
+							</excludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-source-feature-plugin</artifactId>
-				<version>${tycho-version}</version>
-		
-				<executions>
-					<execution>
-						<id>source-feature</id>
-						<phase>package</phase>
-						<goals>
-							<goal>source-feature</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includeBinaryFeature>false</includeBinaryFeature>
-					<excludes>
-						<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
-						<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
-					</excludes>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>
@@ -289,6 +280,11 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.openntf.domino.java.api.corba.patch</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-feature</type>
+								<id>com.ibm.xsp.extlibx.bazaar.feature</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>
@@ -605,6 +601,7 @@
 					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
 					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
 					<version>${bazaar-version}</version>
+					<type>eclipse-feature</type>
 					<optional>true</optional>
 				</dependency>
 			</dependencies>
