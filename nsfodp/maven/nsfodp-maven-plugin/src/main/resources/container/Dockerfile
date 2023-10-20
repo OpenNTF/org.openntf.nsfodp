@@ -1,4 +1,6 @@
-FROM hclcom/domino:12.0.2
+ARG BASEIMAGE=domino-container:V1202_11032022prod
+FROM ${BASEIMAGE}
+#FROM hclcom/domino:12.0.2
 
 ENV LANG="en_US.UTF-8"
 ENV SetupAutoConfigure="1"
