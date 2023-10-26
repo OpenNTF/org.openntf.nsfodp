@@ -1,6 +1,6 @@
 NSF ODP Tooling
 
-(c) Copyright 2018-2022 Jesse Gallagher
+(c) Copyright 2018-2023 Jesse Gallagher
 
 This product includes software contributed to
 OpenNTF Alliance (http://www.OpenNTF.org/)
@@ -18,6 +18,7 @@ The project contains the following 3rd-party code and resources:
 - Components of Swiper, which is available from https://github.com/camac/Swiper and is licensed under Apache 2.0
 
 - Darwino Domino NAPI, which is available from https://artifactory.openntf.org/openntf/com/darwino/domino/com.darwino.domino.napi/ and is licensed under Apache 2.0
+
 - IBM Domino DTD and XSD files, which are copyright 2018 HCL and IBM and are available with a Notes or Domino installation. They are redistributed in accordance with the included Redist-xmlschemas.txt file and the "Redistributables" section of the License-xmlschemas.txt file in the "legal" directory
 
 The project contains snippets derived from the following 3rd-party projects:
@@ -31,3 +32,5 @@ The project contains snippets derived from the following 3rd-party projects:
 - m2eclipse-tycho, which is available from https://github.com/tesla/m2eclipse-tycho and is licensed under the Eclipse Public License 1.0
 
 - IBM Commons, which is available from https://github.com/OpenNTF/SocialSDK and is licensed under Apache 2.0
+
+- XPages Bazaar, which is available from https://github.com/OpenNTF/XPages-Bazaar and is licensed under Apache 2.0
