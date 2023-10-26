@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
+import org.openntf.com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
@@ -41,8 +43,6 @@ import org.w3c.dom.Document;
 
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
-import com.ibm.xsp.extlib.javacompiler.JavaSourceClassLoader;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.page.compiled.PageToClassNameUtil;
 import com.ibm.xsp.registry.FacesLibraryFragment;
