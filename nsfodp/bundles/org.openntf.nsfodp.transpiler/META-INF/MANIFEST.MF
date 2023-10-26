@@ -3,17 +3,16 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.transpiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.transpiler
-Bundle-Version: 3.11.0.qualifier
+Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime,
  com.ibm.xsp.core,
- com.ibm.commons,
- com.ibm.xsp.extlibx.bazaar;bundle-version="2.0.2"
+ com.ibm.commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/com.darwino.domino.napi.jar,
- .
 Import-Package: lotus.domino,
+ org.openntf.com.ibm.xsp.extlib.interpreter;version="4.0.0",
+ org.openntf.com.ibm.xsp.extlib.javacompiler;version="4.0.0",
  org.openntf.nsfodp.commons;version="3.5.0",
  org.openntf.nsfodp.commons.odp;version="3.5.0",
  org.openntf.nsfodp.commons.odp.util;version="3.5.0",

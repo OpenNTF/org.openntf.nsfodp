@@ -17,6 +17,7 @@ package org.openntf.maven.nsfodp;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -149,5 +150,8 @@ public class TranspileXspMojo extends AbstractCompilerMojo {
 	// * Server-based transpilation
 	// *******************************************************************************
 	
-	
+	@Override
+	protected void setServerUrl(URL serverUrl) {
+		// NOP for now
+	}
 }

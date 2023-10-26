@@ -21,6 +21,9 @@
 	<extension id="org.openntf.nsfodp.compiler.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
 		<servlet alias="/org.openntf.nsfodp/compiler" class="org.openntf.nsfodp.compiler.servlet.ODPCompilerServlet"/>
 	</extension>
+	<extension id="org.openntf.nsfodp.compiler.servlet.ODPCompilerContainerServlet" name="odpcontainercompiler" point="org.eclipse.equinox.http.registry.servlets">
+		<servlet alias="/org.openntf.nsfodp/containerCompiler" class="org.openntf.nsfodp.compiler.servlet.ODPCompilerContainerServlet"/>
+	</extension>
 	<extension id="org.openntf.nsfodp.compiler.StockComponentsServlet" name="stockcomponents" point="org.eclipse.equinox.http.registry.servlets">
 		<servlet alias="/org.openntf.nsfodp/stockComponents" class="org.openntf.nsfodp.compiler.servlet.StockComponentsServlet"/>
 	</extension>

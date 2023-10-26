@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
@@ -47,7 +48,6 @@ import org.osgi.framework.BundleException;
 
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;

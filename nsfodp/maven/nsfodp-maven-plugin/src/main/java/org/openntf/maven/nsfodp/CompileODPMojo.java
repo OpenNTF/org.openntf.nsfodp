@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -54,6 +56,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -75,6 +78,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.openntf.maven.nsfodp.config.ConfigAcl;
+import org.openntf.maven.nsfodp.container.NSFODPContainer;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
@@ -96,12 +100,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
+	public static final String SERVLET_CONTAINER_PATH = "/org.openntf.nsfodp/containerCompiler"; //$NON-NLS-1$
 	
-	/**
-	 * Location of the generated NSF.
-	 */
-	@Parameter(defaultValue="${project.build.directory}", property="outputDir", required=true)
-	private File outputDirectory;
 	/**
 	 * File name of the generated NSF.
 	 */
@@ -226,7 +226,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			return;
 		}
 		
-		if(notesProgram == null && compilerServerUrl == null) {
+		if(notesProgram == null && compilerServerUrl == null && !this.container) {
 			throw new IllegalArgumentException(Messages.getString("CompileODPMojo.programAndUrlEmpty")); //$NON-NLS-1$
 		}
 		if(compilerServerUrl == null && requireServerExecution) {
@@ -348,22 +348,41 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				if(isRunLocally()) {
 					compileOdpLocal(odpCopy, updateSites, outputFile);
 				} else {
+					
 					Path odpZip = zipDirectory(odpCopy);
 					try {
 						List<Path> updateSiteZips = null;
-						if(updateSites != null && !updateSites.isEmpty()) {
+						if(!this.container && updateSites != null && !updateSites.isEmpty()) {
 							updateSiteZips = updateSites.stream()
 								.map(this::zipDirectory)
 								.collect(Collectors.toList());
 						}
 						
 						Path packageZip = createPackage(odpZip, updateSiteZips);
+						Optional<NSFODPContainer> spawnedContainer = Optional.empty();
 						try {
-							Path result = compileOdpOnServer(packageZip);
+							Path result;
+							spawnedContainer = initContainerIfNeeded(updateSites, packageZip);
+							if(spawnedContainer.isPresent()) {
+								result = compileOdpInContainer(packageZip, spawnedContainer.get());
+							} else {
+								// Then use normal remote building
+								result = compileOdpOnServer(packageZip);
+							}
+							
 							Files.move(result, outputFile, StandardCopyOption.REPLACE_EXISTING);
 							buildContext.refresh(outputFile.toFile());
 						} finally {
 							Files.deleteIfExists(packageZip);
+							spawnedContainer.ifPresent(c -> {
+								try {
+									c.close();
+								} catch (Exception e) {
+									if(log.isWarnEnabled()) {
+										log.warn("Unable to terminate container", e);
+									}
+								}
+							});
 						}
 					} finally {
 						Files.deleteIfExists(odpZip);
@@ -449,6 +468,50 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			}
 		}
 		return packageZip;
+	}
+	
+	private Path compileOdpInContainer(Path packageZip, NSFODPContainer container) throws URISyntaxException, IOException {
+		URL compilerServerUrl = Objects.requireNonNull(this.compilerServerUrl);
+		if(log.isDebugEnabled()) {
+			log.debug(Messages.getString("CompileODPMojo.usingServerUrl", compilerServerUrl)); //$NON-NLS-1$
+		}
+		
+		URI servlet = compilerServerUrl.toURI().resolve(SERVLET_CONTAINER_PATH);
+		if(log.isInfoEnabled()) {
+			log.info(Messages.getString("CompileODPMojo.compilingWithServer", servlet)); //$NON-NLS-1$
+		}
+
+		HttpClientBuilder httpBuilder = HttpClients.custom();
+		try(CloseableHttpClient client = httpBuilder.build()) {
+			HttpGet post = new HttpGet(servlet);
+			
+			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
+			}
+			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
+			if(this.templateName != null && !this.templateName.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
+				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
+			}
+			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
+			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
+			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
+			post.addHeader(NSFODPConstants.HEADER_CONTAINER_PACKAGE, "/local/odp.zip"); //$NON-NLS-1$
+			
+			HttpResponse res = client.execute(post);
+			HttpEntity responseEntity = ResponseUtil.checkResponse(log, res);
+ 			
+			try(InputStream is = responseEntity.getContent()) {
+				ResponseUtil.monitorResponse(log, is);
+				
+				// Now that we're here, the rest will be the compiler output
+				Path result = Files.createTempFile("odpcompiler-output", ".nsf"); //$NON-NLS-1$ //$NON-NLS-2$
+				try(InputStream gzis = new GZIPInputStream(is)) {
+					Files.copy(gzis, result, StandardCopyOption.REPLACE_EXISTING);
+				}
+				return result;
+			}
+		}
 	}
 	
 	private Path compileOdpOnServer(Path packageZip) throws IOException, URISyntaxException, MojoExecutionException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -567,5 +630,11 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	protected void setServerUrl(URL serverUrl) {
+		this.compilerServer = UUID.randomUUID().toString();
+		this.compilerServerUrl = serverUrl;
 	}
 }
