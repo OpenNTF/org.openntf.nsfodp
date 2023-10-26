@@ -287,6 +287,33 @@
 								<id>com.ibm.xsp.extlibx.bazaar.feature</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.extlibx.bazaar.interpreter</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							
+							<!-- These are required to build the compiler module in newer Tycho -->
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.extsn</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.domino</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.extlib</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.pvc.servlet.jsp</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
 						</extraRequirements>
 						<optionalDependencies>ignore</optionalDependencies>
 					</dependency-resolution>
