@@ -203,6 +203,7 @@
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<configuration>
 					<strictVersions>false</strictVersions>
+					<updatePomFile>false</updatePomFile>
 				</configuration>
 			</plugin>
 			<plugin>
