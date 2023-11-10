@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -122,7 +123,10 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavaFileManager
 			return;
 		}
 		
-		Bundle b = org.eclipse.core.runtime.Platform.getBundle(bundleName);
+		Bundle b = Arrays.stream(org.eclipse.core.runtime.Platform.getBundles(bundleName, null))
+			.filter(bundle -> bundle.getState() == Bundle.ACTIVE || bundle.getState() == Bundle.RESOLVED || bundle.getState() == Bundle.STARTING)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException(MessageFormat.format("Unable to locate bundle {0}", bundleName)));
 		resolveBundle(resolved, resolvedBundles, b, true);
 	}
 	private void resolveBundle(Collection<String> resolved, Set<String> resolvedBundles, Bundle b, boolean includeFragments) throws IOException, BundleException {
