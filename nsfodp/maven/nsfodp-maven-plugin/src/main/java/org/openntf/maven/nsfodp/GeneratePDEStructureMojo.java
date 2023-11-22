@@ -72,6 +72,15 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 	 */
 	@Parameter(required=false)
 	private File[] classpathJars;
+
+	/**
+	 * Specifies the declared execution environment for the generated
+	 * MANIFEST.MF.
+	 * 
+	 * @since 4.0.0
+	 */
+	@Parameter(defaultValue="JavaSE-1.8", required=false)
+	private String executionEnvironment;
 	
 	@Component
 	private BuildContext buildContext;
@@ -169,7 +178,11 @@ public class GeneratePDEStructureMojo extends AbstractMojo {
 		attrs.putValue("Bundle-Name", project.getName()); //$NON-NLS-1$
 		attrs.putValue("Bundle-SymbolicName", symbolicName); //$NON-NLS-1$
 		attrs.putValue("Automatic-Module-Name", symbolicName); //$NON-NLS-1$
-		attrs.putValue("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(this.executionEnvironment != null && !this.executionEnvironment.isEmpty()) {
+			attrs.putValue("Bundle-RequiredExecutionEnvironment", this.executionEnvironment); //$NON-NLS-1$
+		} else {
+			attrs.putValue("Bundle-RequiredExecutionEnvironment", "JavaSE-1.8"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 		attrs.putValue("Bundle-Version", project.getVersion().replace("-SNAPSHOT", ".qualifier")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		
 		// Look for plugin dependencies
