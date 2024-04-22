@@ -58,7 +58,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>3.10.0</version>
+                <version>4.0.0</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -68,9 +68,13 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
 
 Additionally, there are some properties to set in your Maven `~/.m2/settings.xml` configuration.
 
-There are two modes of operation: local and remote. In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://github.com/OpenNTF/generate-domino-update-site). In practice, I've found that update sites generated from Domino instead of Notes are more reliable.
+There are three modes of operation: remote, containerized, or local.
 
-These are the applicable properties to configure remote or server execution:
+#### Remote Operations
+
+For remote operations, install the contents of the distribution update site on a Domino server. It's safest to use a server dedicated to this purpose, particularly if you are going to build NSFs that use OSGi update sites. Because using an update site involves loading and unloading bundles dynamically, it would conflict with normal app behavior on the server.
+
+These are the applicable properties to configure remote execution:
 
 ```xml
 <?xml version="1.0"?>
@@ -81,12 +85,6 @@ These are the applicable properties to configure remote or server execution:
         <profile>
             <id>nsfodp</id>
             <properties>
-                <!-- for local operations, macOS example -->
-                <notes-program>/Applications/IBM Notes.app/Contents/MacOS</notes-program>
-                <notes-platform>file:///Users/username/path/to/Domino10.0.1</notes-platform>
-                <!-- required on Linux -->
-                <notes-ini>/var/lib/domino/data/notes.ini</notes-ini>
-              
                 <!-- for remote operations -->
                 <nsfodp.compiler.server>someserver</nsfodp.compiler.server>
                 <nsfodp.compiler.serverUrl>https://some.server/</nsfodp.compiler.serverUrl>
@@ -116,6 +114,70 @@ These are the applicable properties to configure remote or server execution:
 </settings>
 ```
 
+#### Containerized Execution
+
+Compilation and ODP export can be done using a Docker-compatible environment running either on the current machine or (with the DOCKER_HOST environment variable) remotely. When running with a remote Docker-compatible host, the local environment must be able to open and connect to high-number TCP ports, as the actual operations happen via a randomly-assigned HTTP port.
+
+These are the applicable properties to configure remote execution:
+
+```xml
+<?xml version="1.0"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>nsfodp</id>
+            <properties>
+                <nsfodp.useContainerExecution>true</nsfodp.useContainerExecution>
+                <!-- Optional configuration parameters: -->
+                <!-- Defaults to "domino-container:V1202_11032022prod" -->
+                <nsfodp.containerBaseImage>hclcom/domino:12.0.2</nsfodp.containerBaseImage>
+                <nsfodp.containerHost>tcp://somehost:1234</nsfodp.containerHost>
+                <nsfodp.containerTlsVerify>false</nsfodp.containerTlsVerify>
+                <nsfodp.containerTlsCertPath>/path/to/certs</nsfodp.containerTlsCertPath>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>nsfodp</activeProfile>
+    </activeProfiles>
+</settings>
+```
+
+Note: containerized execution currently uses <a href="https://java.testcontainers.org">Testcontainers</a> and so builds on its use of environment variables and properties, but this is not guaranteed to remain the case.
+
+#### Local Operations
+
+In the case of local operations, set the `notes-program` to the path to a local Notes or Domino installation and `notes-platform` to the URL of a [Domino update site](https://github.com/OpenNTF/generate-domino-update-site). In practice, I've found that update sites generated from Domino instead of Notes are more reliable.
+
+Note: local operations are more prone to strange behavior than the other routes, particularly on macOS, and so it is usually safer to use one of the other paths.
+
+These are the applicable properties to configure local execution:
+
+```xml
+<?xml version="1.0"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>nsfodp</id>
+            <properties>
+                <!-- for local operations, macOS example -->
+                <notes-program>/Applications/IBM Notes.app/Contents/MacOS</notes-program>
+                <notes-platform>file:///Users/username/path/to/Domino10.0.1</notes-platform>
+                <!-- required on Linux -->
+                <notes-ini>/var/lib/domino/data/notes.ini</notes-ini>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>nsfodp</activeProfile>
+    </activeProfiles>
+</settings>
+```
+
 ### ODP Compilation
 
 The ODP compilation process has several properties that can be configured in the plugin's `configuration` block, with these as the defaults:
@@ -125,7 +187,7 @@ The ODP compilation process has several properties that can be configured in the
 	<outputDirectory>${project.build.directory}</outputDirectory>
     <outputFileName>${project.build.finalName}.nsf</outputFileName>
     <odpDirectory>odp</odpDirectory>
-    <!-- e.g. ../../releng/some.updatesite.project/target/site -->
+    <!-- e.g. ../../releng/some.updatesite.project/target/repository -->
     <updateSite></updateSite>
     <compilerLevel>1.8</compilerLevel>
     <!-- Adds the build timestamp to the generated NSF's title -->
@@ -134,7 +196,7 @@ The ODP compilation process has several properties that can be configured in the
     <templateName></templateName>
     <!-- Enabled resource aggregation and compressed JS libs in xsp.properties -->
     <setProductionXspOptions>false</setProductionXspOptions>
-    <!-- Add jars to the compilation classpath, to mimic jvm/lib/ext deployment -->
+    <!-- Add jars to the compilation classpath, to mimic jvm/lib/ext or ndext deployment -->
     <classpathJars>
         <classpathJar></classpathJar>
     </classpathJars>
