@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.commons.dxl
 Automatic-Module-Name: org.openntf.nsfodp.commons.dxl
-Bundle-Version: 3.10.0.qualifier
+Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.openntf.nsfodp.commons.dxl;version="3.10.0"
+Export-Package: org.openntf.nsfodp.commons.dxl;version="4.0.0"
 Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
  com.ibm.commons.xml;bundle-version="9.0.1",
  org.openntf.nsfodp.commons;bundle-version="2.0.0"

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2022 Jesse Gallagher
+ * Copyright © 2018-2023 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.compiler.update.UpdateSite;
@@ -47,7 +48,6 @@ import org.osgi.framework.BundleException;
 
 import com.ibm.commons.extension.ExtensionManager;
 import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.extlib.interpreter.DynamicXPageBean;
 import com.ibm.xsp.library.LibraryServiceLoader;
 import com.ibm.xsp.library.LibraryWrapper;
 import com.ibm.xsp.library.XspLibrary;
@@ -121,7 +121,9 @@ public abstract class AbstractCompilationEnvironment {
 		
 		bundles.stream().forEach(t -> {
 			try {
-				if(t.getState() == Bundle.RESOLVED && StringUtil.isEmpty(t.getHeaders().get("Fragment-Host"))) { //$NON-NLS-1$
+				int state = t.getState();
+				boolean running = state == Bundle.RESOLVED || state == Bundle.ACTIVE;
+				if(running && StringUtil.isEmpty(t.getHeaders().get("Fragment-Host"))) { //$NON-NLS-1$
 					t.stop();
 				}
 				t.uninstall();

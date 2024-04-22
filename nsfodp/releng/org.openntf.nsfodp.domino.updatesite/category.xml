@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2018-2022 Jesse Gallagher
+    Copyright © 2018-2023 Jesse Gallagher
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -29,12 +29,6 @@
 	<feature id="org.openntf.nsfodp.exporter.feature">
 		<category name="NSF ODP Tooling"/>
 	</feature>
-	
-	<!-- Bazaar dependency -->
-	<feature id="com.ibm.xsp.extlibx.bazaar.feature">
-		<category name="XPages Bazaar"/>
-	</feature>
    
 	<category-def name="NSF ODP Tooling" label="NSF ODP Tooling"/>
-	<category-def name="XPages Bazaar" label="XPages Bazaar"/>
 </site>

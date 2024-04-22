@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2018-2022 Jesse Gallagher
+    Copyright © 2018-2023 Jesse Gallagher
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
 <plugin>
 	<extension id="org.openntf.nsfodp.compiler.Servlet" name="odpcompiler" point="org.eclipse.equinox.http.registry.servlets">
 		<servlet alias="/org.openntf.nsfodp/compiler" class="org.openntf.nsfodp.compiler.servlet.ODPCompilerServlet"/>
+	</extension>
+	<extension id="org.openntf.nsfodp.compiler.servlet.ODPCompilerContainerServlet" name="odpcontainercompiler" point="org.eclipse.equinox.http.registry.servlets">
+		<servlet alias="/org.openntf.nsfodp/containerCompiler" class="org.openntf.nsfodp.compiler.servlet.ODPCompilerContainerServlet"/>
 	</extension>
 	<extension id="org.openntf.nsfodp.compiler.StockComponentsServlet" name="stockcomponents" point="org.eclipse.equinox.http.registry.servlets">
 		<servlet alias="/org.openntf.nsfodp/stockComponents" class="org.openntf.nsfodp.compiler.servlet.StockComponentsServlet"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2022 Jesse Gallagher
+ * Copyright © 2018-2023 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.PrintStreamProgressMonitor;
+import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
 import org.openntf.nsfodp.transpiler.TranspilerActivator;
 import org.openntf.nsfodp.transpiler.XspTranspiler;
 
-import com.darwino.domino.napi.DominoAPI;
 import com.ibm.commons.util.io.json.JsonException;
 import com.ibm.commons.util.io.json.JsonJavaFactory;
 import com.ibm.commons.util.io.json.JsonParser;
@@ -59,7 +59,7 @@ public class TranspilerApplication implements IApplication {
 		String notesIni = System.getenv(NSFODPConstants.PROP_NOTESINI);
 		if(notesIni != null && !notesIni.isEmpty()) {
 			String execDir = System.getenv("Notes_ExecDirectory"); //$NON-NLS-1$
-			DominoAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
+			NotesAPI.get().NotesInitExtended(execDir, "=" + notesIni); //$NON-NLS-1$
 		}
 		
 		NotesThread.sinitThread();

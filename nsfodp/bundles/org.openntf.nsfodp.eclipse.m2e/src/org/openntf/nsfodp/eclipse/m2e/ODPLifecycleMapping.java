@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2022 Jesse Gallagher
+ * Copyright © 2018-2023 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,10 @@ public class ODPLifecycleMapping extends AbstractCustomizableLifecycleMapping im
     private static final AbstractMavenDependencyResolver NOOP_DEPENDENCY_RESOLVER =
             new AbstractMavenDependencyResolver()
             {
-                @Override
-                public void resolveProjectDependencies( IMavenProjectFacade facade, MavenExecutionRequest mavenRequest,
+    	// No longer present in newer versions
+//                @Override
+                @SuppressWarnings("unused")
+				public void resolveProjectDependencies( IMavenProjectFacade facade, MavenExecutionRequest mavenRequest,
                                                         Set<Capability> capabilities, Set<RequiredCapability> requirements,
                                                         IProgressMonitor monitor )
                     throws CoreException

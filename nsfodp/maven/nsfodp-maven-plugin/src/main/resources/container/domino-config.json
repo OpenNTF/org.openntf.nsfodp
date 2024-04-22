@@ -1,0 +1,111 @@
+{
+	"serverSetup": {
+		"server": {
+			"type": "first",
+			"name": "NSFODP",
+			"domainName": "OpenNTFBuild",
+			"title": "NSF ODP Build Container",
+			"password": null,
+			"minPasswordLength": 0,
+			"serverTasks": "http"
+		},
+		"network": {
+			"hostName": "nsfodp-build-container.openntf.org",
+			"enablePortEncryption": true,
+			"enablePortCompression": true
+		},
+		"org": {
+			"orgName": "OpenNTFBuild",
+			"certifierPassword": "ThisIsATestPassword"
+		},
+		"admin": {
+			"firstName": "NSF ODP Build",
+			"lastName": "Test",
+			"password": "ThisIsATestPassword",
+			"IDFilePath": "/local/notesdata/admin.id"
+		},
+		"notesINI": {
+			"Create_R12_databases": "1",
+			"Create_R85_log": "1",
+			"ADMIN_IGNORE_NEW_SERVERNAMING_CONVENTION": "1",
+			"LOG_REPLICATION": "0",
+			"LOG_SESSIONS": "0",
+			"HTTPPublicURLs": "/iwaredir.nsf/*:/.well-known*",
+			"ENABLE_SNI": "1",
+			"HTTPEnableMethods": "GET,POST,PUT,DELETE,HEAD",
+			"ADMIN_CLIENT_SKIP_DOMINO": "1",
+			"COMPRESS_LZ1_CREATE": "1",
+			"CREATE_NIFNSF_DATABASES": "1",
+			"NIFNSFENABLE": "1",
+			"EVENT_POOL_SIZE": "41943040",
+			"SSL_DISABLE_EXTENDED_MASTER_SECRET": "1",
+			"Server_MinPossibleTransTime": "1500",
+			"Server_MaxPossibleTransTime": "20000000",
+			"NSF_BUFFER_POOL_SIZE_MB": "256",
+			"FT_FLY_INDEX_OFF": "0",
+			"UPDATE_FULLTEXT_THREAD": "1",
+			"FTG_USE_SYS_MEMORY": "1",
+			"JavaOptionsFile": "/local/JavaOptions.txt"
+		},
+		"security": {
+			"ACL": {
+				"prohibitAnonymousAccess": true,
+				"addLocalDomainAdmins": true
+			}
+		}
+	},
+	"autoConfigPreferences": {
+		"startServerAfterConfiguration": true
+	},
+	"appConfiguration": {
+		"databases": [
+			{
+				"filePath": "names.nsf",
+				"action": "update",
+				"documents": [
+					{
+						"action": "update",
+						"findDocument": {
+							"Type": "Server",
+							"ServerName": "CN=NSFODP/O=OpenNTFBuild"
+						},
+						"items": {
+							"HTTP_HomeURL": "homepage.nsf",
+							"FullAdmin": "LocalDomainAdmins",
+							"CreateAccess": "LocalDomainAdmins",
+							"ReplicaAccess": "LocalDomainAdmins",
+							"UnrestrictedList": "LocalDomainAdmins",
+							"OnBehalfOfLst": "LocalDomainAdmins",
+							"RestrictedList": "LocalDomainAdmins",
+							"OnBehalfOfInvokerLst": ["LocalDomainAdmins", "LocalDomainServers"],
+							"HTTP_EnableSessionAuth": "1",
+							"HTTP_TCPNP": "1",
+							"HTTP_AllowAnonymous": "1",
+							"HTTP_NormalMode": "1",
+							"HTTP_SSLMode": "0",
+							"HTTP_SSLAnonymous": "0",
+							"HTTP_MaxActiveThreads": 550,
+							"HTTP_asynchronizeAgents": "1",
+                            "HTTP_MaxContentLength": 0,
+                            "LdISite": "1",
+							"NSDEnbld": "1",
+							"FREnbld": "1",
+							"FltRcvryNot": "LocalDomainAdmins"
+						}
+					},
+					{
+						"action": "create",
+						"computeWithForm": true,
+						"items": {
+							"Form": "WebSite",
+							"Type": "WebSite",
+                            "ISiteOrg": "OpenNTFBuild",
+                            "WSIsDflt": "1",
+                            "HTTP_MaxPostDataLength": "1000000"
+						}
+					}
+				]
+			}
+		]
+	}
+}

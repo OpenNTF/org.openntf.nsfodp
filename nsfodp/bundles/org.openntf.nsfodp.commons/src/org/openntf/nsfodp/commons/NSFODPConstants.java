@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018-2022 Jesse Gallagher
+ * Copyright © 2018-2023 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,12 @@ public enum NSFODPConstants {
 	 * @since 3.8.0
 	 */
 	public static final String HEADER_COMPILE_BASICLS = "X-CompileBasicLS"; //$NON-NLS-1$
+	/**
+	 * Header indicating the path within the container where the Servlet can expect to find
+	 * the copied package.
+	 * @since 3.11.0
+	 */
+	public static final String HEADER_CONTAINER_PACKAGE = "X-ContainerPackage"; //$NON-NLS-1$
 	
 	/**
 	 * The system property used to specify the path to the ODP directory to compile using the local

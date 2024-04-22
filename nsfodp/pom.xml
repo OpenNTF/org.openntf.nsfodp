@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
 	<artifactId>nsfodp</artifactId>
-	<version>3.10.0</version>
+	<version>4.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>NSF ODP Tooling</name>
@@ -113,8 +113,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<tycho-version>1.6.0</tycho-version>
-		<bazaar-version>2.0.9</bazaar-version>
+		<tycho-version>2.7.5</tycho-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -203,6 +202,7 @@
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<configuration>
 					<strictVersions>false</strictVersions>
+					<updatePomFile>false</updatePomFile>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -220,31 +220,22 @@
 							<goal>plugin-source</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>feature-source</id>
+						<goals>
+							<goal>feature-source</goal>
+						</goals>
+						<configuration>
+							<includeBinaryFeature>false</includeBinaryFeature>
+							<excludes>
+								<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
+								<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
+							</excludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-source-feature-plugin</artifactId>
-				<version>${tycho-version}</version>
-		
-				<executions>
-					<execution>
-						<id>source-feature</id>
-						<phase>package</phase>
-						<goals>
-							<goal>source-feature</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includeBinaryFeature>false</includeBinaryFeature>
-					<excludes>
-						<plugin id="org.openntf.nsfodp.eclipse.schemas"/>
-						<plugin id="org.openntf.nsfodp.eclipse.lsp"/>
-					</excludes>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>
@@ -273,6 +264,11 @@
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
+								<id>com.ibm.domino.napi.impl</id>
+								<versionRange>9.0.1</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
 								<id>javax.activation</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
@@ -284,6 +280,28 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.openntf.domino.java.api.corba.patch</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							
+							<!-- These are required to build the compiler module in newer Tycho -->
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.extsn</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.domino</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.xsp.extlib</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>com.ibm.pvc.servlet.jsp</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>
@@ -333,10 +351,11 @@
                         <exclude>**/res/SwiperDXLClean.xsl</exclude>
                         <exclude>**/dominoschemas/*</exclude>
                         <exclude>**/nsfodp-maven-plugin/**</exclude>
+						<exclude>**/com/ibm/xsp/**</exclude>
 					</excludes>
 					<properties>
 						<owner>Jesse Gallagher</owner>
-						<copyrightYear>2022</copyrightYear>
+						<copyrightYear>2023</copyrightYear>
 					</properties>
 				</configuration>
 			</plugin>
@@ -357,7 +376,7 @@
 									<version>3.0.1</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>1.8.0</version>
+									<version>11</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -553,56 +572,6 @@
 			<modules>
 				<module>webapps/components-webapp</module>
 			</modules>
-		</profile>
-		<profile>
-			<id>non-m2e</id>
-			<activation>
-				<property>
-					<name>!m2e.version</name>
-				</property>
-			</activation>
-	
-			<dependencies>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-					<version>${bazaar-version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar</artifactId>
-					<version>${bazaar-version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-					<version>${bazaar-version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.interpreter</artifactId>
-					<version>${bazaar-version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-					<version>${bazaar-version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.codemirror</artifactId>
-					<version>${bazaar-version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm.xsp.extlib.bazaar</groupId>
-					<artifactId>com.ibm.xsp.extlibx.bazaar.feature</artifactId>
-					<version>${bazaar-version}</version>
-					<optional>true</optional>
-				</dependency>
-			</dependencies>
 		</profile>
 	</profiles>
 </project>
