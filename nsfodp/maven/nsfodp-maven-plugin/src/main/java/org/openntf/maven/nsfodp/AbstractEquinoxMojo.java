@@ -23,6 +23,9 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+
+import com.ibm.commons.util.StringUtil;
 
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.execution.MavenSession;
@@ -33,6 +36,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.openntf.maven.nsfodp.container.NSFODPContainer;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	@Parameter(defaultValue="${project}", readonly=true, required=false)
@@ -110,10 +114,47 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	/**
 	 * Sets whether execution should run in a Docker-compatible container.
 	 * 
-	 * @since 3.11.0
+	 * @since 4.0.0
 	 */
 	@Parameter(property="nsfodp.useContainerExecution", required=false)
 	protected boolean container;
+	
+	/**
+	 * Sets the name of the base Domino image to use when container-based
+	 * operations are enabled.
+	 * 
+	 * @since 4.0.0
+	 */
+	@Parameter(property="nsfodp.containerBaseImage", required=false)
+	protected String containerBaseImage;
+	
+	/**
+	 * Sets the path to the Docker-compatible socket to connect to when
+	 * container-based operations are enabled.
+	 * 
+	 * @since 4.0.0
+	 */
+	@Parameter(property="nsfodp.containerHost", required=false)
+	protected String containerHost;
+	
+	/**
+	 * Sets whether to verify TLS validity for connections when
+	 * container-based operations are enabled.
+	 * 
+	 * @since 4.0.0
+	 */
+	@Parameter(property="nsfodp.containerTlsVerify", required=false)
+	protected String containerTlsVerify;
+	
+	/**
+	 * Sets the path to look for TLS certificate chains for connecting when
+	 * container-based operations are enabled.
+	 * 
+	 * @since 4.0.0
+	 */
+	@Parameter(property="nsfodp.containerTlsCertPath", required=false)
+	protected String containerCertPath;
+	
 
 	protected boolean isRunLocally() {
 		if(this.container) {
@@ -130,8 +171,18 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 			if(log.isInfoEnabled()) {
 				log.info("Initializing NSF ODP container");
 			}
-			NSFODPContainer container = new NSFODPContainer(updateSites, packageZip, log, outputDirectory.toPath());
+			Properties props = TestcontainersConfiguration.getInstance().getUserProperties();
+			if(StringUtil.isNotEmpty(this.containerHost)) {
+				props.setProperty("docker.host", containerHost); //$NON-NLS-1$
+			}
+			if(StringUtil.isNotEmpty(this.containerTlsVerify)) {
+				props.setProperty("docker.tls.verify", this.containerTlsVerify); //$NON-NLS-1$
+			}
+			if(StringUtil.isNotEmpty(this.containerCertPath)) {
+				props.setProperty("docker.cert.path", this.containerCertPath); //$NON-NLS-1$
+			}
 			
+			NSFODPContainer container = new NSFODPContainer(updateSites, packageZip, log, outputDirectory.toPath(), this.containerBaseImage);
 			container.start();
 			if(log.isInfoEnabled()) {
 				log.info(MessageFormat.format("Started container: {0}", container.getContainerName()));
