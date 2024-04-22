@@ -52,6 +52,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
+import com.ibm.domino.napi.NException;
+import com.ibm.domino.napi.c.Os;
+import com.ibm.xsp.library.FacesClassLoader;
+import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
+import com.ibm.xsp.registry.LibraryFragmentImpl;
+import com.ibm.xsp.registry.UpdatableLibrary;
+import com.ibm.xsp.registry.parse.ConfigParser;
+import com.ibm.xsp.registry.parse.ConfigParserFactory;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
 import org.openntf.com.ibm.xsp.extlib.javacompiler.JavaCompilerException;
@@ -77,7 +89,6 @@ import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog;
-import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLError;
 import org.openntf.nsfodp.compiler.dxl.DxlImporterLog.DXLFatalError;
 import org.openntf.nsfodp.compiler.util.CompilerUtil;
 import org.openntf.nsfodp.compiler.util.MultiPathResourceBundleSource;
@@ -85,18 +96,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.domino.napi.NException;
-import com.ibm.domino.napi.c.Os;
-import com.ibm.xsp.library.FacesClassLoader;
-import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
-import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.xsp.registry.LibraryFragmentImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
-import com.ibm.xsp.registry.parse.ConfigParser;
-import com.ibm.xsp.registry.parse.ConfigParserFactory;
 
 /**
  * Represents an on-disk project compilation environment.
