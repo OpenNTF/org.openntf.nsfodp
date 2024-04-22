@@ -45,7 +45,7 @@
 		<nsfodp-version>${project.version}</nsfodp-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
-		<maven.api.version>3.3.9</maven.api.version>
+		<maven.api.version>3.8.1</maven.api.version>
 	</properties>
 	
 	<prerequisites>
@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.21</version>
+			<version>1.26.0</version>
 		</dependency>
 		
 		<!--
