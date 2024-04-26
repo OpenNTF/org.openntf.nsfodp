@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -59,8 +60,8 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 	public static final String JAVA_EXTENSION=JavaFileObject.Kind.SOURCE.extension;
 	public static final String CLASS_EXTENSION=JavaFileObject.Kind.CLASS.extension;
 
-	private Map<String, JavaFileObjectJavaCompiled> classes;
-	private Map<String, Class<?>> definedClasses = new HashMap<>();
+	private final Map<String, JavaFileObjectJavaCompiled> classes = new ConcurrentHashMap<>();
+	private final Map<String, Class<?>> definedClasses = new ConcurrentHashMap<>();
 	private JavaCompiler javaCompiler;
 	private List<String> options;
 	private DiagnosticCollector<JavaFileObject> diagnostics;
@@ -68,7 +69,7 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 	private PrintStream out;
 	
 	private final URLClassLoader classPathLoader;
-	private final Map<String, SingletonClassLoader> classNameClassLoaders = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SingletonClassLoader> classNameClassLoaders = new ConcurrentHashMap<>();
 	private boolean useSingletonClassLoaders = false;
 
 	public JavaSourceClassLoader(ClassLoader parentClassLoader, List<String> compilerOptions, String[] classPath) {
@@ -76,7 +77,6 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 	}
 	public JavaSourceClassLoader(ClassLoader parentClassLoader, List<String> compilerOptions, String[] classPath, boolean resolve) {
 		super(parentClassLoader);
-		this.classes=new HashMap<String, JavaFileObjectJavaCompiled>();
 		this.options=compilerOptions;
 		//this.javaCompiler=new EclipseCompiler();
 		this.javaCompiler = Objects.requireNonNull(ToolProvider.getSystemJavaCompiler(), "Unable to create Java compiler");
