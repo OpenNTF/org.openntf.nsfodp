@@ -103,8 +103,8 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 							}
 						})
 						.forEach(plugin -> {
-							if(log.isInfoEnabled()) {
-								log.info(MessageFormat.format("Adding custom plugin to container: {0}", plugin));
+							if(log.isDebugEnabled()) {
+								log.debug(MessageFormat.format("Adding custom plugin to container: {0}", plugin));
 							}
 							withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), plugin); //$NON-NLS-1$
 						});
@@ -125,8 +125,8 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 							cleanup.add(temp);
 							Files.copy(plugin, temp, StandardCopyOption.REPLACE_EXISTING);
 	
-							if(log.isInfoEnabled()) {
-								log.info(MessageFormat.format("Adding NSF ODP plugin to container: {0}", plugin));
+							if(log.isDebugEnabled()) {
+								log.debug(MessageFormat.format("Adding NSF ODP plugin to container: {0}", plugin));
 							}
 							withFileFromPath("staging/plugins/" + plugin.getFileName().toString(), temp); //$NON-NLS-1$
 						} catch(IOException e) { 
