@@ -151,8 +151,6 @@ public abstract class AbstractEquinoxTask {
 				getDependencyRef("org.openntf.nsfodp.exporter.equinox", -1), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.transpiler", 2), //$NON-NLS-1$
 				getDependencyRef("org.openntf.nsfodp.transpiler.equinox", -1), //$NON-NLS-1$
-				getDependencyRef("com.ibm.xsp.extlibx.bazaar", -1), //$NON-NLS-1$
-				getDependencyRef("com.ibm.xsp.extlibx.bazaar.interpreter", -1), //$NON-NLS-1$
 				getDependencyRef("com.darwino.domino.napi", -1) //$NON-NLS-1$
 			).forEach(runner::addPlatformEntry);
 			
