@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.compiler.equinox;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler.equinox
-Bundle-Version: 4.0.1.qualifier
+Bundle-Version: 4.0.3.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openntf.nsfodp.compiler
