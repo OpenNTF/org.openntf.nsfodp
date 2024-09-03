@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.compiler;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.compiler
-Bundle-Version: 4.0.1.qualifier
+Bundle-Version: 4.0.3.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: com.ibm.jscript.std,
  javax.xml.bind;resolution:=optional,
@@ -24,11 +24,11 @@ Require-Bundle: org.eclipse.osgi,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openntf.nsfodp.compiler.ODPCompilerActivator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.openntf.com.ibm.xsp.extlib.bazaar;version="4.0.1",
- org.openntf.com.ibm.xsp.extlib.bazaar.util;version="4.0.1",
- org.openntf.com.ibm.xsp.extlib.interpreter;version="4.0.1",
- org.openntf.com.ibm.xsp.extlib.javacompiler;version="4.0.1",
- org.openntf.nsfodp.compiler;version="4.0.1";
+Export-Package: org.openntf.com.ibm.xsp.extlib.bazaar;version="4.0.3",
+ org.openntf.com.ibm.xsp.extlib.bazaar.util;version="4.0.3",
+ org.openntf.com.ibm.xsp.extlib.interpreter;version="4.0.3",
+ org.openntf.com.ibm.xsp.extlib.javacompiler;version="4.0.3",
+ org.openntf.nsfodp.compiler;version="4.0.3";
   uses:="org.osgi.framework,
    org.eclipse.core.runtime,
    org.eclipse.osgi.util,
@@ -37,8 +37,8 @@ Export-Package: org.openntf.com.ibm.xsp.extlib.bazaar;version="4.0.1",
    org.openntf.nsfodp.compiler.update,
    com.ibm.xsp.registry,
    com.ibm.xsp.registry.config",
- org.openntf.nsfodp.compiler.update;version="4.0.1",
- org.openntf.nsfodp.compiler.util;version="4.0.1";
+ org.openntf.nsfodp.compiler.update;version="4.0.3",
+ org.openntf.nsfodp.compiler.util;version="4.0.3";
   uses:="com.darwino.domino.napi.wrap,
    com.ibm.xsp.library,
    com.ibm.xsp.registry.config"
