@@ -169,7 +169,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 			
 			// Initialize the Docker container
 			if(log.isInfoEnabled()) {
-				log.info("Initializing NSF ODP container");
+				log.info(MessageFormat.format("Initializing NSF ODP container with base image {0}", this.containerBaseImage));
 			}
 			Properties props = TestcontainersConfiguration.getInstance().getUserProperties();
 			if(StringUtil.isNotEmpty(this.containerHost)) {
