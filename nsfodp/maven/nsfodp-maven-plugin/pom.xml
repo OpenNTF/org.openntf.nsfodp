@@ -5,7 +5,7 @@
 
 	<groupId>org.openntf.maven</groupId>
 	<artifactId>nsfodp-maven-plugin</artifactId>
-	<version>4.0.4</version>
+	<version>4.0.5</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>NSF ODP Maven Plugin</name>

@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -62,6 +63,12 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 				try(InputStream is = getClass().getResourceAsStream("/container/Dockerfile")) { //$NON-NLS-1$
 					Path temp = tempDir.resolve("Dockerfile"); //$NON-NLS-1$
 					Files.copy(is, temp, StandardCopyOption.REPLACE_EXISTING);
+					
+					// Bring in an ODP ZIP only if we're using one
+					if(packageZip != null) {
+						Files.write(temp, "\nCOPY --chown=notes:notes odp.zip /local/odp.zip".getBytes(), StandardOpenOption.APPEND); //$NON-NLS-1$
+					}
+					
 					withFileFromPath("Dockerfile", temp); //$NON-NLS-1$
 				}
 				try(InputStream is = getClass().getResourceAsStream("/container/domino-config.json")) { //$NON-NLS-1$
