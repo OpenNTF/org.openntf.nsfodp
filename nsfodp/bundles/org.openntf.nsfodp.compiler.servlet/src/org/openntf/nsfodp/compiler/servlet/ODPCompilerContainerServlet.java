@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,10 @@ import org.openntf.nsfodp.compiler.update.UpdateSite;
 
 import com.ibm.commons.util.StringUtil;
 
+import lotus.domino.NotesException;
+import lotus.domino.NotesFactory;
 import lotus.domino.NotesThread;
+import lotus.domino.Session;
 
 public class ODPCompilerContainerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -74,6 +78,22 @@ public class ODPCompilerContainerServlet extends HttpServlet {
 		super.init(config);
 		
 		this.exec = Executors.newSingleThreadExecutor(NotesThread::new);
+		
+		try {
+			this.exec.submit(() -> {
+				// Show the OSGi status to help diagnose update-site trouble
+				try {
+					Session session = NotesFactory.createSession();
+					if(session.isOnServer()) {
+						session.sendConsoleCommand("", "tell http osgi diag"); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				} catch(NotesException e) {
+					e.printStackTrace();
+				}
+			}).get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
