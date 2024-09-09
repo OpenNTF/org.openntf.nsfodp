@@ -55,6 +55,7 @@ import java.util.stream.Stream;
 import com.ibm.commons.util.StringUtil;
 import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.domino.napi.NException;
+import com.ibm.domino.napi.c.C;
 import com.ibm.domino.napi.c.Os;
 import com.ibm.xsp.library.FacesClassLoader;
 import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
@@ -141,6 +142,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 		this.odp = onDiskProject;
 		
 		try {
+			C.initLibrary(null);
 			int debugDxl = Os.OSGetEnvironmentInt(INI_DEBUGDXL);
 			DEBUG_DXL = debugDxl > 0;
 		} catch(NException e) {

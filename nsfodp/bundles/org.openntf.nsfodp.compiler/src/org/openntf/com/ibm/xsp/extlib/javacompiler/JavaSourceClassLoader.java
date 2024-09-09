@@ -61,7 +61,7 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 	public static final String CLASS_EXTENSION=JavaFileObject.Kind.CLASS.extension;
 
 	private final Map<String, JavaFileObjectJavaCompiled> classes = new ConcurrentHashMap<>();
-	private final Map<String, Class<?>> definedClasses = new ConcurrentHashMap<>();
+	private final Map<String, Class<?>> definedClasses = new HashMap<>();
 	private JavaCompiler javaCompiler;
 	private List<String> options;
 	private DiagnosticCollector<JavaFileObject> diagnostics;
@@ -148,20 +148,26 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 		// Look if the class had already been compiled
 		JavaFileObject file=classes.get(qualifiedClassName);
 		if(file!=null) {
-			return definedClasses.computeIfAbsent(qualifiedClassName, className -> {
-				byte[] bytes=((JavaFileObjectJavaCompiled) file).getByteCode();
-				if(useSingletonClassLoaders) {
-					String cname = qualifiedClassName;
-					int dollarIndex = cname.indexOf('$');
-					if(dollarIndex > -1) {
-						cname = cname.substring(0, dollarIndex);
+			// Using computeIfAbsent here with concurrentcy-safe types causes exceptions on Java > 8
+			synchronized(definedClasses) {
+				Class<?> defined = definedClasses.get(qualifiedClassName);
+				if(defined == null) {
+					byte[] bytes=((JavaFileObjectJavaCompiled) file).getByteCode();
+					if(useSingletonClassLoaders) {
+						String cname = qualifiedClassName;
+						int dollarIndex = cname.indexOf('$');
+						if(dollarIndex > -1) {
+							cname = cname.substring(0, dollarIndex);
+						}
+						SingletonClassLoader delegate = classNameClassLoaders.computeIfAbsent(cname, name -> new SingletonClassLoader(this));
+						defined = delegate.defineClass(qualifiedClassName, bytes);
+					} else {
+						defined = defineClass(qualifiedClassName, bytes, 0, bytes.length);
 					}
-					SingletonClassLoader delegate = classNameClassLoaders.computeIfAbsent(cname, name -> new SingletonClassLoader(this));
-					return delegate.defineClass(qualifiedClassName, bytes);
-				} else {
-					return defineClass(qualifiedClassName, bytes, 0, bytes.length);
+					definedClasses.put(qualifiedClassName, defined);
 				}
-			});
+				return definedClasses.get(qualifiedClassName);
+			}
 		}
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6434149
 		try {
