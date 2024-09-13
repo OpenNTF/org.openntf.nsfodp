@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.eclipse.lsp;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.eclipse.lsp
-Bundle-Version: 4.0.5.qualifier
+Bundle-Version: 4.0.6.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.ui.editors;bundle-version="3.0.0",

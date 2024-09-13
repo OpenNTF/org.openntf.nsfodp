@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.deployment.servlet;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment.servlet
-Bundle-Version: 4.0.5.qualifier
+Bundle-Version: 4.0.6.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.commons
 Import-Package: com.ibm.xsp.http.fileupload,
