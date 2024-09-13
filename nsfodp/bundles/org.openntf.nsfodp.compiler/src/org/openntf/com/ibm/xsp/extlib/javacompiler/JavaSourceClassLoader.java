@@ -43,6 +43,7 @@ import org.openntf.com.ibm.xsp.extlib.javacompiler.impl.JavaFileObjectJavaCompil
 import org.openntf.com.ibm.xsp.extlib.javacompiler.impl.JavaFileObjectJavaSource;
 import org.openntf.com.ibm.xsp.extlib.javacompiler.impl.SingletonClassLoader;
 import org.openntf.com.ibm.xsp.extlib.javacompiler.impl.SourceFileManager;
+import org.openntf.nsfodp.commons.NSFODPUtil;
 
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -69,7 +70,7 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 	private PrintStream out;
 	
 	private final URLClassLoader classPathLoader;
-	private final Map<String, SingletonClassLoader> classNameClassLoaders = new ConcurrentHashMap<>();
+	private final Map<String, SingletonClassLoader> classNameClassLoaders = new HashMap<>();
 	private boolean useSingletonClassLoaders = false;
 
 	public JavaSourceClassLoader(ClassLoader parentClassLoader, List<String> compilerOptions, String[] classPath) {
@@ -149,25 +150,20 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 		JavaFileObject file=classes.get(qualifiedClassName);
 		if(file!=null) {
 			// Using computeIfAbsent here with concurrentcy-safe types causes exceptions on Java > 8
-			synchronized(definedClasses) {
-				Class<?> defined = definedClasses.get(qualifiedClassName);
-				if(defined == null) {
-					byte[] bytes=((JavaFileObjectJavaCompiled) file).getByteCode();
-					if(useSingletonClassLoaders) {
-						String cname = qualifiedClassName;
-						int dollarIndex = cname.indexOf('$');
-						if(dollarIndex > -1) {
-							cname = cname.substring(0, dollarIndex);
-						}
-						SingletonClassLoader delegate = classNameClassLoaders.computeIfAbsent(cname, name -> new SingletonClassLoader(this));
-						defined = delegate.defineClass(qualifiedClassName, bytes);
-					} else {
-						defined = defineClass(qualifiedClassName, bytes, 0, bytes.length);
+			return NSFODPUtil.computeIfAbsent(definedClasses, qualifiedClassName, className -> {
+				byte[] bytes=((JavaFileObjectJavaCompiled) file).getByteCode();
+				if(useSingletonClassLoaders) {
+					String cname = qualifiedClassName;
+					int dollarIndex = cname.indexOf('$');
+					if(dollarIndex > -1) {
+						cname = cname.substring(0, dollarIndex);
 					}
-					definedClasses.put(qualifiedClassName, defined);
+					SingletonClassLoader delegate = NSFODPUtil.computeIfAbsent(classNameClassLoaders, cname, name -> new SingletonClassLoader(this));
+					return delegate.defineClass(qualifiedClassName, bytes);
+				} else {
+					return defineClass(qualifiedClassName, bytes, 0, bytes.length);
 				}
-				return definedClasses.get(qualifiedClassName);
-			}
+			});
 		}
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6434149
 		try {
