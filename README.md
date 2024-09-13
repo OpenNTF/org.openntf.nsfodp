@@ -58,7 +58,7 @@ To use this tooling with an ODP, wrap it in a Maven project with the `domino-nsf
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>4.0.5</version>
+                <version>4.0.6</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
