@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -402,6 +403,34 @@ public enum NSFODPUtil {
 		} else {
 			// Otherwise, just use the normal method
 			return Files.newInputStream(path, options);
+		}
+	}
+	
+	/**
+	 * Performs an operation like {@link Map#computeIfAbsent}, but made to avoid problems
+	 * with ConcurrentModificationException in synchronized maps on Java beyond 8.
+	 *
+	 * <p>This method synchronizes on {@code map}, so the supplier {@code sup} should not
+	 * work with the original map.</p>
+	 *
+	 * @param <S> the key type of the map
+	 * @param <T> the value type of the map
+	 * @param map the map to work with
+	 * @param key the key to check
+	 * @param sup a supplier to provide a value when missing
+	 * @return the existing or new value from the map
+	 * @since 4.0.6
+	 */
+	public static <S, T> T computeIfAbsent(final Map<S, T> map, final S key, final Function<S, T> sup) {
+		synchronized(map) {
+			T result;
+			if(!map.containsKey(key)) {
+				result = sup.apply(key);
+				map.put(key, result);
+			} else {
+				result = map.get(key);
+			}
+			return result;
 		}
 	}
 }
