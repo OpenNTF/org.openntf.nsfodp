@@ -42,6 +42,8 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.images.builder.Transferable;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.model.Capability;
+import com.github.dockerjava.api.model.HostConfig;
 import com.ibm.commons.util.PathUtil;
 import com.ibm.commons.util.StringUtil;
 
@@ -160,6 +162,11 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 		addEnv("SetupAutoConfigure", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 		addEnv("SetupAutoConfigureParams", "/local/runner/domino-config.json"); //$NON-NLS-1$ //$NON-NLS-2$
 		addEnv("DOMINO_DOCKER_STDOUT", "yes"); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		// Enable ptrace to allow NSD to collect crash information
+		withCreateContainerCmdModifier(it ->
+			it.withHostConfig(HostConfig.newHostConfig().withCapAdd(Capability.SYS_PTRACE))
+		);
 		
 		withImagePullPolicy(imageName -> false);
 		withExposedPorts(80);
