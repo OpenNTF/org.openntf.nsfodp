@@ -36,7 +36,7 @@ public abstract class AbstractCompilerMojo extends AbstractEquinoxMojo {
 	/**
 	 * Any update sites whose contents to use when compiling XPages elements.
 	 * 
-	 * <p>Overrides {@link #updateSite} if both are specified.</p>
+	 * <p>Overrides {@code updateSite} if both are specified.</p>
 	 */
 	@Parameter(required = false)
 	protected File[] updateSites;
