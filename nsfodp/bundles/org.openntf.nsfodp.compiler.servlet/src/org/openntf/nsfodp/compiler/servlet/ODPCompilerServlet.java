@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,11 +120,12 @@ public class ODPCompilerServlet extends HttpServlet {
 				Files.copy(reqInputStream, packageFile, StandardCopyOption.REPLACE_EXISTING);
 			}
 			
-			// Look for an ODP item
 			Path odpZip = null;
 			List<Path> siteZips = new ArrayList<>();
 			List<Path> classPathJars = new ArrayList<>();
+			Collection<Path> docDxl = new ArrayList<>();
 			try(ZipFile packageZip = new ZipFile(packageFile.toFile(), StandardCharsets.UTF_8)) {
+				// Look for an ODP item
 				ZipEntry odpEntry = packageZip.getEntry("odp.zip"); //$NON-NLS-1$
 				if(odpEntry == null) {
 					// Then the package is itself the ODP
@@ -136,11 +138,12 @@ public class ODPCompilerServlet extends HttpServlet {
 						Files.copy(odpIs, odpZip, StandardCopyOption.REPLACE_EXISTING);
 					}
 					
-					// Look for any embedded update sites and classpath entries
+					// Look for any embedded update sites, classpath entries, and document DXL
 					packageZip.stream()
 						.forEach(entry -> {
 							try {
-								if(SITE_ZIP_PATTERN.matcher(entry.getName()).matches()) {
+								String entryName = entry.getName().toLowerCase();
+								if(SITE_ZIP_PATTERN.matcher(entryName).matches()) {
 									// Then add it as an update site
 									Path siteZip = Files.createTempFile(NSFODPUtil.getTempDirectory(), "site", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 									cleanup.add(siteZip);
@@ -148,7 +151,7 @@ public class ODPCompilerServlet extends HttpServlet {
 										Files.copy(siteIs, siteZip, StandardCopyOption.REPLACE_EXISTING);
 									}
 									siteZips.add(siteZip);
-								} else if(entry.getName().startsWith("classpath/")) { //$NON-NLS-1$
+								} else if(entryName.startsWith("classpath/")) { //$NON-NLS-1$
 									// Then add it as an individual JAR
 									Path cpJar = Files.createTempFile(NSFODPUtil.getTempDirectory(), "classpathJar", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
 									cleanup.add(cpJar);
@@ -156,6 +159,14 @@ public class ODPCompilerServlet extends HttpServlet {
 										Files.copy(jarIs, cpJar, StandardCopyOption.REPLACE_EXISTING);
 									}
 									classPathJars.add(cpJar);
+								} else if(entryName.startsWith("docs/") && (entryName.endsWith(".xml") || entryName.endsWith(".dxl"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+									// Then add it as generic DXL to import
+									Path dxlDoc = Files.createTempFile(NSFODPUtil.getTempDirectory(), "doc", ".dxl"); //$NON-NLS-1$ //$NON-NLS-2$
+									cleanup.add(dxlDoc);
+									try(InputStream jarIs = packageZip.getInputStream(entry)) {
+										Files.copy(jarIs, dxlDoc, StandardCopyOption.REPLACE_EXISTING);
+									}
+									docDxl.add(dxlDoc);
 								}
 							} catch(IOException e) {
 								throw new RuntimeException(e);

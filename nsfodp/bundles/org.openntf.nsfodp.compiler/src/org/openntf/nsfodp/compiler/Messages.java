@@ -45,6 +45,7 @@ public class Messages extends NLS {
 	public static String ODPCompiler_javaCompilationFailed;
 	public static String ODPCompiler_lotusScriptLabel;
 	public static String ODPCompiler_unableToCompileLotusScript;
+	public static String ODPCompiler_importingDocuments;
 	public static String ODPCompiler_uninstallingBundles;
 	public static String ODPCompiler_webServiceNotFound1;
 	public static String ODPCompiler_webServiceNotFound2;

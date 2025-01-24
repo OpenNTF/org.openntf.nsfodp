@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +39,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -211,6 +213,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Parameter(required=false, defaultValue = "false")
 	private boolean compileBasicElementLotusScript = false;
 	
+	/**
+	 * Path to a directory containing DXL files ending in ".dxl"
+	 * or ".xml" to import into the NSF without other processing.
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(required=false)
+	private File importDocumentsPath;
+	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
     protected MavenResourcesFiltering mavenResourcesFiltering;
 	
@@ -257,7 +268,9 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 
 		Path outputFile = outputDirectory.resolve(outputFileName);
 		
-		if(checkNeedsCompile(outputFile, odpDirectory, updateSites)) {
+		Path importDocumentsPath = this.importDocumentsPath == null ? null : this.importDocumentsPath.toPath();
+		
+		if(checkNeedsCompile(outputFile, odpDirectory, updateSites, importDocumentsPath)) {
 			if(log.isInfoEnabled()) {
 				log.info(Messages.getString("CompileODPMojo.compilingOdp")); //$NON-NLS-1$
 			}
@@ -346,7 +359,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				
 				// Compile the ODP
 				if(isRunLocally()) {
-					compileOdpLocal(odpCopy, updateSites, outputFile);
+					compileOdpLocal(odpCopy, updateSites, importDocumentsPath, outputFile);
 				} else {
 					
 					Path odpZip = zipDirectory(odpCopy);
@@ -358,7 +371,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 								.collect(Collectors.toList());
 						}
 						
-						Path packageZip = createPackage(odpZip, updateSiteZips);
+						Path packageZip = createPackage(odpZip, updateSiteZips, importDocumentsPath);
 						Optional<NSFODPContainer> spawnedContainer = Optional.empty();
 						try {
 							Path result;
@@ -412,7 +425,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	// * Local compilation
 	// *******************************************************************************
 	
-	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path outputFile) throws IOException {
+	private void compileOdpLocal(Path odpDirectory, List<Path> updateSites, Path importDocumentsPath, Path outputFile) throws IOException {
 		Path notesIni = this.notesIni == null ? null : this.notesIni.toPath();
 		EquinoxCompiler compiler = new EquinoxCompiler(pluginDescriptor, mavenSession, project, getLog(), notesProgram.toPath(), notesPlatform, notesIni);
 		compiler.setJvmArgs(this.equinoxJvmArgs);
@@ -425,14 +438,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
+		
+		compiler.compileOdp(odpDirectory, updateSites, jars, importDocumentsPath, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
 	// * Server-based compilation
 	// *******************************************************************************
 	
-	private Path createPackage(Path odpZip, List<Path> updateSiteZips) throws IOException {
+	private Path createPackage(Path odpZip, List<Path> updateSiteZips, Path importDocumentsPath) throws IOException {
 		if(log.isDebugEnabled()) {
 			log.debug(Messages.getString("CompileODPMojo.creatingPackage") + odpZip + ", updateSiteZips=" + updateSiteZips); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -464,6 +478,26 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					zos.putNextEntry(entry);
 					Files.copy(artifactPath, zos);
 					zos.closeEntry();
+				}
+				
+				// Add any loose documents
+				if(importDocumentsPath != null) {
+					try(Stream<Path> docsStream = Files.find(importDocumentsPath, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile())) {
+						docsStream.forEach(p -> {
+							try {
+								String fileName = p.getFileName().toString().toLowerCase();
+								if(fileName.endsWith(".dxl") || fileName.endsWith(".xml")) { //$NON-NLS-1$ //$NON-NLS-2$
+									String dedupeName = System.currentTimeMillis() + p.getFileName().toString();
+									ZipEntry docEntry = new ZipEntry("docs/" + dedupeName); //$NON-NLS-1$
+									zos.putNextEntry(docEntry);
+									Files.copy(p, zos);
+									zos.closeEntry();
+								}
+							} catch(IOException e) {
+								throw new UncheckedIOException(e);
+							}
+						});
+					}
 				}
 			}
 		}
@@ -595,7 +629,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	// * Misc. internal utilities
 	// *******************************************************************************
 	
-	private boolean checkNeedsCompile(Path outputFile, Path odpDirectory, List<Path> updateSites) throws MojoExecutionException {
+	private boolean checkNeedsCompile(Path outputFile, Path odpDirectory, List<Path> updateSites, Path importDocumentsPath) throws MojoExecutionException {
 		if(Files.exists(outputFile)) {
 			// Check to see if we need compilation
 			try {
@@ -607,9 +641,18 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				}
 				
 				// Check if any ODP files changed
-				try(Stream<Path> changeStream = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile() && attr.lastModifiedTime().compareTo(mod) > 0)) {
+				try(Stream<Path> changeStream = Files.find(odpDirectory, Integer.MAX_VALUE, (path, attr) -> attr.lastModifiedTime().compareTo(mod) > 0)) {
 					if(changeStream.findAny().isPresent()) {
 						return true;
+					}
+				}
+				
+				// Check if any loose document file changed
+				if(importDocumentsPath != null) {
+					try(Stream<Path> changeStream = Files.find(importDocumentsPath, Integer.MAX_VALUE, (path, attr) -> attr.lastModifiedTime().compareTo(mod) > 0)) {
+						if(changeStream.findAny().isPresent()) {
+							return true;
+						}
 					}
 				}
 				

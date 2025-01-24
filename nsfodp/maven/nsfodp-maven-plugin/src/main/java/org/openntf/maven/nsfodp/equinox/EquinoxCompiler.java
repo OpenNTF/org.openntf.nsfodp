@@ -47,6 +47,7 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			Path odpDirectory,
 			List<Path> updateSites,
 			Collection<Path> classpathJars,
+			Path importDocumentsPath,
 			Path outputFile,
 			String compilerLevel,
 			boolean appendTimestampToTitle,
@@ -76,6 +77,10 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		Path notesIni = getNotesIni();
 		if(notesIni != null) {
 			props.put(NSFODPConstants.PROP_NOTESINI, notesIni.toString());
+		}
+		
+		if(importDocumentsPath != null) {
+			props.put(NSFODPConstants.PROP_IMPORTER_DXLDOC, importDocumentsPath.toAbsolutePath().toString());
 		}
 		
 		setEquinoxEnvironmentVars(props);

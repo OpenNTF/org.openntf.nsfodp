@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -120,6 +121,10 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 * @since 3.8.0
 	 */
 	private boolean compileBasicElementLotusScript = false;
+	/**
+	 * @since 4.1.0
+	 */
+	private Collection<Path> docDxl = new HashSet<>();
 	
 	private static final List<String> DEFAULT_COMPILER_OPTIONS = Arrays.asList(
 			"-g", //$NON-NLS-1$
@@ -320,6 +325,18 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	}
 	
 	/**
+	 * Adds paths to DXL files to import into the result NSF after other
+	 * phases.
+	 * 
+	 * @param docDxl a {@link Collection} of {@link Path}s pointing to
+	 *        individual DXL files
+	 * @since 4.1.0
+	 */
+	public void addDocDxl(Collection<Path> docDxl) {
+		this.docDxl.addAll(docDxl);
+	}
+	
+	/**
 	 * Runs the compilation process:
 	 * 
 	 * <ol>
@@ -441,6 +458,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 							doc.set("$TemplateBuildDate", new Date()); //$NON-NLS-1$
 							doc.save();
 						}
+						
+						importDxlDocuments(importer, database);
 					}
 				}
 				
@@ -634,7 +653,7 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 					try {
 						return Files.size(p) > 0;
 					} catch (IOException e) {
-						throw new RuntimeException(e);
+						throw new UncheckedIOException(e);
 					}
 				})
 				.forEach(p -> {
@@ -643,12 +662,35 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 							noteIds.addAll(importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p))));
 						}
 					} catch(Exception e) {
-						throw new RuntimeException("Exception while importing element " + odp.getBaseDirectory().relativize(p), e);
+						throw new RuntimeException(MessageFormat.format("Exception while importing element {0}", odp.getBaseDirectory().relativize(p)), e);
 					}
 				});
 		}
 		if(isCompileBasicElementLotusScript()) {
 			compileLotusScript(database, noteIds, false);
+		}
+	}
+	
+	private void importDxlDocuments(NDXLImporter importer, NDatabase database) throws Exception {
+		subTask(Messages.ODPCompiler_importingDocuments);
+		try(Stream<Path> dxlElements = this.docDxl.stream()) {
+			dxlElements
+				.filter(p -> {
+					try {
+						return Files.size(p) > 0;
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				})
+				.forEach(p -> {
+					try {
+						try(InputStream is = NSFODPUtil.newInputStream(p)) {
+							importDxl(importer, is, database, MessageFormat.format(Messages.ODPCompiler_basicElementLabel, odp.getBaseDirectory().relativize(p)));
+						}
+					} catch(Exception e) {
+						throw new RuntimeException(MessageFormat.format("Exception while importing document {0}", p), e);
+					}
+				});
 		}
 	}
 	

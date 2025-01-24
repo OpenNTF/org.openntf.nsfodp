@@ -22,10 +22,17 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.json.JsonException;
+import com.ibm.commons.util.io.json.JsonJavaFactory;
+import com.ibm.commons.util.io.json.JsonParser;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.equinox.app.IApplication;
@@ -37,11 +44,6 @@ import org.openntf.nsfodp.commons.odp.notesapi.NotesAPI;
 import org.openntf.nsfodp.compiler.ODPCompiler;
 import org.openntf.nsfodp.compiler.ODPCompilerActivator;
 import org.openntf.nsfodp.compiler.update.FilesystemUpdateSite;
-
-import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.json.JsonException;
-import com.ibm.commons.util.io.json.JsonJavaFactory;
-import com.ibm.commons.util.io.json.JsonParser;
 
 import lotus.domino.NotesThread;
 
@@ -71,6 +73,7 @@ public class CompilerApplication implements IApplication {
 			Path odpDirectory = toPath(System.getenv(NSFODPConstants.PROP_ODPDIRECTORY));
 			List<Path> updateSites = toPaths(System.getenv(NSFODPConstants.PROP_UPDATESITE));
 			Path outputFile = toPath(System.getenv(NSFODPConstants.PROP_OUTPUTFILE));
+			Path importDocumentsPath = toPath(System.getenv(NSFODPConstants.PROP_IMPORTER_DXLDOC));
 			
 			IProgressMonitor mon = new PrintStreamProgressMonitor(System.out);
 			OnDiskProject odp = new OnDiskProject(odpDirectory);
@@ -110,6 +113,17 @@ public class CompilerApplication implements IApplication {
 				updateSites.stream()
 					.map(FilesystemUpdateSite::new)
 					.forEach(compiler::addUpdateSite);
+			}
+			
+			if(importDocumentsPath != null) {
+				try(Stream<Path> docsStream = Files.find(importDocumentsPath, Integer.MAX_VALUE, (path, attr) -> attr.isRegularFile())) {
+					Set<Path> docDxl = docsStream.filter(p -> {
+						String fileName = p.getFileName().toString().toLowerCase();
+						return fileName.endsWith(".dxl") || fileName.endsWith(".xml"); //$NON-NLS-1$ //$NON-NLS-2$
+					})
+					.collect(Collectors.toSet());
+					compiler.addDocDxl(docDxl);
+				}
 			}
 			
 			exec.submit(() -> {

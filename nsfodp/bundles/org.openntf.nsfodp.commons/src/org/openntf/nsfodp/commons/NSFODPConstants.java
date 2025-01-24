@@ -40,6 +40,7 @@ public enum NSFODPConstants {
 	 * @since 3.0.0
 	 */
 	public static final String PROP_NOTESINI = "org.openntf.nsfodp.notesini"; //$NON-NLS-1$
+	public static final String PROP_IMPORTER_DXLDOC = "org.openntf.nsfodp.import.dxldoc"; //$NON-NLS-1$
 	
 	// *******************************************************************************
 	// * Compiler constants
