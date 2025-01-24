@@ -46,6 +46,8 @@ import org.openntf.nsfodp.commons.jvm.JvmEnvironment;
 import org.openntf.nsfodp.commons.osgi.EquinoxRunner;
 
 public abstract class AbstractEquinoxTask {
+	private static final String[] VERBOTEN_NDEXT_JARS = { "jsdk.jar", "Notes.jar" }; //$NON-NLS-1$ //$NON-NLS-2$
+	
 	private final PluginDescriptor pluginDescriptor;
 	private final MavenSession mavenSession;
 	private final MavenProject project;
@@ -243,7 +245,14 @@ public abstract class AbstractEquinoxTask {
 				.filter(a -> artifactId.equals(a.getArtifactId()))
 				.findFirst()
 				.orElseThrow(() -> new MojoExecutionException(Messages.getString("EquinoxMojo.couldNotFindDependency", artifactId))); //$NON-NLS-1$
-		Artifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), "", dep.getType(), "", new DefaultArtifactHandler()); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		// flatten-maven-plugin causes trouble with Tycho .qualifier, so alter the version if necessary
+		String version = dep.getVersion();
+		if(version.endsWith(".qualifier")) { //$NON-NLS-1$
+			version = version.substring(0, version.length()-".qualifier".length()) + "-SNAPSHOT"; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
+		Artifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(), version, "", dep.getType(), "", new DefaultArtifactHandler()); //$NON-NLS-1$ //$NON-NLS-2$
 		art = mavenSession.getLocalRepository().find(art);
 		File file = art.getFile();
 		Path result;
@@ -283,6 +292,21 @@ public abstract class AbstractEquinoxTask {
      */
 	private void addNdextJars(EquinoxRunner runner) throws MojoExecutionException {
 		runner.addClasspathJar(getDependencyJar("guava")); //$NON-NLS-1$
+		
+		// Notes/Domino 14 moved support JARs to ndext, so add those, minus the known
+		//   Servlet JAR
+		Path ndext = runner.getNotesProgram().resolve("ndext"); //$NON-NLS-1$
+		if(Files.isDirectory(ndext)) {
+			try {
+				Files.list(ndext)
+					.filter(Files::isRegularFile)
+					.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+					.filter(f -> !Arrays.stream(VERBOTEN_NDEXT_JARS).anyMatch(v -> v.equalsIgnoreCase(f.getFileName().toString())))
+					.forEach(runner::addClasspathJar);
+			} catch (IOException e) {
+				throw new MojoExecutionException("Encountered exception populating ndext JARs", e);
+			}
+		}
 	}
     
     private static final char[] STOP_SEQUENCE = { '#', 'e', 'n', 'd' };

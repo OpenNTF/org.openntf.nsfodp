@@ -953,9 +953,14 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			try {
 				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
 			} catch(ClassNotFoundException e) {
-				subTask(Messages.ODPCompiler_webServiceNotFound1);
-				subTask(Messages.ODPCompiler_webServiceNotFound2);
-				return;
+				// Try with the base ClassLoader
+				try {
+					Class.forName("lotus.domino.websvc.client.Stub", false, ClassLoader.getSystemClassLoader()); //$NON-NLS-1$
+				} catch(ClassNotFoundException e2) {
+					subTask(Messages.ODPCompiler_webServiceNotFound1);
+					subTask(Messages.ODPCompiler_webServiceNotFound2);
+					return;
+				}
 			}
 			
 			subTask(Messages.ODPCompiler_compilingLotusScript);

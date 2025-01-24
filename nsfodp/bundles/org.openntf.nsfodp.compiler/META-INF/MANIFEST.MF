@@ -42,3 +42,4 @@ Export-Package: org.openntf.com.ibm.xsp.extlib.bazaar;version="4.0.7",
   uses:="com.darwino.domino.napi.wrap,
    com.ibm.xsp.library,
    com.ibm.xsp.registry.config"
+Dynamic-ImportPackage: lotus.domino.websvc.*,lotus.domino.axis.*,lotus.domino.discovery.*,lotus.domino.types.*,lotus.domino.ws.*
