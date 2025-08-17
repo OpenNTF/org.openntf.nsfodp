@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.exporter;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.exporter.servlet
-Bundle-Version: 4.0.6.qualifier
+Bundle-Version: 4.0.7.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
  org.eclipse.osgi
@@ -18,4 +18,4 @@ Import-Package: org.eclipse.core.runtime,
  org.openntf.nsfodp.commons.xml;version="3.7.1",
  org.osgi.framework
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.openntf.nsfodp.exporter;version="4.0.6"
+Export-Package: org.openntf.nsfodp.exporter;version="4.0.7"

@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018-2022 Jesse Gallagher
+/*
+ * Copyright © 2018-2025 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	@Deprecated File updateSite;
 	
 	/**
-	 * The compiler level to target, e.g. "1.6", "1.8", "10", etc.
+	 * The compiler level to target, e.g. "1.8", "17", etc.
 	 * 
 	 * <p>If unspecified, this defaults to the server's JRE version.</p>
 	 */
@@ -144,7 +144,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	
 	/**
 	 * Whether or not to append a timestamp to the generated NSF's title. Defaults to
-	 * {@value}.
+	 * {@code false}.
 	 */
 	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false)
 	private boolean appendTimestampToTitle = false;
@@ -152,9 +152,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	/**
 	 * A name to set in the database for use as a master template.
 	 * 
-	 * <p>Note: this is the name
-	 * used by this database when it is a template for others, not the name of a template
-	 * to inherit from.</p>
+	 * <p>Note: this is the name used by this database when it is a template for
+	 * others, not the name of a template to inherit from.</p>
 	 */
 	@Parameter(property="nsfodp.compiler.templateName", required=false)
 	private String templateName;

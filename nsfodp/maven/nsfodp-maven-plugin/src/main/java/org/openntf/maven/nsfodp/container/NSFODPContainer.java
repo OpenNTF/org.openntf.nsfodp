@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018-2022 Jesse Gallagher
+/*
+ * Copyright © 2018-2025 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 	private static class DominoImage extends ImageFromDockerfile {
 
 		public DominoImage(Collection<Path> updateSites, Path packageZip, Collection<Path> cleanup, Log log, String baseImage) {
-			super("nsfodp-container:1.0.0", true); //$NON-NLS-1$
+			super("nsfodp-container:" + getMavenVersion(), true); //$NON-NLS-1$
 			
 			if(StringUtil.isNotEmpty(baseImage)) {
 				withBuildArg("BASEIMAGE", baseImage); //$NON-NLS-1$

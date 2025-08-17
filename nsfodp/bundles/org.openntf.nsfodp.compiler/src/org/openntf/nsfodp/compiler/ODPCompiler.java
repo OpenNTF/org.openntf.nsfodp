@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018-2023 Jesse Gallagher
+/*
+ * Copyright (c) 2018-2025 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -953,9 +953,14 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			try {
 				Class.forName("lotus.domino.websvc.client.Stub"); //$NON-NLS-1$
 			} catch(ClassNotFoundException e) {
-				subTask(Messages.ODPCompiler_webServiceNotFound1);
-				subTask(Messages.ODPCompiler_webServiceNotFound2);
-				return;
+				// Try with the base ClassLoader
+				try {
+					Class.forName("lotus.domino.websvc.client.Stub", false, ClassLoader.getSystemClassLoader()); //$NON-NLS-1$
+				} catch(ClassNotFoundException e2) {
+					subTask(Messages.ODPCompiler_webServiceNotFound1);
+					subTask(Messages.ODPCompiler_webServiceNotFound2);
+					return;
+				}
 			}
 			
 			subTask(Messages.ODPCompiler_compilingLotusScript);

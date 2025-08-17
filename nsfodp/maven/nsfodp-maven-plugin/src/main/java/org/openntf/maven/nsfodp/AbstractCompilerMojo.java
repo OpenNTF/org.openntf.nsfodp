@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018-2022 Jesse Gallagher
+/*
+ * Copyright © 2018-2025 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public abstract class AbstractCompilerMojo extends AbstractEquinoxMojo {
 	/**
 	 * Any update sites whose contents to use when compiling XPages elements.
 	 * 
-	 * <p>Overrides {@link #updateSite} if both are specified.</p>
+	 * <p>Overrides {@code updateSite} if both are specified.</p>
 	 */
 	@Parameter(required = false)
 	protected File[] updateSites;

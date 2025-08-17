@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.deployment;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.deployment
-Bundle-Version: 4.0.6.qualifier
+Bundle-Version: 4.0.7.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: org.openntf.nsfodp.commons.odp.util;version="3.5.0",
  org.osgi.framework

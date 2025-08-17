@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018-2023 Jesse Gallagher
+/*
+ * Copyright (c) 2018-2025 Jesse Gallagher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,6 +151,7 @@ public class EquinoxRunner {
 		
 		List<String> platform = new ArrayList<>(this.platform);
 		platform.add(createClasspathExtensionBundle(this.classpath, plugins));
+		platform.add(createNotesCorbaShim(this.classpath, plugins));
 		
 		Path workspace = workingDirectory.resolve("workspace"); //$NON-NLS-1$
 		Files.createDirectories(workspace);
@@ -408,6 +409,29 @@ public class EquinoxRunner {
 						.collect(Collectors.joining(",")) //$NON-NLS-1$
 					);
 				}
+				
+				manifest.write(jos);
+			}
+		}
+		return "reference:" + tempBundle.toAbsolutePath().toUri(); //$NON-NLS-1$
+	}
+
+    public static String createNotesCorbaShim(Collection<Path> classpathJars, Path plugins) throws IOException {
+		Path tempBundle = Files.createTempFile(plugins, "org.openntf.nsfodp.corbashim", ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+		try(OutputStream os = Files.newOutputStream(tempBundle, StandardOpenOption.TRUNCATE_EXISTING)) {
+			try(JarOutputStream jos = new JarOutputStream(os)) {
+				JarEntry entry = new JarEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
+				jos.putNextEntry(entry);
+				
+				Manifest manifest = new Manifest();
+				Attributes attrs = manifest.getMainAttributes();
+				attrs.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-SymbolicName", "org.openntf.nsfodp.corbashim"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Version", "1.0.0." + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Bundle-Name", "NSF ODP Tooling CORBA shim"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Fragment-Host", "com.ibm.notes.java.api"); //$NON-NLS-1$ //$NON-NLS-2$
+				attrs.putValue("Import-Package", "org.omg.CORBA;resolution:=optional,lotus.domino.websvc.client;resolution:=optional"); //$NON-NLS-1$ //$NON-NLS-2$
 				
 				manifest.write(jos);
 			}
