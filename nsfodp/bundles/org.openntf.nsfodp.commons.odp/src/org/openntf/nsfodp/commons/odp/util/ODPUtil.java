@@ -56,7 +56,7 @@ public enum ODPUtil {
 		try {
 			return String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)); //$NON-NLS-1$
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Encountered exception reading file " + path, e);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public enum ODPUtil {
 		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			return NSFODPDomUtil.createDocument(is);
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Encountered exception reading XML from file " + file, e);
 		}
 	}
 	
