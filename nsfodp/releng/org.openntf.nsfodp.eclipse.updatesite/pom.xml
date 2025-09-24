@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openntf.nsfodp</groupId>
 		<artifactId>nsfodp</artifactId>
-		<version>4.0.7</version>
+		<version>4.0.8-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
 	<artifactId>org.openntf.nsfodp.eclipse.updatesite</artifactId>
@@ -12,6 +12,20 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.darwino</groupId>
+				<artifactId>p2sitexml-maven-plugin</artifactId>
+				<version>1.2.0</version>
+				<executions>
+					<execution>
+						<id>generate-sitexml</id>
+						<goals>
+							<goal>generate-site-xml</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
