@@ -699,8 +699,8 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 				res -> {
 					try {
 						return res.getDxl();
-					} catch ( IOException e) {
-						throw new RuntimeException(e);
+					} catch (Exception e) {
+						throw new RuntimeException(MessageFormat.format("Encountered exception processing file resource {0}", res.getDataFile()), e);
 					}
 				}
 			));
