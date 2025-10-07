@@ -77,6 +77,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.eclipse.aether.RepositorySystemSession;
 import org.openntf.maven.nsfodp.config.ConfigAcl;
 import org.openntf.maven.nsfodp.container.NSFODPContainer;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
@@ -125,7 +126,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 */
 	@Parameter(property="nsfodp.compiler.serverTrustSelfSignedSsl", required=false)
 	private boolean compilerServerTrustSelfSignedSsl;
-	
+
 	/**
 	 * An update site whose contents to use when building the ODP.
 	 * 
@@ -211,7 +212,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	private boolean compileBasicElementLotusScript = false;
 	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
-    protected MavenResourcesFiltering mavenResourcesFiltering;
+	protected MavenResourcesFiltering mavenResourcesFiltering;
+
+	@Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+	private RepositorySystemSession repositorySystemSession;
 	
 	private Log log;
 
@@ -360,8 +364,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Path packageZip = createPackage(odpZip, updateSiteZips);
 						Optional<NSFODPContainer> spawnedContainer = Optional.empty();
 						try {
+							
+							Path localMavenRepo = repositorySystemSession.getLocalRepository().getBasedir().toPath();
 							Path result;
-							spawnedContainer = initContainerIfNeeded(updateSites, packageZip);
+							spawnedContainer = initContainerIfNeeded(localMavenRepo, updateSites, packageZip);
 							if(spawnedContainer.isPresent()) {
 								result = compileOdpInContainer(packageZip, spawnedContainer.get());
 							} else {
