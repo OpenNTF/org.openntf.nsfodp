@@ -24,6 +24,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -179,7 +180,11 @@ public class JavaSourceClassLoader extends ClassLoader implements AutoCloseable 
 		} catch(ClassNotFoundException nf) {
 		}
 		
-		return super.findClass(qualifiedClassName);
+		try {
+			return super.findClass(qualifiedClassName);
+		} catch(ClassNotFoundException nf) {
+			throw new ClassNotFoundException(MessageFormat.format("Unable to find class {0}", qualifiedClassName));
+		}
 	}
 
 	@Override
