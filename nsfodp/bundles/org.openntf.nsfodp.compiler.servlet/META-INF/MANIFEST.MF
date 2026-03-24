@@ -7,6 +7,7 @@ Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Import-Package: javax.servlet;version="2.5.0",
  javax.servlet.http;version="2.5.0",
+ lotus.domino,
  org.eclipse.core.runtime,
  org.openntf.nsfodp.commons.jvm;version="3.8.0",
  org.openntf.nsfodp.commons.osgi;version="3.8.0",

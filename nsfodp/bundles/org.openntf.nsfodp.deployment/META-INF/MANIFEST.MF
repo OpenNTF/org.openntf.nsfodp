@@ -9,6 +9,6 @@ Import-Package: org.openntf.nsfodp.commons.odp.util;version="3.5.0",
  org.osgi.framework
 Require-Bundle: org.eclipse.core.runtime,
  com.ibm.notes.java.api,
- com.ibm.commons;bundle-version="9.0.1"
+ com.ibm.commons
 Export-Package: org.openntf.nsfodp.deployment
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

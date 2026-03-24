@@ -7,3 +7,4 @@ Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openntf.nsfodp.compiler
+Import-Package: lotus.domino
