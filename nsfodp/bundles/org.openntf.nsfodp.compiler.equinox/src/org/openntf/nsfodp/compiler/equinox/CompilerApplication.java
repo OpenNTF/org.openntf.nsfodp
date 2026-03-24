@@ -81,10 +81,6 @@ public class CompilerApplication implements IApplication {
 			if(StringUtil.isNotEmpty(compilerLevel)) {
 				compiler.setCompilerLevel(compilerLevel);
 			}
-			String appendTimestamp = System.getenv(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
-			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-				compiler.setAppendTimestampToTitle(true);
-			}
 			String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
 			if(StringUtil.isNotEmpty(templateName)) {
 				compiler.setTemplateName(templateName);

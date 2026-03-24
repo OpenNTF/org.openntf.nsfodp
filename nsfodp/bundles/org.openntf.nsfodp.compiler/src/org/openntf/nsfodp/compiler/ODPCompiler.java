@@ -29,9 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,19 +49,6 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.domino.napi.NException;
-import com.ibm.domino.napi.c.C;
-import com.ibm.domino.napi.c.Os;
-import com.ibm.xsp.library.FacesClassLoader;
-import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
-import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.xsp.registry.LibraryFragmentImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
-import com.ibm.xsp.registry.parse.ConfigParser;
-import com.ibm.xsp.registry.parse.ConfigParserFactory;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
@@ -98,6 +83,19 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.ibm.commons.util.StringUtil;
+import com.ibm.commons.util.io.StreamUtil;
+import com.ibm.domino.napi.NException;
+import com.ibm.domino.napi.c.C;
+import com.ibm.domino.napi.c.Os;
+import com.ibm.xsp.library.FacesClassLoader;
+import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
+import com.ibm.xsp.registry.LibraryFragmentImpl;
+import com.ibm.xsp.registry.UpdatableLibrary;
+import com.ibm.xsp.registry.parse.ConfigParser;
+import com.ibm.xsp.registry.parse.ConfigParserFactory;
+
 /**
  * Represents an on-disk project compilation environment.
  * 
@@ -111,7 +109,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
 	private String compilerLevel = DEFAULT_COMPILER_LEVEL;
 	
-	private boolean appendTimestampToTitle = false;
 	private String templateName;
 	private String templateVersion;
 	private boolean setProductionXspOptions = false;
@@ -127,8 +124,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 		);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
-	
-	private static final ThreadLocal<DateFormat> TIMESTAMP = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd h:mm a zzz")); //$NON-NLS-1$
 	
 	/**
 	 * Notes.ini property to set to "1" to output debug information about imported DXL
@@ -194,22 +189,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 */
 	public String getCompilerLevel() {
 		return compilerLevel;
-	}
-	
-	/**
-	 * Set whether or not to append a timestamp to the generated NSF's title.
-	 * 
-	 * @param appendTimestampToTitle whether or not to append a timestamp to the generated NSF's title
-	 */
-	public void setAppendTimestampToTitle(boolean appendTimestampToTitle) {
-		this.appendTimestampToTitle = appendTimestampToTitle;
-	}
-	
-	/**
-	 * @return whether the compiler is configured to append a timestamp to the NSF's title
-	 */
-	public boolean isAppendTimestampToTitle() {
-		return appendTimestampToTitle;
 	}
 	
 	/**
@@ -411,11 +390,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 							importCustomControls(importer, database, classLoader, compiledClassNames);
 							importXPages(importer, database, classLoader, compiledClassNames);
 							importJavaElements(importer, database, classLoader, compiledClassNames);
-						}
-		
-						// Append a timestamp if requested
-						if(this.isAppendTimestampToTitle()) {
-							database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
 						}
 						
 						// Set the template info if requested

@@ -36,6 +36,8 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,6 +104,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
 	public static final String SERVLET_CONTAINER_PATH = "/org.openntf.nsfodp/containerCompiler"; //$NON-NLS-1$
+	private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a zzz"); //$NON-NLS-1$
 	
 	/**
 	 * File name of the generated NSF.
@@ -149,6 +152,16 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 */
 	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false)
 	private boolean appendTimestampToTitle = false;
+	
+	/**
+	 * Controls the format of the timestamp when {@code appendTimestampToTitle} is
+	 * set to {@code true}. This is specified in the string format as interpreted
+	 * by {@code DateTimeFormatter}.
+	 * 
+	 * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
+	 */
+	@Parameter(property="nsfodp.compiler.timestampFormat", required=false)
+	private String timestampFormat;
 	
 	/**
 	 * A name to set in the database for use as a master template.
@@ -298,11 +311,8 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					mavenResourcesFiltering.filterResources(exec);
 				}
 				
-				// Write in the ACL, if specified
-				if(this.acl != null) {
-					if(log.isInfoEnabled()) {
-						log.info("Writing ACL from pom.xml into AppProperties/database.properties");
-					}
+				// Write in the ACL or title, if specified
+				if(this.acl != null || this.appendTimestampToTitle) {
 					try {
 						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
 						Document props;
@@ -319,22 +329,54 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							}
 						}
 						
-						for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
-							nodeObj.getParentNode().removeChild(nodeObj);
+						if(this.appendTimestampToTitle) {
+							if(log.isInfoEnabled()) {
+								log.info("Appending timestamp to title in AppProperties/database.properties");
+							}
+							// Write to the top node and, if present, a $TITLE element
+							DateTimeFormatter format;
+							if(StringUtil.isNotEmpty(this.timestampFormat)) {
+								format = DateTimeFormatter.ofPattern(this.timestampFormat);
+							} else {
+								format = TIMESTAMP;
+							}
+							
+							Element database = props.getDocumentElement();
+							String title = database.getAttribute("title"); //$NON-NLS-1$
+							if(StringUtil.isEmpty(title)) {
+								title = project.getArtifactId();
+							}
+							title += " - " + format.format(ZonedDateTime.now()); //$NON-NLS-1$
+							database.setAttribute("title", title); //$NON-NLS-1$
+							String fTitle = title;
+							NSFODPDomUtil.node(props, "/database/note/item[@name='$TITLE']/text").ifPresent(node -> { //$NON-NLS-1$
+								if(node instanceof Element) {
+									((Element)node).setTextContent(fTitle);
+								}
+							});
 						}
 						
-						JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
-						Marshaller marshaller = jaxbContext.createMarshaller();
-						marshaller.marshal(this.acl, props.getDocumentElement());
-						
-						Element aclElement = (Element)props.getDocumentElement().getLastChild();
-						
-						// Make sure that this appears either immediately after a databaseinfo element or as the first child
-						Element databaseinfo = (Element)NSFODPDomUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
-						if(databaseinfo != null) {
-							NSFODPDomUtil.insertAfter((Node) props.getDocumentElement(), (Node) aclElement, (Node) databaseinfo);
-						} else {
-							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
+						if(this.acl != null) {
+							if(log.isInfoEnabled()) {
+								log.info("Writing ACL from pom.xml into AppProperties/database.properties");
+							}
+							for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
+								nodeObj.getParentNode().removeChild(nodeObj);
+							}
+							
+							JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
+							Marshaller marshaller = jaxbContext.createMarshaller();
+							marshaller.marshal(this.acl, props.getDocumentElement());
+							
+							Element aclElement = (Element)props.getDocumentElement().getLastChild();
+							
+							// Make sure that this appears either immediately after a databaseinfo element or as the first child
+							Element databaseinfo = (Element)NSFODPDomUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
+							if(databaseinfo != null) {
+								NSFODPDomUtil.insertAfter((Node) props.getDocumentElement(), (Node) aclElement, (Node) databaseinfo);
+							} else {
+								props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
+							}
 						}
 						
 						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
@@ -430,7 +472,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
@@ -493,7 +535,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
-			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
 			if(this.templateName != null && !this.templateName.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
@@ -547,7 +588,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
-			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
 			if(this.templateName != null && !this.templateName.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
