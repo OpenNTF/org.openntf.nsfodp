@@ -48,7 +48,7 @@ import com.ibm.commons.util.StringUtil;
 public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 	private static class DominoImage extends ImageFromDockerfile {
 
-		public DominoImage(Collection<Path> updateSites, Path packageZip, Collection<Path> cleanup, Log log, String baseImage) {
+		public DominoImage(Path localMavenRepo, Collection<Path> updateSites, Path packageZip, Collection<Path> cleanup, Log log, String baseImage) {
 			super("nsfodp-container:" + getMavenVersion(), true); //$NON-NLS-1$
 			
 			if(StringUtil.isNotEmpty(baseImage)) {
@@ -119,7 +119,7 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 				
 				// Read the NSF ODP update site
 				String version = getMavenVersion();
-				Path updateSite = findLocalMavenArtifact("org.openntf.nsfodp", "org.openntf.nsfodp.domino.updatesite", version, "zip"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				Path updateSite = findLocalMavenArtifact(localMavenRepo, "org.openntf.nsfodp", "org.openntf.nsfodp.domino.updatesite", version, "zip"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if(!(Files.isReadable(updateSite) && Files.isRegularFile(updateSite))) {
 					throw new IllegalStateException(MessageFormat.format("Unable to read update site: {0}", updateSite));
 				}
@@ -151,8 +151,9 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 	private final Log log;
 	private final Path outputDirectory;
 
-	public NSFODPContainer(Collection<Path> updateSites, Path packageZip, Log log, Path outputDirectory, String baseImage) {
-		super(new DominoImage(updateSites, packageZip, cleanup.get(), log, baseImage));
+	public NSFODPContainer(Path localMavenRepo, Collection<Path> updateSites, Path packageZip, Log log,
+			Path outputDirectory, String baseImage) {
+		super(new DominoImage(localMavenRepo, updateSites, packageZip, cleanup.get(), log, baseImage));
 		this.log = log;
 		this.outputDirectory = outputDirectory;
 		
@@ -190,14 +191,9 @@ public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
 		cleanup.get().clear();
 	}
 	
-	private static Path findLocalMavenArtifact(String groupId, String artifactId, String version, String type) {
-		String mavenRepo = System.getProperty("maven.repo.local"); //$NON-NLS-1$
-		if (StringUtil.isEmpty(mavenRepo)) {
-			mavenRepo = PathUtil.concat(System.getProperty("user.home"), ".m2", File.separatorChar); //$NON-NLS-1$ //$NON-NLS-2$
-			mavenRepo = PathUtil.concat(mavenRepo, "repository", File.separatorChar); //$NON-NLS-1$
-		}
+	private static Path findLocalMavenArtifact(Path localMavenRepo, String groupId, String artifactId, String version, String type) {
 		String groupPath = groupId.replace('.', File.separatorChar);
-		Path localPath = Paths.get(mavenRepo).resolve(groupPath).resolve(artifactId).resolve(version);
+		Path localPath = localMavenRepo.resolve(groupPath).resolve(artifactId).resolve(version);
 		String fileName = StringUtil.format("{0}-{1}.{2}", artifactId, version, type); //$NON-NLS-1$
 		Path localFile = localPath.resolve(fileName);
 		

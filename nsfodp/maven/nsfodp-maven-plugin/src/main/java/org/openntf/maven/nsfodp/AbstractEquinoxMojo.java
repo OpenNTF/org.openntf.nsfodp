@@ -163,7 +163,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 		return notesProgram != null && notesPlatform != null && !requireServerExecution;
 	}
 	
-	protected Optional<NSFODPContainer> initContainerIfNeeded(List<Path> updateSites, Path packageZip) {
+	protected Optional<NSFODPContainer> initContainerIfNeeded(Path localMavenRepo, List<Path> updateSites, Path packageZip) {
 		if(this.container) {
 			Log log = getLog();
 			
@@ -182,7 +182,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 				props.setProperty("docker.cert.path", this.containerCertPath); //$NON-NLS-1$
 			}
 			
-			NSFODPContainer container = new NSFODPContainer(updateSites, packageZip, log, outputDirectory.toPath(), this.containerBaseImage);
+			NSFODPContainer container = new NSFODPContainer(localMavenRepo, updateSites, packageZip, log, outputDirectory.toPath(), this.containerBaseImage);
 			container.start();
 			if(log.isInfoEnabled()) {
 				log.info(MessageFormat.format("Started container: {0}", container.getContainerName()));
