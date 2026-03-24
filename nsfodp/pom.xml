@@ -345,8 +345,8 @@
 						<exclude>**/com/ibm/xsp/**</exclude>
 					</excludes>
 					<properties>
-						<owner>Jesse Gallagher</owner>
-						<copyrightYear>2025</copyrightYear>
+						<owner>Contributors to the NSF ODP Tooling Project</owner>
+						<copyrightYear>2026</copyrightYear>
 					</properties>
 				</configuration>
 			</plugin>
