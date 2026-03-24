@@ -191,14 +191,6 @@ public class ODPCompilerContainerServlet extends HttpServlet {
 				if(StringUtil.isNotEmpty(compilerLevel)) {
 					compiler.setCompilerLevel(compilerLevel);
 				}
-				String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
-				if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-					compiler.setAppendTimestampToTitle(true);
-					String timestampFormat = req.getHeader(NSFODPConstants.HEADER_TIMESTAMP_FORMAT);
-					if(StringUtil.isNotEmpty(timestampFormat)) {
-						compiler.setTimestampFormat(timestampFormat);
-					}
-				}
 				String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
 				if(StringUtil.isNotEmpty(templateName)) {
 					compiler.setTemplateName(templateName);

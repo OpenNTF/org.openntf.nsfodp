@@ -46,13 +46,6 @@ public enum NSFODPConstants {
 	// *******************************************************************************
 
 	public static final String HEADER_COMPILER_LEVEL = "X-CompilerLevel"; //$NON-NLS-1$
-	public static final String HEADER_APPEND_TIMESTAMP = "X-AppendTimestamp"; //$NON-NLS-1$
-	/**
-	 * Header indicating the format to use for the title timestamp when
-	 * configured to append.
-	 * @since 4.1.0
-	 */
-	public static final String HEADER_TIMESTAMP_FORMAT = "X-TimestampFormat"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
 	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$

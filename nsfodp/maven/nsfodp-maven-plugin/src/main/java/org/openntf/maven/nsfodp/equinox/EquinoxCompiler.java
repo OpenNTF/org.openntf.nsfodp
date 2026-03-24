@@ -49,8 +49,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			Collection<Path> classpathJars,
 			Path outputFile,
 			String compilerLevel,
-			boolean appendTimestampToTitle,
-			String timestampFormat,
 			String templateName,
 			boolean setProductionXspOptions,
 			String odsRelease,
@@ -64,10 +62,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, outputFile.toAbsolutePath().toString());
 		if(compilerLevel != null) {
 			props.put(NSFODPConstants.PROP_COMPILERLEVEL, compilerLevel);
-		}
-		props.put(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE, Boolean.toString(appendTimestampToTitle));
-		if(timestampFormat != null) {
-			props.put(NSFODPConstants.PROP_TIMESTAMPFORMAT, timestampFormat);
 		}
 		if(templateName != null) {
 			props.put(NSFODPConstants.PROP_TEMPLATENAME, templateName);
