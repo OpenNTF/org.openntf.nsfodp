@@ -20,13 +20,20 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
 
 import org.openntf.nsfodp.commons.NSFODPUtil;
 import org.openntf.nsfodp.commons.dxl.DXLUtil;
 import org.openntf.nsfodp.commons.dxl.ODSConstants;
 import org.openntf.nsfodp.commons.h.Ods;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
+import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import com.ibm.commons.util.StringUtil;
 
 /**
  * Represents an image resource in the ODP.
@@ -53,9 +60,35 @@ public class ImageResource extends FileResource {
 	@Override
 	protected Document attachFileData(Document dxlDoc) throws IOException {
 		byte[] data = getCompositeData();
-		String itemName = getFileDataItem();
 		
-		DXLUtil.writeItemDataRaw(dxlDoc, itemName, data, ODSConstants.PER_IMAGE_ITEM_DATA_CAP, Ods.SIZE_CDIMAGEHEADER + Ods.SIZE_CDGRAPHIC);
+		List<Node> existingNodes = NSFODPDomUtil.nodes(dxlDoc, "/note/item[@name='" + DXLUtil.escapeXPathValue("$FileSize") + "']"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(existingNodes.isEmpty()) {
+			long fileSize = getFileSize();
+			Element note = DXLUtil.getRootNoteElement(dxlDoc);
+			Element item = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
+			item.setAttribute("name", "$FileSize"); //$NON-NLS-1$
+			item.setAttribute("sign", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+			Element number = NSFODPDomUtil.createElement(item, "number"); //$NON-NLS-1$
+			number.setTextContent(StringUtil.toString(fileSize));
+		}
+		
+		List<Node> existingNodes2 = NSFODPDomUtil.nodes(dxlDoc, "/note/item[@name='" + DXLUtil.escapeXPathValue("$DesignerVersion") + "']"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(existingNodes2.isEmpty()) {
+			Path file = getDataFile();
+			if(file.getFileName().toString().toLowerCase().endsWith(".png")) {
+				Element note = DXLUtil.getRootNoteElement(dxlDoc);
+				Element item = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
+				item.setAttribute("name", "$DesignerVersion"); //$NON-NLS-1$
+				Element text = NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+				text.setTextContent("8.5.3"); //$NON-NLS-1$
+			}
+		}
+		
+		HashMap<String, String> additionalItemAttributes = new HashMap<>(1);
+		additionalItemAttributes.put("sign", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		String itemName = getFileDataItem();
+		DXLUtil.writeItemDataRaw(dxlDoc, itemName, data, ODSConstants.PER_IMAGE_ITEM_DATA_CAP, Ods.SIZE_CDIMAGEHEADER + Ods.SIZE_CDGRAPHIC, additionalItemAttributes);
 		
 		return dxlDoc;
 	}
@@ -70,5 +103,10 @@ public class ImageResource extends FileResource {
 		try(InputStream is = NSFODPUtil.newInputStream(file)) {
 			return DXLUtil.getImageResourceData(file, dxlDoc);
 		}
+	}
+	
+	public long getFileSize() throws IOException {
+		Path file = getDataFile();
+		return Files.size(file);
 	}
 }
