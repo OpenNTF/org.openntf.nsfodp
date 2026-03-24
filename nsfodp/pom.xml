@@ -115,6 +115,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.release>8</maven.compiler.release>
 		<tycho-version>3.0.5</tycho-version>
+		<xsp-bundles-range>0.0.0</xsp-bundles-range>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -251,12 +252,12 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>com.ibm.notes.java.api.win32.linux</id>
-								<versionRange>9.0.1</versionRange>
+								<versionRange>0.0.0</versionRange>
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>com.ibm.domino.napi.impl</id>
-								<versionRange>9.0.1</versionRange>
+								<versionRange>${xsp-bundles-range}</versionRange>
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
@@ -519,6 +520,21 @@
 			<modules>
 				<module>webapps/components-webapp</module>
 			</modules>
+		</profile>
+		
+		<profile>
+			<id>xsp-build-stubs</id>
+			<activation>
+				<property>
+					<name>!notes-platform</name>
+				</property>
+			</activation>
+			
+			<properties>				
+				<xsp-bundles-range>[1.0.0,2.0.0)</xsp-bundles-range>
+				<notes-platform>${project.baseUri}../../../xsp-deps/target/repository</notes-platform>
+				<skipTests>true</skipTests>
+			</properties>
 		</profile>
 	</profiles>
 </project>

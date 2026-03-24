@@ -7,7 +7,7 @@ Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.openntf.nsfodp.commons.dxl;version="4.0.9"
-Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
- com.ibm.commons.xml;bundle-version="9.0.1",
+Require-Bundle: com.ibm.commons,
+ com.ibm.commons.xml,
  org.openntf.nsfodp.commons;bundle-version="2.0.0"
 Import-Package: javax.activation;resolution:=optional

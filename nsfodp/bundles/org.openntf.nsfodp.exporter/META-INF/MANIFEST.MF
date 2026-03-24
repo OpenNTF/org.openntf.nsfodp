@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.openntf.nsfodp.exporter;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.exporter.servlet
 Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
-Require-Bundle: com.ibm.commons;bundle-version="9.0.1",
+Require-Bundle: com.ibm.commons,
  org.eclipse.osgi
 Import-Package: org.eclipse.core.runtime,
  org.openntf.nsfodp.commons;version="3.5.0",
