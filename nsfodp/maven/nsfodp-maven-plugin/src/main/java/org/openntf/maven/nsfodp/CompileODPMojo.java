@@ -151,6 +151,16 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	private boolean appendTimestampToTitle = false;
 	
 	/**
+	 * Controls the format of the timestamp when {@code appendTimestampToTitle} is
+	 * set to {@code true}. This is specified in the string format as interpreted
+	 * by {@code DateTimeFormatter}.
+	 * 
+	 * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
+	 */
+	@Parameter(property="nsfodp.compiler.timestampFormat", required=false)
+	private String timestampFormat;
+	
+	/**
 	 * A name to set in the database for use as a master template.
 	 * 
 	 * <p>Note: this is the name used by this database when it is a template for
@@ -430,7 +440,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, timestampFormat, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
@@ -494,6 +504,9 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
 			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
+			if(this.timestampFormat != null && !this.timestampFormat.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_TIMESTAMP_FORMAT, this.timestampFormat);
+			}
 			if(this.templateName != null && !this.templateName.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
@@ -548,6 +561,9 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
 			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
+			if(this.timestampFormat != null && !this.timestampFormat.isEmpty()) {
+				post.addHeader(NSFODPConstants.HEADER_TIMESTAMP_FORMAT, this.timestampFormat);
+			}
 			if(this.templateName != null && !this.templateName.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
