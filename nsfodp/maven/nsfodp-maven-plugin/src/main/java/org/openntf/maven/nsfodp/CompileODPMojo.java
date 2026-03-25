@@ -18,10 +18,7 @@ package org.openntf.maven.nsfodp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,7 +33,6 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,9 +51,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -84,19 +77,15 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.eclipse.aether.RepositorySystemSession;
-import org.openntf.maven.nsfodp.config.ConfigAcl;
 import org.openntf.maven.nsfodp.container.NSFODPContainer;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.odp.util.ODPUtil;
-import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
+import org.openntf.nsfodp.commons.config.ConfigAcl;
+import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import com.ibm.commons.util.StringUtil;
 
@@ -317,106 +306,43 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					mavenResourcesFiltering.filterResources(exec);
 				}
 				
+				OnDiskProject odp = new OnDiskProject(odpCopy);
+				
 				// Update xsp.properties, if specified
 				if(this.setProductionXspOptions) {
 					if(log.isInfoEnabled()) {
 						log.info("Applying production properties to WebContent/WEB-INF/xsp.properties");
 					}
+					odp.setProductionXspOptions();
+				}
+				
+				// Add the current timestamp to the DB title, if specified
+				if(this.appendTimestampToTitle) {
+					if(log.isInfoEnabled()) {
+						log.info("Appending timestamp to title in AppProperties/database.properties");
+					}
+					// Write to the top node and, if present, a $TITLE element
+					String pattern;
+					if(StringUtil.isNotEmpty(this.timestampFormat)) {
+						pattern = this.timestampFormat;
+					} else {
+						pattern = TIMESTAMP_PATTERN;
+					}
+					Locale locale = NSFODPUtil.toLocale(this.locale);
+					DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern, locale);
 					
-					Properties props = new Properties();
-					Path xspProperties = odpCopy.resolve("WebContent").resolve("WEB-INF").resolve("xsp.properties"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					if(Files.exists(xspProperties)) {
-						try(InputStream is = Files.newInputStream(xspProperties)) {
-							props.load(is);
-						}
-					}
-					props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
-					props.put("xsp.client.resources.uncompressed", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-					try(OutputStream os = Files.newOutputStream(xspProperties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-						props.store(os, null);
-					}
+					ZonedDateTime now = now();
+					
+					odp.appendTimestampToTitle(format.format(now), project.getArtifactId());
 				}
 				
 				// Write in the ACL or title, if specified
-				if(this.acl != null || this.appendTimestampToTitle) {
+				if(this.acl != null) {
 					try {
-						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
-						Document props;
-						if(Files.exists(databaseProperties)) {
-							try(Reader r = Files.newBufferedReader(databaseProperties, StandardCharsets.UTF_8)) {
-								props = NSFODPDomUtil.createDocument((Reader) r);
-							}
-						} else {
-							Files.createDirectories(databaseProperties.getParent());
-							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
-								try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-									props = NSFODPDomUtil.createDocument((Reader) r);
-								}
-							}
+						if(log.isInfoEnabled()) {
+							log.info("Writing ACL from pom.xml into AppProperties/database.properties");
 						}
-						
-						if(this.appendTimestampToTitle) {
-							if(log.isInfoEnabled()) {
-								log.info("Appending timestamp to title in AppProperties/database.properties");
-							}
-							// Write to the top node and, if present, a $TITLE element
-							String pattern;
-							if(StringUtil.isNotEmpty(this.timestampFormat)) {
-								pattern = this.timestampFormat;
-							} else {
-								pattern = TIMESTAMP_PATTERN;
-							}
-							Locale locale = NSFODPUtil.toLocale(this.locale);
-							DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern, locale);
-							
-							ZonedDateTime now = now();
-							
-							Element database = props.getDocumentElement();
-							String title = database.getAttribute("title"); //$NON-NLS-1$
-							if(StringUtil.isEmpty(title)) {
-								title = project.getArtifactId();
-							}
-							title += " - " + format.format(now); //$NON-NLS-1$
-							
-							if(log.isDebugEnabled()) {
-								log.debug(MessageFormat.format("Built new title \"{0}\"", title));
-							}
-							
-							database.setAttribute("title", title); //$NON-NLS-1$
-							String fTitle = title;
-							NSFODPDomUtil.node(props, "/database/note/item[@name='$TITLE']/text").ifPresent(node -> { //$NON-NLS-1$
-								if(node instanceof Element) {
-									((Element)node).setTextContent(fTitle);
-								}
-							});
-						}
-						
-						if(this.acl != null) {
-							if(log.isInfoEnabled()) {
-								log.info("Writing ACL from pom.xml into AppProperties/database.properties");
-							}
-							for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
-								nodeObj.getParentNode().removeChild(nodeObj);
-							}
-							
-							JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
-							Marshaller marshaller = jaxbContext.createMarshaller();
-							marshaller.marshal(this.acl, props.getDocumentElement());
-							
-							Element aclElement = (Element)props.getDocumentElement().getLastChild();
-							
-							// Make sure that this appears either immediately after a databaseinfo element or as the first child
-							Element databaseinfo = (Element)NSFODPDomUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
-							if(databaseinfo != null) {
-								NSFODPDomUtil.insertAfter((Node) props.getDocumentElement(), (Node) aclElement, (Node) databaseinfo);
-							} else {
-								props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
-							}
-						}
-						
-						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
-							NSFODPDomUtil.serialize((Writer) w, (Node) props, null);
-						}
+						odp.setAcl(this.acl);
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
 					}
@@ -427,57 +353,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					if(log.isInfoEnabled()) {
 						log.info("Writing template name and build information from pom.xml into SharedElements/Fields/$TemplateBuild.field");
 					}
-					Path templateBuildField = odpCopy.resolve("SharedElements").resolve("Fields").resolve("$TemplateBuild.field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					if(!Files.exists(templateBuildField) || Files.size(templateBuildField) == 0) {
-						Files.createDirectories(templateBuildField.getParent());
-						try(InputStream is = getClass().getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-							Files.copy(is, templateBuildField, StandardCopyOption.REPLACE_EXISTING);
-						}
-					}
-
-					Document templateBuildDxl;
-					try(Reader r = Files.newBufferedReader(templateBuildField, StandardCharsets.UTF_8)) {
-						templateBuildDxl = NSFODPDomUtil.createDocument(r);
-					}
-					// TODO support non-raw format
-					{
-						Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuildname']/text") //$NON-NLS-1$
-							.orElseGet(() -> {
-								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
-								item.setAttribute("name", "$TemplateBuildName"); //$NON-NLS-1$ //$NON-NLS-2$
-								return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
-							});
-						node.setTextContent(this.templateName);
-					}
-					{
-						Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuild']/text") //$NON-NLS-1$
-							.orElseGet(() -> {
-								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
-								item.setAttribute("name", "$TemplateBuild"); //$NON-NLS-1$ //$NON-NLS-2$
-								return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
-							});
-						String version = ODPMojoUtil.calculateVersion(project);
-						node.setTextContent(version);
-					}
-					{
-						// <datetime dst="true">20230518T151728,07-04</datetime>
-						Element node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuilddate']/datetime") //$NON-NLS-1$
-							.map(Element.class::cast)
-							.orElseGet(() -> {
-								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
-								item.setAttribute("name", "$TemplateBuildDate"); //$NON-NLS-1$ //$NON-NLS-2$
-								return NSFODPDomUtil.createElement(item, "datetime"); //$NON-NLS-1$
-							});
-						ZonedDateTime now = now();
-						if(now.getZone().getRules().isDaylightSavings(now.toInstant())) {
-							node.setAttribute("dst", "true"); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-						node.setTextContent(ODPUtil.DXL_DATETIME.format(now));
-					}
-					
-					try(Writer w = Files.newBufferedWriter(templateBuildField, StandardOpenOption.TRUNCATE_EXISTING)) {
-						NSFODPDomUtil.serialize(w, templateBuildDxl, null);
-					}
+					odp.writeTemplateName(this.templateName, ODPMojoUtil.calculateVersion(project), now());
 				}
 				
 				buildContext.refresh(odpCopy.toFile());

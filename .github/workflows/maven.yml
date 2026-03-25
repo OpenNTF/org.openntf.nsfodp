@@ -20,12 +20,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
+    - uses: actions/checkout@v6
+    - name: Set up JDK
       uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: |
+          nsfodp/pom.xml
+          nsfodp/**/pom.xml
+          xsp-deps/pom.xml
     - name: Build with Maven
       run: mvn -B package -f xsp-deps && mvn -B package --file nsfodp
