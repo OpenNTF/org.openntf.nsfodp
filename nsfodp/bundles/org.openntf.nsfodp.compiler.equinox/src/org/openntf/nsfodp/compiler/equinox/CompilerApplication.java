@@ -89,10 +89,6 @@ public class CompilerApplication implements IApplication {
 					compiler.setTemplateVersion(templateVersion);
 				}
 			}
-			String setXspOptions = System.getenv(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
-			if("true".equals(setXspOptions)) { //$NON-NLS-1$
-				compiler.setSetProductionXspOptions(true);
-			}
 			String odsRelease = System.getenv(NSFODPConstants.PROP_ODSRELEASE);
 			if(StringUtil.isNotEmpty(odsRelease)) {
 				compiler.setOdsRelease(odsRelease);

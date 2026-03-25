@@ -48,7 +48,6 @@ public enum NSFODPConstants {
 	public static final String HEADER_COMPILER_LEVEL = "X-CompilerLevel"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
 	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
-	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$
 	public static final String HEADER_ODS_RELEASE = "X-ODSRelease"; //$NON-NLS-1$
 	/**
 	 * Header indicating whether basic-element LotusScript should be explicitly compiled,
@@ -83,7 +82,6 @@ public enum NSFODPConstants {
 	public static final String PROP_TIMESTAMPFORMAT = "org.openntf.nsfodp.compiler.timestampFormat"; //$NON-NLS-1$
 	public static final String PROP_TEMPLATENAME = "org.openntf.nsfodp.compiler.templateName"; //$NON-NLS-1$
 	public static final String PROP_TEMPLATEVERSION = "org.openntf.nsfodp.compiler.templateVersion"; //$NON-NLS-1$
-	public static final String PROP_SETPRODUCTIONXSPOPTIONS = "org.openntf.nsfodp.compiler.setProductionXSPOptions"; //$NON-NLS-1$
 	public static final String PROP_ODSRELEASE = "org.openntf.nsfodp.compiler.odsRelease"; //$NON-NLS-1$
 	/**
 	 * The system property indicating whether basic-element LotusScript should be explicitly compiled,

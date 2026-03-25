@@ -86,12 +86,12 @@ public class OnDiskProject {
 
 	private final Path baseDir;
 	
-	public final List<GlobMatcher> FILE_RESOURCES;
+	public final List<GlobMatcher> fileResourceMatchers;
 	
 	public OnDiskProject(Path baseDirectory) {
 		this.baseDir = Objects.requireNonNull(baseDirectory);
 		
-		this.FILE_RESOURCES = Arrays.asList(
+		this.fileResourceMatchers = Arrays.asList(
 			new GlobMatcher(".classpath", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher(".settings/**", path -> new FileResource(path, "~C4gP", null, p -> ODPUtil.toBasicFilePath(baseDir, p))), //$NON-NLS-1$ //$NON-NLS-2$
 			new GlobMatcher("AppProperties/xspdesign.properties", path -> new FileResource(path, "~C4g", null, p -> ODPUtil.toBasicFilePath(baseDir, p), p -> "xspdesign.properties")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -304,7 +304,7 @@ public class OnDiskProject {
 	
 	public List<AbstractSplitDesignElement> getFileResources() {
 		FileSystem fs = baseDir.getFileSystem();
-		return FILE_RESOURCES.stream()
+		return this.fileResourceMatchers.stream()
 			.map(matcher -> {
 				try {
 					return Files.find(baseDir, Integer.MAX_VALUE,

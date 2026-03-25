@@ -50,7 +50,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			Path outputFile,
 			String compilerLevel,
 			String templateName,
-			boolean setProductionXspOptions,
 			String odsRelease,
 			boolean compileBasicElementLotusScript
 		) {
@@ -67,7 +66,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			props.put(NSFODPConstants.PROP_TEMPLATENAME, templateName);
 			props.put(NSFODPConstants.PROP_TEMPLATEVERSION, ODPMojoUtil.calculateVersion(getProject()));
 		}
-		props.put(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, Boolean.toString(setProductionXspOptions));
 		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
 		props.put(NSFODPConstants.PROP_COMPILEBASICLS, Boolean.toString(compileBasicElementLotusScript));
 		
