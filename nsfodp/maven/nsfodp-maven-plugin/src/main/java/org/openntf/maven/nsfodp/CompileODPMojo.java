@@ -36,6 +36,7 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,7 +107,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
 	public static final String SERVLET_CONTAINER_PATH = "/org.openntf.nsfodp/containerCompiler"; //$NON-NLS-1$
-	private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a zzz"); //$NON-NLS-1$
+	private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd h:mm a zzz"; //$NON-NLS-1$
 	
 	/**
 	 * File name of the generated NSF.
@@ -333,15 +335,18 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						
 						if(this.appendTimestampToTitle) {
 							if(log.isInfoEnabled()) {
-								log.info("Appending timestamp to title in AppProperties/database.properties");
+								log.info(MessageFormat.format("Appending timestamp to title in AppProperties/database.properties", ""));
 							}
 							// Write to the top node and, if present, a $TITLE element
-							DateTimeFormatter format;
+							String pattern;
 							if(StringUtil.isNotEmpty(this.timestampFormat)) {
-								format = DateTimeFormatter.ofPattern(this.timestampFormat);
+								pattern = this.timestampFormat;
 							} else {
-								format = TIMESTAMP;
+								pattern = TIMESTAMP_PATTERN;
 							}
+							Locale locale = NSFODPUtil.toLocale(this.locale);
+							DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern, locale);
+							
 							ZoneId zone;
 							if(StringUtil.isNotEmpty(this.timeZone)) {
 								zone = ZoneId.of(this.timeZone);
@@ -356,6 +361,11 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 								title = project.getArtifactId();
 							}
 							title += " - " + format.format(now); //$NON-NLS-1$
+							
+							if(log.isDebugEnabled()) {
+								log.debug(MessageFormat.format("Built new title \"{0}\"", title));
+							}
+							
 							database.setAttribute("title", title); //$NON-NLS-1$
 							String fTitle = title;
 							NSFODPDomUtil.node(props, "/database/note/item[@name='$TITLE']/text").ifPresent(node -> { //$NON-NLS-1$
