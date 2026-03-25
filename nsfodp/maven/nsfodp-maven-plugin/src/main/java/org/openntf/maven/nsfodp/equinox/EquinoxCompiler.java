@@ -27,7 +27,6 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
 import com.ibm.commons.util.StringUtil;
@@ -61,10 +60,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		props.put(NSFODPConstants.PROP_OUTPUTFILE, outputFile.toAbsolutePath().toString());
 		if(compilerLevel != null) {
 			props.put(NSFODPConstants.PROP_COMPILERLEVEL, compilerLevel);
-		}
-		if(templateName != null) {
-			props.put(NSFODPConstants.PROP_TEMPLATENAME, templateName);
-			props.put(NSFODPConstants.PROP_TEMPLATEVERSION, ODPMojoUtil.calculateVersion(getProject()));
 		}
 		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
 		props.put(NSFODPConstants.PROP_COMPILEBASICLS, Boolean.toString(compileBasicElementLotusScript));

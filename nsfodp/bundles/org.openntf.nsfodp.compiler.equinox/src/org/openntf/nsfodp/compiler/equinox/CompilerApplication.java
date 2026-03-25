@@ -81,14 +81,6 @@ public class CompilerApplication implements IApplication {
 			if(StringUtil.isNotEmpty(compilerLevel)) {
 				compiler.setCompilerLevel(compilerLevel);
 			}
-			String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
-			if(StringUtil.isNotEmpty(templateName)) {
-				compiler.setTemplateName(templateName);
-				String templateVersion = System.getenv(NSFODPConstants.PROP_TEMPLATEVERSION);
-				if(StringUtil.isNotEmpty(templateVersion)) {
-					compiler.setTemplateVersion(templateVersion);
-				}
-			}
 			String odsRelease = System.getenv(NSFODPConstants.PROP_ODSRELEASE);
 			if(StringUtil.isNotEmpty(odsRelease)) {
 				compiler.setOdsRelease(odsRelease);

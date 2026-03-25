@@ -191,14 +191,6 @@ public class ODPCompilerContainerServlet extends HttpServlet {
 				if(StringUtil.isNotEmpty(compilerLevel)) {
 					compiler.setCompilerLevel(compilerLevel);
 				}
-				String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
-				if(StringUtil.isNotEmpty(templateName)) {
-					compiler.setTemplateName(templateName);
-					String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
-					if(StringUtil.isNotEmpty(templateVersion)) {
-						compiler.setTemplateVersion(templateVersion);
-					}
-				}
 				String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
 				if(StringUtil.isNotEmpty(odsRelease)) {
 					compiler.setOdsRelease(odsRelease);

@@ -46,8 +46,6 @@ public enum NSFODPConstants {
 	// *******************************************************************************
 
 	public static final String HEADER_COMPILER_LEVEL = "X-CompilerLevel"; //$NON-NLS-1$
-	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
-	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
 	public static final String HEADER_ODS_RELEASE = "X-ODSRelease"; //$NON-NLS-1$
 	/**
 	 * Header indicating whether basic-element LotusScript should be explicitly compiled,
@@ -73,15 +71,6 @@ public enum NSFODPConstants {
 	 */
 	public static final String PROP_UPDATESITE = "org.openntf.nsfodp.compiler.updateSite"; //$NON-NLS-1$
 	public static final String PROP_COMPILERLEVEL = "org.openntf.nsfodp.compiler.compilerLevel"; //$NON-NLS-1$
-	public static final String PROP_APPENDTIMESTAMPTOTITLE = "org.openntf.nsfodp.compiler.appendTimestampToTitle"; //$NON-NLS-1$
-	/**
-	 * The system property indicating the format to use for the title timestamp when
-	 * configured to append.
-	 * @since 4.1.0
-	 */
-	public static final String PROP_TIMESTAMPFORMAT = "org.openntf.nsfodp.compiler.timestampFormat"; //$NON-NLS-1$
-	public static final String PROP_TEMPLATENAME = "org.openntf.nsfodp.compiler.templateName"; //$NON-NLS-1$
-	public static final String PROP_TEMPLATEVERSION = "org.openntf.nsfodp.compiler.templateVersion"; //$NON-NLS-1$
 	public static final String PROP_ODSRELEASE = "org.openntf.nsfodp.compiler.odsRelease"; //$NON-NLS-1$
 	/**
 	 * The system property indicating whether basic-element LotusScript should be explicitly compiled,
