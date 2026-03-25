@@ -39,6 +39,7 @@ import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -432,5 +433,37 @@ public enum NSFODPUtil {
 			}
 			return result;
 		}
+	}
+	
+	/**
+	 * Converts the provided string into a {@link Locale} object, defaulting
+	 * to the current system locale.
+	 * 
+	 * @param locale the locale string to interpret
+	 * @return a {@link Locale} object
+	 * @since 4.1.0
+	 */
+	public static Locale toLocale(String locale) {
+		if(locale != null && !locale.isEmpty()) {
+			String localeString = locale;
+			int dotIndex = localeString.indexOf('.');
+			if(dotIndex > -1) {
+				localeString = localeString.substring(0, dotIndex);
+			}
+			int underIndex = localeString.indexOf('_');
+			if(underIndex > -1) {
+				String lang = localeString.substring(0, underIndex);
+				String country = localeString.substring(underIndex+1);
+				return new Locale.Builder()
+					.setLanguage(lang)
+					.setRegion(country)
+					.build();
+			} else {
+				return new Locale.Builder()
+					.setLanguage(localeString)
+					.build();
+			}
+		}
+		return Locale.getDefault();
 	}
 }

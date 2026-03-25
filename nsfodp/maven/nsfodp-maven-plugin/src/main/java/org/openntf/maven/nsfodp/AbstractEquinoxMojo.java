@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -173,6 +174,25 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	 */
 	@Parameter(property="nsfodp.timeZone", required=false)
 	protected String timeZone;
+	
+	/**
+	 * Controls the locale used for several operations:
+	 * 
+	 * <ul>
+	 *   <li>The timestamp applied when {@code appendTimestampToTitle} is {@code true}.</li>
+	 *   <li>The {@code LANG} of the container when using container-based processing.</li>
+	 * </ul>
+	 * 
+	 * <p>This value should be specified as a language/country code pair, optionally
+	 * followed by a character set, such as "en_US" or "en_US.UTF-8". When the character set
+	 * is omitted, ".UTF-8" will be appended automatically for container {@code LANG} values.</p>
+	 * 
+	 * <p>Defaults to the current system's default locale and UTF-8.</p>
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.locale", required=false)
+	protected String locale;
 
 	protected boolean isRunLocally() {
 		if(this.container) {
@@ -190,9 +210,18 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 				timeZone = ZoneId.systemDefault().getId();
 			}
 			
+			String lang = this.locale;
+			if(StringUtil.isEmpty(locale)) {
+				Locale locale = Locale.getDefault();
+				lang = locale.getLanguage() + "_" + locale.getCountry(); //$NON-NLS-1$
+			}
+			if(lang.indexOf('.') < -1) {
+				lang += ".UTF-8"; //$NON-NLS-1$
+			}
+			
 			// Initialize the Docker container
 			if(log.isInfoEnabled()) {
-				log.info(MessageFormat.format("Initializing NSF ODP container with base image {0} and time zone {1}", this.containerBaseImage, timeZone));
+				log.info(MessageFormat.format("Initializing NSF ODP container with base image {0}, time zone \"{1}\", and lang \"{2}\"", this.containerBaseImage, timeZone, lang));
 			}
 			Properties props = TestcontainersConfiguration.getInstance().getUserProperties();
 			if(StringUtil.isNotEmpty(this.containerHost)) {
@@ -207,6 +236,7 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 			
 			NSFODPContainer container = new NSFODPContainer(localMavenRepo, updateSites, packageZip, log, outputDirectory.toPath(), this.containerBaseImage);
 			container.addEnv("TZ", timeZone); //$NON-NLS-1$
+			container.addEnv("LANG", lang); //$NON-NLS-1$
 			
 			container.start();
 			if(log.isInfoEnabled()) {
