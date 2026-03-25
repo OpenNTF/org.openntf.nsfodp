@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -315,6 +316,26 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					mavenResourcesFiltering.filterResources(exec);
 				}
 				
+				// Update xsp.properties, if specified
+				if(this.setProductionXspOptions) {
+					if(log.isInfoEnabled()) {
+						log.info("Applying production properties to WebContent/WEB-INF/xsp.properties");
+					}
+					
+					Properties props = new Properties();
+					Path xspProperties = odpCopy.resolve("WebContent").resolve("WEB-INF").resolve("xsp.properties"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					if(Files.exists(xspProperties)) {
+						try(InputStream is = Files.newInputStream(xspProperties)) {
+							props.load(is);
+						}
+					}
+					props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+					props.put("xsp.client.resources.uncompressed", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+					try(OutputStream os = Files.newOutputStream(xspProperties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+						props.store(os, null);
+					}
+				}
+				
 				// Write in the ACL or title, if specified
 				if(this.acl != null || this.appendTimestampToTitle) {
 					try {
@@ -335,7 +356,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						
 						if(this.appendTimestampToTitle) {
 							if(log.isInfoEnabled()) {
-								log.info(MessageFormat.format("Appending timestamp to title in AppProperties/database.properties", ""));
+								log.info("Appending timestamp to title in AppProperties/database.properties");
 							}
 							// Write to the top node and, if present, a $TITLE element
 							String pattern;
@@ -491,7 +512,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, templateName, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
@@ -558,7 +579,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
 			}
-			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			post.addHeader(NSFODPConstants.HEADER_CONTAINER_PACKAGE, "/local/odp.zip"); //$NON-NLS-1$
@@ -611,7 +631,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
 				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
 			}
-			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			

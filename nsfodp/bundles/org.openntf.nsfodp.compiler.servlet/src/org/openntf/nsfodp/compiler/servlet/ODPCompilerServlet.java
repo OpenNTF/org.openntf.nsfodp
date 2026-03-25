@@ -186,10 +186,6 @@ public class ODPCompilerServlet extends HttpServlet {
 						compiler.setTemplateVersion(templateVersion);
 					}
 				}
-				String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
-				if("true".equals(setXspOptions)) { //$NON-NLS-1$
-					compiler.setSetProductionXspOptions(true);
-				}
 				String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
 				if(StringUtil.isNotEmpty(odsRelease)) {
 					compiler.setOdsRelease(odsRelease);

@@ -26,8 +26,7 @@
                 <extensions>true</extensions>
                 <configuration>
 					<appendTimestampToTitle>true</appendTimestampToTitle>
-					<timestampFormat>eeee, d MMMM, yyyy HH:mm zzz</timestampFormat>
-					<locale>fr_FR.UTF-8</locale>
+					<setProductionXspOptions>true</setProductionXspOptions>
                 	<acl>
                 		<entries>
                 			<aclEntry>
