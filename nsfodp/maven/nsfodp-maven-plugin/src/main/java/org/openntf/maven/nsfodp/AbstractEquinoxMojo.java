@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -155,6 +156,23 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 	@Parameter(property="nsfodp.containerTlsCertPath", required=false)
 	protected String containerCertPath;
 	
+	/**
+	 * Controls the time zone used for several operations:
+	 * 
+	 * <ul>
+	 *   <li>The timestamp applied when {@code appendTimestampToTitle} is {@code true}.</li>
+	 *   <li>The time zone of the container when using container-based processing.</li>
+	 * </ul>
+	 *
+	 * <p>This value should be specified as a valid tz database name, such as "America/New_York".</p>
+	 * 
+	 * <p>Defaults to the current system's default time zone.</p>
+	 * 
+	 * @see <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">List of tz database time zones</a>
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.timeZone", required=false)
+	protected String timeZone;
 
 	protected boolean isRunLocally() {
 		if(this.container) {
@@ -167,9 +185,14 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 		if(this.container) {
 			Log log = getLog();
 			
+			String timeZone = this.timeZone;
+			if(StringUtil.isEmpty(timeZone)) {
+				timeZone = ZoneId.systemDefault().getId();
+			}
+			
 			// Initialize the Docker container
 			if(log.isInfoEnabled()) {
-				log.info(MessageFormat.format("Initializing NSF ODP container with base image {0}", this.containerBaseImage));
+				log.info(MessageFormat.format("Initializing NSF ODP container with base image {0} and time zone {1}", this.containerBaseImage, timeZone));
 			}
 			Properties props = TestcontainersConfiguration.getInstance().getUserProperties();
 			if(StringUtil.isNotEmpty(this.containerHost)) {
@@ -183,9 +206,11 @@ public abstract class AbstractEquinoxMojo extends AbstractMojo {
 			}
 			
 			NSFODPContainer container = new NSFODPContainer(localMavenRepo, updateSites, packageZip, log, outputDirectory.toPath(), this.containerBaseImage);
+			container.addEnv("TZ", timeZone); //$NON-NLS-1$
+			
 			container.start();
 			if(log.isInfoEnabled()) {
-				log.info(MessageFormat.format("Started container: {0}", container.getContainerName()));
+				log.info(MessageFormat.format("Started container \"{0}\"", container.getContainerName()));
 			}
 			
 			// Set the remote URL

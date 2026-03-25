@@ -36,6 +36,7 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -159,6 +160,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * by {@code DateTimeFormatter}.
 	 * 
 	 * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
+	 * @since 4.1.0
 	 */
 	@Parameter(property="nsfodp.compiler.timestampFormat", required=false)
 	private String timestampFormat;
@@ -340,13 +342,20 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							} else {
 								format = TIMESTAMP;
 							}
+							ZoneId zone;
+							if(StringUtil.isNotEmpty(this.timeZone)) {
+								zone = ZoneId.of(this.timeZone);
+							} else {
+								zone = ZoneId.systemDefault();
+							}
+							ZonedDateTime now = ZonedDateTime.now(zone);
 							
 							Element database = props.getDocumentElement();
 							String title = database.getAttribute("title"); //$NON-NLS-1$
 							if(StringUtil.isEmpty(title)) {
 								title = project.getArtifactId();
 							}
-							title += " - " + format.format(ZonedDateTime.now()); //$NON-NLS-1$
+							title += " - " + format.format(now); //$NON-NLS-1$
 							database.setAttribute("title", title); //$NON-NLS-1$
 							String fTitle = title;
 							NSFODPDomUtil.node(props, "/database/note/item[@name='$TITLE']/text").ifPresent(node -> { //$NON-NLS-1$

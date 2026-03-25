@@ -26,7 +26,7 @@
                 <extensions>true</extensions>
                 <configuration>
 					<appendTimestampToTitle>true</appendTimestampToTitle>
-					<timestampFormat>yyyy-MM-dd</timestampFormat>
+					<timeZone>America/Anchorage</timeZone>
                 	<acl>
                 		<entries>
                 			<aclEntry>
