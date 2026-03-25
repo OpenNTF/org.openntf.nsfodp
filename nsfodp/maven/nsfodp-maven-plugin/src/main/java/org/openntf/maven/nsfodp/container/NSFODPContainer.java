@@ -22,7 +22,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
@@ -42,7 +41,6 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.images.builder.Transferable;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.ibm.commons.util.PathUtil;
 import com.ibm.commons.util.StringUtil;
 
 public class NSFODPContainer extends GenericContainer<NSFODPContainer> {
