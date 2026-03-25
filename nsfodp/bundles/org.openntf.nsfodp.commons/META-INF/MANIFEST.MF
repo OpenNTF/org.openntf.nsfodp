@@ -13,5 +13,6 @@ Export-Package: org.openntf.com.eclipsesource.json;version="0.9.5",
  org.openntf.nsfodp.commons.jvm;version="4.0.9",
  org.openntf.nsfodp.commons.osgi;version="4.0.9";uses:="org.openntf.nsfodp.commons.jvm",
  org.openntf.nsfodp.commons.xml;version="4.0.9";uses:="org.w3c.dom,javax.xml.transform"
+Import-Package: javax.xml.bind.annotation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime
