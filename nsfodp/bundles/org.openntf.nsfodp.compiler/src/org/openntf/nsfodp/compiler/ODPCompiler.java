@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -83,7 +82,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
 import com.ibm.domino.napi.NException;
 import com.ibm.domino.napi.c.C;
 import com.ibm.domino.napi.c.Os;
@@ -108,8 +106,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
 	private String compilerLevel = DEFAULT_COMPILER_LEVEL;
 	
-	private String templateName;
-	private String templateVersion;
 	private String odsRelease;
 	/**
 	 * @since 3.8.0
@@ -187,39 +183,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 */
 	public String getCompilerLevel() {
 		return compilerLevel;
-	}
-	
-	/**
-	 * Sets a name for this database to act as a master template.
-	 * 
-	 * @param templateName the name to set, or <code>null</code> to un-set it
-	 */
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
-	}
-	
-	/**
-	 * @return the name this database will use as a master template
-	 */
-	public String getTemplateName() {
-		return templateName;
-	}
-	
-	/**
-	 * Sets a version for this database to use when {@link #setTemplateName(String)} is
-	 * configured.
-	 * 
-	 * @param templateVersion the version to use, or <code>null</code> to un-set it
-	 */
-	public void setTemplateVersion(String templateVersion) {
-		this.templateVersion = templateVersion;
-	}
-	
-	/**
-	 * @return the version this database will use when a master template
-	 */
-	public String getTemplateVersion() {
-		return templateVersion;
 	}
 	
 	/**
@@ -367,30 +330,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 							importCustomControls(importer, database, classLoader, compiledClassNames);
 							importXPages(importer, database, classLoader, compiledClassNames);
 							importJavaElements(importer, database, classLoader, compiledClassNames);
-						}
-						
-						// Set the template info if requested
-						String templateName = this.getTemplateName();
-						if(StringUtil.isNotEmpty(templateName)) {
-							int noteId = database.getSharedFieldNoteID("$TemplateBuild"); //$NON-NLS-1$
-							NNote doc;
-							if(noteId != 0) {
-								doc = database.getNoteByID(noteId);
-							} else {
-								// Import an empty one
-								try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-									String dxl = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
-									List<Integer> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
-									doc = database.getNoteByID(ids.get(0));
-								}
-							}
-							String version = this.getTemplateVersion();
-							if(StringUtil.isNotEmpty(version)) {
-								doc.set("$TemplateBuild", version); //$NON-NLS-1$
-							}
-							doc.set("$TemplateBuildName", templateName); //$NON-NLS-1$
-							doc.set("$TemplateBuildDate", new Date()); //$NON-NLS-1$
-							doc.save();
 						}
 					}
 				}

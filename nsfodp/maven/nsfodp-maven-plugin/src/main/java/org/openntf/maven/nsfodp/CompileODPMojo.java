@@ -91,6 +91,7 @@ import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
+import org.openntf.nsfodp.commons.odp.util.ODPUtil;
 import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
@@ -368,13 +369,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 							Locale locale = NSFODPUtil.toLocale(this.locale);
 							DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern, locale);
 							
-							ZoneId zone;
-							if(StringUtil.isNotEmpty(this.timeZone)) {
-								zone = ZoneId.of(this.timeZone);
-							} else {
-								zone = ZoneId.systemDefault();
-							}
-							ZonedDateTime now = ZonedDateTime.now(zone);
+							ZonedDateTime now = now();
 							
 							Element database = props.getDocumentElement();
 							String title = database.getAttribute("title"); //$NON-NLS-1$
@@ -424,6 +419,64 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						}
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
+					}
+				}
+				
+				// Create/update the $TemplateBuild subform, if specified
+				if(StringUtil.isNotEmpty(this.templateName)) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing template name and build information from pom.xml into SharedElements/Fields/$TemplateBuild.field");
+					}
+					Path templateBuildField = odpCopy.resolve("SharedElements").resolve("Fields").resolve("$TemplateBuild.field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					if(!Files.exists(templateBuildField) || Files.size(templateBuildField) == 0) {
+						Files.createDirectories(templateBuildField.getParent());
+						try(InputStream is = getClass().getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+							Files.copy(is, templateBuildField, StandardCopyOption.REPLACE_EXISTING);
+						}
+					}
+
+					Document templateBuildDxl;
+					try(Reader r = Files.newBufferedReader(templateBuildField, StandardCharsets.UTF_8)) {
+						templateBuildDxl = NSFODPDomUtil.createDocument(r);
+					}
+					// TODO support non-raw format
+					{
+						Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuildname']/text") //$NON-NLS-1$
+							.orElseGet(() -> {
+								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
+								item.setAttribute("name", "$TemplateBuildName"); //$NON-NLS-1$ //$NON-NLS-2$
+								return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+							});
+						node.setTextContent(this.templateName);
+					}
+					{
+						Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuild']/text") //$NON-NLS-1$
+							.orElseGet(() -> {
+								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
+								item.setAttribute("name", "$TemplateBuild"); //$NON-NLS-1$ //$NON-NLS-2$
+								return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+							});
+						String version = ODPMojoUtil.calculateVersion(project);
+						node.setTextContent(version);
+					}
+					{
+						// <datetime dst="true">20230518T151728,07-04</datetime>
+						Element node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuilddate']/datetime") //$NON-NLS-1$
+							.map(Element.class::cast)
+							.orElseGet(() -> {
+								Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
+								item.setAttribute("name", "$TemplateBuildDate"); //$NON-NLS-1$ //$NON-NLS-2$
+								return NSFODPDomUtil.createElement(item, "datetime"); //$NON-NLS-1$
+							});
+						ZonedDateTime now = now();
+						if(now.getZone().getRules().isDaylightSavings(now.toInstant())) {
+							node.setAttribute("dst", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						node.setTextContent(ODPUtil.DXL_DATETIME.format(now));
+					}
+					
+					try(Writer w = Files.newBufferedWriter(templateBuildField, StandardOpenOption.TRUNCATE_EXISTING)) {
+						NSFODPDomUtil.serialize(w, templateBuildDxl, null);
 					}
 				}
 				
@@ -575,10 +628,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
-			if(this.templateName != null && !this.templateName.isEmpty()) {
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
-			}
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			post.addHeader(NSFODPConstants.HEADER_CONTAINER_PACKAGE, "/local/odp.zip"); //$NON-NLS-1$
@@ -626,10 +675,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
-			}
-			if(this.templateName != null && !this.templateName.isEmpty()) {
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
 			}
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
@@ -719,5 +764,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	protected void setServerUrl(URL serverUrl) {
 		this.compilerServer = UUID.randomUUID().toString();
 		this.compilerServerUrl = serverUrl;
+	}
+	
+	private ZonedDateTime now() {
+		ZoneId zone;
+		if(StringUtil.isNotEmpty(this.timeZone)) {
+			zone = ZoneId.of(this.timeZone);
+		} else {
+			zone = ZoneId.systemDefault();
+		}
+		return ZonedDateTime.now(zone);
 	}
 }
