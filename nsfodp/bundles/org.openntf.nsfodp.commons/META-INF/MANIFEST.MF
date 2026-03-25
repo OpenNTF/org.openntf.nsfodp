@@ -7,6 +7,7 @@ Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Export-Package: org.openntf.com.eclipsesource.json;version="0.9.5",
  org.openntf.nsfodp.commons;version="4.0.9";uses:="org.eclipse.core.runtime,org.eclipse.osgi.util",
+ org.openntf.nsfodp.commons.config,
  org.openntf.nsfodp.commons.h;version="4.0.9",
  org.openntf.nsfodp.commons.io;version="4.0.9";uses:="javax.xml.transform",
  org.openntf.nsfodp.commons.jvm;version="4.0.9",

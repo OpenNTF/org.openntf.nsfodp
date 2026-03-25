@@ -26,6 +26,9 @@
                 <extensions>true</extensions>
                 <configuration>
 					<appendTimestampToTitle>true</appendTimestampToTitle>
+					<timestampFormat>yyyy-MM-dd h:mm a zzzz</timestampFormat>
+					<templateName>Example Template</templateName>
+					<setProductionXspOptions>true</setProductionXspOptions>
                 	<acl>
                 		<entries>
                 			<aclEntry>
