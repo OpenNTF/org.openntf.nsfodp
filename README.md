@@ -192,6 +192,8 @@ The ODP compilation process has several properties that can be configured in the
     <compilerLevel>1.8</compilerLevel>
     <!-- Adds the build timestamp to the generated NSF's title -->
     <appendTimestampToTitle>false</appendTimestampToTitle>
+    <!-- Configures the format for the appended timestamp; defaults to the below -->
+    <timestampFormat>yyyy-MM-dd h:mm a zzz</timestampFormat>
     <!-- Creates/updates a $TemplateBuild shared field -->
     <templateName></templateName>
     <!-- Enabled resource aggregation and compressed JS libs in xsp.properties -->

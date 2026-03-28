@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2025 Jesse Gallagher
+ * Copyright © 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.openntf.nsfodp.commons.odp.util.ODPUtil;
@@ -31,5 +34,11 @@ public class TestODPUtil {
 		String expected = "org.openntf.nsfodp.example.ExampleClass";
 		
 		assertEquals(expected, ODPUtil.toJavaClassName(filePath));
+	}
+	
+	@Test
+	public void testDxlTime() {
+		ZonedDateTime now = ZonedDateTime.ofInstant(Instant.ofEpochMilli(1774459564169l), ZoneId.of("America/New_York"));
+		assertEquals("20260325T012604,16-04", ODPUtil.DXL_DATETIME.format(now));
 	}
 }

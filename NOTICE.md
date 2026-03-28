@@ -1,6 +1,6 @@
 NSF ODP Tooling
 
-(c) Copyright 2018-2023 Jesse Gallagher
+(c) Copyright 2018-2026 Contributors to the NSF ODP Tooling Project
 
 This product includes software contributed to
 OpenNTF Alliance (http://www.OpenNTF.org/)

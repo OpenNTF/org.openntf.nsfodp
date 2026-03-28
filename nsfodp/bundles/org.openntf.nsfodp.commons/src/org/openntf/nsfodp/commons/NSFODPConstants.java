@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,6 @@ public enum NSFODPConstants {
 	// *******************************************************************************
 
 	public static final String HEADER_COMPILER_LEVEL = "X-CompilerLevel"; //$NON-NLS-1$
-	public static final String HEADER_APPEND_TIMESTAMP = "X-AppendTimestamp"; //$NON-NLS-1$
-	public static final String HEADER_TEMPLATE_NAME = "X-TemplateName"; //$NON-NLS-1$
-	public static final String HEADER_TEMPLATE_VERSION = "X-TemplateVersion"; //$NON-NLS-1$
-	public static final String HEADER_SET_PRODUCTION_XSP = "X-SetProductionXSPOptions"; //$NON-NLS-1$
 	public static final String HEADER_ODS_RELEASE = "X-ODSRelease"; //$NON-NLS-1$
 	/**
 	 * Header indicating whether basic-element LotusScript should be explicitly compiled,
@@ -75,13 +71,9 @@ public enum NSFODPConstants {
 	 */
 	public static final String PROP_UPDATESITE = "org.openntf.nsfodp.compiler.updateSite"; //$NON-NLS-1$
 	public static final String PROP_COMPILERLEVEL = "org.openntf.nsfodp.compiler.compilerLevel"; //$NON-NLS-1$
-	public static final String PROP_APPENDTIMESTAMPTOTITLE = "org.openntf.nsfodp.compiler.appendTimestampToTitle"; //$NON-NLS-1$
-	public static final String PROP_TEMPLATENAME = "org.openntf.nsfodp.compiler.templateName"; //$NON-NLS-1$
-	public static final String PROP_TEMPLATEVERSION = "org.openntf.nsfodp.compiler.templateVersion"; //$NON-NLS-1$
-	public static final String PROP_SETPRODUCTIONXSPOPTIONS = "org.openntf.nsfodp.compiler.setProductionXSPOptions"; //$NON-NLS-1$
 	public static final String PROP_ODSRELEASE = "org.openntf.nsfodp.compiler.odsRelease"; //$NON-NLS-1$
 	/**
-	 * Header indicating whether basic-element LotusScript should be explicitly compiled,
+	 * The system property indicating whether basic-element LotusScript should be explicitly compiled,
 	 * used when launching an Equinox container.
 	 * @since 3.8.0
 	 */

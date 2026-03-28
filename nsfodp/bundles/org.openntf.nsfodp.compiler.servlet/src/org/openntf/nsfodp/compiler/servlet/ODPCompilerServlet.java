@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,22 +177,6 @@ public class ODPCompilerServlet extends HttpServlet {
 				String compilerLevel = req.getHeader(NSFODPConstants.HEADER_COMPILER_LEVEL);
 				if(StringUtil.isNotEmpty(compilerLevel)) {
 					compiler.setCompilerLevel(compilerLevel);
-				}
-				String appendTimestamp = req.getHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP);
-				if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-					compiler.setAppendTimestampToTitle(true);
-				}
-				String templateName = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_NAME);
-				if(StringUtil.isNotEmpty(templateName)) {
-					compiler.setTemplateName(templateName);
-					String templateVersion = req.getHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION);
-					if(StringUtil.isNotEmpty(templateVersion)) {
-						compiler.setTemplateVersion(templateVersion);
-					}
-				}
-				String setXspOptions = req.getHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP);
-				if("true".equals(setXspOptions)) { //$NON-NLS-1$
-					compiler.setSetProductionXspOptions(true);
 				}
 				String odsRelease = req.getHeader(NSFODPConstants.HEADER_ODS_RELEASE);
 				if(StringUtil.isNotEmpty(odsRelease)) {

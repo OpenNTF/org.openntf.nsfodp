@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2025 Jesse Gallagher
+ * Copyright © 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,7 +233,7 @@ public abstract class AbstractExportMojo extends AbstractEquinoxMojo {
 					Files.move(eclipseProject, odpDir.resolve(".project"), StandardCopyOption.REPLACE_EXISTING); //$NON-NLS-1$
 				}
 			} else {
-				Optional<NSFODPContainer> spawnedContainer = initContainerIfNeeded(Collections.emptyList(), null);
+				Optional<NSFODPContainer> spawnedContainer = initContainerIfNeeded(null, Collections.emptyList(), null);
 				URL exporterServerUrl = Objects.requireNonNull(this.exporterServerUrl, "exportServerUrl cannot be null");
 				if(log.isDebugEnabled()) {
 					log.debug(Messages.getString("GenerateODPMojo.usingServerUrl", exporterServerUrl)); //$NON-NLS-1$

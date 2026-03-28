@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2025 Jesse Gallagher
+ * Copyright © 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,7 @@ package org.openntf.maven.nsfodp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,10 +33,14 @@ import java.nio.file.attribute.FileTime;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,9 +51,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -77,18 +76,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.openntf.maven.nsfodp.config.ConfigAcl;
+import org.eclipse.aether.RepositorySystemSession;
 import org.openntf.maven.nsfodp.container.NSFODPContainer;
 import org.openntf.maven.nsfodp.equinox.EquinoxCompiler;
 import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.maven.nsfodp.util.ResponseUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 import org.openntf.nsfodp.commons.NSFODPUtil;
-import org.openntf.nsfodp.commons.xml.NSFODPDomUtil;
+import org.openntf.nsfodp.commons.config.ConfigAcl;
+import org.openntf.nsfodp.commons.odp.OnDiskProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import com.ibm.commons.util.StringUtil;
 
@@ -101,6 +98,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	public static final String CLASSIFIER_NSF = "nsf"; //$NON-NLS-1$
 	public static final String SERVLET_PATH = "/org.openntf.nsfodp/compiler"; //$NON-NLS-1$
 	public static final String SERVLET_CONTAINER_PATH = "/org.openntf.nsfodp/containerCompiler"; //$NON-NLS-1$
+	private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd h:mm a zzz"; //$NON-NLS-1$
 	
 	/**
 	 * File name of the generated NSF.
@@ -125,7 +123,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 */
 	@Parameter(property="nsfodp.compiler.serverTrustSelfSignedSsl", required=false)
 	private boolean compilerServerTrustSelfSignedSsl;
-	
+
 	/**
 	 * An update site whose contents to use when building the ODP.
 	 * 
@@ -146,17 +144,49 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * Whether or not to append a timestamp to the generated NSF's title. Defaults to
 	 * {@code false}.
 	 */
-	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false)
+	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false, defaultValue = "false")
 	private boolean appendTimestampToTitle = false;
 	
 	/**
-	 * A name to set in the database for use as a master template.
+	 * Controls the format of the timestamp when {@code appendTimestampToTitle} is
+	 * set to {@code true}. This is specified in the string format as interpreted
+	 * by {@code DateTimeFormatter}.
+	 * 
+	 * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.timestampFormat", required=false, defaultValue = "yyyy-MM-dd h:mm a zzz")
+	private String timestampFormat;
+	
+	/**
+	 * A name to set in the database for use as a template.
 	 * 
 	 * <p>Note: this is the name used by this database when it is a template for
 	 * others, not the name of a template to inherit from.</p>
 	 */
 	@Parameter(property="nsfodp.compiler.templateName", required=false)
 	private String templateName;
+	
+	/**
+	 * A name to set in the database to set for the template this database inherits from.
+	 * 
+	 * <p>This sets the value both as the NSF's parent template to inherit from as well
+	 * as the name used in the $TemplateBuild shared field.
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.fromTemplateName", required=false)
+	private String fromTemplateName;
+	
+	/**
+	 * Configures whether the NSF should be marked to inherit from. When set to
+	 * {@code false}, then {@code fromTemplateName} will only write the name to
+	 * $TemplateBuild.
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.fromTemplateInherit", required=false, defaultValue="true")
+	private boolean fromTemplateInherit = true;
 	
 	/**
 	 * Whether to set production options in the xsp.properties file. Currently, this sets:
@@ -166,7 +196,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
 	 * </ul>
 	 */
-	@Parameter(required=false)
+	@Parameter(required=false, defaultValue = "false")
 	private boolean setProductionXspOptions = false;
 	
 	/**
@@ -211,7 +241,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	private boolean compileBasicElementLotusScript = false;
 	
 	@Component( role = MavenResourcesFiltering.class, hint = "default" )
-    protected MavenResourcesFiltering mavenResourcesFiltering;
+	protected MavenResourcesFiltering mavenResourcesFiltering;
+
+	@Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+	private RepositorySystemSession repositorySystemSession;
 	
 	private Log log;
 
@@ -294,51 +327,60 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					mavenResourcesFiltering.filterResources(exec);
 				}
 				
-				// Write in the ACL, if specified
-				if(this.acl != null) {
+				OnDiskProject odp = new OnDiskProject(odpCopy);
+				
+				// Update xsp.properties, if specified
+				if(this.setProductionXspOptions) {
 					if(log.isInfoEnabled()) {
-						log.info("Writing ACL from pom.xml into AppProperties/database.properties");
+						log.info("Applying production properties to WebContent/WEB-INF/xsp.properties");
 					}
+					odp.setProductionXspOptions();
+				}
+				
+				// Add the current timestamp to the DB title, if specified
+				if(this.appendTimestampToTitle) {
+					if(log.isInfoEnabled()) {
+						log.info("Appending timestamp to title in AppProperties/database.properties");
+					}
+					// Write to the top node and, if present, a $TITLE element
+					String pattern;
+					if(StringUtil.isNotEmpty(this.timestampFormat)) {
+						pattern = this.timestampFormat;
+					} else {
+						pattern = TIMESTAMP_PATTERN;
+					}
+					Locale locale = NSFODPUtil.toLocale(this.locale);
+					DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern, locale);
+					
+					ZonedDateTime now = now();
+					
+					odp.appendTimestampToTitle(format.format(now), project.getArtifactId());
+				}
+				
+				// Write in the ACL or title, if specified
+				if(this.acl != null) {
 					try {
-						Path databaseProperties = odpCopy.resolve("AppProperties").resolve("database.properties"); //$NON-NLS-1$ //$NON-NLS-2$
-						Document props;
-						if(Files.exists(databaseProperties)) {
-							try(Reader r = Files.newBufferedReader(databaseProperties, StandardCharsets.UTF_8)) {
-								props = NSFODPDomUtil.createDocument((Reader) r);
-							}
-						} else {
-							Files.createDirectories(databaseProperties.getParent());
-							try(InputStream is = getClass().getResourceAsStream("/dxl/base.databaseproperties.xml")) { //$NON-NLS-1$
-								try(Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-									props = NSFODPDomUtil.createDocument((Reader) r);
-								}
-							}
+						if(log.isInfoEnabled()) {
+							log.info("Writing ACL from pom.xml into AppProperties/database.properties");
 						}
-						
-						for(Node nodeObj : NSFODPDomUtil.nodes(props.getDocumentElement(), "/database/acl")) { //$NON-NLS-1$
-							nodeObj.getParentNode().removeChild(nodeObj);
-						}
-						
-						JAXBContext jaxbContext = JAXBContext.newInstance(ConfigAcl.class);
-						Marshaller marshaller = jaxbContext.createMarshaller();
-						marshaller.marshal(this.acl, props.getDocumentElement());
-						
-						Element aclElement = (Element)props.getDocumentElement().getLastChild();
-						
-						// Make sure that this appears either immediately after a databaseinfo element or as the first child
-						Element databaseinfo = (Element)NSFODPDomUtil.node(props.getDocumentElement(), "/database/databaseinfo").orElse(null); //$NON-NLS-1$
-						if(databaseinfo != null) {
-							NSFODPDomUtil.insertAfter((Node) props.getDocumentElement(), (Node) aclElement, (Node) databaseinfo);
-						} else {
-							props.getDocumentElement().insertBefore(aclElement, props.getDocumentElement().getFirstChild());
-						}
-						
-						try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
-							NSFODPDomUtil.serialize((Writer) w, (Node) props, null);
-						}
+						odp.setAcl(this.acl);
 					} catch (JAXBException | IOException e) {
 						throw new MojoExecutionException("Exception while writing new ACL", e);
 					}
+				}
+				
+				// Create/update the template information, if specified
+				if(StringUtil.isNotEmpty(this.fromTemplateName)) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing from template name from pom.xml into ODP");
+					}
+					odp.writeFromTemplateName(this.fromTemplateName, fromTemplateInherit);
+				}
+				if(StringUtil.isNotEmpty(this.templateName)) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing template name and build information from pom.xml into ODP");
+					}
+					odp.writeTemplateName(this.templateName, ODPMojoUtil.calculateVersion(project), now());
 				}
 				
 				buildContext.refresh(odpCopy.toFile());
@@ -360,8 +402,10 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 						Path packageZip = createPackage(odpZip, updateSiteZips);
 						Optional<NSFODPContainer> spawnedContainer = Optional.empty();
 						try {
+							
+							Path localMavenRepo = repositorySystemSession.getLocalRepository().getBasedir().toPath();
 							Path result;
-							spawnedContainer = initContainerIfNeeded(updateSites, packageZip);
+							spawnedContainer = initContainerIfNeeded(localMavenRepo, updateSites, packageZip);
 							if(spawnedContainer.isPresent()) {
 								result = compileOdpInContainer(packageZip, spawnedContainer.get());
 							} else {
@@ -424,7 +468,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, appendTimestampToTitle, templateName, setProductionXspOptions, odsRelease, this.compileBasicElementLotusScript);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
@@ -487,12 +531,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
-			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
-			if(this.templateName != null && !this.templateName.isEmpty()) {
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
-			}
-			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			post.addHeader(NSFODPConstants.HEADER_CONTAINER_PACKAGE, "/local/odp.zip"); //$NON-NLS-1$
@@ -541,12 +579,6 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			if(this.compilerLevel != null && !this.compilerLevel.isEmpty()) {
 				post.addHeader(NSFODPConstants.HEADER_COMPILER_LEVEL, this.compilerLevel);
 			}
-			post.addHeader(NSFODPConstants.HEADER_APPEND_TIMESTAMP, String.valueOf(this.appendTimestampToTitle));
-			if(this.templateName != null && !this.templateName.isEmpty()) {
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_NAME, this.templateName);
-				post.addHeader(NSFODPConstants.HEADER_TEMPLATE_VERSION, ODPMojoUtil.calculateVersion(project));
-			}
-			post.addHeader(NSFODPConstants.HEADER_SET_PRODUCTION_XSP, String.valueOf(this.setProductionXspOptions));
 			post.addHeader(NSFODPConstants.HEADER_ODS_RELEASE, StringUtil.toString(this.odsRelease));
 			post.addHeader(NSFODPConstants.HEADER_COMPILE_BASICLS, Boolean.toString(this.compileBasicElementLotusScript));
 			
@@ -635,5 +667,15 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	protected void setServerUrl(URL serverUrl) {
 		this.compilerServer = UUID.randomUUID().toString();
 		this.compilerServerUrl = serverUrl;
+	}
+	
+	private ZonedDateTime now() {
+		ZoneId zone;
+		if(StringUtil.isNotEmpty(this.timeZone)) {
+			zone = ZoneId.of(this.timeZone);
+		} else {
+			zone = ZoneId.systemDefault();
+		}
+		return ZonedDateTime.now(zone);
 	}
 }

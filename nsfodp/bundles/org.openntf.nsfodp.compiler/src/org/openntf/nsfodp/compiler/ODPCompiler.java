@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,41 +29,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.ibm.commons.util.StringUtil;
-import com.ibm.commons.util.io.StreamUtil;
-import com.ibm.domino.napi.NException;
-import com.ibm.domino.napi.c.C;
-import com.ibm.domino.napi.c.Os;
-import com.ibm.xsp.library.FacesClassLoader;
-import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
-import com.ibm.xsp.registry.FacesSharableRegistry;
-import com.ibm.xsp.registry.LibraryFragmentImpl;
-import com.ibm.xsp.registry.UpdatableLibrary;
-import com.ibm.xsp.registry.parse.ConfigParser;
-import com.ibm.xsp.registry.parse.ConfigParserFactory;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openntf.com.ibm.xsp.extlib.interpreter.DynamicFacesClassLoader;
@@ -98,6 +81,18 @@ import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.ibm.commons.util.StringUtil;
+import com.ibm.domino.napi.NException;
+import com.ibm.domino.napi.c.C;
+import com.ibm.domino.napi.c.Os;
+import com.ibm.xsp.library.FacesClassLoader;
+import com.ibm.xsp.registry.CompositeComponentDefinitionImpl;
+import com.ibm.xsp.registry.FacesSharableRegistry;
+import com.ibm.xsp.registry.LibraryFragmentImpl;
+import com.ibm.xsp.registry.UpdatableLibrary;
+import com.ibm.xsp.registry.parse.ConfigParser;
+import com.ibm.xsp.registry.parse.ConfigParserFactory;
+
 /**
  * Represents an on-disk project compilation environment.
  * 
@@ -111,10 +106,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	private List<String> compilerOptions = DEFAULT_COMPILER_OPTIONS;
 	private String compilerLevel = DEFAULT_COMPILER_LEVEL;
 	
-	private boolean appendTimestampToTitle = false;
-	private String templateName;
-	private String templateVersion;
-	private boolean setProductionXspOptions = false;
 	private String odsRelease;
 	/**
 	 * @since 3.8.0
@@ -127,8 +118,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 			"-encoding", "utf-8" //$NON-NLS-1$ //$NON-NLS-2$
 		);
 	public static final String DEFAULT_COMPILER_LEVEL = "1.8"; //$NON-NLS-1$
-	
-	private static final ThreadLocal<DateFormat> TIMESTAMP = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd h:mm a zzz")); //$NON-NLS-1$
 	
 	/**
 	 * Notes.ini property to set to "1" to output debug information about imported DXL
@@ -194,76 +183,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 	 */
 	public String getCompilerLevel() {
 		return compilerLevel;
-	}
-	
-	/**
-	 * Set whether or not to append a timestamp to the generated NSF's title.
-	 * 
-	 * @param appendTimestampToTitle whether or not to append a timestamp to the generated NSF's title
-	 */
-	public void setAppendTimestampToTitle(boolean appendTimestampToTitle) {
-		this.appendTimestampToTitle = appendTimestampToTitle;
-	}
-	
-	/**
-	 * @return whether the compiler is configured to append a timestamp to the NSF's title
-	 */
-	public boolean isAppendTimestampToTitle() {
-		return appendTimestampToTitle;
-	}
-	
-	/**
-	 * Sets a name for this database to act as a master template.
-	 * 
-	 * @param templateName the name to set, or <code>null</code> to un-set it
-	 */
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
-	}
-	
-	/**
-	 * @return the name this database will use as a master template
-	 */
-	public String getTemplateName() {
-		return templateName;
-	}
-	
-	/**
-	 * Sets a version for this database to use when {@link #setTemplateName(String)} is
-	 * configured.
-	 * 
-	 * @param templateVersion the version to use, or <code>null</code> to un-set it
-	 */
-	public void setTemplateVersion(String templateVersion) {
-		this.templateVersion = templateVersion;
-	}
-	
-	/**
-	 * @return the version this database will use when a master template
-	 */
-	public String getTemplateVersion() {
-		return templateVersion;
-	}
-	
-	/**
-	 * Sets whether to set production options in the xsp.properties file. Currently, this sets:
-	 * 
-	 * <ul>
-	 * 	<li><code>xsp.resources.aggregate=true</code></li>
-	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
-	 * </ul>
-	 * 
-	 * @param setProductionXspOptions whether to set production XSP options
-	 */
-	public void setSetProductionXspOptions(boolean setProductionXspOptions) {
-		this.setProductionXspOptions = setProductionXspOptions;
-	}
-	
-	/**
-	 * @return whether the compiler is set to specify production XSP options
-	 */
-	public boolean isSetProductionXspOptions() {
-		return setProductionXspOptions;
 	}
 	
 	/**
@@ -411,35 +330,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 							importCustomControls(importer, database, classLoader, compiledClassNames);
 							importXPages(importer, database, classLoader, compiledClassNames);
 							importJavaElements(importer, database, classLoader, compiledClassNames);
-						}
-		
-						// Append a timestamp if requested
-						if(this.isAppendTimestampToTitle()) {
-							database.setTitle(database.getTitle() + " - " + TIMESTAMP.get().format(new Date())); //$NON-NLS-1$
-						}
-						
-						// Set the template info if requested
-						String templateName = this.getTemplateName();
-						if(StringUtil.isNotEmpty(templateName)) {
-							int noteId = database.getSharedFieldNoteID("$TemplateBuild"); //$NON-NLS-1$
-							NNote doc;
-							if(noteId != 0) {
-								doc = database.getNoteByID(noteId);
-							} else {
-								// Import an empty one
-								try(InputStream is = ODPCompiler.class.getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-									String dxl = StreamUtil.readString(is, "UTF-8"); //$NON-NLS-1$
-									List<Integer> ids = importDxl(importer, dxl, database, "$TemplateBuild blank field"); //$NON-NLS-1$
-									doc = database.getNoteByID(ids.get(0));
-								}
-							}
-							String version = this.getTemplateVersion();
-							if(StringUtil.isNotEmpty(version)) {
-								doc.set("$TemplateBuild", version); //$NON-NLS-1$
-							}
-							doc.set("$TemplateBuildName", templateName); //$NON-NLS-1$
-							doc.set("$TemplateBuildDate", new Date()); //$NON-NLS-1$
-							doc.save();
 						}
 					}
 				}
@@ -671,24 +561,6 @@ public class ODPCompiler extends AbstractCompilationEnvironment {
 						throw new RuntimeException(e);
 					}
 				} break;
-				case "WebContent/WEB-INF/xsp.properties": { //$NON-NLS-1$
-					// Special handling of xsp.properties to set production options
-					if(this.isSetProductionXspOptions()) {
-						try(InputStream is = NSFODPUtil.newInputStream(res.getDataFile())) {
-							Properties props = new Properties();
-							props.load(is);
-							props.put("xsp.resources.aggregate", "true"); //$NON-NLS-1$ //$NON-NLS-2$
-							props.put("xsp.client.resources.uncompressed", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-							try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-								props.store(baos, null);
-								baos.flush();
-								res.setOverrideData(baos.toByteArray());
-							}
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-					}
-				}
 				}
 				
 				

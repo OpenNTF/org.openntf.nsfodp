@@ -24,6 +24,43 @@
                 <artifactId>nsfodp-maven-plugin</artifactId>
                 <version>4.1.0-SNAPSHOT</version>
                 <extensions>true</extensions>
+                <configuration>
+					<appendTimestampToTitle>true</appendTimestampToTitle>
+					<setProductionXspOptions>true</setProductionXspOptions>
+                	<acl>
+                		<entries>
+                			<aclEntry>
+                				<name>-Default-</name>
+                				<level>manager</level>
+                				<defaultEntry>true</defaultEntry>
+                				<deleteDocs>true</deleteDocs>
+                			</aclEntry>
+                			<aclEntry>
+                				<name>Anonymous</name>
+                				<level>noaccess</level>
+                				<type>person</type>
+                			</aclEntry>
+                			<aclEntry>
+                				<name>LocalDomainAdmins</name>
+                				<level>manager</level>
+                				<type>mixedgroup</type>
+                				<deleteDocs>true</deleteDocs>
+                			</aclEntry>
+                			<aclEntry>
+                				<name>LocalDomainServers</name>
+                				<level>manager</level>
+                				<type>servergroup</type>
+                				<deleteDocs>true</deleteDocs>
+                			</aclEntry>
+                			<aclEntry>
+                				<name>OtherDomainServers</name>
+                				<level>noaccess</level>
+                				<type>servergroup</type>
+                				<noReplicate>true</noReplicate>
+                			</aclEntry>
+                		</entries>
+                	</acl>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2025 Jesse Gallagher
+ * Copyright © 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.openntf.maven.nsfodp.util.ODPMojoUtil;
 import org.openntf.nsfodp.commons.NSFODPConstants;
 
 import com.ibm.commons.util.StringUtil;
@@ -49,9 +48,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			Collection<Path> classpathJars,
 			Path outputFile,
 			String compilerLevel,
-			boolean appendTimestampToTitle,
-			String templateName,
-			boolean setProductionXspOptions,
 			String odsRelease,
 			boolean compileBasicElementLotusScript
 		) {
@@ -64,12 +60,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 		if(compilerLevel != null) {
 			props.put(NSFODPConstants.PROP_COMPILERLEVEL, compilerLevel);
 		}
-		props.put(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE, Boolean.toString(appendTimestampToTitle));
-		if(templateName != null) {
-			props.put(NSFODPConstants.PROP_TEMPLATENAME, templateName);
-			props.put(NSFODPConstants.PROP_TEMPLATEVERSION, ODPMojoUtil.calculateVersion(getProject()));
-		}
-		props.put(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS, Boolean.toString(setProductionXspOptions));
 		props.put(NSFODPConstants.PROP_ODSRELEASE, StringUtil.toString(odsRelease));
 		props.put(NSFODPConstants.PROP_COMPILEBASICLS, Boolean.toString(compileBasicElementLotusScript));
 		

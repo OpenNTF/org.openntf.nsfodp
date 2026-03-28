@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.MessageFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,6 +52,11 @@ import com.ibm.commons.util.StringUtil;
 
 public enum ODPUtil {
 	;
+	
+	/**
+	 * Formatter to create a DXL-compatible value from a Java time.
+	 */
+	public static final DateTimeFormatter DXL_DATETIME = DateTimeFormatter.ofPattern("yyyyMMdd'T'hhmmss,SSx"); //$NON-NLS-1$
 	
 	public static String readFile(Path path) {
 		try {

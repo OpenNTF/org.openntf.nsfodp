@@ -3,16 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.openntf.nsfodp.commons.odp;singleton:=true
 Automatic-Module-Name: org.openntf.nsfodp.commons.odp
-Bundle-Version: 4.0.8.qualifier
+Bundle-Version: 4.0.9.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
- com.ibm.commons;bundle-version="9.0.1",
- com.ibm.domino.napi;bundle-version="9.0.1"
-Import-Package: org.openntf.nsfodp.commons;version="3.5.0",
+ com.ibm.commons,
+ com.ibm.domino.napi
+Import-Package: javax.xml.bind,
+ org.openntf.nsfodp.commons;version="3.5.0",
+ org.openntf.nsfodp.commons.config,
  org.openntf.nsfodp.commons.dxl;version="3.5.0",
  org.openntf.nsfodp.commons.h;version="3.5.0",
  org.openntf.nsfodp.commons.xml;version="3.7.1"
-Export-Package: org.openntf.nsfodp.commons.odp;version="4.0.8",
- org.openntf.nsfodp.commons.odp.notesapi;version="4.0.8",
- org.openntf.nsfodp.commons.odp.util;version="4.0.8"
+Export-Package: org.openntf.nsfodp.commons.odp;version="4.0.9",
+ org.openntf.nsfodp.commons.odp.notesapi;version="4.0.9",
+ org.openntf.nsfodp.commons.odp.util;version="4.0.9"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,22 +80,6 @@ public class CompilerApplication implements IApplication {
 			String compilerLevel = System.getenv(NSFODPConstants.PROP_COMPILERLEVEL);
 			if(StringUtil.isNotEmpty(compilerLevel)) {
 				compiler.setCompilerLevel(compilerLevel);
-			}
-			String appendTimestamp = System.getenv(NSFODPConstants.PROP_APPENDTIMESTAMPTOTITLE);
-			if("true".equals(appendTimestamp)) { //$NON-NLS-1$
-				compiler.setAppendTimestampToTitle(true);
-			}
-			String templateName = System.getenv(NSFODPConstants.PROP_TEMPLATENAME);
-			if(StringUtil.isNotEmpty(templateName)) {
-				compiler.setTemplateName(templateName);
-				String templateVersion = System.getenv(NSFODPConstants.PROP_TEMPLATEVERSION);
-				if(StringUtil.isNotEmpty(templateVersion)) {
-					compiler.setTemplateVersion(templateVersion);
-				}
-			}
-			String setXspOptions = System.getenv(NSFODPConstants.PROP_SETPRODUCTIONXSPOPTIONS);
-			if("true".equals(setXspOptions)) { //$NON-NLS-1$
-				compiler.setSetProductionXspOptions(true);
 			}
 			String odsRelease = System.getenv(NSFODPConstants.PROP_ODSRELEASE);
 			if(StringUtil.isNotEmpty(odsRelease)) {

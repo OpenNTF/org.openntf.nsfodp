@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2025 Jesse Gallagher
+ * Copyright © 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openntf.maven.nsfodp.config;
+package org.openntf.nsfodp.commons.config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,6 +47,9 @@ public class ConfigAclEntry {
 	private boolean defaultEntry = false;
 	@XmlAttribute(name="name")
 	private String name;
+	/** @since 4.1.0 */
+	@XmlAttribute(name="type")
+	private ConfigAclEntry.EntryType type;
 
 	@XmlAttribute(name="writepublicdocs")
 	private Boolean writePublicDocs;
@@ -87,6 +90,14 @@ public class ConfigAclEntry {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	/** @since 4.1.0 */
+	public ConfigAclEntry.EntryType getType() {
+		return type;
+	}
+	/** @since 4.1.0 */
+	public void setType(ConfigAclEntry.EntryType type) {
+		this.type = type;
 	}
 	public Boolean getWritePublicDocs() {
 		return writePublicDocs;

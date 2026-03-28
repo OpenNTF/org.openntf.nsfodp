@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2025 Jesse Gallagher
+ * Copyright (c) 2018-2026 Contributors to the NSF ODP Tooling Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 
@@ -128,6 +130,10 @@ public enum DXLUtil {
 	}
 
 	public static void writeItemDataRaw(Document dxlDoc, String itemName, byte[] data, int itemCap, int headerSize) {
+		writeItemDataRaw(dxlDoc, itemName, data, itemCap, headerSize, Collections.emptyMap());
+	}
+	
+	public static void writeItemDataRaw(Document dxlDoc, String itemName, byte[] data, int itemCap, int headerSize, Map<String, String> additionalItemAttributes) {
 		deleteItems(dxlDoc, itemName);
 
 		Element note = getRootNoteElement(dxlDoc);
@@ -144,6 +150,11 @@ public enum DXLUtil {
 	
 			Element itemNode = NSFODPDomUtil.createElement(note, "item"); //$NON-NLS-1$
 			itemNode.setAttribute("name", itemName); //$NON-NLS-1$
+			if(additionalItemAttributes != null && !additionalItemAttributes.isEmpty()) {
+				for(Map.Entry<String, String> entry : additionalItemAttributes.entrySet()) {
+					itemNode.setAttribute(entry.getKey(), entry.getValue());
+				}
+			}
 			Element fileDataNode = NSFODPDomUtil.createElement(itemNode, "rawitemdata"); //$NON-NLS-1$
 			fileDataNode.setAttribute("type", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 			// Write out the value with 72-column wrapping
@@ -250,11 +261,13 @@ public enum DXLUtil {
 			imageType = 1; // CDIMAGETYPE_GIF
 			break;
 		case "image/jpeg": //$NON-NLS-1$
-		case "image/png": // for some reason //$NON-NLS-1$
 			imageType = 2; // CDIMAGETYPE_JPEG
 			break;
 		case "image/bmp": //$NON-NLS-1$
 			imageType = 3; // CDIMAGETYPE_BMP
+			break;
+		case "image/png": //$NON-NLS-1$
+			imageType = 4; // CDIMAGETYPE_PNG
 			break;
 		default:
 			// Everything else is 0
