@@ -467,7 +467,8 @@ public class OnDiskProject {
 	}
 	
 	/**
-	 * Writes the provided template name and build information into AppProperties/database.properties.
+	 * Writes the provided template name and build information into AppProperties/database.properties
+	 * and SharedElements/Fields/$TemplateBuild.field.
 	 * 
 	 * @param templateName the template name to set
 	 * @param version the version string to set
@@ -477,30 +478,30 @@ public class OnDiskProject {
 	 * @since 4.1.0
 	 */
 	public void writeTemplateName(String templateName, String version, ZonedDateTime buildTime) throws IOException {
-		Path templateBuildField = baseDir.resolve("SharedElements").resolve("Fields").resolve("$TemplateBuild.field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		if(!Files.exists(templateBuildField) || Files.size(templateBuildField) == 0) {
-			Files.createDirectories(templateBuildField.getParent());
-			try(InputStream is = getClass().getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
-				Files.copy(is, templateBuildField, StandardCopyOption.REPLACE_EXISTING);
-			}
-		}
-
-		Document templateBuildDxl;
-		try(Reader r = Files.newBufferedReader(templateBuildField, StandardCharsets.UTF_8)) {
-			templateBuildDxl = NSFODPDomUtil.createDocument(r);
-		}
+		Document props = readDatabaseProperties();
+		
+		Element database = props.getDocumentElement();
+		database.setAttribute("templatename", templateName); //$NON-NLS-1$
+		updateTitleItem(props);
+		
+		writeDatabaseProperties(props);
+		
+		Document templateBuildDxl = readTemplateBuild();
 		// TODO support non-raw format
 		{
-			Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuildname']/text") //$NON-NLS-1$
-				.orElseGet(() -> {
-					Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
-					item.setAttribute("name", "$TemplateBuildName"); //$NON-NLS-1$ //$NON-NLS-2$
-					return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
-				});
-			node.setTextContent(templateName);
+			String fromTemplate = database.getAttribute("fromtemplate"); //$NON-NLS-1$
+			if(StringUtil.isNotEmpty(fromTemplate)) {
+				Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$TEMPLATEBUILDNAME']/text") //$NON-NLS-1$
+					.orElseGet(() -> {
+						Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
+						item.setAttribute("name", "$TemplateBuildName"); //$NON-NLS-1$ //$NON-NLS-2$
+						return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+					});
+				node.setTextContent(fromTemplate);
+			}
 		}
 		{
-			Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuild']/text") //$NON-NLS-1$
+			Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$TEMPLATEBUILD']/text") //$NON-NLS-1$
 				.orElseGet(() -> {
 					Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
 					item.setAttribute("name", "$TemplateBuild"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -510,7 +511,7 @@ public class OnDiskProject {
 		}
 		{
 			// <datetime dst="true">20230518T151728,07-04</datetime>
-			Element node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuilddate']/datetime") //$NON-NLS-1$
+			Element node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$TEMPLATEBUILDDATE']/datetime") //$NON-NLS-1$
 				.map(Element.class::cast)
 				.orElseGet(() -> {
 					Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
@@ -523,9 +524,47 @@ public class OnDiskProject {
 			node.setTextContent(ODPUtil.DXL_DATETIME.format(buildTime));
 		}
 		
-		try(Writer w = Files.newBufferedWriter(templateBuildField, StandardOpenOption.TRUNCATE_EXISTING)) {
-			NSFODPDomUtil.serialize(w, templateBuildDxl, null);
+		writeTemplateBuild(templateBuildDxl);
+	}
+	
+	/**
+	 * Writes the "From Template" info into the database.properties file and
+	 * and SharedElements/Fields/$TemplateBuild.field.
+	 * 
+	 * @param fromTemplate the name of the template to inherit from
+	 * @param inherit whether the database should also inherit future changes from this
+	 *                template
+	 * @throws IOException if there is a problem processing database.properties
+	 * @since 4.1.0
+	 */
+	public void writeFromTemplateName(String fromTemplate, boolean inherit) throws IOException {
+		if(inherit) {
+			Document props = readDatabaseProperties();
+			
+			Element database = props.getDocumentElement();
+			if(StringUtil.isNotEmpty(fromTemplate)) {
+				database.setAttribute("fromtemplate", fromTemplate); //$NON-NLS-1$
+			} else {
+				database.removeAttribute("fromtemplate"); //$NON-NLS-1$
+			}
+			updateTitleItem(props);
+	
+			writeDatabaseProperties(props);
 		}
+		
+//		Document templateBuildDxl = readTemplateBuild();
+//
+//		{
+//			Node node = NSFODPDomUtil.node(templateBuildDxl, "/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$templatebuildname']/text") //$NON-NLS-1$
+//				.orElseGet(() -> {
+//					Element item = NSFODPDomUtil.createElement(templateBuildDxl.getDocumentElement(), "item"); //$NON-NLS-1$
+//					item.setAttribute("name", "$TemplateBuildName"); //$NON-NLS-1$ //$NON-NLS-2$
+//					return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+//				});
+//			node.setTextContent(fromTemplate);
+//		}		
+//		
+//		writeTemplateBuild(templateBuildDxl);
 	}
 	
 	// *******************************************************************************
@@ -595,5 +634,50 @@ public class OnDiskProject {
 		try(Writer w = Files.newBufferedWriter(databaseProperties, StandardCharsets.UTF_8)) {
 			NSFODPDomUtil.serialize((Writer) w, (Node) props, null);
 		}
+	}
+	
+	private Document readTemplateBuild() throws IOException {
+		Path templateBuildField = baseDir.resolve("SharedElements").resolve("Fields").resolve("$TemplateBuild.field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if(!Files.exists(templateBuildField) || Files.size(templateBuildField) == 0) {
+			Files.createDirectories(templateBuildField.getParent());
+			try(InputStream is = getClass().getResourceAsStream("/dxl/TemplateBuild.xml")) { //$NON-NLS-1$
+				Files.copy(is, templateBuildField, StandardCopyOption.REPLACE_EXISTING);
+			}
+		}
+
+		try(Reader r = Files.newBufferedReader(templateBuildField, StandardCharsets.UTF_8)) {
+			return NSFODPDomUtil.createDocument(r);
+		}
+	}
+	
+	private void writeTemplateBuild(Document templateBuildDxl) throws IOException {
+		Path templateBuildField = baseDir.resolve("SharedElements").resolve("Fields").resolve("$TemplateBuild.field"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		try(Writer w = Files.newBufferedWriter(templateBuildField, StandardOpenOption.TRUNCATE_EXISTING)) {
+			NSFODPDomUtil.serialize(w, templateBuildDxl, null);
+		}
+	}
+	
+	private void updateTitleItem(Document props) {
+		// Title\n#1Template Name\n#2From Template
+		Element database = props.getDocumentElement();
+		
+		StringBuilder titleVal = new StringBuilder(database.getAttribute("title")); //$NON-NLS-1$
+		String templateName = database.getAttribute("templatename"); //$NON-NLS-1$
+		if(StringUtil.isNotEmpty(templateName)) {
+			titleVal.append("\n#1"); //$NON-NLS-1$
+			titleVal.append(templateName);
+		}
+		String fromTemplate = database.getAttribute("fromtemplate"); //$NON-NLS-1$
+		if(StringUtil.isNotEmpty(fromTemplate)) {
+			titleVal.append("\n#2"); //$NON-NLS-1$
+			titleVal.append(fromTemplate);
+		}
+		Node node = NSFODPDomUtil.node(props, "/database/note/item[translate(@name, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='$TITLE']/text") //$NON-NLS-1$
+			.orElseGet(() -> {
+				Element item = NSFODPDomUtil.createElement(database, "item"); //$NON-NLS-1$
+				item.setAttribute("name", "$TITLE"); //$NON-NLS-1$ //$NON-NLS-2$
+				return NSFODPDomUtil.createElement(item, "text"); //$NON-NLS-1$
+			});
+		node.setTextContent(titleVal.toString());
 	}
 }

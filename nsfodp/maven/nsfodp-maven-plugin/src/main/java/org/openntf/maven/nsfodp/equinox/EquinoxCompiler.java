@@ -48,7 +48,6 @@ public class EquinoxCompiler extends AbstractEquinoxTask {
 			Collection<Path> classpathJars,
 			Path outputFile,
 			String compilerLevel,
-			String templateName,
 			String odsRelease,
 			boolean compileBasicElementLotusScript
 		) {
