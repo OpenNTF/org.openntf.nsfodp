@@ -22,7 +22,7 @@
             <plugin>
                 <groupId>org.openntf.maven</groupId>
                 <artifactId>nsfodp-maven-plugin</artifactId>
-                <version>4.1.0-SNAPSHOT</version>
+                <version>4.1.0</version>
                 <extensions>true</extensions>
                 <configuration>
 					<appendTimestampToTitle>true</appendTimestampToTitle>
