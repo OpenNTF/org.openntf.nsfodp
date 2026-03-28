@@ -144,7 +144,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * Whether or not to append a timestamp to the generated NSF's title. Defaults to
 	 * {@code false}.
 	 */
-	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false)
+	@Parameter(property="nsfodp.compiler.appendTimestampToTitle", required=false, defaultValue = "false")
 	private boolean appendTimestampToTitle = false;
 	
 	/**
@@ -155,17 +155,38 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
 	 * @since 4.1.0
 	 */
-	@Parameter(property="nsfodp.compiler.timestampFormat", required=false)
+	@Parameter(property="nsfodp.compiler.timestampFormat", required=false, defaultValue = "yyyy-MM-dd h:mm a zzz")
 	private String timestampFormat;
 	
 	/**
-	 * A name to set in the database for use as a master template.
+	 * A name to set in the database for use as a template.
 	 * 
 	 * <p>Note: this is the name used by this database when it is a template for
 	 * others, not the name of a template to inherit from.</p>
 	 */
 	@Parameter(property="nsfodp.compiler.templateName", required=false)
 	private String templateName;
+	
+	/**
+	 * A name to set in the database to set for the template this database inherits from.
+	 * 
+	 * <p>This sets the value both as the NSF's parent template to inherit from as well
+	 * as the name used in the $TemplateBuild shared field.
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.fromTemplateName", required=false)
+	private String fromTemplateName;
+	
+	/**
+	 * Configures whether the NSF should be marked to inherit from. When set to
+	 * {@code false}, then {@code fromTemplateName} will only write the name to
+	 * $TemplateBuild.
+	 * 
+	 * @since 4.1.0
+	 */
+	@Parameter(property="nsfodp.compiler.fromTemplateInherit", required=false, defaultValue="true")
+	private boolean fromTemplateInherit = true;
 	
 	/**
 	 * Whether to set production options in the xsp.properties file. Currently, this sets:
@@ -175,7 +196,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 	 * 	<li><code>xsp.client.resources.uncompressed=false</code></li>
 	 * </ul>
 	 */
-	@Parameter(required=false)
+	@Parameter(required=false, defaultValue = "false")
 	private boolean setProductionXspOptions = false;
 	
 	/**
@@ -348,10 +369,16 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 					}
 				}
 				
-				// Create/update the $TemplateBuild subform, if specified
+				// Create/update the template information, if specified
+				if(StringUtil.isNotEmpty(this.fromTemplateName)) {
+					if(log.isInfoEnabled()) {
+						log.info("Writing from template name from pom.xml into ODP");
+					}
+					odp.writeFromTemplateName(this.fromTemplateName, fromTemplateInherit);
+				}
 				if(StringUtil.isNotEmpty(this.templateName)) {
 					if(log.isInfoEnabled()) {
-						log.info("Writing template name and build information from pom.xml into SharedElements/Fields/$TemplateBuild.field");
+						log.info("Writing template name and build information from pom.xml into ODP");
 					}
 					odp.writeTemplateName(this.templateName, ODPMojoUtil.calculateVersion(project), now());
 				}
@@ -441,7 +468,7 @@ public class CompileODPMojo extends AbstractCompilerMojo {
 			.map(Artifact::getFile)
 			.map(File::toPath)
 			.forEach(jars::add);
-		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, templateName, odsRelease, this.compileBasicElementLotusScript);
+		compiler.compileOdp(odpDirectory, updateSites, jars, outputFile, compilerLevel, odsRelease, this.compileBasicElementLotusScript);
 	}
 	
 	// *******************************************************************************
