@@ -115,7 +115,6 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.release>8</maven.compiler.release>
 		<tycho-version>3.0.5</tycho-version>
-		<xsp-bundles-range>0.0.0</xsp-bundles-range>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -245,8 +244,9 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
-
-					<pomDependencies>consider</pomDependencies>
+					<target>
+						<file>../../xsp-platform.target</file>
+					</target>
 					<dependency-resolution>
 						<extraRequirements>
 							<requirement>
@@ -257,7 +257,7 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>com.ibm.domino.napi.impl</id>
-								<versionRange>${xsp-bundles-range}</versionRange>
+								<versionRange>0.0.0</versionRange>
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
@@ -299,29 +299,6 @@
 						</extraRequirements>
 						<optionalDependencies>ignore</optionalDependencies>
 					</dependency-resolution>
-
-					<filters>
-						<!-- work around Equinox bug 348045 -->
-						<filter>
-							<type>p2-installable-unit</type>
-							<id>org.eclipse.equinox.servletbridge.extensionbundle</id>
-							<removeAll />
-						</filter>
-					</filters>
-
-					<environments>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-					<resolver>p2</resolver>
 				</configuration>
 			</plugin>
 
@@ -530,9 +507,7 @@
 				</property>
 			</activation>
 			
-			<properties>				
-				<xsp-bundles-range>[1.0.0,2.0.0)</xsp-bundles-range>
-				<notes-platform>${project.baseUri}../../../xsp-deps/target/repository</notes-platform>
+			<properties>
 				<skipTests>true</skipTests>
 			</properties>
 		</profile>

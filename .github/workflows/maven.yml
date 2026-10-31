@@ -30,6 +30,5 @@ jobs:
         cache-dependency-path: |
           nsfodp/pom.xml
           nsfodp/**/pom.xml
-          xsp-deps/pom.xml
     - name: Build with Maven
-      run: mvn -B package -f xsp-deps && mvn -B package --file nsfodp
+      run: mvn -B package --file nsfodp
