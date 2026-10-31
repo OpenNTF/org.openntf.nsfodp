@@ -125,13 +125,8 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-202006</id>
-			<url>https://download.eclipse.org/releases/2020-06</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>com.hcl.repo</id>
-			<url>${notes-platform}</url>
+			<id>eclipse-2021-12</id>
+			<url>https://download.eclipse.org/releases/2021-12</url>
 			<layout>p2</layout>
 		</repository>
 		<repository>
@@ -267,28 +262,6 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.openntf.domino.java.api.corba.patch</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							
-							<!-- These are required to build the compiler module in newer Tycho -->
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.extsn</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.domino</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.extlib</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.pvc.servlet.jsp</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>
