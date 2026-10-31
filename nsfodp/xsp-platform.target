@@ -17,6 +17,7 @@
             <unit id="org.eclipse.equinox.registry" version="3.11.100.v20211021-1418"/>
             <unit id="org.eclipse.osgi" version="3.17.100.v20211104-1730"/>
             <unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
+            <unit id="org.eclipse.swt" version="3.118.0.v20211123-0851"/>
         </location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" label="Eclipse Platform" missingManifest="generate" type="Maven">
 			<dependencies>
