@@ -39,9 +39,9 @@
 			<version>0.12.0</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>org.openntf.nsfodp.commons</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.eclipsesource.minimal-json</groupId>
+			<artifactId>minimal-json</artifactId>
+			<version>0.9.5</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -53,7 +53,7 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>${project.groupId}:*</include>
+							<include>com.eclipsesource.minimal-json:*</include>
 						</includes>
 					</artifactSet>
 				</configuration>

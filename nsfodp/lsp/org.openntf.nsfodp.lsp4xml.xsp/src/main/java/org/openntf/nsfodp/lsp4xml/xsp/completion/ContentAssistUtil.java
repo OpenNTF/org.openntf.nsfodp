@@ -16,13 +16,13 @@
 package org.openntf.nsfodp.lsp4xml.xsp.completion;
 
 import org.eclipse.lemminx.dom.DOMDocument;
-import org.openntf.nsfodp.commons.NSFODPConstants;
 
 public enum ContentAssistUtil {
 	;
+	public static final String XP_NS = "http://www.ibm.com/xsp/core"; //$NON-NLS-1$
 
 	public static boolean isXsp(DOMDocument doc) {
-		if (!NSFODPConstants.XP_NS.equals(doc.getDocumentElement().getNamespaceURI())) {
+		if (!XP_NS.equals(doc.getDocumentElement().getNamespaceURI())) {
 			return false;
 		}
 		return true;
