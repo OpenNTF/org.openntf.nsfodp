@@ -33,7 +33,7 @@ jobs:
           nsfodp/pom.xml
           nsfodp/**/pom.xml
     - name: Build with Maven
-      run: mvn -B -X package --file nsfodp
+      run: mvn -B package --file nsfodp
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v7
