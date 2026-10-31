@@ -34,10 +34,6 @@
       %license
    </license>
 
-   <requires>
-      <import feature="com.ibm.xsp.extlibx.bazaar.feature"/>
-   </requires>
-
    <plugin
          id="org.openntf.nsfodp.commons"
          download-size="0"
