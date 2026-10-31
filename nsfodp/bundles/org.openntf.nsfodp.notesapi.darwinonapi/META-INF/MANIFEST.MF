@@ -6,7 +6,7 @@ Automatic-Module-Name: org.openntf.nsfodp.notesapi.darwinonapi
 Bundle-Version: 4.1.1.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/com.darwino.domino.napi.jar,
+Bundle-ClassPath: com.darwino.domino.napi.jar,
  .
 Require-Bundle: com.ibm.commons,
  com.ibm.domino.napi
