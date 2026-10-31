@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
-    - name: Set up JDK
+    - uses: actions/checkout@v7
+    - name: Set up JDK 21
       uses: actions/setup-java@v5
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
         cache-dependency-path: |
@@ -32,3 +32,9 @@ jobs:
           nsfodp/**/pom.xml
     - name: Build with Maven
       run: mvn -B package --file nsfodp
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        path: nsfodp/releng/nsfodp-dist/target/NSFODP-Tooling-*.zip
+        archive: false
