@@ -125,11 +125,6 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-2021-12</id>
-			<url>https://download.eclipse.org/releases/2021-12</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
 			<url>https://artifactory.openntf.org/openntf</url>
@@ -152,15 +147,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openntf.domino</groupId>
-			<artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.domino</groupId>
+			<artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -251,21 +246,10 @@
 							</requirement>
 							<requirement>
 								<type>eclipse-plugin</type>
-								<id>javax.activation</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>jakarta.xml.bind-api</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
 								<id>org.openntf.domino.java.api.corba.patch</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>
-						<optionalDependencies>ignore</optionalDependencies>
 					</dependency-resolution>
 				</configuration>
 			</plugin>

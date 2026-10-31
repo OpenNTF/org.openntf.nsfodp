@@ -15,9 +15,17 @@
             <unit id="org.eclipse.equinox.common" version="3.15.100.v20211021-1418"/>
             <unit id="org.eclipse.equinox.preferences" version="3.9.100.v20211021-1418"/>
             <unit id="org.eclipse.equinox.registry" version="3.11.100.v20211021-1418"/>
-            <unit id="org.eclipse.osgi" version="3.17.100.v20211104-1730"/>
             <unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
             <unit id="org.eclipse.swt" version="3.118.0.v20211123-0851"/>
+            <unit id="org.eclipse.core.resources" version="3.16.0.v20211001-2032"/>
+            <unit id="org.eclipse.wildwebdeveloper" version="0.5.18.202111090852"/>
+            <unit id="org.eclipse.wildwebdeveloper.xml" version="0.13.1.202111081705"/>
+            <unit id="org.eclipse.jdt.core" version="3.28.0.v20211117-1416"/>
+            <unit id="org.eclipse.pde.core" version="3.15.0.v20211020-1251"/>
+            <unit id="org.eclipse.m2e.core" version="1.18.3.20211018-0804"/>
+            <unit id="org.eclipse.m2e.jdt" version="1.18.3.20211112-0847"/>
+            <unit id="org.eclipse.m2e.launching" version="1.17.4.20211002-1029"/>
+	        <unit id="org.eclipse.wildwebdeveloper.feature.feature.group" version="0.10.10.202111090852"/>
         </location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" label="Eclipse Platform" missingManifest="generate" type="Maven">
 			<dependencies>
@@ -206,6 +214,22 @@ DynamicImport-Package: *
 					<groupId>org.openntf.xsp.stubs</groupId>
 					<artifactId>com.ibm.xsp.extsn</artifactId>
 					<version>1.5.2</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
+		</location>
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Jakarta Dependencies" missingManifest="generate" type="Maven">
+			<dependencies>
+				<dependency>
+					<groupId>jakarta.activation</groupId>
+					<artifactId>jakarta.activation-api</artifactId>
+					<version>1.2.2</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>jakarta.xml.bind</groupId>
+					<artifactId>jakarta.xml.bind-api</artifactId>
+					<version>2.3.3</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
