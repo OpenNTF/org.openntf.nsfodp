@@ -19,7 +19,7 @@
 <feature
       id="org.openntf.nsfodp.compiler.feature"
       label="%featureName"
-      version="3.11.0.qualifier"
+      version="4.1.1.qualifier"
       provider-name="%providerName">
 
    <description url="https://openntf.org/main.nsf/project.xsp?r=project/NSF%20ODP%20Tooling">
@@ -33,10 +33,6 @@
    <license url="https://www.apache.org/licenses/LICENSE-2.0">
       %license
    </license>
-
-   <requires>
-      <import feature="com.ibm.xsp.extlibx.bazaar.feature"/>
-   </requires>
 
    <plugin
          id="org.openntf.nsfodp.commons"

@@ -39,27 +39,13 @@
 			<version>0.12.0</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>org.openntf.nsfodp.commons</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.eclipsesource.minimal-json</groupId>
+			<artifactId>minimal-json</artifactId>
+			<version>0.9.5</version>
 		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				
-				<executions>
-					<execution>
-						<id>generate-manifest</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>manifest</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -67,7 +53,7 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>${project.groupId}:*</include>
+							<include>com.eclipsesource.minimal-json:*</include>
 						</includes>
 					</artifactSet>
 				</configuration>
