@@ -111,10 +111,10 @@
 	<properties>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.release>8</maven.compiler.release>
-		<tycho-version>3.0.5</tycho-version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+		<tycho-version>5.0.4</tycho-version>
 		
 		<!-- Maven API version. This version should be supported by m2e -->
 		<maven.api.version>3.3.9</maven.api.version>
@@ -175,20 +175,17 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
-				<!-- enable tycho versions extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-versions-plugin</artifactId>
 				<version>${tycho-version}</version>
 			</plugin>
 			<plugin>
-				<!-- enable tycho packaging extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<configuration>
@@ -357,42 +354,9 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<!-- javadoc configuration -->
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.2</version>
-					<configuration>
-						<!-- Activated by profile below -->
-						<skip>true</skip>
-
-						<failOnError>false</failOnError>
-						<excludePackageNames>com.sun.*:com.ibm.commons.*:com.ibm.sbt.core.*:com.ibm.sbt.plugin.*:com.ibm.sbt.jslibrray.*:com.ibm.sbt.proxy.*:com.ibm.sbt.security.*:*.util.*:com.ibm.sbt.portlet.*:com.ibm.sbt.playground.*:demo.*:acme.*</excludePackageNames>
-
-						<charset>UTF-8</charset>
-						<encoding>UTF-8</encoding>
-						<docencoding>UTF-8</docencoding>
-						<breakiterator>true</breakiterator>
-						<version>true</version>
-						<author>true</author>
-						<keywords>true</keywords>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.4.2</version>
-					<configuration>
-						<archive>
-							<manifestFile>${manifest-location}/MANIFEST.MF</manifestFile>
-						</archive>
-					</configuration>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -424,28 +388,6 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>6.0.0</version>
-					<configuration>
-						<supportIncrementalBuild>true</supportIncrementalBuild>
-						<manifestLocation>${manifest-location}</manifestLocation>
-						<excludeDependencies>true</excludeDependencies>
-						<supportedProjectTypes>
-							<supportedProjectType>jar</supportedProjectType>
-							<supportedProjectType>bundle</supportedProjectType>
-							<supportedProjectType>maven-plugin</supportedProjectType>
-						</supportedProjectTypes>
-						<instructions>
-							<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-							<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
-							<_snapshot>${osgi.qualifier}</_snapshot>
-						</instructions>
-					</configuration>
-				</plugin>
-				
 				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
