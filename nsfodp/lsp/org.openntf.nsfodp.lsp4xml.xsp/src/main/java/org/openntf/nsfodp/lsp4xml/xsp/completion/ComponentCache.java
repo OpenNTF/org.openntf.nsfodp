@@ -35,10 +35,10 @@ import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.openntf.com.eclipsesource.json.Json;
-import org.openntf.com.eclipsesource.json.JsonArray;
-import org.openntf.com.eclipsesource.json.JsonObject;
-import org.openntf.com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import org.openntf.domino.utils.xml.XMLDocument;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.model.ComponentProperty;
 import org.openntf.nsfodp.lsp4xml.xsp.completion.model.CustomControl;

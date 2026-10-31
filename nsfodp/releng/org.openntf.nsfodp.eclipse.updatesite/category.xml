@@ -23,6 +23,12 @@
    <feature id="org.openntf.nsfodp.eclipse.feature.source">
       <category name="NSF ODP Tooling"/>
    </feature>
+   <feature id="org.openntf.nsfodp.eclipse.xml.feature">
+      <category name="NSF ODP Tooling"/>
+   </feature>
+   <feature id="org.openntf.nsfodp.eclipse.xml.feature.source">
+      <category name="NSF ODP Tooling"/>
+   </feature>
    
    <category-def name="NSF ODP Tooling" label="NSF ODP Tooling"/>
 </site>

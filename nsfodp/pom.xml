@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openntf.nsfodp</groupId>
 	<artifactId>nsfodp</artifactId>
-	<version>4.1.0</version>
+	<version>4.2.0</version>
 	<packaging>pom</packaging>
 
 	<name>NSF ODP Tooling</name>
@@ -88,6 +88,7 @@
 		<module>bundles/org.openntf.nsfodp.eclipse.schemas</module>
 		<module>bundles/org.openntf.nsfodp.eclipse.lsp</module>
 		<module>features/org.openntf.nsfodp.eclipse.feature</module>
+		<module>features/org.openntf.nsfodp.eclipse.xml.feature</module>
 		<module>releng/org.openntf.nsfodp.eclipse.updatesite</module>
 		
 		<!--
@@ -111,14 +112,10 @@
 	<properties>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.release>8</maven.compiler.release>
-		<tycho-version>3.0.5</tycho-version>
-		<xsp-bundles-range>0.0.0</xsp-bundles-range>
-		
-		<!-- Maven API version. This version should be supported by m2e -->
-		<maven.api.version>3.3.9</maven.api.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+		<tycho-version>5.0.4</tycho-version>
 		
 		<!-- OSGi/Eclipse PDE support -->
 		<manifest-location>META-INF</manifest-location>
@@ -127,16 +124,6 @@
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>eclipse-202006</id>
-			<url>https://download.eclipse.org/releases/2020-06</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>com.hcl.repo</id>
-			<url>${notes-platform}</url>
-			<layout>p2</layout>
-		</repository>
 		<repository>
 			<id>artifactory.openntf.org</id>
 			<name>artifactory.openntf.org</name>
@@ -160,15 +147,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openntf.domino</groupId>
-			<artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openntf.domino</groupId>
+			<artifactId>org.openntf.domino.java.api.corba.patch</artifactId>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -176,20 +163,17 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
-				<!-- enable tycho versions extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-versions-plugin</artifactId>
 				<version>${tycho-version}</version>
 			</plugin>
 			<plugin>
-				<!-- enable tycho packaging extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<configuration>
@@ -245,8 +229,9 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
-
-					<pomDependencies>consider</pomDependencies>
+					<target>
+						<file>../../xsp-platform.target</file>
+					</target>
 					<dependency-resolution>
 						<extraRequirements>
 							<requirement>
@@ -257,16 +242,6 @@
 							<requirement>
 								<type>eclipse-plugin</type>
 								<id>com.ibm.domino.napi.impl</id>
-								<versionRange>${xsp-bundles-range}</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>javax.activation</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>jakarta.xml.bind-api</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 							<requirement>
@@ -274,54 +249,8 @@
 								<id>org.openntf.domino.java.api.corba.patch</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
-							
-							<!-- These are required to build the compiler module in newer Tycho -->
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.extsn</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.domino</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.xsp.extlib</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>com.ibm.pvc.servlet.jsp</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
 						</extraRequirements>
-						<optionalDependencies>ignore</optionalDependencies>
 					</dependency-resolution>
-
-					<filters>
-						<!-- work around Equinox bug 348045 -->
-						<filter>
-							<type>p2-installable-unit</type>
-							<id>org.eclipse.equinox.servletbridge.extensionbundle</id>
-							<removeAll />
-						</filter>
-					</filters>
-
-					<environments>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-					<resolver>p2</resolver>
 				</configuration>
 			</plugin>
 
@@ -380,47 +309,19 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<!-- javadoc configuration -->
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.2</version>
-					<configuration>
-						<!-- Activated by profile below -->
-						<skip>true</skip>
-
-						<failOnError>false</failOnError>
-						<excludePackageNames>com.sun.*:com.ibm.commons.*:com.ibm.sbt.core.*:com.ibm.sbt.plugin.*:com.ibm.sbt.jslibrray.*:com.ibm.sbt.proxy.*:com.ibm.sbt.security.*:*.util.*:com.ibm.sbt.portlet.*:com.ibm.sbt.playground.*:demo.*:acme.*</excludePackageNames>
-
-						<charset>UTF-8</charset>
-						<encoding>UTF-8</encoding>
-						<docencoding>UTF-8</docencoding>
-						<breakiterator>true</breakiterator>
-						<version>true</version>
-						<author>true</author>
-						<keywords>true</keywords>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.4.2</version>
-					<configuration>
-						<archive>
-							<manifestFile>${manifest-location}/MANIFEST.MF</manifestFile>
-						</archive>
-					</configuration>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.12.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.2</version>
+					<version>3.6.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -447,28 +348,6 @@
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>6.0.0</version>
-					<configuration>
-						<supportIncrementalBuild>true</supportIncrementalBuild>
-						<manifestLocation>${manifest-location}</manifestLocation>
-						<excludeDependencies>true</excludeDependencies>
-						<supportedProjectTypes>
-							<supportedProjectType>jar</supportedProjectType>
-							<supportedProjectType>bundle</supportedProjectType>
-							<supportedProjectType>maven-plugin</supportedProjectType>
-						</supportedProjectTypes>
-						<instructions>
-							<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-							<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
-							<_snapshot>${osgi.qualifier}</_snapshot>
-						</instructions>
-					</configuration>
-				</plugin>
-				
 				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -530,9 +409,7 @@
 				</property>
 			</activation>
 			
-			<properties>				
-				<xsp-bundles-range>[1.0.0,2.0.0)</xsp-bundles-range>
-				<notes-platform>${project.baseUri}../../../xsp-deps/target/repository</notes-platform>
+			<properties>
 				<skipTests>true</skipTests>
 			</properties>
 		</profile>
